@@ -16,6 +16,13 @@
 
 class _ImmutableMapFactory<K extends Hashable,V> {
   factory ImmutableMap() => new _EmptyMap();
+  factory ImmutableMap.fromMap(Map<K,V> map) {
+    ImmutableMap<K,V> result = new _EmptyMap();
+    map.forEach((K key, V value) {
+      result = result.insert(key, value);
+    });
+    return result;
+  }
 }
 
 /**

@@ -17,6 +17,7 @@
 interface ImmutableMap<K extends Hashable,V>
     default _ImmutableMapFactory<K extends Hashable,V> {
   ImmutableMap();
+  ImmutableMap.fromMap(Map<K,V> map);
 
   /** m.insert(k, v) == m.insert(k, v, (x, y) => y) */
   ImmutableMap<K,V> insert(K key, V value, [V combine(V,V)]);
