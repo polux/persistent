@@ -24,7 +24,7 @@ import Text.Show.Functions
 
 -- a datatype with an imperfect hash function
 data Key = Key String Bool
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq)
 
 instance Hashable Key where
   hash (Key s _) = hash s

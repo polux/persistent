@@ -26,7 +26,7 @@ import qualified Prelude as P
 import Data.Hashable
 import Data.Bits
 import Data.Maybe
-import Data.List (sort)
+import Data.List (null, (\\))
 import Control.Arrow((***))
 
 data Map k v = EmptyMap
@@ -103,16 +103,14 @@ delete k m = delete' 0 m
     delete' l m@(SubMap im) =
       case IM.lookup i im of
         Nothing -> m
-        Just m' ->
-          let m'' = delete' (l+1) m'
-          in SubMap (IM.insert i m'' im) -- could be further optimized
--- like this for instance:
-{-
-          in case m'' of
-               EmptyMap -> SubMap (IM.delete i im)
-               _ -> SubMap (IM.insert i m'' im) -- could simplify the tree here in some cases
--}
+        Just m' -> build $ case delete' (l+1) m' of
+          EmptyMap -> IM.delete i im
+          m'' -> IM.insert i m'' im
       where i = part l code
+            build im = case IM.toList im of
+                         [(_, l@(Leaf _ _))] -> l
+                         _                   -> SubMap im
+                         
 
 unionWith :: Eq k => (v -> v -> v) -> Map k v -> Map k v -> Map k v
 unionWith f m1 m2 = unionWith' 0 m1 m2
@@ -155,5 +153,9 @@ instance Functor (Map k) where
           fmap' (Leaf h kvs) = Leaf h (map (id *** f) kvs)
           fmap' (SubMap sm) = SubMap (IM.map fmap' sm)
 
-instance (Ord k, Eq k, Eq v) => Eq (Map k v) where
-  m1 == m2 = M.fromList (toList m1) == M.fromList (toList m2)
+instance (Eq k, Eq v) => Eq (Map k v) where
+  EmptyMap == EmptyMap = True
+  Leaf h1 kvs1 == Leaf h2 kvs2 = h1 == h2 && eqPermut kvs1 kvs2 
+    where eqPermut xs ys = null (xs \\ ys)
+  SubMap sm1 == SubMap sm2 = sm1 == sm2
+  _ == _ = False
