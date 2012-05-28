@@ -20,8 +20,8 @@ class Test {
   Test() {
     _tests = {
       "testLookupDelete": testLookupDelete,
-      "testLookupInsertWith": testLookupInsertWith,
-      "testDeleteInsertWith": testDeleteInsertWith,
+      "testLookupInsert": testLookupInsert,
+      "testDeleteInsert": testDeleteInsert,
       "testMapValuesInsert": testMapValuesInsert,
       "testMapValuesDelete": testMapValuesDelete,
       "testMapValuesLookup": testMapValuesLookup,
@@ -30,7 +30,7 @@ class Test {
       "testUnionMapValues": testUnionMapValues,
       "testUnionTrans": testUnionTrans,
       "testSizeEmpty": testSizeEmpty,
-      "testSizeInsertWith": testSizeInsertWith,
+      "testSizeInsert": testSizeInsert,
       "testSizeDelete": testSizeDelete,
       "testSizeMapValues": testSizeMapValues,
       "testAdjustSpec": testAdjustSpec
@@ -52,7 +52,7 @@ class Test {
         updateCallback: callback);
 
   // looking up an inserted key/value yields the value
-  testLookupInsertWith(callback(String)) {
+  testLookupInsert(callback(String)) {
     combine(x, y) => x + 42 * y;
     expected(map, k, v) {
       Option<int> present = map.lookup(k);
@@ -63,21 +63,21 @@ class Test {
     return forAllMap((map) =>
         forAllInt((k) =>
             forAllInt((v) =>
-                map.insertWith(k, v, combine).lookup(k)
+                map.insert(k, v, combine).lookup(k)
                     == new Option.some(expected(map, k, v)))),
         updateCallback: callback);
   }
 
   // deleting an inserted key yields the orginal map,
   // provided it didn't contain the key
-  testDeleteInsertWith(callback(String)) {
+  testDeleteInsert(callback(String)) {
     combine(n, m) => n + 42 * m;
     return forAllMap((map) =>
         forAllInt((k) =>
             forAllInt((v) =>
                 (map.lookup(k).isDefined)
                     ? true
-                    : map.insertWith(k, v, combine).delete(k) == map)),
+                    : map.insert(k, v, combine).delete(k) == map)),
         updateCallback: callback);
   }
 
@@ -155,11 +155,11 @@ class Test {
 
   // inserting (key,value) in a map increments its size
   // unless the key was already present
-  testSizeInsertWith(callback(String)) =>
+  testSizeInsert(callback(String)) =>
       forAllMap((m) =>
           forAllInt((k) =>
               forAllInt((v) =>
-                  m.insertWith(k, v, (a, b) => a + 42 * b).size()
+                  m.insert(k, v, (a, b) => a + 42 * b).size()
                       == m.size() + (m.lookup(k).isDefined ? 0 : 1))),
            updateCallback : callback);
 

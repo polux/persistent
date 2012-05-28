@@ -33,8 +33,8 @@ class Benchmark {
 
     ImmutableMap map = empty();
     for (int i = 0; i < _size; i++) {
-      map = map.insertWith("key$i", "foo", (String x, String y) => x.concat(y));
-      map = map.insertWith("key$i", "bar", (String x, String y) => x.concat(y));
+      map = map.insert("key$i", "foo", (String x, String y) => x.concat(y));
+      map = map.insert("key$i", "bar", (String x, String y) => x.concat(y));
     }
 
     for (int i = _size * 2; i >= 0; i--) {

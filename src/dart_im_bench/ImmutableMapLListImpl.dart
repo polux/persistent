@@ -21,9 +21,11 @@ class SimpleImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   final LList<Pair<K,V>> _list;
 
   SimpleImmutableMap._internal(this._list);
-  factory SimpleImmutableMap() => new SimpleImmutableMap._internal(new LList.nil());
+  factory SimpleImmutableMap() =>
+      new SimpleImmutableMap._internal(new LList.nil());
 
-  ImmutableMap<K,V> insertWith(K key, V value, V combine(V, V)) {
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V, V)]) {
+    combine = (combine != null) ? combine : (V x, V y) => y; 
     LList<Pair<K,V>> newList() {
       LListBuilder<Pair<K,V>> builder = new LListBuilder<Pair<K,V>>();
       LList<Pair<K,V>> it = _list;

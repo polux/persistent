@@ -44,8 +44,9 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   Option<V> lookup(K key) =>
       _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> insertWith(K key, V value, V combine(V ,V)) =>
-      _insertWith(_onePair(key, value), combine,
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V ,V)]) =>
+      _insertWith(_onePair(key, value),
+          (combine != null) ? combine : (V x, V y) => y,
           (key.hashCode() >> 2) & 0x3fffffff, 0);
 
   ImmutableMap<K,V> delete(K key) =>
