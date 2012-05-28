@@ -37,11 +37,11 @@ instance (Eq k, Hashable k, Arbitrary k, Arbitrary v) => Arbitrary (M.Map k v) w
   arbitrary = M.fromList <$> arbitrary
   shrink = map M.fromList . shrink . M.toList
 
-lookupInsert :: Key -> Int -> M.Map Key Int -> Bool
-lookupInsert k v m = M.lookup k (M.insert k v m) == Just v
+lookupInsertWith :: Key -> Int -> (Int -> Int -> Int) -> M.Map Key Int -> Bool
+lookupInsertWith k v f m = M.lookup k (M.insertWith f k v m) == Just (maybe v (f v) (M.lookup k m))
 
-deleteInsert :: Key -> Int -> M.Map Key Int -> Property
-deleteInsert k v m = not (k `M.member` m) ==> M.delete k (M.insert k v m) == m
+deleteInsertWith :: Key -> Int -> (Int -> Int -> Int) -> M.Map Key Int -> Property
+deleteInsertWith k v f m = not (k `M.member` m) ==> M.delete k (M.insertWith f k v m) == m
 
 lookupDelete :: Key -> M.Map Key Int -> Bool
 lookupDelete k m = M.lookup k (M.delete k m) == Nothing
@@ -76,8 +76,8 @@ unionFmap m1 m2 f = fmap f (M.unionWith const m1 m2) == M.unionWith const (fmap 
 sizeEmpty :: Bool
 sizeEmpty = M.size M.empty == 0
 
-sizeInsert :: M.Map Key Int -> Key -> Int -> Bool
-sizeInsert m k v = M.size (M.insert k v m) == M.size m + if M.member k m then 0 else 1
+sizeInsertWith :: M.Map Key Int -> Key -> Int -> (Int -> Int -> Int) -> Bool
+sizeInsertWith m k v f = M.size (M.insertWith f k v m) == M.size m + if M.member k m then 0 else 1
 
 sizeDelete :: M.Map Key Int -> Key -> Bool
 sizeDelete m k = M.size (M.delete k m) == M.size m - if M.member k m then 1 else 0
@@ -91,14 +91,13 @@ adjustSpec m k f = M.adjust k f m == expected
                      Nothing -> m
                      Just v -> M.insert k (f v) m
 
-
 check p = quickCheckWith args p
   where args = stdArgs { maxSuccess = 1000 }
 
 main = do
   check lookupDelete 
-  check lookupInsert
-  check deleteInsert
+  check lookupInsertWith
+  check deleteInsertWith
   check fromListToList
   check fmapToList
   check fmapInsert
@@ -108,7 +107,7 @@ main = do
   check unionEmptyRight
   check unionTrans
   check unionFmap
-  check sizeInsert
+  check sizeInsertWith
   check sizeDelete
   check sizeFMap
   check adjustSpec

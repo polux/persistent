@@ -16,7 +16,7 @@
 
 module ImMap (
   Map(), empty, adjust, lookup, insert, delete, unionWith, toList,
-  fromList, member, size
+  fromList, member, size, insertWith
 ) where
 
 import qualified Data.IntMap as IM
@@ -51,26 +51,29 @@ lookup k m = lookup' 0 m
 
 
 insert :: (Eq k, Hashable k) => k -> v -> Map k v -> Map k v
-insert k v m = insertWith const 0 (hash30 k) [(k,v)] m
+insert k v m = insertWith const k v m
 
-insertWith :: Eq k
+insertWith :: (Eq k, Hashable k) => (v -> v -> v) -> k -> v -> Map k v -> Map k v
+insertWith f k v m = insertWith' f 0 (hash30 k) [(k,v)] m
+
+insertWith' :: Eq k
            => (v -> v -> v) -- merge function
            -> Int           -- depth
            -> Int           -- hashcode
            -> [(k, v)]      -- assoc list to insert
            -> Map k v
            -> Map k v
-insertWith f depth code kvs m = insertWith' depth m
+insertWith' f depth code kvs m = insertWith'' depth m
   where
-    insertWith'  _ EmptyMap = Leaf code kvs
-    insertWith'  6 (Leaf h assocs) = Leaf code (insertAssocWith f kvs assocs)
-    insertWith'  l lf@(Leaf code2 assocs)
+    insertWith''  _ EmptyMap = Leaf code kvs
+    insertWith''  6 (Leaf h assocs) = Leaf code (insertAssocWith f kvs assocs)
+    insertWith''  l lf@(Leaf code2 assocs)
       | code == code2 = Leaf code (insertAssocWith f kvs assocs)
-      | otherwise = insertWith'  l (SubMap $ IM.singleton (part l code2) lf)
-    insertWith'  l (SubMap im) =
+      | otherwise = insertWith''  l (SubMap $ IM.singleton (part l code2) lf)
+    insertWith''  l (SubMap im) =
       SubMap $ case IM.lookup i im of
         Nothing -> IM.insert i (Leaf code kvs) im
-        Just m  -> IM.insert i (insertWith'  (l+1) m) im
+        Just m  -> IM.insert i (insertWith''  (l+1) m) im
       where i = part l code
 
 insertAssocWith :: Eq k
@@ -117,9 +120,9 @@ unionWith f m1 m2 = unionWith' 0 m1 m2
         unionWith' _ m EmptyMap = m
         unionWith' d (SubMap sm1) (SubMap sm2) = SubMap sm
           where sm = IM.unionWith (unionWith' (d+1)) sm1 sm2
-        unionWith' d m@(SubMap sm) (Leaf h kvs) = insertWith (flip f) d h kvs m
-        unionWith' d (Leaf h kvs) m@(SubMap sm) = insertWith f d h kvs m
-        unionWith' d (Leaf h1 kvs1) m@(Leaf h2 kvs2) = insertWith f d h1 kvs1 m
+        unionWith' d m@(SubMap sm) (Leaf h kvs) = insertWith' (flip f) d h kvs m
+        unionWith' d (Leaf h kvs) m@(SubMap sm) = insertWith' f d h kvs m
+        unionWith' d (Leaf h1 kvs1) m@(Leaf h2 kvs2) = insertWith' f d h1 kvs1 m
 
 adjust :: (Eq k, Hashable k) => k -> (v -> v) -> Map k v -> Map k v
 adjust k f m = adjust' 0 m
