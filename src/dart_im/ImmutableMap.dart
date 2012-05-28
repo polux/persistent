@@ -29,23 +29,16 @@ interface ImmutableMap<K extends Hashable,V>
   ImmutableMap mapValues(f(V));
 
   int size();
-  ImmutableMap<K,V> insertAll(ImmutableMap<K,V> other);
-  ImmutableMap<K,V> unionWith(ImmutableMap<K,V> other, V combine(V,V));
+  /** m.union(k, v) == m.union(k, v, (x, y) => y) */
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V,V)]);
 
   Map<K,V> toMap();
 }
 
 class _Stop implements Exception {}
 
-abstract class AImmutableMap<K extends Hashable,V> implements ImmutableMap<K,V> {  
-  ImmutableMap<K,V> insertAll(ImmutableMap<K,V> other) {
-    ImmutableMap<K,V> result = this;
-    other.forEach((K key, V value) {
-      result = result.insert(key, value);
-    });
-    return result;
-  }
-
+abstract class AImmutableMap<K extends Hashable,V>
+    implements ImmutableMap<K,V> {
   Map<K,V> toMap() {
     Map<K,V> result = new Map<K,V>();
     this.forEach((K k, V v) { result[k] = v; });

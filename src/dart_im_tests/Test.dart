@@ -113,14 +113,14 @@ class Test {
   // empty is union's left neutral
   testUnionEmptyLeft(callback(String)) {
     return forAllMap((map) =>
-        new ImmutableMap().unionWith(map, (v1,v2) => v1 * v2) == map,
+        new ImmutableMap().union(map, (v1,v2) => v1 * v2) == map,
         updateCallback: callback);
   }
 
   // empty is union's right neutral
   testUnionEmptyRight(callback(String)) {
     return forAllMap((map) =>
-        map.unionWith(new ImmutableMap(), (v1,v2) => v1 * v2) == map,
+        map.union(new ImmutableMap(), (v1,v2) => v1 * v2) == map,
         updateCallback: callback);
   }
 
@@ -131,8 +131,8 @@ class Test {
     g(x) => x * 42;
     return forAllMap((map1) =>
         forAllMap((map2) =>
-            map1.unionWith(map2, f).mapValues(g)
-                == map1.mapValues(g).unionWith(map2.mapValues(g), f)),
+            map1.union(map2, f).mapValues(g)
+                == map1.mapValues(g).union(map2.mapValues(g), f)),
         updateCallback: callback);
   }
 
@@ -142,8 +142,8 @@ class Test {
     return forAllMap((map1) =>
         forAllMap((map2) =>
             forAllMap((map3) =>
-                map1.unionWith(map2, f).unionWith(map3, f)
-                    == map1.unionWith(map2.unionWith(map3, f), f))),
+                map1.union(map2, f).union(map3, f)
+                    == map1.union(map2.union(map3, f), f))),
         updateCallback: callback);
   }
 

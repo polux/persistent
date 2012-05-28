@@ -21,7 +21,8 @@ class SimpleImmutableMap2<K extends Hashable,V> extends AImmutableMap<K,V> {
   final Map<K,V> _map;
 
   SimpleImmutableMap2._internal(this._map);
-  factory SimpleImmutableMap2() => new SimpleImmutableMap2._internal(new Map<K,V>());
+  factory SimpleImmutableMap2() =>
+      new SimpleImmutableMap2._internal(new Map<K,V>());
 
   ImmutableMap<K,V> insert(K key, V value, [V combine(V, V)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
@@ -69,7 +70,7 @@ class SimpleImmutableMap2<K extends Hashable,V> extends AImmutableMap<K,V> {
 
   int size() => _map.length;
 
-  ImmutableMap<K,V> unionWith(ImmutableMap<K,V> other, V merge(V,V)) {
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V, V)]) {
     throw "not implemented";
   }
 }

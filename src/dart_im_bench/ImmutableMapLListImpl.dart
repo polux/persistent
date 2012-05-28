@@ -76,7 +76,7 @@ class SimpleImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
 
   int size() => toMap().length;
 
-  ImmutableMap<K,V> unionWith(ImmutableMap<K,V> other, V merge(V,V)) {
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V, V)]) {
     throw "not implemented";
   }
 

@@ -55,8 +55,8 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   ImmutableMap<K,V> adjust(K key, V update(V)) =>
       _adjust(key, update, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> unionWith(ImmutableMap<K,V> other, V combine(V,V)) =>
-    this._unionWith(other, combine, 0);
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V, V)]) =>
+    this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 }
 
 class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
