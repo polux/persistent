@@ -33,24 +33,22 @@ class Benchmark {
 
     ImmutableMap map = empty();
     for (int i = 0; i < _size; i++) {
-      map = map.insert("key$i", "foo");
-      map = map.insert("key$i", "bar");
+      map = map.insertWith("key$i", "foo", (String x, String y) => x.concat(y));
+      map = map.insertWith("key$i", "bar", (String x, String y) => x.concat(y));
     }
-    // worst case scenario for linked list
+
     for (int i = _size * 2; i >= 0; i--) {
       map.lookup("key$i");
     }
-    // best case scenario for linked list
     for (int i = 0; i <= _size * 2; i++) {
       map.lookup("key$i");
     }
+    
     ImmutableMap saved = map;
-    // worst case scenario for linked list
     for (int i = _size * 2; i >= 0; i--) {
       map = map.delete("key$i");
     }
     map = saved;
-    // best case scenario for linked list
     for (int i = 0; i < _size * 2; i++) {
       map = map.delete("key$i");
     }

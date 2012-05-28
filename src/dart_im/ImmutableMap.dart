@@ -18,7 +18,9 @@ interface ImmutableMap<K extends Hashable,V>
     default _ImmutableMapFactory<K extends Hashable,V> {
   ImmutableMap();
 
+  /** m.insert(k, v) == m.insertWith(k, v, (x, y) => y) */
   ImmutableMap<K,V> insert(K key, V value);
+  ImmutableMap<K,V> insertWith(K key, V value, V combine(V,V));
   ImmutableMap<K,V> delete(K key);
   Option<V> lookup(K key);
 
@@ -37,6 +39,9 @@ interface ImmutableMap<K extends Hashable,V>
 class _Stop implements Exception {}
 
 abstract class AImmutableMap<K extends Hashable,V> implements ImmutableMap<K,V> {
+  ImmutableMap<K,V> insert(K key, V value) =>
+    insertWith(key, value, (V x, V y) => y);
+  
   ImmutableMap<K,V> insertAll(ImmutableMap<K,V> other) {
     ImmutableMap<K,V> result = this;
     other.forEach((K key, V value) {
