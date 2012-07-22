@@ -110,7 +110,7 @@ delete k m = delete' 0 m
             build im = case IM.toList im of
                          [(_, l@(Leaf _ _))] -> l
                          _                   -> SubMap im
-                         
+
 
 unionWith :: Eq k => (v -> v -> v) -> Map k v -> Map k v -> Map k v
 unionWith f m1 m2 = unionWith' 0 m1 m2
@@ -155,7 +155,7 @@ instance Functor (Map k) where
 
 instance (Eq k, Eq v) => Eq (Map k v) where
   EmptyMap == EmptyMap = True
-  Leaf h1 kvs1 == Leaf h2 kvs2 = h1 == h2 && eqPermut kvs1 kvs2 
+  Leaf h1 kvs1 == Leaf h2 kvs2 = h1 == h2 && eqPermut kvs1 kvs2
     where eqPermut xs ys = null (xs \\ ys)
   SubMap sm1 == SubMap sm2 = sm1 == sm2
   _ == _ = False
