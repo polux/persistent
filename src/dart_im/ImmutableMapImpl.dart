@@ -26,6 +26,11 @@ class _ImmutableMapFactory<K extends Hashable,V> {
 }
 
 /**
+ * Exception used for aborting forEach loops.
+ */
+class _Stop implements Exception {}
+
+/**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
 abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
@@ -116,6 +121,10 @@ class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   void forEach(f(K,V)) {}
 
   int size() => 0;
+
+  bool operator ==(ImmutableMap<K,V> other) => other is _EmptyMap;
+
+  toDebugString() => "_EmptyMap()";
 }
 
 class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
@@ -250,6 +259,26 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   // no need to cache the size since it is already cached in _pairs
   int size() => _pairs.length();
+
+  bool operator ==(ImmutableMap<K,V> other) {
+    if (this === other) return true;
+    if (other is! _Leaf) return false;
+    if (_hash != other._hash) return false;
+    Map<K,V> thisAsMap = toMap();
+    int counter = 0;
+    LList<Pair<K,V>> it = other._pairs;
+    while (!it.isNil()) {
+      Cons<Pair<K,V>> cons = it.asCons();
+      Pair<K,V> elem = cons.elem;
+      if (thisAsMap[elem.fst] != elem.snd)
+        return false;
+      counter++;
+      it = cons.tail;
+    }
+    return thisAsMap.length == counter;
+  }
+
+  toDebugString() => "_Leaf($_hash, $_pairs)";
 }
 
 class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
@@ -370,4 +399,21 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
     }
     return _size;
   }
+
+  bool operator ==(ImmutableMap<K,V> other) {
+    if (this === other) return true;
+    if (other is! _SubMap) return false;
+    if (_submap.length != other._submap.length) return false;
+    try {
+      _submap.forEach((int k, _AImmutableMap<K,V> v) {
+        if (!other._submap.containsKey(k)) throw new _Stop();
+        if (other._submap[k] != v) throw new _Stop();
+      });
+    } catch (_Stop e) {
+      return false;
+    }
+    return true;
+  }
+
+  toDebugString() => "_SubMap($_submap)";
 }

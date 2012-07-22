@@ -36,8 +36,6 @@ interface ImmutableMap<K extends Hashable,V>
   Map<K,V> toMap();
 }
 
-class _Stop implements Exception {}
-
 abstract class AImmutableMap<K extends Hashable,V>
     implements ImmutableMap<K,V> {
   Map<K,V> toMap() {
@@ -46,20 +44,5 @@ abstract class AImmutableMap<K extends Hashable,V>
     return result;
   }
 
-  bool operator ==(ImmutableMap<K,V> other) {
-    Map<K,V> mm1 = this.toMap();
-    Map<K,V> mm2 = other.toMap();
-    if (mm1.length != mm2.length) return false;
-    try {
-      mm1.forEach((K k, V v) {
-        if (!mm2.containsKey(k)) throw new _Stop();
-        if (mm2[k] != v) throw new _Stop();
-      });
-    } catch (_Stop e) {
-      return false;
-    }
-    return true;
-  }
-
-  String toString() => toMap().toString();
+  String toString() => toDebugString(); //toMap().toString();
 }
