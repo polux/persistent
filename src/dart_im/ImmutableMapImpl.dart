@@ -29,6 +29,9 @@ class _ImmutableMapFactory<K extends Hashable,V> {
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
 abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
+  abstract bool _isEmpty();
+  abstract bool _isLeaf();
+
   abstract Option<V> _lookup(K key, int hash, int depth);
   abstract ImmutableMap<K,V> _insertWith(
       LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth);
@@ -47,6 +50,20 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   LList<Pair<K,V>> _onePair(K key, V value) =>
       new LList<Pair<K,V>>.cons(new Pair<K,V>(key, value),
           new LList<Pair<K,V>>.nil());
+
+  ImmutableMap<K,V> _makeFromSubMap(Map<int, _AImmutableMap<K,V>> _submap) {
+    assert (_submap.length >= 1);
+    if (_submap.length > 1) return new _SubMap(_submap);
+    else {
+      _AImmutableMap<K,V> onlyValueLeft = null;
+      // There's only one value left but that's the only way of getting it
+      // without resorting to _submap.getKeys().iterator() and [] which might be
+      // even slower.
+      _submap.forEach((_, value) { onlyValueLeft = value; });
+      assert (onlyValueLeft !== null);
+      return onlyValueLeft._isLeaf() ? onlyValueLeft : new _SubMap(_submap);
+    }
+  }
 
   Option<V> lookup(K key) =>
       _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
@@ -67,6 +84,9 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
 }
 
 class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
+  bool _isEmpty() => true;
+  bool _isLeaf() => false;
+
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
   ImmutableMap<K,V> _insertWith(
@@ -103,6 +123,9 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
   LList<Pair<K, V>> _pairs;
 
   _Leaf(this._hash, this._pairs);
+
+  bool _isEmpty() => false;
+  bool _isLeaf() => true;
 
   ImmutableMap<K,V> _insertWith(
       LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
@@ -235,6 +258,9 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   _SubMap(this._submap);
 
+  bool _isEmpty() => false;
+  bool _isLeaf() => false;
+
   Option<V> _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     if (_submap.containsKey(branch)) {
@@ -266,8 +292,12 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
       _AImmutableMap<K,V> newm = m._delete(key, hash, depth + 1);
       Map<int, _AImmutableMap<K,V>> newsubmap =
           new Map<int, _AImmutableMap<K,V>>.from(_submap);
-      newsubmap[branch] = newm;
-      return new _SubMap<K,V>(newsubmap);
+      if (newm._isEmpty()) {
+        newsubmap.remove(branch);
+      } else {
+        newsubmap[branch] = newm;
+      }
+      return _makeFromSubMap(newsubmap);
     } else {
       return this;
     }

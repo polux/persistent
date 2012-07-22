@@ -108,6 +108,7 @@ delete k m = delete' 0 m
           m'' -> IM.insert i m'' im
       where i = part l code
             build im = case IM.toList im of
+                         [] -> error "should never happen"
                          [(_, l@(Leaf _ _))] -> l
                          _                   -> SubMap im
 
