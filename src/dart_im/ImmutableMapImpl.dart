@@ -31,18 +31,18 @@ class _ImmutableMapFactory<K extends Hashable,V> {
 abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   abstract Option<V> _lookup(K key, int hash, int depth);
   abstract ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V,V), int hash, int depth);
+      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth);
   abstract ImmutableMap<K,V> _delete(K key, int hash, int depth);
   abstract ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth);
 
   abstract _AImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V,V), int depth);
+      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth);
   abstract _AImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V,V), int depth);
+      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth);
   abstract _AImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V,V), int depth);
+      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth);
   abstract _AImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V,V), int depth);
+      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth);
 
   LList<Pair<K,V>> _onePair(K key, V value) =>
       new LList<Pair<K,V>>.cons(new Pair<K,V>(key, value),
@@ -51,7 +51,7 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   Option<V> lookup(K key) =>
       _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V ,V)]) =>
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]) =>
       _insertWith(_onePair(key, value),
           (combine != null) ? combine : (V x, V y) => y,
           (key.hashCode() >> 2) & 0x3fffffff, 0);
@@ -62,7 +62,7 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   ImmutableMap<K,V> adjust(K key, V update(V)) =>
       _adjust(key, update, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V, V)]) =>
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 }
 
@@ -70,7 +70,7 @@ class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
   ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V,V), int hash, int depth) =>
+      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) =>
           new _Leaf<K,V>(hash, keyValues);
 
   ImmutableMap<K,V> _delete(K key, int hash, int depth) => this;
@@ -78,18 +78,18 @@ class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) => this;
 
   ImmutableMap<K,V>
-      _unionWith(ImmutableMap<K,V> m, V combine(V,V), int depth) => m;
+      _unionWith(ImmutableMap<K,V> m, V combine(V x, V y), int depth) => m;
 
   ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V,V), int depth) {
+      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) {
     throw "should never be called";
   }
 
   ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V,V), int depth) => m;
+      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) => m;
 
   ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V,V), int depth) => m;
+      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) => m;
 
   ImmutableMap mapValues(f(V)) => this;
 
@@ -105,7 +105,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
   _Leaf(this._hash, this._pairs);
 
   ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V,V), int hash, int depth) {
+      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
 
     LList<Pair<K,V>> insertPair(Pair<K,V> toInsert, LList<Pair<K,V>> pairs) {
       LListBuilder<Pair<K,V>> builder = new LListBuilder<Pair<K,V>>();
@@ -190,19 +190,19 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
   }
 
   ImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V,V), int depth) =>
+      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth) =>
           m._unionWithLeaf(this, combine, depth);
 
   ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V,V), int depth) =>
+      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) =>
           this;
 
   ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V,V), int depth) =>
+      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, combine, _hash, depth);
 
   ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V,V), int depth) =>
+      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, combine, _hash, depth);
 
   Option<V> _lookup(K key, int hash, int depth) {
@@ -246,7 +246,7 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   }
 
   ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V,V), int hash, int depth) {
+      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
     Map<int, _AImmutableMap<K,V>> newsubmap =
         new Map<int, _AImmutableMap<K,V>>.from(_submap);
     int branch = (hash >> (depth * 5)) & 0x1f;
@@ -288,20 +288,20 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   }
 
   ImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V,V), int depth) =>
+      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth) =>
           m._unionWithSubMap(this, combine, depth);
 
   ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V,V), int depth) =>
+      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) =>
           this;
 
   ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V,V), int depth) =>
+      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) =>
           this._insertWith(m._pairs, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
   ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V,V), int depth) {
+      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) {
     Map<int, _AImmutableMap<K,V>> newsubmap =
         new Map<int, _AImmutableMap<K,V>>();
     Set<int> allKeys = new Set<int>.from(_submap.getKeys());

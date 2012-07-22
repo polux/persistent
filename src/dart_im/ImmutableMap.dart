@@ -20,7 +20,7 @@ interface ImmutableMap<K extends Hashable,V>
   ImmutableMap.fromMap(Map<K,V> map);
 
   /** m.insert(k, v) == m.insert(k, v, (x, y) => y) */
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V,V)]);
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]);
   ImmutableMap<K,V> delete(K key);
   Option<V> lookup(K key);
 
@@ -31,7 +31,7 @@ interface ImmutableMap<K extends Hashable,V>
 
   int size();
   /** m.union(k, v) == m.union(k, v, (x, y) => y) */
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V,V)]);
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]);
 
   Map<K,V> toMap();
 }

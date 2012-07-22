@@ -24,7 +24,7 @@ class SimpleImmutableMap2<K extends Hashable,V> extends AImmutableMap<K,V> {
   factory SimpleImmutableMap2() =>
       new SimpleImmutableMap2._internal(new Map<K,V>());
 
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V, V)]) {
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     Map<K,V> newmap = new Map<K,V>.from(_map);
     newmap[key] = _map.containsKey(key) ? combine(_map[key], value) : value;
@@ -70,7 +70,7 @@ class SimpleImmutableMap2<K extends Hashable,V> extends AImmutableMap<K,V> {
 
   int size() => _map.length;
 
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V, V)]) {
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]) {
     throw "not implemented";
   }
 }
