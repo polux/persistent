@@ -47,7 +47,7 @@ class Test {
   // looking up a deleted key yields none
   testLookupDelete(callback(String)) =>
     forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             map.delete(k).lookup(k) == new Option.none()),
         updateCallback: callback);
 
@@ -61,7 +61,7 @@ class Test {
           : v;
     }
     return forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             forAllInt((v) =>
                 map.insert(k, v, combine).lookup(k)
                     == new Option.some(expected(map, k, v)))),
@@ -73,7 +73,7 @@ class Test {
   testDeleteInsert(callback(String)) {
     combine(n, m) => n + 42 * m;
     return forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             forAllInt((v) =>
                 (map.lookup(k).isDefined)
                     ? true
@@ -85,7 +85,7 @@ class Test {
   testMapValuesInsert(callback(String)) {
     int f(int n) => n * 42;
     return forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             forAllInt((v) =>
                 map.mapValues(f).insert(k, f(v))
                     == map.insert(k,v).mapValues(f))),
@@ -96,7 +96,7 @@ class Test {
   testMapValuesDelete(callback(String)) {
     int f(int n) => n * 42;
     return forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             map.mapValues(f).delete(k) == map.delete(k).mapValues(f)),
         updateCallback: callback);
   }
@@ -105,7 +105,7 @@ class Test {
   testMapValuesLookup(callback(String)) {
     int f(int n) => n * 42;
     return forAllMap((map) =>
-        forAllInt((k) =>
+        forAllKey((k) =>
             map.mapValues(f).lookup(k) == map.lookup(k).map(f)),
         updateCallback: callback);
   }
@@ -157,7 +157,7 @@ class Test {
   // unless the key was already present
   testSizeInsert(callback(String)) =>
       forAllMap((m) =>
-          forAllInt((k) =>
+          forAllKey((k) =>
               forAllInt((v) =>
                   m.insert(k, v, (a, b) => a + 42 * b).size()
                       == m.size() + (m.lookup(k).isDefined ? 0 : 1))),
@@ -187,7 +187,7 @@ class Test {
     }
     int f(n) => n * 42;
     return forAllMap((m) =>
-        forAllInt((k) => m.adjust(k, f) == spec(m, k, f)),
+        forAllKey((k) => m.adjust(k, f) == spec(m, k, f)),
         updateCallback : callback);
   }
 }

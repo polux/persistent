@@ -14,16 +14,34 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+/**
+ * A datatype with an imperfect hash function
+ */
+class Key implements Hashable {
+  int i;
+  bool b;
+  Key(this.i, this.b);
+  bool operator ==(Key other) {
+    if (other is! Key) return false;
+    return i == other.i && b == other.b;
+  }
+  int hashCode() => i.hashCode();
+  toString() => "Key($i,$b)";
+}
+
 class ImmutableMapGen {
   MRand _mrand;
 
   ImmutableMapGen(int seed): _mrand = new MRand(seed);
 
-  ImmutableMap<int, int> randomMap(int size, int intSize) {
-    ImmutableMap<int, int> result = new ImmutableMap<int, int>();
+  Key randomKey(int intSize) =>
+    new Key(_mrand.randomInt(-intSize, intSize), _mrand.randomBool());
+
+  ImmutableMap<Key, int> randomMap(int size, int intSize) {
+    ImmutableMap<Key, int> result = new ImmutableMap<Key, int>();
     for (int i = 0; i < size; i++) {
       result = result.insert(
-        _mrand.randomInt(-intSize, intSize),
+        randomKey(intSize),
         _mrand.randomInt(-intSize, intSize));
     }
     return result;
@@ -47,12 +65,12 @@ void _tryAndPropagate(bool f(x), var x) {
  * Calls f on ever growing random [ImmutableMap]s from size 0 to maxSize.
  * updateCallback is regularily called with a status message.
  */
-bool forAllMap(bool f(ImmutableMap<int, int> m),
-               [seed = 0, maxSize = 100, intSize = 100, updateCallback(String) = null]) {
+bool forAllMap(bool f(ImmutableMap<Key, int> m),
+    [seed = 0, maxSize = 100, intSize = 100, updateCallback(String) = null]) {
   ImmutableMapGen gen = new ImmutableMapGen(seed);
   for (int size = 0; size <= maxSize; size++) {
     if (updateCallback != null) updateCallback("$size / $maxSize");
-    ImmutableMap<int, int> map = gen.randomMap(size, intSize);
+    ImmutableMap<Key, int> map = gen.randomMap(size, intSize);
     _tryAndPropagate(f, map);
   }
   return true;
@@ -67,8 +85,21 @@ bool forAllInt(bool f(int n),
   MRand mrand = new MRand(seed);
   for (int size = 0; size <= maxSize; size++) {
     if (updateCallback != null) updateCallback("$size / $maxSize");
-    int n = mrand.randomInt(-size, size);
-    _tryAndPropagate(f, n);
+    _tryAndPropagate(f, mrand.randomInt(-size, size));
+  }
+  return true;
+}
+
+/**
+ * Calls f on ever growing random keys from [0..0] to [-maxSize..maxSize].
+ * updateCallback is regularily called with a status message.
+ */
+bool forAllKey(bool f(int n),
+               [seed = 0, maxSize = 100, updateCallback(String) = null]) {
+  ImmutableMapGen gen = new ImmutableMapGen(seed);
+  for (int size = 0; size <= maxSize; size++) {
+    if (updateCallback != null) updateCallback("$size / $maxSize");
+    _tryAndPropagate(f, gen.randomKey(size));
   }
   return true;
 }
