@@ -17,7 +17,7 @@
 class _ImmutableMapFactory<K extends Hashable,V> {
   factory ImmutableMap() => new _EmptyMap();
   factory ImmutableMap.fromMap(Map<K,V> map) {
-    ImmutableMap<K,V> result = new _EmptyMap();
+    ImmutableMap<K,V> result = new _EmptyMap<K,V>();
     map.forEach((K key, V value) {
       result = result.insert(key, value);
     });
@@ -71,7 +71,7 @@ class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _insertWith(
       LList<Pair<K,V>> keyValues, V combine(V,V), int hash, int depth) =>
-          new _Leaf(hash, keyValues);
+          new _Leaf<K,V>(hash, keyValues);
 
   ImmutableMap<K,V> _delete(K key, int hash, int depth) => this;
 
@@ -141,16 +141,16 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
     if (depth > 5) {
       assert(_hash == hash);
-      return new _Leaf(hash, insertPairs(keyValues, _pairs));
+      return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
     } else {
       if (hash == _hash) {
-        return new _Leaf(hash, insertPairs(keyValues, _pairs));
+        return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
       } else {
         Map<int, _AImmutableMap<K,V>> submap =
             new Map<int, _AImmutableMap<K,V>>();
         int branch = (_hash >> (depth * 5)) & 0x1f;
         submap[branch] = this;
-        return new _SubMap(submap)
+        return new _SubMap<K,V>(submap)
             ._insertWith(keyValues, combine, hash, depth);
       }
     }
@@ -161,8 +161,8 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
       return this;
     LList<Pair<K, V>> newPairs = _pairs.filter((p) => p.fst != key);
     return newPairs.isNil()
-        ? new _EmptyMap()
-        : new _Leaf(_hash, newPairs);
+        ? new _EmptyMap<K,V>()
+        : new _Leaf<K,V>(_hash, newPairs);
   }
 
   ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) {
@@ -186,7 +186,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
     return (hash != _hash)
         ? this
-        : new _Leaf(_hash, adjustPairs());
+        : new _Leaf<K,V>(_hash, adjustPairs());
   }
 
   ImmutableMap<K,V>
@@ -254,9 +254,9 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
       _AImmutableMap<K,V> m = _submap[branch];
       newsubmap[branch] = m._insertWith(keyValues, combine, hash, depth + 1);
     } else {
-      newsubmap[branch] = new _Leaf(hash, keyValues);
+      newsubmap[branch] = new _Leaf<K,V>(hash, keyValues);
     }
-    return new _SubMap(newsubmap);
+    return new _SubMap<K,V>(newsubmap);
   }
 
   ImmutableMap<K,V> _delete(K key, int hash, int depth) {

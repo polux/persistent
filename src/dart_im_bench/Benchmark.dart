@@ -16,9 +16,9 @@
 
 class Benchmark {
 
-  int _size;
+  int size;
 
-  Benchmark([this._size = 1000]);
+  Benchmark([this.size = 1000]);
 
   Map<String, int> bench() {
     var res = {};
@@ -32,24 +32,24 @@ class Benchmark {
     int start = Clock.now();
 
     ImmutableMap map = empty();
-    for (int i = 0; i < _size; i++) {
+    for (int i = 0; i < size; i++) {
       map = map.insert("key$i", "foo", (String x, String y) => x.concat(y));
       map = map.insert("key$i", "bar", (String x, String y) => x.concat(y));
     }
 
-    for (int i = _size * 2; i >= 0; i--) {
+    for (int i = size * 2; i >= 0; i--) {
       map.lookup("key$i");
     }
-    for (int i = 0; i <= _size * 2; i++) {
+    for (int i = 0; i <= size * 2; i++) {
       map.lookup("key$i");
     }
     
     ImmutableMap saved = map;
-    for (int i = _size * 2; i >= 0; i--) {
+    for (int i = size * 2; i >= 0; i--) {
       map = map.delete("key$i");
     }
     map = saved;
-    for (int i = 0; i < _size * 2; i++) {
+    for (int i = 0; i < size * 2; i++) {
       map = map.delete("key$i");
     }
 
