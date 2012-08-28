@@ -29,7 +29,7 @@ class Benchmark {
   }
 
   int _bench(ImmutableMap empty()) {
-    int start = Clock.now();
+    int start = new Date.now().millisecondsSinceEpoch;
 
     ImmutableMap map = empty();
     for (int i = 0; i < size; i++) {
@@ -53,6 +53,6 @@ class Benchmark {
       map = map.delete("key$i");
     }
 
-    return Clock.now() - start;
+    return new Date.now().millisecondsSinceEpoch - start;
   }
 }

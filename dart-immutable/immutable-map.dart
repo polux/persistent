@@ -44,5 +44,5 @@ abstract class AImmutableMap<K extends Hashable,V>
     return result;
   }
 
-  String toString() => toDebugString(); //toMap().toString();
+  String toString() => toMap().toString();
 }

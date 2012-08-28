@@ -30,19 +30,19 @@ class Key implements Hashable {
 }
 
 class ImmutableMapGen {
-  MRand _mrand;
+  Random _rand;
 
-  ImmutableMapGen(int seed): _mrand = new MRand(seed);
+  ImmutableMapGen(int seed): _rand = new Random(seed);
 
   Key randomKey(int intSize) =>
-    new Key(_mrand.randomInt(-intSize, intSize), _mrand.randomBool());
+    new Key(_rand.nextInt(2 * intSize + 1) - intSize, _rand.nextBool());
 
   ImmutableMap<Key, int> randomMap(int size, int intSize) {
     ImmutableMap<Key, int> result = new ImmutableMap<Key, int>();
     for (int i = 0; i < size; i++) {
       result = result.insert(
         randomKey(intSize),
-        _mrand.randomInt(-intSize, intSize));
+        _rand.nextInt(2 * intSize + 1) - intSize);
     }
     return result;
   }
@@ -82,10 +82,10 @@ bool forAllMap(bool f(ImmutableMap<Key, int> m),
  */
 bool forAllInt(bool f(int n),
                [seed = 0, maxSize = 100, updateCallback(String) = null]) {
-  MRand mrand = new MRand(seed);
+  Random rand = new Random(seed);
   for (int size = 0; size <= maxSize; size++) {
     if (updateCallback != null) updateCallback("$size / $maxSize");
-    _tryAndPropagate(f, mrand.randomInt(-size, size));
+    _tryAndPropagate(f, rand.nextInt(2 * size + 1) - size);
   }
   return true;
 }

@@ -14,19 +14,10 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart_im_tests.dart');
+#library('dart-immutable');
 
-#import('../dart_im/dart_im.dart');
-
-#source('Rand.dart');
-#source('Test.dart');
-#source('TestUtil.dart');
-
-void main() {
-  Test test = new Test();
-  try {
-    test.run((s) { print(s); });
-  } catch (var e) {
-    print(e.toString());
-  }
-}
+#source('immutable-map.dart');
+#source('immutable-map-impl.dart');
+#source('linked-list.dart');
+#source('option.dart');
+#source('pair.dart');

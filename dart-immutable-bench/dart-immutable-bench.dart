@@ -14,10 +14,17 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart_im');
+#library('dart_im_bench');
 
-#source('ImmutableMap.dart');
-#source('ImmutableMapImpl.dart');
-#source('LList.dart');
-#source('Option.dart');
-#source('Pair.dart');
+#import('../dart-immutable/dart-immutable.dart');
+
+#source('benchmark.dart');
+#source('simple-map-1.dart');
+#source('simple-map-2.dart');
+
+void main() {
+  for (int n = 0; n < 2000; n += 100) {
+    Benchmark benchmark = new Benchmark(n);
+    print("$n: ${benchmark.bench().toString()}");
+  }
+}

@@ -14,17 +14,19 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart_im_bench');
+#library('dart-immutable-tests');
 
-#import('../dart_im/dart_im.dart');
+#import('dart:math');
+#import('../dart-immutable/dart-immutable.dart');
 
-#source('Benchmark.dart');
-#source('ImmutableMapLListImpl.dart');
-#source('ImmutableMapMutableMapImpl.dart');
+#source('test.dart');
+#source('test-util.dart');
 
 void main() {
-  for (int n = 0; n < 2000; n += 100) {
-    Benchmark benchmark = new Benchmark(n);
-    print("$n: ${benchmark.bench().toString()}");
+  Test test = new Test();
+  try {
+    test.run((s) { print(s); });
+  } catch (var e) {
+    print(e.toString());
   }
 }
