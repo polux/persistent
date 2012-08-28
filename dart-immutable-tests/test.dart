@@ -167,7 +167,7 @@ class Test {
   // provided the key was present in the map
   testSizeDelete(callback(String)) =>
       forAllMap((m) =>
-          forAllInt((k) =>
+          forAllKey((k) =>
               m.delete(k).size()
                   == m.size() - (m.lookup(k).isDefined ? 1 : 0)),
            updateCallback : callback);
@@ -180,8 +180,8 @@ class Test {
 
   // adjust behaves like its spec
   testAdjustSpec(callback(String)) {
-    ImmutableMap<int,int> spec(
-        ImmutableMap<int,int> m, int key, int f(int n)) {
+    ImmutableMap<Key,int> spec(
+        ImmutableMap<Key,int> m, Key key, int f(int n)) {
       Option<int> val = m.lookup(key);
       return val.isDefined ? m.insert(key, f(val.value)) : m;
     }

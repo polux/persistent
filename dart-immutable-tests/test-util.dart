@@ -94,7 +94,7 @@ bool forAllInt(bool f(int n),
  * Calls f on ever growing random keys from [0..0] to [-maxSize..maxSize].
  * updateCallback is regularily called with a status message.
  */
-bool forAllKey(bool f(int n),
+bool forAllKey(bool f(Key n),
                [seed = 0, maxSize = 100, updateCallback(String) = null]) {
   ImmutableMapGen gen = new ImmutableMapGen(seed);
   for (int size = 0; size <= maxSize; size++) {
