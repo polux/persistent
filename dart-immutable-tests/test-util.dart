@@ -30,13 +30,12 @@ class Key implements Hashable {
 }
 
 /**
- * Enumerations of [Key] and [ModelMap].
+ * Enumerations of [Key] and [Map<Key, int>].
  */
 class Enumerations {
   Combinators c;
   Enumeration<Key> keys;
   Enumeration<Map<Key, int>> maps;
-  Enumeration<ModelMap<Key, int>> modelMaps;
 
   Enumerations() {
     c = new Combinators();

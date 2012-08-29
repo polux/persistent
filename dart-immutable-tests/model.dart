@@ -15,7 +15,7 @@
 // Author: Paul Brauner (polux@google.com)
 
 /**
- * Naive implementation of ImmutableMap dart:core [Map]s.
+ * Naive implementation of ImmutableMap using dart:core [Map]s.
  */
 class ModelMap<K extends Hashable,V> extends AImmutableMap<K,V> {
   final Map<K,V> map;
