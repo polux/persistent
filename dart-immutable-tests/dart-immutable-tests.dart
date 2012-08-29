@@ -32,6 +32,9 @@ minus(int x, int y) => x - y;
 // a unary function on integers
 times42(x) => x * 42;
 
+testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
+    (implemFrom(map1) == implemFrom(map2)) == mapEquals(map1, map2);
+
 testInsert(Map<Key, int> map, Key key, int value) =>
     same(implemFrom(map).insert(key, value, minus),
          modelFrom(map).insert(key, value, minus));
@@ -64,6 +67,7 @@ main() {
   final qc = new QuickCheck(maxSize: 300);
 
   final properties = {
+    'equals'   : forall2(e.maps, e.maps, testEquals),
     'insert'   : forall3(e.maps, e.keys, e.values, testInsert),
     'delete'   : forall2(e.maps, e.keys, testDelete),
     'lookup'   : forall2(e.maps, e.keys, testLookup),

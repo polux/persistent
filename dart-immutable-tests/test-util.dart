@@ -51,9 +51,7 @@ ModelMap modelFrom(Map m) => new ModelMap(m);
 
 class _Stop implements Exception {}
 
-bool same(ImmutableMap im, ModelMap mm) {
-  final Map m1 = im.toMap();
-  final Map m2 = mm.map;
+bool mapEquals(Map m1, Map m2) {
   if (m1.length != m2.length) return false;
   try {
     m1.forEach((k, v) {
@@ -65,3 +63,5 @@ bool same(ImmutableMap im, ModelMap mm) {
   }
   return true;
 }
+
+bool same(ImmutableMap im, ModelMap mm) => mapEquals(im.toMap(), mm.map);
