@@ -64,14 +64,6 @@ main() {
   final sc = new SmallCheck(depth: 15);
   final qc = new QuickCheck(maxSize: 300);
 
-  final insertProperty = forall3(e.maps, e.keys, c.ints, testInsert);
-  final deleteProperty = forall2(e.maps, e.keys, testDelete);
-  final lookupProperty = forall2(e.maps, e.keys, testLookup);
-  final adjustProperty = forall2(e.maps, e.keys, testAdjust);
-  final mapValuesProperty = forall(e.maps, testMapValues);
-  final sizeProperty = forall(e.maps, testSize);
-  final unionProperty = forall2(e.maps, e.maps, testUnion);
-
   final properties = {
     'insert'   : forall3(e.maps, e.keys, c.ints, testInsert),
     'delete'   : forall2(e.maps, e.keys, testDelete),
