@@ -29,77 +29,38 @@ class Key implements Hashable {
   toString() => "Key($i,$b)";
 }
 
-class ImmutableMapGen {
-  Random _rand;
+/**
+ * Enumerations of [Key] and [ModelMap].
+ */
+class Enumerations {
+  Combinators c;
+  Enumeration<Key> keys;
+  Enumeration<Map<Key, int>> maps;
+  Enumeration<ModelMap<Key, int>> modelMaps;
 
-  ImmutableMapGen(int seed): _rand = new Random(seed);
-
-  Key randomKey(int intSize) =>
-    new Key(_rand.nextInt(2 * intSize + 1) - intSize, _rand.nextBool());
-
-  ImmutableMap<Key, int> randomMap(int size, int intSize) {
-    ImmutableMap<Key, int> result = new ImmutableMap<Key, int>();
-    for (int i = 0; i < size; i++) {
-      result = result.insert(
-        randomKey(intSize),
-        _rand.nextInt(2 * intSize + 1) - intSize);
-    }
-    return result;
+  Enumerations() {
+    c = new Combinators();
+    keys = singleton((i) => (b) => new Key(i, b)).apply(c.ints).apply(c.bools);
+    maps = c.mapsOf(keys, c.ints);
   }
 }
 
-void _tryAndPropagate(bool f(x), var x) {
-  bool res;
+ImmutableMap implemFrom(Map m) => new ImmutableMap.fromMap(m);
+ModelMap modelFrom(Map m) => new ModelMap(m);
+
+class _Stop implements Exception {}
+
+bool same(ImmutableMap im, ModelMap mm) {
+  final Map m1 = im.toMap();
+  final Map m2 = mm.map;
+  if (m1.length != m2.length) return false;
   try {
-    res = f(x);
-  } catch (List<String> e) {
-    e.add("failed for $x");
-    throw e;
-  }
-  if (!res){
-    throw ["failed for $x"];
-  }
-}
-
-/**
- * Calls f on ever growing random [ImmutableMap]s from size 0 to maxSize.
- * updateCallback is regularily called with a status message.
- */
-bool forAllMap(bool f(ImmutableMap<Key, int> m),
-    [seed = 0, maxSize = 100, intSize = 100, updateCallback(String) = null]) {
-  ImmutableMapGen gen = new ImmutableMapGen(seed);
-  for (int size = 0; size <= maxSize; size++) {
-    if (updateCallback != null) updateCallback("$size / $maxSize");
-    ImmutableMap<Key, int> map = gen.randomMap(size, intSize);
-    _tryAndPropagate(f, map);
-  }
-  return true;
-}
-
-/**
- * Calls f on ever growing random integers from [0..0] to [-maxSize..maxSize].
- * updateCallback is regularily called with a status message.
- */
-bool forAllInt(bool f(int n),
-               [seed = 0, maxSize = 100, updateCallback(String) = null]) {
-  Random rand = new Random(seed);
-  for (int size = 0; size <= maxSize; size++) {
-    if (updateCallback != null) updateCallback("$size / $maxSize");
-    _tryAndPropagate(f, rand.nextInt(2 * size + 1) - size);
-  }
-  return true;
-}
-
-/**
- * Calls f on ever growing random keys from [0..0] to [-maxSize..maxSize].
- * updateCallback is regularily called with a status message.
- */
-bool forAllKey(bool f(Key n),
-               [seed = 0, maxSize = 100, updateCallback(String) = null]) {
-  ImmutableMapGen gen = new ImmutableMapGen(seed);
-  for (int size = 0; size <= maxSize; size++) {
-    if (updateCallback != null) updateCallback("$size / $maxSize");
-    _tryAndPropagate(f, gen.randomKey(size));
+    m1.forEach((k, v) {
+      if (!m2.containsKey(k)) throw new _Stop();
+      if (v != m2[k]) throw new _Stop();
+    });
+  } catch (_Stop e) {
+    return false;
   }
   return true;
 }

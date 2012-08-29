@@ -17,16 +17,79 @@
 #library('dart-immutable-tests');
 
 #import('dart:math');
+#import('package:dart-check/dart-check.dart');
+#import('package:dart-enumerators/combinators.dart');
+#import('package:dart-enumerators/enumerators.dart');
+#import('package:unittest/unittest.dart');
 #import('../dart-immutable/dart-immutable.dart');
 
-#source('test.dart');
 #source('test-util.dart');
+#source('model.dart');
 
-void main() {
-  Test test = new Test();
-  try {
-    test.run((s) { print(s); });
-  } catch (var e) {
-    print(e.toString());
-  }
+// a deriberately non-commutative operation on ints
+minus(int x, int y) => x - y;
+
+// a unary function on integers
+times42(x) => x * 42;
+
+testInsert(Map<Key, int> map, Key key, int value) =>
+    same(implemFrom(map).insert(key, value, minus),
+         modelFrom(map).insert(key, value, minus));
+
+testDelete(Map<Key, int> map, Key key) =>
+    same(implemFrom(map).delete(key),
+         modelFrom(map).delete(key));
+
+testLookup(Map<Key, int> map, Key key) =>
+    implemFrom(map).lookup(key) == modelFrom(map).lookup(key);
+
+testAdjust(Map<Key, int> map, Key key) =>
+    same(implemFrom(map).adjust(key, times42),
+         modelFrom(map).adjust(key,  times42));
+
+testMapValues(Map<Key, int> map) =>
+    same(implemFrom(map).mapValues(times42),
+        modelFrom(map).mapValues(times42));
+
+testSize(Map<Key, int> map) =>
+    implemFrom(map).size() == modelFrom(map).size();
+
+testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
+    same(implemFrom(map1).union(implemFrom(map2), minus),
+         modelFrom(map1).union(modelFrom(map2), minus));
+
+main() {
+  final c = new Combinators();
+  final e = new Enumerations();
+  final sc = new SmallCheck(depth: 15);
+  final qc = new QuickCheck(maxSize: 300);
+
+  final insertProperty = forall3(e.maps, e.keys, c.ints, testInsert);
+  final deleteProperty = forall2(e.maps, e.keys, testDelete);
+  final lookupProperty = forall2(e.maps, e.keys, testLookup);
+  final adjustProperty = forall2(e.maps, e.keys, testAdjust);
+  final mapValuesProperty = forall(e.maps, testMapValues);
+  final sizeProperty = forall(e.maps, testSize);
+  final unionProperty = forall2(e.maps, e.maps, testUnion);
+
+  final properties = {
+    'insert'   : forall3(e.maps, e.keys, c.ints, testInsert),
+    'delete'   : forall2(e.maps, e.keys, testDelete),
+    'lookup'   : forall2(e.maps, e.keys, testLookup),
+    'adjust'   : forall2(e.maps, e.keys, testAdjust),
+    'mapValues': forall(e.maps, testMapValues),
+    'size'     : forall(e.maps, testSize),
+    'union'    : forall2(e.maps, e.maps, testUnion)
+  };
+
+  group('smallcheck', () {
+    properties.forEach((name, prop) {
+      test(name, () => sc.check(prop));
+    });
+  });
+  group('quickcheck', () {
+    properties.forEach((name, prop) {
+      test(name, () => qc.check(prop));
+    });
+  });
 }
