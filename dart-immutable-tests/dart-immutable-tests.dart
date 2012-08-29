@@ -59,13 +59,12 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
          modelFrom(map1).union(modelFrom(map2), minus));
 
 main() {
-  final c = new Combinators();
   final e = new Enumerations();
   final sc = new SmallCheck(depth: 15);
   final qc = new QuickCheck(maxSize: 300);
 
   final properties = {
-    'insert'   : forall3(e.maps, e.keys, c.ints, testInsert),
+    'insert'   : forall3(e.maps, e.keys, e.values, testInsert),
     'delete'   : forall2(e.maps, e.keys, testDelete),
     'lookup'   : forall2(e.maps, e.keys, testLookup),
     'adjust'   : forall2(e.maps, e.keys, testAdjust),
