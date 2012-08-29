@@ -26,7 +26,7 @@
 #source('test-util.dart');
 #source('model.dart');
 
-// a deriberately non-commutative operation on ints
+// a deliberately non-commutative operation on ints
 minus(int x, int y) => x - y;
 
 // a unary function on integers
