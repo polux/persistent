@@ -45,7 +45,7 @@ testLookup(Map<Key, int> map, Key key) =>
 
 testAdjust(Map<Key, int> map, Key key) =>
     same(implemFrom(map).adjust(key, times42),
-         modelFrom(map).adjust(key,  times42));
+         modelFrom(map).adjust(key, times42));
 
 testMapValues(Map<Key, int> map) =>
     same(implemFrom(map).mapValues(times42),
