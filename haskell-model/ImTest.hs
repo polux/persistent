@@ -14,7 +14,8 @@
 
 -- Author: Paul Brauner (polux@google.com)
 
-import qualified ImMap as M
+import qualified Data.Map as M
+import qualified ImMap as IM
 
 import Test.QuickCheck
 import Control.Applicative
@@ -24,7 +25,7 @@ import Text.Show.Functions
 
 -- a datatype with an imperfect hash function
 data Key = Key String Bool
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
 
 instance Hashable Key where
   hash (Key s _) = hash s
@@ -33,81 +34,50 @@ instance Arbitrary Key where
   arbitrary = Key <$> arbitrary <*> arbitrary
   shrink (Key s b) = Key <$> shrink s <*> shrink b
 
-instance (Eq k, Hashable k, Arbitrary k, Arbitrary v) => Arbitrary (M.Map k v) where
+instance (Ord k, Arbitrary k, Arbitrary v) => Arbitrary (M.Map k v) where
   arbitrary = M.fromList <$> arbitrary
   shrink = map M.fromList . shrink . M.toList
 
-lookupInsertWith :: Key -> Int -> (Int -> Int -> Int) -> M.Map Key Int -> Bool
-lookupInsertWith k v f m = M.lookup k (M.insertWith f k v m) == Just (maybe v (f v) (M.lookup k m))
+from = IM.fromList . M.toList
+same im m = M.fromList (IM.toList im) == m
 
-deleteInsertWith :: Key -> Int -> (Int -> Int -> Int) -> M.Map Key Int -> Property
-deleteInsertWith k v f m = not (k `M.member` m) ==> M.delete k (M.insertWith f k v m) == m
+type Val = Int
+type M = M.Map Key Val
 
-lookupDelete :: Key -> M.Map Key Int -> Bool
-lookupDelete k m = M.lookup k (M.delete k m) == Nothing
+equalsProp :: M -> M -> Bool
+equalsProp m1 m2 = (from m1 == from m2) == (m1 == m2)
 
-fromListToList :: M.Map Key Int -> Bool
-fromListToList m = M.fromList (M.toList m) == m
+insertProp :: M -> Key -> Val -> (Val -> Val -> Val) -> Bool
+insertProp m k v f = IM.insertWith f k v (from m) `same` M.insertWith f k v m
 
-fmapToList :: M.Map Key Int -> (Int -> Int) -> Bool
-fmapToList m f = M.toList (fmap f m) == map (id *** f) (M.toList m)
+deleteProp :: M -> Key -> Bool
+deleteProp m k = IM.delete k (from m) `same` M.delete k m
 
-fmapInsert :: M.Map Key Int -> (Int -> Int) -> Key -> Int -> Bool
-fmapInsert m f k v = M.insert k (f v) (fmap f m) == fmap f (M.insert k v m)
+lookupProp :: M -> Key -> Bool
+lookupProp m k = IM.lookup k (from m) == M.lookup k m
 
-fmapDelete :: M.Map Key Int -> (Int -> Int) -> Key -> Bool
-fmapDelete m f k = M.delete k (fmap f m) == fmap f (M.delete k m)
+adjustProp :: M -> Key -> (Val -> Val) -> Bool
+adjustProp m k f = IM.adjust k f (from m) `same` M.adjust f k m
 
-fmapLookup :: M.Map Key Int -> (Int -> Int) -> Key -> Bool
-fmapLookup m f k = fmap f (M.lookup k m) == M.lookup k (fmap f m)
+fmapProp :: M -> (Val -> Val) -> Bool
+fmapProp m f = fmap f (from m) `same` fmap f m
 
-unionEmptyLeft :: M.Map Key Int -> (Int -> Int -> Int) -> Bool
-unionEmptyLeft m f = M.unionWith f M.empty m == m
+sizeProp :: M -> Bool
+sizeProp m = IM.size (from m) == M.size m
 
-unionEmptyRight :: M.Map Key Int -> (Int -> Int -> Int) -> Bool
-unionEmptyRight m f = M.unionWith f m M.empty == m
-
-unionTrans :: M.Map Key Int -> M.Map Key Int -> M.Map Key Int -> Bool
-unionTrans m1 m2 m3 = M.unionWith const m1 (M.unionWith const m2 m3) == M.unionWith const (M.unionWith const m1 m2) m3
-
-unionFmap :: M.Map Key Int -> M.Map Key Int -> (Int -> Int) -> Bool
-unionFmap m1 m2 f = fmap f (M.unionWith const m1 m2) == M.unionWith const (fmap f m1) (fmap f m2)
-
-sizeEmpty :: Bool
-sizeEmpty = M.size M.empty == 0
-
-sizeInsertWith :: M.Map Key Int -> Key -> Int -> (Int -> Int -> Int) -> Bool
-sizeInsertWith m k v f = M.size (M.insertWith f k v m) == M.size m + if M.member k m then 0 else 1
-
-sizeDelete :: M.Map Key Int -> Key -> Bool
-sizeDelete m k = M.size (M.delete k m) == M.size m - if M.member k m then 1 else 0
-
-sizeFMap :: M.Map Key Int -> (Int -> Int) -> Bool
-sizeFMap m f = M.size (fmap f m) == M.size m
-
-adjustSpec :: M.Map Key Int -> Key -> (Int -> Int) -> Bool
-adjustSpec m k f = M.adjust k f m == expected
-  where expected = case M.lookup k m of
-                     Nothing -> m
-                     Just v -> M.insert k (f v) m
+unionProp :: M -> M -> (Val -> Val -> Val) -> Bool
+unionProp m1 m2 f =
+  IM.unionWith f (from m1) (from m2) `same` M.unionWith f m1 m2
 
 check p = quickCheckWith args p
   where args = stdArgs { maxSuccess = 1000 }
 
 main = do
-  check lookupDelete 
-  check lookupInsertWith
-  check deleteInsertWith
-  check fromListToList
-  check fmapToList
-  check fmapInsert
-  check fmapDelete 
-  check fmapLookup
-  check unionEmptyLeft
-  check unionEmptyRight
-  check unionTrans
-  check unionFmap
-  check sizeInsertWith
-  check sizeDelete
-  check sizeFMap
-  check adjustSpec
+  check equalsProp
+  check insertProp
+  check deleteProp
+  check lookupProp
+  check adjustProp
+  check fmapProp
+  check sizeProp
+  check unionProp
