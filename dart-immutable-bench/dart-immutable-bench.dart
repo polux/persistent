@@ -23,7 +23,7 @@
 #source('simple-map-2.dart');
 
 void main() {
-  for (int n = 0; n < 2000; n += 100) {
+  for (int n = 0; n < 20000; n += 100) {
     Benchmark benchmark = new Benchmark(n);
     print("$n: ${benchmark.bench().toString()}");
   }

@@ -22,8 +22,8 @@ class Benchmark {
 
   Map<String, int> bench() {
     var res = {};
-    res["Linked List"] = _bench(() => new SimpleImmutableMap());
-    res["Mutable Map"] = _bench(() => new SimpleImmutableMap2());
+//    res["Linked List"] = _bench(() => new SimpleImmutableMap());
+//    res["Mutable Map"] = _bench(() => new SimpleImmutableMap2());
     res["Hash Trie"] = _bench(() => new ImmutableMap());
     return res;
   }

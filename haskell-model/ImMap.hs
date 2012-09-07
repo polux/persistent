@@ -19,7 +19,7 @@ module ImMap (
   fromList, member, size, insertWith
 ) where
 
-import qualified Data.IntMap as IM
+import qualified SmallMap as IM
 import qualified Data.Map as M -- for cheak equality
 import Prelude hiding (lookup)
 import qualified Prelude as P
@@ -31,7 +31,7 @@ import Control.Arrow((***))
 
 data Map k v = EmptyMap
              | Leaf Int [(k, v)]
-             | SubMap (IM.IntMap (Map k v))
+             | SubMap (IM.SmallMap (Map k v))
   deriving (Show)
 
 empty = EmptyMap
