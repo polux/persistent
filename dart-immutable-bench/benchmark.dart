@@ -43,7 +43,7 @@ class Benchmark {
     for (int i = 0; i <= size * 2; i++) {
       map.lookup("key$i");
     }
-    
+
     ImmutableMap saved = map;
     for (int i = size * 2; i >= 0; i--) {
       map = map.delete("key$i");

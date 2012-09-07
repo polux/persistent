@@ -14,7 +14,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart_im_bench');
+#library('dart-immutable-bench');
 
 #import('../dart-immutable/dart-immutable.dart');
 
