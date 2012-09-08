@@ -56,16 +56,15 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
       new LList<Pair<K,V>>.cons(new Pair<K,V>(key, value),
           new LList<Pair<K,V>>.nil());
 
-  ImmutableMap<K,V> _makeFromSubMap(Map<int, _AImmutableMap<K,V>> _submap) {
+  ImmutableMap<K,V> _makeFromSubMap(List<_AImmutableMap<K,V>> _submap) {
     assert (_submap.length >= 1);
     if (_submap.length > 1) return new _SubMap(_submap);
     else {
       _AImmutableMap<K,V> onlyValueLeft = null;
-      // There's only one value left but that's the only way of getting it
-      // without resorting to _submap.getKeys().iterator() and [] which might be
-      // even slower.
-      _submap.forEach((_, value) { onlyValueLeft = value; });
-      assert (onlyValueLeft !== null);
+      int index = 0;
+      for (int i = 0; onlyValueLeft === null; i++) {
+        onlyValueLeft = _submap[i];
+      }
       return onlyValueLeft._isLeaf() ? onlyValueLeft : new _SubMap(_submap);
     }
   }
@@ -178,8 +177,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
       if (hash == _hash) {
         return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
       } else {
-        Map<int, _AImmutableMap<K,V>> submap =
-            new Map<int, _AImmutableMap<K,V>>();
+        List<_AImmutableMap<K,V>> submap = new List<_AImmutableMap<K,V>>(32);
         int branch = (_hash >> (depth * 5)) & 0x1f;
         submap[branch] = this;
         return new _SubMap<K,V>(submap)
@@ -282,7 +280,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
 }
 
 class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
-  Map<int, _AImmutableMap<K,V>> _submap;
+  List<_AImmutableMap<K,V>> _submap;
   int _size = null;
 
   _SubMap(this._submap);
@@ -292,7 +290,7 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   Option<V> _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap.containsKey(branch)) {
+    if (_submap[branch] !== null) {
       _AImmutableMap<K,V> map = _submap[branch];
       return map._lookup(key, hash, depth + 1);
     } else {
@@ -302,10 +300,10 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _insertWith(
       LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
-    Map<int, _AImmutableMap<K,V>> newsubmap =
-        new Map<int, _AImmutableMap<K,V>>.from(_submap);
+    List<_AImmutableMap<K,V>> newsubmap =
+        new List<_AImmutableMap<K,V>>.from(_submap);
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap.containsKey(branch)) {
+    if (_submap[branch] !== null) {
       _AImmutableMap<K,V> m = _submap[branch];
       newsubmap[branch] = m._insertWith(keyValues, combine, hash, depth + 1);
     } else {
@@ -316,13 +314,13 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _delete(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap.containsKey(branch)) {
+    if (_submap[branch] !== null) {
       _AImmutableMap<K,V> m = _submap[branch];
       _AImmutableMap<K,V> newm = m._delete(key, hash, depth + 1);
-      Map<int, _AImmutableMap<K,V>> newsubmap =
-          new Map<int, _AImmutableMap<K,V>>.from(_submap);
+      List<_AImmutableMap<K,V>> newsubmap =
+          new List<_AImmutableMap<K,V>>.from(_submap);
       if (newm._isEmpty()) {
-        newsubmap.remove(branch);
+        newsubmap[branch] = null;
       } else {
         newsubmap[branch] = newm;
       }
@@ -334,11 +332,11 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap.containsKey(branch)) {
+    if (_submap[branch] !== null) {
       _AImmutableMap<K,V> m = _submap[branch];
       _AImmutableMap<K,V> newm = m._adjust(key, update, hash, depth + 1);
-      Map<int, _AImmutableMap<K,V>> newsubmap =
-          new Map<int, _AImmutableMap<K,V>>.from(_submap);
+      List<_AImmutableMap<K,V>> newsubmap =
+          new List<_AImmutableMap<K,V>>.from(_submap);
       newsubmap[branch] = newm;
       return new _SubMap<K,V>(newsubmap);
     } else {
@@ -361,41 +359,54 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V>
       _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) {
-    Map<int, _AImmutableMap<K,V>> newsubmap =
-        new Map<int, _AImmutableMap<K,V>>();
-    Set<int> allKeys = new Set<int>.from(_submap.getKeys());
-    allKeys.addAll(m._submap.getKeys());
-    allKeys.forEach((int key) {
-      if (_submap.containsKey(key)) {
-        if (m._submap.containsKey(key)) {
-          newsubmap[key] =
-              m._submap[key]._unionWith(_submap[key], combine, depth + 1);
+    List<_AImmutableMap<K,V>> newsubmap =
+        new List<_AImmutableMap<K,V>>.from(_submap);
+    for (int i = 0; i < 32; i++) {
+      _AImmutableMap<K,V> mi = m._submap[i];
+      if (mi !== null) {
+        _AImmutableMap<K,V> mmi = _submap[i];
+        if (mmi !== null) {
+          newsubmap[i] = mi._unionWith(mmi, combine, depth + 1);
         } else {
-          newsubmap[key] = _submap[key];
+          newsubmap[i] = mi;
         }
-      } else {
-        newsubmap[key] = m._submap[key];
       }
-    });
+    }
     return new _SubMap<K,V>(newsubmap);
   }
 
   ImmutableMap mapValues(f(V)) {
-    Map newsubmap = new Map();
-    _submap.forEach((int i, _AImmutableMap<K,V> m) {
-      newsubmap[i] = m.mapValues(f);
-    });
+    List<_AImmutableMap<K,V>> newsubmap =
+        new List<_AImmutableMap<K,V>>.from(_submap);
+    for (int i = 0; i < 32; i++) {
+      _AImmutableMap<K,V> mi = _submap[i];
+      if (mi !== null) {
+        newsubmap[i] = mi.mapValues(f);
+      }
+    }
     return new _SubMap(newsubmap);
   }
 
   forEach(f(K,V)) {
-    _submap.forEach((int _, _AImmutableMap<K,V> m) => m.forEach(f));
+    List<_AImmutableMap<K,V>> newsubmap =
+        new List<_AImmutableMap<K,V>>.from(_submap);
+    for (int i = 0; i < 32; i++) {
+      _AImmutableMap<K,V> mi = _submap[i];
+      if (mi !== null) {
+        mi.forEach(f);
+      }
+    }
   }
 
   int size() {
     if (_size == null) {
       _size = 0;
-      _submap.forEach((int _, _AImmutableMap<K,V> m) { _size += m.size(); });
+      for (int i = 0; i < 32; i++) {
+        _AImmutableMap<K,V> mi = _submap[i];
+        if (mi !== null) {
+          _size += mi.size();
+        }
+      }
     }
     return _size;
   }
@@ -403,14 +414,12 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   bool operator ==(ImmutableMap<K,V> other) {
     if (this === other) return true;
     if (other is! _SubMap) return false;
-    if (_submap.length != other._submap.length) return false;
-    try {
-      _submap.forEach((int k, _AImmutableMap<K,V> v) {
-        if (!other._submap.containsKey(k)) throw new _Stop();
-        if (other._submap[k] != v) throw new _Stop();
-      });
-    } catch (_Stop e) {
-      return false;
+    for (int i = 0; i < 32; i++) {
+      _AImmutableMap<K,V> mi = _submap[i];
+      _AImmutableMap<K,V> omi = other._submap[i];
+      if (mi != omi) {
+        return false;
+      }
     }
     return true;
   }
