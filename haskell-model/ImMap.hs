@@ -107,10 +107,10 @@ delete k m = delete' 0 m
           EmptyMap -> IM.delete i im
           m'' -> IM.insert i m'' im
       where i = part l code
-            build im = case IM.toList im of
+            build im = case IM.elems im of
                          [] -> error "should never happen"
-                         [(_, l@(Leaf _ _))] -> l
-                         _                   -> SubMap im
+                         [l@(Leaf _ _)] -> l
+                         _              -> SubMap im
 
 
 unionWith :: Eq k => (v -> v -> v) -> Map k v -> Map k v -> Map k v
