@@ -39,9 +39,12 @@ testInsert(Map<Key, int> map, Key key, int value) =>
     same(implemFrom(map).insert(key, value, minus),
          modelFrom(map).insert(key, value, minus));
 
-testDelete(Map<Key, int> map, Key key) =>
-    same(implemFrom(map).delete(key),
-         modelFrom(map).delete(key));
+testDelete(Map<Key, int> map, Key key) {
+  ImmutableMap m = implemFrom(map).delete(key);
+  return same(m, modelFrom(map).delete(key))
+    // checks that delete's normalizes the map so that == is well defined
+    && implemFrom(m.toMap()) == m;
+}
 
 testLookup(Map<Key, int> map, Key key) =>
     implemFrom(map).lookup(key) == modelFrom(map).lookup(key);
