@@ -56,19 +56,6 @@ abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
       new LList<Pair<K,V>>.cons(new Pair<K,V>(key, value),
           new LList<Pair<K,V>>.nil());
 
-  ImmutableMap<K,V> _makeFromSubMap(List<_AImmutableMap<K,V>> _submap) {
-    assert (_submap.length >= 1);
-    if (_submap.length > 1) return new _SubMap(_submap);
-    else {
-      _AImmutableMap<K,V> onlyValueLeft = null;
-      int index = 0;
-      for (int i = 0; onlyValueLeft === null; i++) {
-        onlyValueLeft = _submap[i];
-      }
-      return onlyValueLeft._isLeaf() ? onlyValueLeft : new _SubMap(_submap);
-    }
-  }
-
   Option<V> lookup(K key) =>
       _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
@@ -177,10 +164,10 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
       if (hash == _hash) {
         return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
       } else {
-        List<_AImmutableMap<K,V>> submap = new List<_AImmutableMap<K,V>>(32);
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        submap[branch] = this;
-        return new _SubMap<K,V>(submap)
+        List<_AImmutableMap<K,V>> array = new List<_AImmutableMap<K,V>>(1);
+        array[0] = this;
+        return new _SubMap<K,V>(1 << branch, array)
             ._insertWith(keyValues, combine, hash, depth);
       }
     }
@@ -280,18 +267,35 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
 }
 
 class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
-  List<_AImmutableMap<K,V>> _submap;
+  int _bitmap;
+  List<_AImmutableMap<K,V>> _array;
   int _size = null;
 
-  _SubMap(this._submap);
+  _SubMap(this._bitmap, this._array);
+
+  static _popcount(int n) {
+    n = n - ((n >> 1) & 0x55555555);
+    n = (n & 0x33333333) + ((n >> 2) & 0x33333333);
+    n = (n + (n >> 4)) & 0x0F0F0F0F;
+    n = n + (n >> 8);
+    n = n + (n >> 16);
+    return n & 0x0000003F;
+  }
+
+  /*
+  int mask = 1 << branch
+  index = popcount (b & (mask - 1))
+  */
 
   bool _isEmpty() => false;
   bool _isLeaf() => false;
 
   Option<V> _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap[branch] !== null) {
-      _AImmutableMap<K,V> map = _submap[branch];
+    int mask = 1 << branch;
+    if ((_bitmap & mask) != 0) {
+      int index = _popcount(_bitmap & (mask - 1));
+      _AImmutableMap<K,V> map = _array[index];
       return map._lookup(key, hash, depth + 1);
     } else {
       return new Option<V>.none();
@@ -300,31 +304,62 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _insertWith(
       LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
-    List<_AImmutableMap<K,V>> newsubmap =
-        new List<_AImmutableMap<K,V>>.from(_submap);
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap[branch] !== null) {
-      _AImmutableMap<K,V> m = _submap[branch];
-      newsubmap[branch] = m._insertWith(keyValues, combine, hash, depth + 1);
+    int mask = 1 << branch;
+    int index = _popcount(_bitmap & (mask - 1));
+
+    if ((_bitmap & mask) != 0) {
+      List<_AImmutableMap<K,V>> newarray =
+          new List<_AImmutableMap<K,V>>.from(_array);
+      _AImmutableMap<K,V> m = _array[index];
+      newarray[index] = m._insertWith(keyValues, combine, hash, depth + 1);
+      return new _SubMap<K,V>(_bitmap, newarray);
     } else {
-      newsubmap[branch] = new _Leaf<K,V>(hash, keyValues);
+      int newlength = _array.length + 1;
+      List<_AImmutableMap<K,V>> newarray =
+          new List<_AImmutableMap<K,V>>(newlength);
+      // TODO: find out if there's a "copy array" native function somewhere
+      for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
+      for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
+      newarray[index] = new _Leaf<K,V>(hash, keyValues);
+      return new _SubMap<K,V>(_bitmap | mask, newarray);
     }
-    return new _SubMap<K,V>(newsubmap);
   }
 
   ImmutableMap<K,V> _delete(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap[branch] !== null) {
-      _AImmutableMap<K,V> m = _submap[branch];
+    int mask = 1 << branch;
+
+    if ((_bitmap & mask) != 0) {
+      int index = _popcount(_bitmap & (mask - 1));
+      _AImmutableMap<K,V> m = _array[index];
       _AImmutableMap<K,V> newm = m._delete(key, hash, depth + 1);
-      List<_AImmutableMap<K,V>> newsubmap =
-          new List<_AImmutableMap<K,V>>.from(_submap);
-      if (newm._isEmpty()) {
-        newsubmap[branch] = null;
-      } else {
-        newsubmap[branch] = newm;
+      if (m === newm) {
+        return this;
       }
-      return _makeFromSubMap(newsubmap);
+      if (newm._isEmpty()) {
+        if (_array.length > 2) {
+          int newsize = _array.length - 1;
+          List<_AImmutableMap<K,V>> newarray =
+              new List<_AImmutableMap<K,V>>(newsize);
+          for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
+          for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
+          return new _SubMap(_bitmap ^ mask, newarray);
+        } else {
+          assert(_array.length == 2);
+          assert(index == 0 || index == 1);
+          _AImmutableMap<K,V> onlyValueLeft = _array[1 - index];
+          return onlyValueLeft._isLeaf()
+              ? onlyValueLeft
+              : new _SubMap(_bitmap ^ mask,
+                            <_AImmutableMap<K,V>>[onlyValueLeft]);
+        }
+      } else {
+        List<_AImmutableMap<K,V>> newarray =
+            new List<_AImmutableMap<K,V>>.from(_array);
+        newarray[index] = newm;
+        return new _SubMap(_bitmap, newarray);
+      }
     } else {
       return this;
     }
@@ -332,13 +367,18 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
-    if (_submap[branch] !== null) {
-      _AImmutableMap<K,V> m = _submap[branch];
+    int mask = 1 << branch;
+    if ((_bitmap & mask) != 0) {
+      int index = _popcount(_bitmap & (mask - 1));
+      _AImmutableMap<K,V> m = _array[index];
       _AImmutableMap<K,V> newm = m._adjust(key, update, hash, depth + 1);
-      List<_AImmutableMap<K,V>> newsubmap =
-          new List<_AImmutableMap<K,V>>.from(_submap);
-      newsubmap[branch] = newm;
-      return new _SubMap<K,V>(newsubmap);
+      if (newm === m) {
+        return this;
+      }
+      List<_AImmutableMap<K,V>> newarray =
+          new List<_AImmutableMap<K,V>>.from(_array);
+      newarray[index] = newm;
+      return new _SubMap(_bitmap, newarray);
     } else {
       return this;
     }
@@ -359,53 +399,52 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
 
   ImmutableMap<K,V>
       _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) {
-    List<_AImmutableMap<K,V>> newsubmap =
-        new List<_AImmutableMap<K,V>>.from(_submap);
-    for (int i = 0; i < 32; i++) {
-      _AImmutableMap<K,V> mi = m._submap[i];
-      if (mi !== null) {
-        _AImmutableMap<K,V> mmi = _submap[i];
-        if (mmi !== null) {
-          newsubmap[i] = mi._unionWith(mmi, combine, depth + 1);
-        } else {
-          newsubmap[i] = mi;
-        }
+    int ormap = _bitmap | m._bitmap;
+    int andmap = _bitmap & m._bitmap;
+    List<_AImmutableMap<K,V>> newarray =
+        new List<_AImmutableMap<K,V>>(_popcount(ormap));
+    int mask = 1, i = 0, i1 = 0, i2 = 0;
+    while (mask <= _bitmap) {
+      if ((andmap & mask) != 0) {
+        _array[i1];
+        m._array[i2];
+        newarray[i] = m._array[i2]._unionWith(_array[i1], combine, depth + 1);
+        i1++;
+        i2++;
+        i++;
+      } else if ((_bitmap & mask) != 0) {
+        newarray[i] = _array[i1];
+        i1++;
+        i++;
+      } else if ((m._bitmap & mask) != 0) {
+        newarray[i] = m._array[i2];
+        i2++;
+        i++;
       }
+      mask <<= 1;
     }
-    return new _SubMap<K,V>(newsubmap);
+    return new _SubMap<K,V>(ormap, newarray);
   }
 
   ImmutableMap mapValues(f(V)) {
-    List<_AImmutableMap<K,V>> newsubmap =
-        new List<_AImmutableMap<K,V>>.from(_submap);
-    for (int i = 0; i < 32; i++) {
-      _AImmutableMap<K,V> mi = _submap[i];
-      if (mi !== null) {
-        newsubmap[i] = mi.mapValues(f);
-      }
+    List<_AImmutableMap<K,V>> newarray =
+        new List<_AImmutableMap<K,V>>.from(_array);
+    for (int i = 0; i < _array.length; i++) {
+      _AImmutableMap<K,V> mi = _array[i];
+        newarray[i] = mi.mapValues(f);
     }
-    return new _SubMap(newsubmap);
+    return new _SubMap(_bitmap, newarray);
   }
 
   forEach(f(K,V)) {
-    List<_AImmutableMap<K,V>> newsubmap =
-        new List<_AImmutableMap<K,V>>.from(_submap);
-    for (int i = 0; i < 32; i++) {
-      _AImmutableMap<K,V> mi = _submap[i];
-      if (mi !== null) {
-        mi.forEach(f);
-      }
-    }
+    _array.forEach((mi) => mi.forEach(f));
   }
 
   int size() {
     if (_size == null) {
       _size = 0;
-      for (int i = 0; i < 32; i++) {
-        _AImmutableMap<K,V> mi = _submap[i];
-        if (mi !== null) {
-          _size += mi.size();
-        }
+      for (_AImmutableMap<K,V> mi in _array) {
+        _size += mi.size();
       }
     }
     return _size;
@@ -414,9 +453,11 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   bool operator ==(ImmutableMap<K,V> other) {
     if (this === other) return true;
     if (other is! _SubMap) return false;
-    for (int i = 0; i < 32; i++) {
-      _AImmutableMap<K,V> mi = _submap[i];
-      _AImmutableMap<K,V> omi = other._submap[i];
+    if (_bitmap != other._bitmap) return false;
+    assert(_array.length == other._array.length);
+    for (int i = 0; i < _array.length; i++) {
+      _AImmutableMap<K,V> mi = _array[i];
+      _AImmutableMap<K,V> omi = other._array[i];
       if (mi != omi) {
         return false;
       }
@@ -424,5 +465,5 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
     return true;
   }
 
-  toDebugString() => "_SubMap($_submap)";
+  toDebugString() => "_SubMap($_array)";
 }

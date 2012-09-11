@@ -58,7 +58,7 @@ bool mapEquals(Map m1, Map m2) {
       if (!m2.containsKey(k)) throw new _Stop();
       if (v != m2[k]) throw new _Stop();
     });
-  } catch (_Stop e) {
+  } on _Stop catch(e) {
     return false;
   }
   return true;

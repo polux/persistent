@@ -77,14 +77,14 @@ main() {
     'union'    : forall2(e.maps, e.maps, testUnion)
   };
 
-  group('smallcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => sc.check(prop));
-    });
-  });
   group('quickcheck', () {
     properties.forEach((name, prop) {
       test(name, () => qc.check(prop));
+    });
+  });
+  group('smallcheck', () {
+    properties.forEach((name, prop) {
+      test(name, () => sc.check(prop));
     });
   });
 }
