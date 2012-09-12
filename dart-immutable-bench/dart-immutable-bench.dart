@@ -25,7 +25,6 @@
 void main() {
   for (int n = 0; n < 20000; n += 100) {
     Benchmark benchmark = new Benchmark(n);
-    final res = benchmark.bench();
-    print("$n: ${res["Hash Trie"]} ${res["Mutable Map"]} ${res["Linked List"]}");
+    print("$n: ${benchmark.bench()}");
   }
 }
