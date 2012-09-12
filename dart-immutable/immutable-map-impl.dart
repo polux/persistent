@@ -165,8 +165,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
         return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        List<_AImmutableMap<K,V>> array = new List<_AImmutableMap<K,V>>(1);
-        array[0] = this;
+        List<_AImmutableMap<K,V>> array = <_AImmutableMap<K,V>>[this];
         return new _SubMap<K,V>(1 << branch, array)
             ._insertWith(keyValues, combine, hash, depth);
       }
@@ -190,9 +189,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
         Cons<Pair<K,V>> cons = it.asCons();
         Pair<K,V> elem = cons.elem;
         if (elem.fst == key) {
-          builder.add(new Pair<K,V>(
-              key,
-              update(elem.snd)));
+          builder.add(new Pair<K,V>(key, update(elem.snd)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
@@ -282,11 +279,6 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
     return n & 0x0000003F;
   }
 
-  /*
-  int mask = 1 << branch
-  index = popcount (b & (mask - 1))
-  */
-
   bool _isEmpty() => false;
   bool _isLeaf() => false;
 
@@ -344,8 +336,10 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
               new List<_AImmutableMap<K,V>>(newsize);
           for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
           for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
+          assert(newarray.length >= 2);
           return new _SubMap(_bitmap ^ mask, newarray);
         } else {
+          if (_array.length != 2) { print("E $_array"); }
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
           _AImmutableMap<K,V> onlyValueLeft = _array[1 - index];
@@ -353,6 +347,15 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
               ? onlyValueLeft
               : new _SubMap(_bitmap ^ mask,
                             <_AImmutableMap<K,V>>[onlyValueLeft]);
+        }
+      } else if (newm._isLeaf()){
+        if (_array.length == 1) {
+          return newm;
+        } else {
+          List<_AImmutableMap<K,V>> newarray =
+              new List<_AImmutableMap<K,V>>.from(_array);
+          newarray[index] = newm;
+          return new _SubMap(_bitmap, newarray);
         }
       } else {
         List<_AImmutableMap<K,V>> newarray =

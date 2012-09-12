@@ -22,8 +22,8 @@ class Benchmark {
 
   Map<String, int> bench() {
     var res = {};
-//    res["Linked List"] = _bench(() => new SimpleImmutableMap());
-//    res["Mutable Map"] = _bench(() => new SimpleImmutableMap2());
+    //res["Linked List"] = _bench(() => new SimpleImmutableMap());
+    //res["Mutable Map"] = _bench(() => new SimpleImmutableMap2());
     res["Hash Trie"] = _bench(() => new ImmutableMap());
     return res;
   }
@@ -31,28 +31,34 @@ class Benchmark {
   int _bench(ImmutableMap empty()) {
     int start = new Date.now().millisecondsSinceEpoch;
 
-    ImmutableMap map = empty();
-    for (int i = 0; i < size; i++) {
-      map = map.insert("key$i", "foo", (String x, String y) => x.concat(y));
-      map = map.insert("key$i", "bar", (String x, String y) => x.concat(y));
-    }
+    for (int i = 0; i < 1; i++) {
 
-    for (int i = size * 2; i >= 0; i--) {
-      map.lookup("key$i");
-    }
-    for (int i = 0; i <= size * 2; i++) {
-      map.lookup("key$i");
-    }
+      ImmutableMap map = empty();
+      for (int i = 0; i < size; i++) {
+        map = map.insert("key$i", "foo", (String x, String y) => x.concat(y));
+        map = map.insert("key$i", "bar", (String x, String y) => x.concat(y));
+      }
 
-    ImmutableMap saved = map;
-    for (int i = size * 2; i >= 0; i--) {
-      map = map.delete("key$i");
-    }
-    map = saved;
-    for (int i = 0; i < size * 2; i++) {
-      map = map.delete("key$i");
-    }
+      for (int i = size * 2; i >= 0; i--) {
+        map.lookup("key$i");
+      }
+      for (int i = 0; i <= size * 2; i++) {
+        map.lookup("key$i");
+      }
 
+      ImmutableMap saved = map;
+      for (int i = size * 2; i >= 0; i--) {
+        //if (i == 174) { print("LA $i $map"); }
+        map = map.delete("key$i");
+      }
+      /*
+      map = saved;
+      for (int i = 0; i < size * 2; i++) {
+        map = map.delete("key$i");
+      }
+      */
+
+    }
     return new Date.now().millisecondsSinceEpoch - start;
   }
 }
