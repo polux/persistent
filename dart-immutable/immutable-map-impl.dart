@@ -339,7 +339,6 @@ class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
           assert(newarray.length >= 2);
           return new _SubMap(_bitmap ^ mask, newarray);
         } else {
-          if (_array.length != 2) { print("E $_array"); }
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
           _AImmutableMap<K,V> onlyValueLeft = _array[1 - index];
