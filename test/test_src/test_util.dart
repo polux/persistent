@@ -33,13 +33,11 @@ class Key implements Hashable {
  * Enumerations of [Key] and [Map<Key, int>].
  */
 class Enumerations {
-  Combinators c;
   Enumeration<Key> keys;
   Enumeration<int> values;
   Enumeration<Map<Key, int>> maps;
 
   Enumerations() {
-    c = new Combinators();
     keys = singleton((i) => (b) => new Key(i, b)).apply(c.ints).apply(c.bools);
     values = c.ints;
     maps = c.mapsOf(keys, values);
