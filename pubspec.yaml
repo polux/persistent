@@ -3,12 +3,8 @@ description: Efficient immutable data structures for Dart
 version: 0.0.1
 dependencies:
   dart-check:
-    git:
-      url: https://code.google.com/p/dart-check/
-      ref: new-layout
+    git: https://code.google.com/p/dart-check/
   dart-enumerators:
-    git:
-      url: https://code.google.com/p/dart-enumerators/
-      ref: new-layout
+    git: https://code.google.com/p/dart-enumerators/
   unittest:
     sdk: unittest
