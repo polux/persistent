@@ -1,5 +1,5 @@
-#library('demo');
-#import('dart-immutable/dart-immutable.dart');
+#library('map_example');
+#import('package:dart-immutable/dart_immutable.dart');
 
 main() {
   var emptyMap = new ImmutableMap<String,int>();

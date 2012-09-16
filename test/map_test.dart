@@ -14,17 +14,17 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart-immutable-tests');
+#library('map_test');
 
 #import('dart:math');
-#import('package:dart-check/dart-check.dart');
+#import('package:dart-check/dart_check.dart');
 #import('package:dart-enumerators/combinators.dart');
 #import('package:dart-enumerators/enumerators.dart');
+#import('package:dart-immutable/dart_immutable.dart');
 #import('package:unittest/unittest.dart');
-#import('../dart-immutable/dart-immutable.dart');
 
-#source('test-util.dart');
-#source('model.dart');
+#source('test_src/test_util.dart');
+#source('test_src/map_model.dart');
 
 // a deliberately non-commutative operation on ints
 minus(int x, int y) => x - y;

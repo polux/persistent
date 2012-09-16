@@ -14,13 +14,13 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('dart-immutable-bench');
+#library('map_bench');
 
-#import('../dart-immutable/dart-immutable.dart');
+#import('package:dart-immutable/dart_immutable.dart');
 
-#source('benchmark.dart');
-#source('simple-map-1.dart');
-#source('simple-map-2.dart');
+#source('bench_src/benchmark.dart');
+#source('bench_src/simple_map_1.dart');
+#source('bench_src/simple_map_2.dart');
 
 void main() {
   for (int n = 0; n < 20000; n += 100) {
