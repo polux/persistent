@@ -19,7 +19,7 @@
 #import('dart:math');
 #import('package:dart-check/dart_check.dart');
 #import('package:dart-enumerators/combinators.dart', prefix: 'c');
-#import('package:dart-enumerators/enumerators.dart');
+#import('package:dart-enumerators/enumerators.dart', prefix: 'en');
 #import('package:dart-immutable/dart_immutable.dart');
 #import('package:unittest/unittest.dart');
 
