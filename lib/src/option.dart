@@ -24,7 +24,7 @@ class Option<T> {
 
   factory Option.some(T value) => new Option._internal(true, value);
 
-  T get value() {
+  T get value {
     if (isDefined) return _value;
     throw "undefined";
   }
