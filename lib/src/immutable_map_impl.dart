@@ -14,17 +14,6 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-class _ImmutableMapFactory<K extends Hashable,V> {
-  factory ImmutableMap() => new _EmptyMap();
-  factory ImmutableMap.fromMap(Map<K,V> map) {
-    ImmutableMap<K,V> result = new _EmptyMap<K,V>();
-    map.forEach((K key, V value) {
-      result = result.insert(key, value);
-    });
-    return result;
-  }
-}
-
 /**
  * Exception used for aborting forEach loops.
  */
@@ -33,7 +22,8 @@ class _Stop implements Exception {}
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _AImmutableMap<K extends Hashable,V> extends AImmutableMap<K,V> {
+abstract class _AImmutableMap<K extends Hashable,V>
+    extends ImmutableMapBase<K,V> {
   abstract bool _isEmpty();
   abstract bool _isLeaf();
 

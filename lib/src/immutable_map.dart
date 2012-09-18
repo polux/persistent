@@ -14,12 +14,33 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-interface ImmutableMap<K extends Hashable,V>
-    default _ImmutableMapFactory<K extends Hashable,V> {
-  ImmutableMap();
-  ImmutableMap.fromMap(Map<K,V> map);
+/**
+ * An immutable map from keys of type [K] to values of type [V]. Null values are
+ * supported but null keys aren't.
+ */
+abstract class ImmutableMap<K extends Hashable,V> {
+  /** Creates an empty [ImmutableMap] with the default implementation */
+  factory ImmutableMap() => new _EmptyMap();
 
-  /** m.insert(k, v) == m.insert(k, v, (x, y) => y) */
+  /**
+   * Creates an immutable copy of [map] using the default implementation of
+   * [ImmutableMap].
+   */
+  factory ImmutableMap.fromMap(Map<K,V> map) {
+    ImmutableMap<K,V> result = new _EmptyMap<K,V>();
+    map.forEach((K key, V value) {
+      result = result.insert(key, value);
+    });
+    return result;
+  }
+
+  /**
+   * Associates [value] to [key] in [this]. If [key] was already associated to
+   * [: oldvalue :] in [this] it is replaced by [value] unless [combine] is
+   * provided, in which case it is replaced by [: combine(oldvalue, value) :].
+   * Thus, [: m.insert(k, v) :] is equivalent to
+   * [: m.insert(k, v , (x, y) => y) :].
+   */
   ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]);
   ImmutableMap<K,V> delete(K key);
   Option<V> lookup(K key);
@@ -36,7 +57,7 @@ interface ImmutableMap<K extends Hashable,V>
   Map<K,V> toMap();
 }
 
-abstract class AImmutableMap<K extends Hashable,V>
+abstract class ImmutableMapBase<K extends Hashable,V>
     implements ImmutableMap<K,V> {
   Map<K,V> toMap() {
     Map<K,V> result = new Map<K,V>();

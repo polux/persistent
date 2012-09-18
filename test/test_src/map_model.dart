@@ -17,7 +17,7 @@
 /**
  * Naive implementation of ImmutableMap using dart:core [Map]s.
  */
-class ModelMap<K extends Hashable,V> extends AImmutableMap<K,V> {
+class ModelMap<K extends Hashable,V> extends ImmutableMapBase<K,V> {
   final Map<K,V> map;
 
   ModelMap(this.map);

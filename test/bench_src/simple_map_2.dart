@@ -17,7 +17,7 @@
 /**
  * Naive implementation of ImmutableMap dart:core [Map]s.
  */
-class SimpleImmutableMap2<K extends Hashable,V> extends AImmutableMap<K,V> {
+class SimpleImmutableMap2<K extends Hashable,V> extends ImmutableMapBase<K,V> {
   final Map<K,V> _map;
 
   SimpleImmutableMap2._internal(this._map);
