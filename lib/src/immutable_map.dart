@@ -15,7 +15,7 @@
 // Author: Paul Brauner (polux@google.com)
 
 /**
- * An immutable map binding keys of type [K] to values of type [V]. Null values
+ * An immutable map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
  */
 abstract class ImmutableMap<K extends Hashable,V> {
@@ -110,12 +110,12 @@ abstract class ImmutableMap<K extends Hashable,V> {
    * [combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to
    * [key] in [this] and [rightvalue] is the one bound to [key] in [other].
    *
-   *     {'a': 1}.union({'b': 2}) ==  {'a': 1, 'b': 2}
-   *     {'a': 1}.union({'a': 3, 'b': 2}) ==  {'a': 3, 'b': 2}
-   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) ==  {'a': 4, 'b': 2}
+   *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}
    *
    * Note that [union] is commutative if and only if [combine] is provided and
-   * is commutative.
+   * if it is commutative.
    */
   ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V l, V r)]);
 
