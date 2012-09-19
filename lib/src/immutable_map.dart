@@ -117,7 +117,8 @@ abstract class ImmutableMap<K extends Hashable,V> {
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V l, V r)]);
+  ImmutableMap<K,V>
+      union(ImmutableMap<K,V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a mutable copy of [this].
