@@ -15,11 +15,12 @@
 // Author: Paul Brauner (polux@google.com)
 
 /**
- * An immutable map from keys of type [K] to values of type [V]. Null values are
- * supported but null keys aren't.
+ * An immutable map binding keys of type [K] to values of type [V]. Null values
+ * are supported but null keys are not.
  */
 abstract class ImmutableMap<K extends Hashable,V> {
-  /** Creates an empty [ImmutableMap] with the default implementation */
+
+  /** Creates an empty [ImmutableMap] using its default implementation. */
   factory ImmutableMap() => new _EmptyMap();
 
   /**
@@ -35,25 +36,92 @@ abstract class ImmutableMap<K extends Hashable,V> {
   }
 
   /**
-   * Associates [value] to [key] in [this]. If [key] was already associated to
-   * [: oldvalue :] in [this] it is replaced by [value] unless [combine] is
-   * provided, in which case it is replaced by [: combine(oldvalue, value) :].
-   * Thus, [: m.insert(k, v) :] is equivalent to
-   * [: m.insert(k, v , (x, y) => y) :].
+   * Returns a new map identical to [this] except that it binds [key] to
+   * [value].
+   *
+   * If [key] was bound to some [oldvalue] in [this], it is nevertheless bound
+   * to [value] in the new map. If [key] was bound to some [oldvalue] in
+   * [this] and if [combine] is provided then [key] it is bound to
+   * [combine(oldvalue, value)] in the new map.
+   *
+   *     {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}
+   *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
+   *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]);
+  ImmutableMap<K,V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+
+  /**
+   * Returns a new map identical to [this] except that it doesn't bind [key]
+   * anymore.
+   *
+   *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
+   *     {'a': 1}.delete('b') == {'a': 1}
+   */
   ImmutableMap<K,V> delete(K key);
+
+  /**
+   * Looks up the value possibly bound to [key] in [this]. Returns
+   * [Option.some(value)] if it exists, [Option.none()] otherwise.
+   *
+   *     {'a': 1}.lookup('b') == Option.none()
+   *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
+   */
   Option<V> lookup(K key);
 
-  void forEach(f(K,V));
-  ImmutableMap<K,V> adjust(K key, V update(V));
-  // forall T, ImmutableMap<K,T> mapValues(T f(V))
-  ImmutableMap mapValues(f(V));
+  /**
+   * Evaluates [f(key, value)] for each ([key], [value]) pair in [this].
+   */
+  void forEach(f(K key, V value));
 
+  /**
+   * Returns a new map identical to [this] except that the value it possibly
+   * binds to [key] has been adjusted by [update].
+   *
+   *     {'a': 1, 'b': 2}.update('b', (x) => x + 1) == {'a', 1, 'b', 3}
+   *     {'a': 1}.update('b', (x) => x + 1) == {'a', 1}
+   */
+  ImmutableMap<K,V> adjust(K key, V update(V value));
+
+  /**
+   * Returns a new map identical to [this] where each value has been updated by
+   * [f].
+   *
+   *     {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}
+   *     {}.map((x) => x + 1) == {}
+   */
+  ImmutableMap mapValues(f(V value));
+
+  /**
+   * Returns the number of (key, value) pairs in [this].
+   *
+   *     {}.size() == 0
+   *     {'a': 1}.size() == 1
+   *     {'a': 1, 'b': 2}.size() == 2
+   */
   int size();
-  /** m.union(k, v) == m.union(k, v, (x, y) => y) */
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]);
 
+  /**
+   * Returns a new map whose (key, value) pairs are the union of those of [this]
+   * and [other].
+   *
+   * The union is right-biased: if a key is present in both [this] and [other],
+   * the value from [other] is retained. If [combine] is provided, the retained
+   * value for a [key] present in both [this] and [other] is then
+   * [combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to
+   * [key] in [this] and [rightvalue] is the one bound to [key] in [other].
+   *
+   *     {'a': 1}.union({'b': 2}) ==  {'a': 1, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}) ==  {'a': 3, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) ==  {'a': 4, 'b': 2}
+   *
+   * Note that [union] is commutative if and only if [combine] is provided and
+   * is commutative.
+   */
+  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V l, V r)]);
+
+  /**
+   * Returns a mutable copy of [this].
+   */
   Map<K,V> toMap();
 }
 
