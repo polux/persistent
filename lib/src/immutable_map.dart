@@ -17,6 +17,9 @@
 /**
  * An immutable map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
+ *
+ * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
+ * [ImmutableMap.fromMap({k1: v1, k2: v2, ...})].
  */
 abstract class ImmutableMap<K extends Hashable,V> {
 
