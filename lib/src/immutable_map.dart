@@ -129,6 +129,9 @@ abstract class ImmutableMap<K extends Hashable,V> {
   Map<K,V> toMap();
 }
 
+/**
+ * A base class for implementations of [ImmutableMap].
+ */
 abstract class ImmutableMapBase<K extends Hashable,V>
     implements ImmutableMap<K,V> {
   Map<K,V> toMap() {
@@ -137,5 +140,15 @@ abstract class ImmutableMapBase<K extends Hashable,V>
     return result;
   }
 
-  String toString() => toMap().toString();
+  String toString() {
+    StringBuffer buffer = new StringBuffer('{');
+    bool comma = false;
+    this.forEach((K k, V v) {
+      if (comma) buffer.add(', ');
+      buffer.add('$k: $v');
+      comma = true;
+    });
+    buffer.add('}');
+    return buffer.toString();
+  }
 }
