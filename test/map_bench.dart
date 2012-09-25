@@ -16,7 +16,7 @@
 
 #library('map_bench');
 
-#import('package:dart-immutable/dart_immutable.dart');
+#import('package:dart_immutable/dart_immutable.dart');
 
 #source('bench_src/benchmark.dart');
 #source('bench_src/simple_map_1.dart');
