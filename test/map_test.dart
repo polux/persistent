@@ -17,10 +17,10 @@
 #library('map_test');
 
 #import('dart:math');
-#import('package:dart-check/dart_check.dart');
-#import('package:dart-enumerators/combinators.dart', prefix: 'c');
-#import('package:dart-enumerators/enumerators.dart', prefix: 'en');
-#import('package:dart-immutable/dart_immutable.dart');
+#import('package:dart_check/dart_check.dart');
+#import('package:dart_enumerators/combinators.dart', prefix: 'c');
+#import('package:dart_enumerators/enumerators.dart', prefix: 'en');
+#import('package:dart_immutable/dart_immutable.dart');
 #import('package:unittest/unittest.dart');
 
 #source('test_src/test_util.dart');

@@ -15,7 +15,7 @@
 // Author: Paul Brauner (polux@google.com)
 
 #library('map_example');
-#import('package:dart-immutable/dart_immutable.dart');
+#import('package:dart_immutable/dart_immutable.dart');
 
 main() {
   var emptyMap = new ImmutableMap<String,int>();
