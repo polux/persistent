@@ -14,19 +14,19 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-interface LList<A> default LListFactory<A> {
-  LList.nil();
-  LList.cons(A x, LList<A> xs);
+abstract class LList<A> {
+  factory LList.nil() => new Nil<A>();
+  factory LList.cons(A x, LList<A> xs) => new Cons<A>(x, xs);
 
-  bool isNil();
-  Cons<A> asCons();
+  abstract bool isNil();
+  abstract Cons<A> asCons();
 
-  void foreach(f(A));
+  abstract void foreach(f(A));
   // forall B, LList<B> map(B f(A))
-  LList map(f(A));
-  LList<A> filter(bool f(A));
+  abstract LList map(f(A));
+  abstract LList<A> filter(bool f(A));
 
-  int length();
+  abstract int length();
 }
 
 class LListBuilder<A> {
@@ -55,7 +55,7 @@ class LListBuilder<A> {
   }
 }
 
-abstract class ALList<A> implements LList<A> {
+abstract class LListBase<A> implements LList<A> {
 
   void foreach(f(A)) {
     LList<A> it = this;
@@ -96,7 +96,7 @@ class LListFactory<A> {
   factory LList.cons(A x, LList<A> xs) => new Cons<A>(x, xs);
 }
 
-class Nil<A> extends ALList<A> {
+class Nil<A> extends LListBase<A> {
   isNil() => true;
   asCons() { throw "Nil is not a Cons"; }
   toString() => "nil()";
@@ -104,7 +104,7 @@ class Nil<A> extends ALList<A> {
   int length() => 0;
 }
 
-class Cons<A> extends ALList<A> {
+class Cons<A> extends LListBase<A> {
   int _length = null;
 
   final A elem;
