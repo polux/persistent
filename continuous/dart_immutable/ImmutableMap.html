@@ -1,0 +1,321 @@
+        <!DOCTYPE html>
+        <html manifest="/appcache.manifest">
+        <head>
+                <meta charset="utf-8">
+        <title>ImmutableMap&lt;K, V&gt; class / dart_immutable Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="dart_immutable" data-type="ImmutableMap&amp;lt;K, V&amp;gt;">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../dart_immutable.html">dart_immutable</a> &rsaquo; <a href="../dart_immutable/ImmutableMap.html">ImmutableMap&lt;K, V&gt;</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>ImmutableMap&lt;K extends Hashable, V&gt;</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>An immutable map, binding keys of type <code>K</code> to values of type <code>V</code>. Null values
+are supported but null keys are not.</p>
+<p>In all the examples below <code>{k1: v1, k2: v2, ...}</code> is a shorthand for
+<code>ImmutableMap.fromMap({k1: v1, k2: v2, ...})</code>.</p>
+</div>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dart_immutable/ImmutableMapBase.html">ImmutableMapBase&lt;K, V&gt;</a></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="ImmutableMap">
+<button class="show-code">Code</button>
+factory <strong>ImmutableMap</strong>() <a class="anchor-link" href="#ImmutableMap"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.ImmutableMap">#</a></h4>
+<div class="doc">
+<p>Creates an empty <a class="crossref" href="../dart_immutable/ImmutableMap.html#ImmutableMap">ImmutableMap</a> using its default implementation.</p>
+<pre class="source">
+factory ImmutableMap() =&gt; new _EmptyMap();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="ImmutableMap.fromMap">
+<button class="show-code">Code</button>
+factory <strong>ImmutableMap.fromMap</strong>(<a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; map) <a class="anchor-link" href="#ImmutableMap.fromMap"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.ImmutableMap.fromMap">#</a></h4>
+<div class="doc">
+<p>Creates an immutable copy of 
+<span class="param">map</span> using the default implementation of
+<a class="crossref" href="../dart_immutable/ImmutableMap.html#ImmutableMap">ImmutableMap</a>.</p>
+<pre class="source">
+factory ImmutableMap.fromMap(Map&lt;K,V&gt; map) {
+  ImmutableMap&lt;K,V&gt; result = new _EmptyMap&lt;K,V&gt;();
+  map.forEach((K key, V value) {
+    result = result.insert(key, value);
+  });
+  return result;
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method inherited"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
+              title="Permalink to ImmutableMap&lt;K, V&gt;.operator ==">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<pre class="source">
+bool operator ==(other) =&gt; identical(this, other);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="adjust">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>adjust</strong>(<a href="../dart_immutable/ImmutableMap.html">K</a> key, <a href="../dart_immutable/ImmutableMap.html">V</a> update(<a href="../dart_immutable/ImmutableMap.html">V</a> value)) <a class="anchor-link" href="#adjust"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.adjust">#</a></h4>
+<div class="doc">
+<p>Returns a new map identical to <code>this</code> except that the value it possibly
+binds to 
+<span class="param">key</span> has been adjusted by 
+<span class="param">update</span>.</p>
+<pre><code>{'a': 1, 'b': 2}.update('b', (x) =&gt; x + 1) == {'a', 1, 'b', 3}
+{'a': 1}.update('b', (x) =&gt; x + 1) == {'a', 1}
+</code></pre>
+<pre class="source">
+ImmutableMap&lt;K,V&gt; adjust(K key, V update(V value));
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="delete">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>delete</strong>(<a href="../dart_immutable/ImmutableMap.html">K</a> key) <a class="anchor-link" href="#delete"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.delete">#</a></h4>
+<div class="doc">
+<p>Returns a new map identical to <code>this</code> except that it doesn't bind 
+<span class="param">key</span>
+anymore.</p>
+<pre><code>{'a': 1, 'b': 2}.delete('b') == {'a': 1}
+{'a': 1}.delete('b') == {'a': 1}
+</code></pre>
+<pre class="source">
+ImmutableMap&lt;K,V&gt; delete(K key);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="forEach">
+<button class="show-code">Code</button>
+void <strong>forEach</strong>(f(<a href="../dart_immutable/ImmutableMap.html">K</a> key, <a href="../dart_immutable/ImmutableMap.html">V</a> value)) <a class="anchor-link" href="#forEach"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.forEach">#</a></h4>
+<div class="doc">
+<p>Evaluates <code>f(key, value)</code> for each (<code>key</code>, <code>value</code>) pair in <code>this</code>.</p>
+<pre class="source">
+void forEach(f(K key, V value));
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="hashCode">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.hashCode">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <code>hashCode</code> it should override the
+equality operator as well to maintain consistency.</p>
+<pre class="source">
+external int hashCode();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="insert">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>insert</strong>(<a href="../dart_immutable/ImmutableMap.html">K</a> key, <a href="../dart_immutable/ImmutableMap.html">V</a> value, [<a href="../dart_immutable/ImmutableMap.html">V</a> combine(<a href="../dart_immutable/ImmutableMap.html">V</a> oldvalue, <a href="../dart_immutable/ImmutableMap.html">V</a> newvalue)]) <a class="anchor-link" href="#insert"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.insert">#</a></h4>
+<div class="doc">
+<p>Returns a new map identical to <code>this</code> except that it binds 
+<span class="param">key</span> to
+
+<span class="param">value</span>.</p>
+<p>If 
+<span class="param">key</span> was bound to some <code>oldvalue</code> in <code>this</code>, it is nevertheless bound
+to 
+<span class="param">value</span> in the new map. If 
+<span class="param">key</span> was bound to some <code>oldvalue</code> in
+<code>this</code> and if 
+<span class="param">combine</span> is provided then 
+<span class="param">key</span> it is bound to
+<code>combine(oldvalue, value)</code> in the new map.</p>
+<pre><code>{'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}
+{'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
+{'a': 1, 'b': 2}.insert('b', 3, (x,y) =&gt; x - y) == {'a': 3, 'b', -1}
+</code></pre>
+<pre class="source">
+ImmutableMap&lt;K,V&gt; insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="lookup">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/Option.html">Option</a>&lt;<a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>lookup</strong>(<a href="../dart_immutable/ImmutableMap.html">K</a> key) <a class="anchor-link" href="#lookup"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.lookup">#</a></h4>
+<div class="doc">
+<p>Looks up the value possibly bound to 
+<span class="param">key</span> in <code>this</code>. Returns
+<code>Option.some(value)</code> if it exists, <code>Option.none()</code> otherwise.</p>
+<pre><code>{'a': 1}.lookup('b') == Option.none()
+{'a': 1, 'b': 2}.lookup('b') == Option.some(2)
+</code></pre>
+<pre class="source">
+Option&lt;V&gt; lookup(K key);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="mapValues">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a> <strong>mapValues</strong>(f(<a href="../dart_immutable/ImmutableMap.html">V</a> value)) <a class="anchor-link" href="#mapValues"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.mapValues">#</a></h4>
+<div class="doc">
+<p>Returns a new map identical to <code>this</code> where each value has been updated by
+
+<span class="param">f</span>.</p>
+<pre><code>{'a': 1, 'b': 2}.map((x) =&gt; x + 1) == {'a', 2, 'b', 3}
+{}.map((x) =&gt; x + 1) == {}
+</code></pre>
+<pre class="source">
+ImmutableMap mapValues(f(V value));
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
+returns a value, that value becomes the result of the original
+invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<pre class="source">
+external Dynamic noSuchMethod(String name, List args);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> <strong>get runtimeType</strong>() <a class="anchor-link" href="#runtimeType"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.get runtimeType">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="size">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>size</strong>() <a class="anchor-link" href="#size"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.size">#</a></h4>
+<div class="doc">
+<p>Returns the number of (key, value) pairs in <code>this</code>.</p>
+<pre><code>{}.size() == 0
+{'a': 1}.size() == 1
+{'a': 1, 'b': 2}.size() == 2
+</code></pre>
+<pre class="source">
+int size();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="toMap">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>toMap</strong>() <a class="anchor-link" href="#toMap"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.toMap">#</a></h4>
+<div class="doc">
+<p>Returns a mutable copy of <code>this</code>.</p>
+<pre class="source">
+Map&lt;K,V&gt; toMap();
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.toString">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>Returns a string representation of this object.</p>
+<pre class="source">
+external String toString();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="union">
+<button class="show-code">Code</button>
+<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; <strong>union</strong>(<a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMap.html">K</a>, <a href="../dart_immutable/ImmutableMap.html">V</a>&gt; other, [<a href="../dart_immutable/ImmutableMap.html">V</a> combine(<a href="../dart_immutable/ImmutableMap.html">V</a> left, <a href="../dart_immutable/ImmutableMap.html">V</a> right)]) <a class="anchor-link" href="#union"
+              title="Permalink to ImmutableMap&lt;K, V&gt;.union">#</a></h4>
+<div class="doc">
+<p>Returns a new map whose (key, value) pairs are the union of those of <code>this</code>
+and 
+<span class="param">other</span>.</p>
+<p>The union is right-biased: if a key is present in both <code>this</code> and 
+<span class="param">other</span>,
+the value from 
+<span class="param">other</span> is retained. If 
+<span class="param">combine</span> is provided, the retained
+value for a <code>key</code> present in both <code>this</code> and 
+<span class="param">other</span> is then
+<code>combine(leftvalue, rightvalue)</code> where <code>leftvalue</code> is the value bound to
+<code>key</code> in <code>this</code> and <code>rightvalue</code> is the one bound to <code>key</code> in 
+<span class="param">other</span>.</p>
+<pre><code>{'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
+{'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
+{'a': 1}.union({'a': 3, 'b': 2}, (x,y) =&gt; x + y) == {'a': 4, 'b': 2}
+</code></pre>
+<p>Note that <a class="crossref" href="../dart_immutable/ImmutableMap.html#union">union</a> is commutative if and only if 
+<span class="param">combine</span> is provided and
+if it is commutative.</p>
+<pre class="source">
+ImmutableMap&lt;K,V&gt;
+    union(ImmutableMap&lt;K,V&gt; other, [V combine(V left, V right)]);
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-10-10 21:44:19.507</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        
