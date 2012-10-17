@@ -132,8 +132,7 @@ abstract class ImmutableMap<K, V> {
 /**
  * A base class for implementations of [ImmutableMap].
  */
-abstract class ImmutableMapBase<K, V>
-    implements ImmutableMap<K, V> {
+abstract class ImmutableMapBase<K, V> implements ImmutableMap<K, V> {
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
     this.forEach((K k, V v) { result[k] = v; });

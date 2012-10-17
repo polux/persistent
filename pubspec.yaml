@@ -8,3 +8,5 @@ dependencies:
     git: https://code.google.com/p/dart-enumerators/
   unittest:
     sdk: unittest
+author: Paul Brauner <polux@google.com>
+homepage: https://code.google.com/p/dart-immutable/
