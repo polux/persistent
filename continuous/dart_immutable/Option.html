@@ -32,6 +32,34 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<pre class="source">
+class Option&lt;T&gt; {
+  final T _value;
+  final bool isDefined;
+
+  Option._internal(this.isDefined, this._value);
+
+  factory Option.none() =&gt; new Option._internal(false, null);
+
+  factory Option.some(T value) =&gt; new Option._internal(true, value);
+
+  T get value {
+    if (isDefined) return _value;
+    throw "undefined";
+  }
+
+  // forall U, Option&lt;U&gt; map(U f(T))
+  Option map(f(T)) =&gt;
+      isDefined ? new Option.some(f(this.value)) : this;
+
+  bool operator ==(Option&lt;T&gt; other) =&gt;
+      (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
+   || (!isDefined &amp;&amp; !other.isDefined);
+
+  String toString() =&gt;
+      isDefined ? "Option.some($_value)" : "Option.none()";
+}
+</pre>
 </div>
 <div>
 <h3>Constructors</h3>
@@ -67,7 +95,7 @@ Option._internal(this.isDefined, this._value);
 </div>
 </div>
 <div>
-<h3>Fields</h3>
+<h3>Properties</h3>
 <div class="field"><h4 id="isDefined">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isDefined</strong> <a class="anchor-link"
@@ -80,9 +108,37 @@ final bool isDefined;
 </pre>
 </div>
 </div>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to Option&lt;T&gt;.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="value">
+<button class="show-code">Code</button>
+final <a href="../dart_immutable/Option.html">T</a>         <strong>value</strong> <a class="anchor-link"
+            href="#value"
+            title="Permalink to Option&lt;T&gt;.value">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+T get value {
+  if (isDefined) return _value;
+  throw "undefined";
+}
+</pre>
+</div>
+</div>
 </div>
 <div>
-<h3>Methods</h3>
+<h3>Operators</h3>
 <div class="method"><h4 id="==">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(<a href="../dart_immutable/Option.html">Option</a>&lt;<a href="../dart_immutable/Option.html">T</a>&gt; other) <a class="anchor-link" href="#=="
@@ -103,6 +159,9 @@ bool operator ==(Option&lt;T&gt; other) =&gt;
 </pre>
 </div>
 </div>
+</div>
+<div>
+<h3>Methods</h3>
 <div class="method inherited"><h4 id="hashCode">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
@@ -149,14 +208,47 @@ external Dynamic noSuchMethod(String name, List args);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="runtimeType">
+<div class="method inherited"><h4 id="Object">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> <strong>get runtimeType</strong>() <a class="anchor-link" href="#runtimeType"
-              title="Permalink to Option&lt;T&gt;.get runtimeType">#</a></h4>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to Option&lt;T&gt;.Object">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>A representation of the runtime type of the object.</p>
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
 <pre class="source">
-external Type get runtimeType;
+const Object();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="Option._internal">
+<button class="show-code">Code</button>
+new <strong>Option._internal</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> isDefined, <a href="../dart_immutable/Option.html">T</a> _value) <a class="anchor-link" href="#Option._internal"
+              title="Permalink to Option&lt;T&gt;.Option._internal">#</a></h4>
+<div class="doc">
+<pre class="source">
+Option._internal(this.isDefined, this._value);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="Option.none">
+<button class="show-code">Code</button>
+factory <strong>Option.none</strong>() <a class="anchor-link" href="#Option.none"
+              title="Permalink to Option&lt;T&gt;.Option.none">#</a></h4>
+<div class="doc">
+<pre class="source">
+factory Option.none() =&gt; new Option._internal(false, null);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="Option.some">
+<button class="show-code">Code</button>
+factory <strong>Option.some</strong>(<a href="../dart_immutable/Option.html">T</a> value) <a class="anchor-link" href="#Option.some"
+              title="Permalink to Option&lt;T&gt;.Option.some">#</a></h4>
+<div class="doc">
+<pre class="source">
+factory Option.some(T value) =&gt; new Option._internal(true, value);
 </pre>
 </div>
 </div>
@@ -174,26 +266,13 @@ String toString() =&gt;
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="value">
-<button class="show-code">Code</button>
-<a href="../dart_immutable/Option.html">T</a> <strong>get value</strong>() <a class="anchor-link" href="#value"
-              title="Permalink to Option&lt;T&gt;.get value">#</a></h4>
-<div class="doc">
-<pre class="source">
-T get value {
-  if (isDefined) return _value;
-  throw "undefined";
-}
-</pre>
-</div>
-</div>
 </div>
         </div>
         <div class="clear"></div>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-10 22:33:43.163</div>
+          <div>This page was generated at 2012-10-17 18:32:50.209</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

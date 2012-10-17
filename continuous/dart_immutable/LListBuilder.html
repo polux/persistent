@@ -32,9 +32,52 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<pre class="source">
+class LListBuilder&lt;A&gt; {
+  LList&lt;A&gt; _first = null;
+  Cons&lt;A&gt; _last = null;
+
+  void add(A x) {
+    Cons&lt;A&gt; cons = new Cons&lt;A&gt;(x, null);
+    if (_first == null) {
+      _first = cons;
+    } else {
+      _last.tail = cons;
+    }
+    _last = cons;
+  }
+
+  LList&lt;A&gt; build([tail = null]) {
+    if (tail == null)
+      tail = new Nil&lt;A&gt;();
+    if (_first == null) {
+      return tail;
+    } else {
+      _last.tail = tail;
+      return _first;
+    }
+  }
+}
+</pre>
 </div>
 <div>
-<h3>Methods</h3>
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to LListBuilder&lt;A&gt;.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
 <div class="method inherited"><h4 id="==">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
@@ -51,6 +94,9 @@ bool operator ==(other) =&gt; identical(this, other);
 </pre>
 </div>
 </div>
+</div>
+<div>
+<h3>Methods</h3>
 <div class="method"><h4 id="add">
 <button class="show-code">Code</button>
 void <strong>add</strong>(<a href="../dart_immutable/LListBuilder.html">A</a> x) <a class="anchor-link" href="#add"
@@ -123,14 +169,17 @@ external Dynamic noSuchMethod(String name, List args);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="runtimeType">
+<div class="method inherited"><h4 id="Object">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> <strong>get runtimeType</strong>() <a class="anchor-link" href="#runtimeType"
-              title="Permalink to LListBuilder&lt;A&gt;.get runtimeType">#</a></h4>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to LListBuilder&lt;A&gt;.Object">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>A representation of the runtime type of the object.</p>
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
 <pre class="source">
-external Type get runtimeType;
+const Object();
 </pre>
 </div>
 </div>
@@ -151,7 +200,7 @@ external String toString();
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-10 22:33:43.064</div>
+          <div>This page was generated at 2012-10-17 18:32:50.244</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

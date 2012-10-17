@@ -2,7 +2,7 @@
         <html manifest="/appcache.manifest">
         <head>
                 <meta charset="utf-8">
-        <title>ImmutableMapBase&lt;K, V&gt; class / dart_immutable Library / Dart Documentation</title>
+        <title>ImmutableMapBase&lt;K, V&gt; abstract class / dart_immutable Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
@@ -26,19 +26,57 @@
         
 </div>
 <div class="content">
-        <h2><strong>ImmutableMapBase&lt;K extends Hashable, V&gt;</strong>
-          class
+        <h2><strong>ImmutableMapBase&lt;K, V&gt;</strong>
+          abstract class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
 <p>A base class for implementations of <a class="crossref" href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>.</p>
+<pre class="source">
+abstract class ImmutableMapBase&lt;K, V&gt;
+    implements ImmutableMap&lt;K, V&gt; {
+  Map&lt;K, V&gt; toMap() {
+    Map&lt;K, V&gt; result = new Map&lt;K, V&gt;();
+    this.forEach((K k, V v) { result[k] = v; });
+    return result;
+  }
+
+  String toString() {
+    StringBuffer buffer = new StringBuffer('{');
+    bool comma = false;
+    this.forEach((K k, V v) {
+      if (comma) buffer.add(', ');
+      buffer.add('$k: $v');
+      comma = true;
+    });
+    buffer.add('}');
+    return buffer.toString();
+  }
+}
+</pre>
 </div>
 <h3>Implements</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../dart_immutable/ImmutableMap.html">ImmutableMap&lt;K, V&gt;</a></span></p>
 <div>
-<h3>Methods</h3>
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="runtimeType">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
+            href="#runtimeType"
+            title="Permalink to ImmutableMapBase&lt;K, V&gt;.runtimeType">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
+<p>A representation of the runtime type of the object.</p>
+<pre class="source">
+external Type get runtimeType;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
 <div class="method inherited"><h4 id="==">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
@@ -55,6 +93,9 @@ bool operator ==(other) =&gt; identical(this, other);
 </pre>
 </div>
 </div>
+</div>
+<div>
+<h3>Methods</h3>
 <div class="method inherited"><h4 id="adjust">
 <button class="show-code">Code</button>
 <a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMapBase.html">K</a>, <a href="../dart_immutable/ImmutableMapBase.html">V</a>&gt; <strong>adjust</strong>(<a href="../dart_immutable/ImmutableMapBase.html">K</a> key, <a href="../dart_immutable/ImmutableMapBase.html">V</a> update(<a href="../dart_immutable/ImmutableMapBase.html">V</a> value)) <a class="anchor-link" href="#adjust"
@@ -68,7 +109,7 @@ binds to
 {'a': 1}.update('b', (x) =&gt; x + 1) == {'a', 1}
 </code></pre>
 <pre class="source">
-ImmutableMap&lt;K,V&gt; adjust(K key, V update(V value));
+ImmutableMap&lt;K, V&gt; adjust(K key, V update(V value));
 </pre>
 </div>
 </div>
@@ -84,7 +125,7 @@ anymore.</p>
 {'a': 1}.delete('b') == {'a': 1}
 </code></pre>
 <pre class="source">
-ImmutableMap&lt;K,V&gt; delete(K key);
+ImmutableMap&lt;K, V&gt; delete(K key);
 </pre>
 </div>
 </div>
@@ -117,6 +158,36 @@ external int hashCode();
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="ImmutableMap">
+<button class="show-code">Code</button>
+factory <strong>ImmutableMap</strong>() <a class="anchor-link" href="#ImmutableMap"
+              title="Permalink to ImmutableMapBase&lt;K, V&gt;.ImmutableMap">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a> </div><div class="doc">
+<p>Creates an empty <a class="crossref" href="../dart_immutable/ImmutableMap.html">ImmutableMap</a> using its default implementation.</p>
+<pre class="source">
+factory ImmutableMap() =&gt; new _EmptyMap();
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="ImmutableMap.fromMap">
+<button class="show-code">Code</button>
+factory <strong>ImmutableMap.fromMap</strong>(<a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../dart_immutable/ImmutableMapBase.html">K</a>, <a href="../dart_immutable/ImmutableMapBase.html">V</a>&gt; map) <a class="anchor-link" href="#ImmutableMap.fromMap"
+              title="Permalink to ImmutableMapBase&lt;K, V&gt;.ImmutableMap.fromMap">#</a></h4>
+<div class="inherited-from">inherited from <a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a> </div><div class="doc">
+<p>Creates an immutable copy of 
+<span class="param">map</span> using the default implementation of
+<a class="crossref" href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>.</p>
+<pre class="source">
+factory ImmutableMap.fromMap(Map&lt;K, V&gt; map) {
+  ImmutableMap&lt;K, V&gt; result = new _EmptyMap&lt;K, V&gt;();
+  map.forEach((K key, V value) {
+    result = result.insert(key, value);
+  });
+  return result;
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="insert">
 <button class="show-code">Code</button>
 <a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMapBase.html">K</a>, <a href="../dart_immutable/ImmutableMapBase.html">V</a>&gt; <strong>insert</strong>(<a href="../dart_immutable/ImmutableMapBase.html">K</a> key, <a href="../dart_immutable/ImmutableMapBase.html">V</a> value, [<a href="../dart_immutable/ImmutableMapBase.html">V</a> combine(<a href="../dart_immutable/ImmutableMapBase.html">V</a> oldvalue, <a href="../dart_immutable/ImmutableMapBase.html">V</a> newvalue)]) <a class="anchor-link" href="#insert"
@@ -140,7 +211,7 @@ to
 {'a': 1, 'b': 2}.insert('b', 3, (x,y) =&gt; x - y) == {'a': 3, 'b', -1}
 </code></pre>
 <pre class="source">
-ImmutableMap&lt;K,V&gt; insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+ImmutableMap&lt;K, V&gt; insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 </pre>
 </div>
 </div>
@@ -193,14 +264,17 @@ external Dynamic noSuchMethod(String name, List args);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="runtimeType">
+<div class="method inherited"><h4 id="Object">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Type.html">Type</a> <strong>get runtimeType</strong>() <a class="anchor-link" href="#runtimeType"
-              title="Permalink to ImmutableMapBase&lt;K, V&gt;.get runtimeType">#</a></h4>
+const <strong>Object</strong>() <a class="anchor-link" href="#Object"
+              title="Permalink to ImmutableMapBase&lt;K, V&gt;.Object">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>A representation of the runtime type of the object.</p>
+<p>Creates a new <code>Object</code> instance.</p>
+<p><code>Object</code> instances have no meaningful state, and are only useful
+through their identity. An <code>Object</code> instance is equal to itself
+only.</p>
 <pre class="source">
-external Type get runtimeType;
+const Object();
 </pre>
 </div>
 </div>
@@ -228,8 +302,8 @@ int size();
 <p>Returns a mutable copy of <code>this</code>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../dart_immutable/ImmutableMap.html">ImmutableMap</a>&lt;<a href="../dart_immutable/ImmutableMapBase.html">K</a>, <a href="../dart_immutable/ImmutableMapBase.html">V</a>&gt; </div></div>
 <pre class="source">
-Map&lt;K,V&gt; toMap() {
-  Map&lt;K,V&gt; result = new Map&lt;K,V&gt;();
+Map&lt;K, V&gt; toMap() {
+  Map&lt;K, V&gt; result = new Map&lt;K, V&gt;();
   this.forEach((K k, V v) { result[k] = v; });
   return result;
 }
@@ -285,8 +359,8 @@ value for a <code>key</code> present in both <code>this</code> and
 <span class="param">combine</span> is provided and
 if it is commutative.</p>
 <pre class="source">
-ImmutableMap&lt;K,V&gt;
-    union(ImmutableMap&lt;K,V&gt; other, [V combine(V left, V right)]);
+ImmutableMap&lt;K, V&gt;
+    union(ImmutableMap&lt;K, V&gt; other, [V combine(V left, V right)]);
 </pre>
 </div>
 </div>
@@ -296,7 +370,7 @@ ImmutableMap&lt;K,V&gt;
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-10 22:33:43.127</div>
+          <div>This page was generated at 2012-10-17 18:32:50.230</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
