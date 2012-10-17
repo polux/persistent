@@ -21,7 +21,7 @@
  * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
  * [ImmutableMap.fromMap({k1: v1, k2: v2, ...})].
  */
-abstract class ImmutableMap<K extends Hashable,V> {
+abstract class ImmutableMap<K,V> {
 
   /** Creates an empty [ImmutableMap] using its default implementation. */
   factory ImmutableMap() => new _EmptyMap();
@@ -132,7 +132,7 @@ abstract class ImmutableMap<K extends Hashable,V> {
 /**
  * A base class for implementations of [ImmutableMap].
  */
-abstract class ImmutableMapBase<K extends Hashable,V>
+abstract class ImmutableMapBase<K,V>
     implements ImmutableMap<K,V> {
   Map<K,V> toMap() {
     Map<K,V> result = new Map<K,V>();

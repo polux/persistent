@@ -22,7 +22,7 @@ class _Stop implements Exception {}
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _AImmutableMap<K extends Hashable,V>
+abstract class _AImmutableMap<K,V>
     extends ImmutableMapBase<K,V> {
   abstract bool _isEmpty();
   abstract bool _isLeaf();
@@ -64,7 +64,7 @@ abstract class _AImmutableMap<K extends Hashable,V>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 }
 
-class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
+class _EmptyMap<K, V> extends _AImmutableMap<K,V> {
   bool _isEmpty() => true;
   bool _isLeaf() => false;
 
@@ -103,7 +103,7 @@ class _EmptyMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
   toDebugString() => "_EmptyMap()";
 }
 
-class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
+class _Leaf<K, V> extends _AImmutableMap<K,V> {
   int _hash;
   LList<Pair<K, V>> _pairs;
 
@@ -253,7 +253,7 @@ class _Leaf<K extends Hashable, V> extends _AImmutableMap<K,V> {
   toDebugString() => "_Leaf($_hash, $_pairs)";
 }
 
-class _SubMap<K extends Hashable, V> extends _AImmutableMap<K,V> {
+class _SubMap<K, V> extends _AImmutableMap<K,V> {
   int _bitmap;
   List<_AImmutableMap<K,V>> _array;
   int _size = null;

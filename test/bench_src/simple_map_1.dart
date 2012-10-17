@@ -17,7 +17,7 @@
 /**
  * Naive implementation of ImmutableMap using a [LList] of [Pair]s.
  */
-class SimpleImmutableMap<K extends Hashable,V> extends ImmutableMapBase<K,V> {
+class SimpleImmutableMap<K,V> extends ImmutableMapBase<K,V> {
   final LList<Pair<K,V>> _list;
 
   SimpleImmutableMap._internal(this._list);

@@ -17,7 +17,7 @@
 /**
  * A datatype with an imperfect hash function
  */
-class Key implements Hashable {
+class Key {
   int i;
   bool b;
   Key(this.i, this.b);
