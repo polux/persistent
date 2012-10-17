@@ -22,88 +22,88 @@ class _Stop implements Exception {}
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _AImmutableMap<K,V>
-    extends ImmutableMapBase<K,V> {
+abstract class _AImmutableMap<K, V>
+    extends ImmutableMapBase<K, V> {
   abstract bool _isEmpty();
   abstract bool _isLeaf();
 
   abstract Option<V> _lookup(K key, int hash, int depth);
-  abstract ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth);
-  abstract ImmutableMap<K,V> _delete(K key, int hash, int depth);
-  abstract ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth);
+  abstract ImmutableMap<K, V> _insertWith(
+      LList<Pair<K, V>> keyValues, V combine(V x, V y), int hash, int depth);
+  abstract ImmutableMap<K, V> _delete(K key, int hash, int depth);
+  abstract ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth);
 
-  abstract _AImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth);
+  abstract _AImmutableMap<K, V>
+      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth);
+  abstract _AImmutableMap<K, V>
+      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth);
+  abstract _AImmutableMap<K, V>
+      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
+  abstract _AImmutableMap<K, V>
+      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
 
-  LList<Pair<K,V>> _onePair(K key, V value) =>
-      new LList<Pair<K,V>>.cons(new Pair<K,V>(key, value),
-          new LList<Pair<K,V>>.nil());
+  LList<Pair<K, V>> _onePair(K key, V value) =>
+      new LList<Pair<K, V>>.cons(new Pair<K, V>(key, value),
+          new LList<Pair<K, V>>.nil());
 
   Option<V> lookup(K key) =>
       _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]) =>
+  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) =>
       _insertWith(_onePair(key, value),
           (combine != null) ? combine : (V x, V y) => y,
           (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> delete(K key) =>
+  ImmutableMap<K, V> delete(K key) =>
       _delete(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> adjust(K key, V update(V)) =>
+  ImmutableMap<K, V> adjust(K key, V update(V)) =>
       _adjust(key, update, (key.hashCode() >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]) =>
+  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 }
 
-class _EmptyMap<K, V> extends _AImmutableMap<K,V> {
+class _EmptyMap<K, V> extends _AImmutableMap<K, V> {
   bool _isEmpty() => true;
   bool _isLeaf() => false;
 
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
-  ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) =>
-          new _Leaf<K,V>(hash, keyValues);
+  ImmutableMap<K, V> _insertWith(
+      LList<Pair<K, V>> keyValues, V combine(V x, V y), int hash, int depth) =>
+          new _Leaf<K, V>(hash, keyValues);
 
-  ImmutableMap<K,V> _delete(K key, int hash, int depth) => this;
+  ImmutableMap<K, V> _delete(K key, int hash, int depth) => this;
 
-  ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) => this;
+  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
 
-  ImmutableMap<K,V>
-      _unionWith(ImmutableMap<K,V> m, V combine(V x, V y), int depth) => m;
+  ImmutableMap<K, V>
+      _unionWith(ImmutableMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) {
+  ImmutableMap<K, V>
+      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) {
     throw "should never be called";
   }
 
-  ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) => m;
+  ImmutableMap<K, V>
+      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
-  ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) => m;
+  ImmutableMap<K, V>
+      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) => m;
 
   ImmutableMap mapValues(f(V)) => this;
 
-  void forEach(f(K,V)) {}
+  void forEach(f(K, V)) {}
 
   int size() => 0;
 
-  bool operator ==(ImmutableMap<K,V> other) => other is _EmptyMap;
+  bool operator ==(ImmutableMap<K, V> other) => other is _EmptyMap;
 
   toDebugString() => "_EmptyMap()";
 }
 
-class _Leaf<K, V> extends _AImmutableMap<K,V> {
+class _Leaf<K, V> extends _AImmutableMap<K, V> {
   int _hash;
   LList<Pair<K, V>> _pairs;
 
@@ -112,17 +112,17 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
   bool _isEmpty() => false;
   bool _isLeaf() => true;
 
-  ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
+  ImmutableMap<K, V> _insertWith(
+      LList<Pair<K, V>> keyValues, V combine(V x, V y), int hash, int depth) {
 
-    LList<Pair<K,V>> insertPair(Pair<K,V> toInsert, LList<Pair<K,V>> pairs) {
-      LListBuilder<Pair<K,V>> builder = new LListBuilder<Pair<K,V>>();
-      LList<Pair<K,V>> it = pairs;
+    LList<Pair<K, V>> insertPair(Pair<K, V> toInsert, LList<Pair<K, V>> pairs) {
+      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
+      LList<Pair<K, V>> it = pairs;
       while (!it.isNil()) {
-        Cons<Pair<K,V>> cons = it.asCons();
-        Pair<K,V> elem = cons.elem;
+        Cons<Pair<K, V>> cons = it.asCons();
+        Pair<K, V> elem = cons.elem;
         if (elem.fst == toInsert.fst) {
-          builder.add(new Pair<K,V>(
+          builder.add(new Pair<K, V>(
               toInsert.fst,
               combine(elem.snd, toInsert.snd)));
           return builder.build(cons.tail);
@@ -134,13 +134,13 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
       return builder.build();
     }
 
-    LList<Pair<K,V>> insertPairs(
-        LList<Pair<K,V>> toInsert, LList<Pair<K,V>> pairs) {
-      LList<Pair<K,V>> res = pairs;
-      LList<Pair<K,V>> it = toInsert;
+    LList<Pair<K, V>> insertPairs(
+        LList<Pair<K, V>> toInsert, LList<Pair<K, V>> pairs) {
+      LList<Pair<K, V>> res = pairs;
+      LList<Pair<K, V>> it = toInsert;
       while (!it.isNil()) {
-        Cons<Pair<K,V>> cons = it.asCons();
-        Pair<K,V> elem = cons.elem;
+        Cons<Pair<K, V>> cons = it.asCons();
+        Pair<K, V> elem = cons.elem;
         res = insertPair(elem, res);
         it = cons.tail;
       }
@@ -149,37 +149,37 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
 
     if (depth > 5) {
       assert(_hash == hash);
-      return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
+      return new _Leaf<K, V>(hash, insertPairs(keyValues, _pairs));
     } else {
       if (hash == _hash) {
-        return new _Leaf<K,V>(hash, insertPairs(keyValues, _pairs));
+        return new _Leaf<K, V>(hash, insertPairs(keyValues, _pairs));
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        List<_AImmutableMap<K,V>> array = <_AImmutableMap<K,V>>[this];
-        return new _SubMap<K,V>(1 << branch, array)
+        List<_AImmutableMap<K, V>> array = <_AImmutableMap<K, V>>[this];
+        return new _SubMap<K, V>(1 << branch, array)
             ._insertWith(keyValues, combine, hash, depth);
       }
     }
   }
 
-  ImmutableMap<K,V> _delete(K key, int hash, int depth) {
+  ImmutableMap<K, V> _delete(K key, int hash, int depth) {
     if (hash != _hash)
       return this;
     LList<Pair<K, V>> newPairs = _pairs.filter((p) => p.fst != key);
     return newPairs.isNil()
-        ? new _EmptyMap<K,V>()
-        : new _Leaf<K,V>(_hash, newPairs);
+        ? new _EmptyMap<K, V>()
+        : new _Leaf<K, V>(_hash, newPairs);
   }
 
-  ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) {
-    LList<Pair<K,V>> adjustPairs() {
-      LListBuilder<Pair<K,V>> builder = new LListBuilder<Pair<K,V>>();
-      LList<Pair<K,V>> it = _pairs;
+  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+    LList<Pair<K, V>> adjustPairs() {
+      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
+      LList<Pair<K, V>> it = _pairs;
       while (!it.isNil()) {
-        Cons<Pair<K,V>> cons = it.asCons();
-        Pair<K,V> elem = cons.elem;
+        Cons<Pair<K, V>> cons = it.asCons();
+        Pair<K, V> elem = cons.elem;
         if (elem.fst == key) {
-          builder.add(new Pair<K,V>(key, update(elem.snd)));
+          builder.add(new Pair<K, V>(key, update(elem.snd)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
@@ -190,32 +190,32 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
 
     return (hash != _hash)
         ? this
-        : new _Leaf<K,V>(_hash, adjustPairs());
+        : new _Leaf<K, V>(_hash, adjustPairs());
   }
 
-  ImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithLeaf(this, combine, depth);
 
-  ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, combine, _hash, depth);
 
-  ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, combine, _hash, depth);
 
   Option<V> _lookup(K key, int hash, int depth) {
     if (hash != _hash)
       return new Option<V>.none();
-    LList<Pair<K,V>> it = _pairs;
+    LList<Pair<K, V>> it = _pairs;
     while (!it.isNil()) {
-      Cons<Pair<K,V>> cons = it.asCons();
-      Pair<K,V> elem = cons.elem;
+      Cons<Pair<K, V>> cons = it.asCons();
+      Pair<K, V> elem = cons.elem;
       if (elem.fst == key) return new Option<V>.some(elem.snd);
       it = cons.tail;
     }
@@ -225,23 +225,23 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
   ImmutableMap mapValues(f(V)) =>
       new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))));
 
-  void forEach(f(K,V)) {
-    _pairs.foreach((Pair<K,V> pair) => f(pair.fst, pair.snd));
+  void forEach(f(K, V)) {
+    _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
   // no need to cache the size since it is already cached in _pairs
   int size() => _pairs.length();
 
-  bool operator ==(ImmutableMap<K,V> other) {
+  bool operator ==(ImmutableMap<K, V> other) {
     if (this === other) return true;
     if (other is! _Leaf) return false;
     if (_hash != other._hash) return false;
-    Map<K,V> thisAsMap = toMap();
+    Map<K, V> thisAsMap = toMap();
     int counter = 0;
-    LList<Pair<K,V>> it = other._pairs;
+    LList<Pair<K, V>> it = other._pairs;
     while (!it.isNil()) {
-      Cons<Pair<K,V>> cons = it.asCons();
-      Pair<K,V> elem = cons.elem;
+      Cons<Pair<K, V>> cons = it.asCons();
+      Pair<K, V> elem = cons.elem;
       if (thisAsMap[elem.fst] != elem.snd)
         return false;
       counter++;
@@ -253,9 +253,9 @@ class _Leaf<K, V> extends _AImmutableMap<K,V> {
   toDebugString() => "_Leaf($_hash, $_pairs)";
 }
 
-class _SubMap<K, V> extends _AImmutableMap<K,V> {
+class _SubMap<K, V> extends _AImmutableMap<K, V> {
   int _bitmap;
-  List<_AImmutableMap<K,V>> _array;
+  List<_AImmutableMap<K, V>> _array;
   int _size = null;
 
   _SubMap(this._bitmap, this._array);
@@ -277,53 +277,53 @@ class _SubMap<K, V> extends _AImmutableMap<K,V> {
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K,V> map = _array[index];
+      _AImmutableMap<K, V> map = _array[index];
       return map._lookup(key, hash, depth + 1);
     } else {
       return new Option<V>.none();
     }
   }
 
-  ImmutableMap<K,V> _insertWith(
-      LList<Pair<K,V>> keyValues, V combine(V x, V y), int hash, int depth) {
+  ImmutableMap<K, V> _insertWith(
+      LList<Pair<K, V>> keyValues, V combine(V x, V y), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     int index = _popcount(_bitmap & (mask - 1));
 
     if ((_bitmap & mask) != 0) {
-      List<_AImmutableMap<K,V>> newarray =
-          new List<_AImmutableMap<K,V>>.from(_array);
-      _AImmutableMap<K,V> m = _array[index];
+      List<_AImmutableMap<K, V>> newarray =
+          new List<_AImmutableMap<K, V>>.from(_array);
+      _AImmutableMap<K, V> m = _array[index];
       newarray[index] = m._insertWith(keyValues, combine, hash, depth + 1);
-      return new _SubMap<K,V>(_bitmap, newarray);
+      return new _SubMap<K, V>(_bitmap, newarray);
     } else {
       int newlength = _array.length + 1;
-      List<_AImmutableMap<K,V>> newarray =
-          new List<_AImmutableMap<K,V>>(newlength);
+      List<_AImmutableMap<K, V>> newarray =
+          new List<_AImmutableMap<K, V>>(newlength);
       // TODO: find out if there's a "copy array" native function somewhere
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      newarray[index] = new _Leaf<K,V>(hash, keyValues);
-      return new _SubMap<K,V>(_bitmap | mask, newarray);
+      newarray[index] = new _Leaf<K, V>(hash, keyValues);
+      return new _SubMap<K, V>(_bitmap | mask, newarray);
     }
   }
 
-  ImmutableMap<K,V> _delete(K key, int hash, int depth) {
+  ImmutableMap<K, V> _delete(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K,V> m = _array[index];
-      _AImmutableMap<K,V> newm = m._delete(key, hash, depth + 1);
+      _AImmutableMap<K, V> m = _array[index];
+      _AImmutableMap<K, V> newm = m._delete(key, hash, depth + 1);
       if (m === newm) {
         return this;
       }
       if (newm._isEmpty()) {
         if (_array.length > 2) {
           int newsize = _array.length - 1;
-          List<_AImmutableMap<K,V>> newarray =
-              new List<_AImmutableMap<K,V>>(newsize);
+          List<_AImmutableMap<K, V>> newarray =
+              new List<_AImmutableMap<K, V>>(newsize);
           for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
           for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
           assert(newarray.length >= 2);
@@ -331,24 +331,24 @@ class _SubMap<K, V> extends _AImmutableMap<K,V> {
         } else {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
-          _AImmutableMap<K,V> onlyValueLeft = _array[1 - index];
+          _AImmutableMap<K, V> onlyValueLeft = _array[1 - index];
           return onlyValueLeft._isLeaf()
               ? onlyValueLeft
               : new _SubMap(_bitmap ^ mask,
-                            <_AImmutableMap<K,V>>[onlyValueLeft]);
+                            <_AImmutableMap<K, V>>[onlyValueLeft]);
         }
       } else if (newm._isLeaf()){
         if (_array.length == 1) {
           return newm;
         } else {
-          List<_AImmutableMap<K,V>> newarray =
-              new List<_AImmutableMap<K,V>>.from(_array);
+          List<_AImmutableMap<K, V>> newarray =
+              new List<_AImmutableMap<K, V>>.from(_array);
           newarray[index] = newm;
           return new _SubMap(_bitmap, newarray);
         }
       } else {
-        List<_AImmutableMap<K,V>> newarray =
-            new List<_AImmutableMap<K,V>>.from(_array);
+        List<_AImmutableMap<K, V>> newarray =
+            new List<_AImmutableMap<K, V>>.from(_array);
         newarray[index] = newm;
         return new _SubMap(_bitmap, newarray);
       }
@@ -357,18 +357,18 @@ class _SubMap<K, V> extends _AImmutableMap<K,V> {
     }
   }
 
-  ImmutableMap<K,V> _adjust(K key, V update(V), int hash, int depth) {
+  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K,V> m = _array[index];
-      _AImmutableMap<K,V> newm = m._adjust(key, update, hash, depth + 1);
+      _AImmutableMap<K, V> m = _array[index];
+      _AImmutableMap<K, V> newm = m._adjust(key, update, hash, depth + 1);
       if (newm === m) {
         return this;
       }
-      List<_AImmutableMap<K,V>> newarray =
-          new List<_AImmutableMap<K,V>>.from(_array);
+      List<_AImmutableMap<K, V>> newarray =
+          new List<_AImmutableMap<K, V>>.from(_array);
       newarray[index] = newm;
       return new _SubMap(_bitmap, newarray);
     } else {
@@ -376,25 +376,25 @@ class _SubMap<K, V> extends _AImmutableMap<K,V> {
     }
   }
 
-  ImmutableMap<K,V>
-      _unionWith(_AImmutableMap<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithSubMap(this, combine, depth);
 
-  ImmutableMap<K,V>
-      _unionWithEmptyMap(_EmptyMap<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  ImmutableMap<K,V>
-      _unionWithLeaf(_Leaf<K,V> m, V combine(V x, V y), int depth) =>
+  ImmutableMap<K, V>
+      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           this._insertWith(m._pairs, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
-  ImmutableMap<K,V>
-      _unionWithSubMap(_SubMap<K,V> m, V combine(V x, V y), int depth) {
+  ImmutableMap<K, V>
+      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) {
     int ormap = _bitmap | m._bitmap;
     int andmap = _bitmap & m._bitmap;
-    List<_AImmutableMap<K,V>> newarray =
-        new List<_AImmutableMap<K,V>>(_popcount(ormap));
+    List<_AImmutableMap<K, V>> newarray =
+        new List<_AImmutableMap<K, V>>(_popcount(ormap));
     int mask = 1, i = 0, i1 = 0, i2 = 0;
     while (mask <= _bitmap) {
       if ((andmap & mask) != 0) {
@@ -415,41 +415,41 @@ class _SubMap<K, V> extends _AImmutableMap<K,V> {
       }
       mask <<= 1;
     }
-    return new _SubMap<K,V>(ormap, newarray);
+    return new _SubMap<K, V>(ormap, newarray);
   }
 
   ImmutableMap mapValues(f(V)) {
-    List<_AImmutableMap<K,V>> newarray =
-        new List<_AImmutableMap<K,V>>.from(_array);
+    List<_AImmutableMap<K, V>> newarray =
+        new List<_AImmutableMap<K, V>>.from(_array);
     for (int i = 0; i < _array.length; i++) {
-      _AImmutableMap<K,V> mi = _array[i];
+      _AImmutableMap<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(f);
     }
     return new _SubMap(_bitmap, newarray);
   }
 
-  forEach(f(K,V)) {
+  forEach(f(K, V)) {
     _array.forEach((mi) => mi.forEach(f));
   }
 
   int size() {
     if (_size == null) {
       _size = 0;
-      for (_AImmutableMap<K,V> mi in _array) {
+      for (_AImmutableMap<K, V> mi in _array) {
         _size += mi.size();
       }
     }
     return _size;
   }
 
-  bool operator ==(ImmutableMap<K,V> other) {
+  bool operator ==(ImmutableMap<K, V> other) {
     if (this === other) return true;
     if (other is! _SubMap) return false;
     if (_bitmap != other._bitmap) return false;
     assert(_array.length == other._array.length);
     for (int i = 0; i < _array.length; i++) {
-      _AImmutableMap<K,V> mi = _array[i];
-      _AImmutableMap<K,V> omi = other._array[i];
+      _AImmutableMap<K, V> mi = _array[i];
+      _AImmutableMap<K, V> omi = other._array[i];
       if (mi != omi) {
         return false;
       }

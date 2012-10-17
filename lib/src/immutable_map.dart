@@ -21,7 +21,7 @@
  * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
  * [ImmutableMap.fromMap({k1: v1, k2: v2, ...})].
  */
-abstract class ImmutableMap<K,V> {
+abstract class ImmutableMap<K, V> {
 
   /** Creates an empty [ImmutableMap] using its default implementation. */
   factory ImmutableMap() => new _EmptyMap();
@@ -30,8 +30,8 @@ abstract class ImmutableMap<K,V> {
    * Creates an immutable copy of [map] using the default implementation of
    * [ImmutableMap].
    */
-  factory ImmutableMap.fromMap(Map<K,V> map) {
-    ImmutableMap<K,V> result = new _EmptyMap<K,V>();
+  factory ImmutableMap.fromMap(Map<K, V> map) {
+    ImmutableMap<K, V> result = new _EmptyMap<K, V>();
     map.forEach((K key, V value) {
       result = result.insert(key, value);
     });
@@ -51,7 +51,7 @@ abstract class ImmutableMap<K,V> {
    *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+  ImmutableMap<K, V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
    * Returns a new map identical to [this] except that it doesn't bind [key]
@@ -60,7 +60,7 @@ abstract class ImmutableMap<K,V> {
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
-  ImmutableMap<K,V> delete(K key);
+  ImmutableMap<K, V> delete(K key);
 
   /**
    * Looks up the value possibly bound to [key] in [this]. Returns
@@ -83,7 +83,7 @@ abstract class ImmutableMap<K,V> {
    *     {'a': 1, 'b': 2}.update('b', (x) => x + 1) == {'a', 1, 'b', 3}
    *     {'a': 1}.update('b', (x) => x + 1) == {'a', 1}
    */
-  ImmutableMap<K,V> adjust(K key, V update(V value));
+  ImmutableMap<K, V> adjust(K key, V update(V value));
 
   /**
    * Returns a new map identical to [this] where each value has been updated by
@@ -120,22 +120,22 @@ abstract class ImmutableMap<K,V> {
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  ImmutableMap<K,V>
-      union(ImmutableMap<K,V> other, [V combine(V left, V right)]);
+  ImmutableMap<K, V>
+      union(ImmutableMap<K, V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a mutable copy of [this].
    */
-  Map<K,V> toMap();
+  Map<K, V> toMap();
 }
 
 /**
  * A base class for implementations of [ImmutableMap].
  */
-abstract class ImmutableMapBase<K,V>
-    implements ImmutableMap<K,V> {
-  Map<K,V> toMap() {
-    Map<K,V> result = new Map<K,V>();
+abstract class ImmutableMapBase<K, V>
+    implements ImmutableMap<K, V> {
+  Map<K, V> toMap() {
+    Map<K, V> result = new Map<K, V>();
     this.forEach((K k, V v) { result[k] = v; });
     return result;
   }

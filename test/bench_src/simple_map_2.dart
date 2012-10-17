@@ -17,22 +17,22 @@
 /**
  * Naive implementation of ImmutableMap dart:core [Map]s.
  */
-class SimpleImmutableMap2<K,V> extends ImmutableMapBase<K,V> {
-  final Map<K,V> _map;
+class SimpleImmutableMap2<K, V> extends ImmutableMapBase<K, V> {
+  final Map<K, V> _map;
 
   SimpleImmutableMap2._internal(this._map);
   factory SimpleImmutableMap2() =>
-      new SimpleImmutableMap2._internal(new Map<K,V>());
+      new SimpleImmutableMap2._internal(new Map<K, V>());
 
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]) {
+  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
-    Map<K,V> newmap = new Map<K,V>.from(_map);
+    Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap[key] = _map.containsKey(key) ? combine(_map[key], value) : value;
     return new SimpleImmutableMap2._internal(newmap);
   }
 
-  ImmutableMap<K,V> delete(K key) {
-    Map<K,V> newmap = new Map<K,V>.from(_map);
+  ImmutableMap<K, V> delete(K key) {
+    Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap.remove(key);
     return new SimpleImmutableMap2._internal(newmap);
   }
@@ -53,7 +53,7 @@ class SimpleImmutableMap2<K,V> extends ImmutableMapBase<K,V> {
     return new SimpleImmutableMap2._internal(newmap);
   }
 
-  ImmutableMap<K,V> adjust(K key, V update(V)) {
+  ImmutableMap<K, V> adjust(K key, V update(V)) {
     if (_map.containsKey(key)) {
       Map newmap = new Map.from(_map);
       newmap[key] = update(_map[key]);
@@ -62,7 +62,7 @@ class SimpleImmutableMap2<K,V> extends ImmutableMapBase<K,V> {
     return this;
   }
 
-  void forEach(f(K,V)) {
+  void forEach(f(K, V)) {
     _map.forEach(f);
   }
 
@@ -70,7 +70,7 @@ class SimpleImmutableMap2<K,V> extends ImmutableMapBase<K,V> {
 
   int size() => _map.length;
 
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]) {
+  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) {
     throw "not implemented";
   }
 }

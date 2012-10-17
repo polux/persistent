@@ -17,42 +17,42 @@
 /**
  * Naive implementation of ImmutableMap using a [LList] of [Pair]s.
  */
-class SimpleImmutableMap<K,V> extends ImmutableMapBase<K,V> {
-  final LList<Pair<K,V>> _list;
+class SimpleImmutableMap<K, V> extends ImmutableMapBase<K, V> {
+  final LList<Pair<K, V>> _list;
 
   SimpleImmutableMap._internal(this._list);
   factory SimpleImmutableMap() =>
       new SimpleImmutableMap._internal(new LList.nil());
 
-  ImmutableMap<K,V> insert(K key, V value, [V combine(V x, V y)]) {
+  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
-    LList<Pair<K,V>> newList() {
-      LListBuilder<Pair<K,V>> builder = new LListBuilder<Pair<K,V>>();
-      LList<Pair<K,V>> it = _list;
+    LList<Pair<K, V>> newList() {
+      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
+      LList<Pair<K, V>> it = _list;
       while (!it.isNil()) {
-        Cons<Pair<K,V>> cons = it.asCons();
-        Pair<K,V> elem = cons.elem;
+        Cons<Pair<K, V>> cons = it.asCons();
+        Pair<K, V> elem = cons.elem;
         if (elem.fst == key) {
-          builder.add(new Pair<K,V>(key, combine(elem.snd, value)));
+          builder.add(new Pair<K, V>(key, combine(elem.snd, value)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
         it = cons.tail;
       }
-      builder.add(new Pair<K,V>(key, value));
+      builder.add(new Pair<K, V>(key, value));
       return builder.build();
     }
     return new SimpleImmutableMap._internal(newList());
   }
 
-  ImmutableMap<K,V> delete(K key) =>
+  ImmutableMap<K, V> delete(K key) =>
       new SimpleImmutableMap._internal(_list.filter((p) => p.fst != key));
 
   Option<V> lookup(K key) {
-    LList<Pair<K,V>> it = _list;
+    LList<Pair<K, V>> it = _list;
     while (!it.isNil()) {
-      Cons<Pair<K,V>> cons = it.asCons();
-      Pair<K,V> elem = cons.elem;
+      Cons<Pair<K, V>> cons = it.asCons();
+      Pair<K, V> elem = cons.elem;
       if (elem.fst == key) return new Option<V>.some(elem.snd);
       it = cons.tail;
     }
@@ -63,8 +63,8 @@ class SimpleImmutableMap<K,V> extends ImmutableMapBase<K,V> {
     new SimpleImmutableMap._internal(
       _list.map((p) => new Pair(p.fst, f(p.snd))));
 
-  forEach(f(K,V)) {
-    Map<K,V> tmp = new Map<K,V>();
+  forEach(f(K, V)) {
+    Map<K, V> tmp = new Map<K, V>();
     _list.foreach((pair) {
       if (!tmp.containsKey(pair.fst))
         tmp[pair.fst] = pair.snd;
@@ -76,11 +76,11 @@ class SimpleImmutableMap<K,V> extends ImmutableMapBase<K,V> {
 
   int size() => toMap().length;
 
-  ImmutableMap<K,V> union(ImmutableMap<K,V> other, [V combine(V x, V y)]) {
+  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) {
     throw "not implemented";
   }
 
-  ImmutableMap<K,V> adjust(K key, V update(V)) {
+  ImmutableMap<K, V> adjust(K key, V update(V)) {
     throw "not implemented";
   }
 }
