@@ -17,6 +17,7 @@
 library map_test;
 
 import 'dart:math';
+import 'package:args/args.dart';
 import 'package:dart_check/dart_check.dart';
 import 'package:dart_enumerators/combinators.dart' as c;
 import 'package:dart_enumerators/enumerators.dart' as en;
@@ -65,9 +66,13 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
          modelFrom(map1).union(modelFrom(map2), minus));
 
 main() {
+  final parser = new ArgParser();
+  parser.addFlag('quiet', negatable: false);
+  final flags = parser.parse(new Options().arguments);
+
   final e = new Enumerations();
-  final sc = new SmallCheck(depth: 15);
-  final qc = new QuickCheck(maxSize: 300);
+  final qc = new QuickCheck(maxSize: 300, quiet: flags['quiet']);
+  final sc = new SmallCheck(depth: 15, quiet: flags['quiet']);
 
   final properties = {
     'equals'   : forall2(e.maps, e.maps, testEquals),

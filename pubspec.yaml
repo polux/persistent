@@ -6,6 +6,8 @@ dependencies:
     git: https://code.google.com/p/dart-check/
   dart_enumerators:
     git: https://code.google.com/p/dart-enumerators/
+  args:
+    sdk: args
   unittest:
     sdk: unittest
 author: Paul Brauner <polux@google.com>
