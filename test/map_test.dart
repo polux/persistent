@@ -68,11 +68,17 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
 main() {
   final parser = new ArgParser();
   parser.addFlag('quiet', negatable: false);
+  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
+  parser.addOption('smallCheckDepth', defaultsTo: '15');
   final flags = parser.parse(new Options().arguments);
 
   final e = new Enumerations();
-  final qc = new QuickCheck(maxSize: 300, quiet: flags['quiet']);
-  final sc = new SmallCheck(depth: 15, quiet: flags['quiet']);
+  final qc = new QuickCheck(
+      maxSize: int.parse(flags['quickCheckMaxSize']),
+      quiet: flags['quiet']);
+  final sc = new SmallCheck(
+      depth: int.parse(flags['smallCheckDepth']),
+      quiet: flags['quiet']);
 
   final properties = {
     'equals'   : forall2(e.maps, e.maps, testEquals),
