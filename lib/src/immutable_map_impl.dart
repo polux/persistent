@@ -261,6 +261,7 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
     if (this === other) return true;
     if (other is! _Leaf) return false;
     if (_hash != other._hash) return false;
+    if (_size != other._size) return false;
     Map<K, V> thisAsMap = toMap();
     int counter = 0;
     LList<Pair<K, V>> it = other._pairs;
@@ -475,6 +476,7 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     if (this === other) return true;
     if (other is! _SubMap) return false;
     if (_bitmap != other._bitmap) return false;
+    if (_size != other._size) return false;
     assert(_array.length == other._array.length);
     for (int i = 0; i < _array.length; i++) {
       _AImmutableMap<K, V> mi = _array[i];
