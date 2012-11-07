@@ -14,17 +14,19 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of map_bench;
+
 /**
- * Naive implementation of ImmutableMap using a [LList] of [Pair]s.
+ * Naive implementation of PersistentMap using a [LList] of [Pair]s.
  */
-class SimpleImmutableMap<K, V> extends ImmutableMapBase<K, V> {
+class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   final LList<Pair<K, V>> _list;
 
-  SimpleImmutableMap._internal(this._list);
-  factory SimpleImmutableMap() =>
-      new SimpleImmutableMap._internal(new LList.nil());
+  SimplePersistentMap._internal(this._list);
+  factory SimplePersistentMap() =>
+      new SimplePersistentMap._internal(new LList.nil());
 
-  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
+  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     LList<Pair<K, V>> newList() {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
@@ -42,11 +44,11 @@ class SimpleImmutableMap<K, V> extends ImmutableMapBase<K, V> {
       builder.add(new Pair<K, V>(key, value));
       return builder.build();
     }
-    return new SimpleImmutableMap._internal(newList());
+    return new SimplePersistentMap._internal(newList());
   }
 
-  ImmutableMap<K, V> delete(K key) =>
-      new SimpleImmutableMap._internal(_list.filter((p) => p.fst != key));
+  PersistentMap<K, V> delete(K key) =>
+      new SimplePersistentMap._internal(_list.filter((p) => p.fst != key));
 
   Option<V> lookup(K key) {
     LList<Pair<K, V>> it = _list;
@@ -59,8 +61,8 @@ class SimpleImmutableMap<K, V> extends ImmutableMapBase<K, V> {
     return new Option<V>.none();
   }
 
-  ImmutableMap mapValues(f(V)) =>
-    new SimpleImmutableMap._internal(
+  PersistentMap mapValues(f(V)) =>
+    new SimplePersistentMap._internal(
       _list.map((p) => new Pair(p.fst, f(p.snd))));
 
   forEach(f(K, V)) {
@@ -76,11 +78,11 @@ class SimpleImmutableMap<K, V> extends ImmutableMapBase<K, V> {
 
   int size() => toMap().length;
 
-  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) {
+  PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
     throw "not implemented";
   }
 
-  ImmutableMap<K, V> adjust(K key, V update(V)) {
+  PersistentMap<K, V> adjust(K key, V update(V)) {
     throw "not implemented";
   }
 }

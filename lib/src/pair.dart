@@ -14,6 +14,8 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of dart_immutable;
+
 class Pair<A, B> {
   final A fst;
   final B snd;

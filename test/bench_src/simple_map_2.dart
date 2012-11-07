@@ -14,27 +14,29 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of map_bench;
+
 /**
- * Naive implementation of ImmutableMap dart:core [Map]s.
+ * Naive implementation of PersistentMap dart:core [Map]s.
  */
-class SimpleImmutableMap2<K, V> extends ImmutableMapBase<K, V> {
+class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
   final Map<K, V> _map;
 
-  SimpleImmutableMap2._internal(this._map);
-  factory SimpleImmutableMap2() =>
-      new SimpleImmutableMap2._internal(new Map<K, V>());
+  SimplePersistentMap2._internal(this._map);
+  factory SimplePersistentMap2() =>
+      new SimplePersistentMap2._internal(new Map<K, V>());
 
-  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
+  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap[key] = _map.containsKey(key) ? combine(_map[key], value) : value;
-    return new SimpleImmutableMap2._internal(newmap);
+    return new SimplePersistentMap2._internal(newmap);
   }
 
-  ImmutableMap<K, V> delete(K key) {
+  PersistentMap<K, V> delete(K key) {
     Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap.remove(key);
-    return new SimpleImmutableMap2._internal(newmap);
+    return new SimplePersistentMap2._internal(newmap);
   }
 
   Option<V> lookup(K key) {
@@ -45,19 +47,19 @@ class SimpleImmutableMap2<K, V> extends ImmutableMapBase<K, V> {
     }
   }
 
-  ImmutableMap mapValues(f(V)) {
+  PersistentMap mapValues(f(V)) {
     Map newmap = new Map.from(_map);
     _map.forEach((K key, V value) {
       newmap[key] = f(value);
     });
-    return new SimpleImmutableMap2._internal(newmap);
+    return new SimplePersistentMap2._internal(newmap);
   }
 
-  ImmutableMap<K, V> adjust(K key, V update(V)) {
+  PersistentMap<K, V> adjust(K key, V update(V)) {
     if (_map.containsKey(key)) {
       Map newmap = new Map.from(_map);
       newmap[key] = update(_map[key]);
-      return new SimpleImmutableMap2._internal(newmap);
+      return new SimplePersistentMap2._internal(newmap);
     }
     return this;
   }
@@ -70,7 +72,7 @@ class SimpleImmutableMap2<K, V> extends ImmutableMapBase<K, V> {
 
   int size() => _map.length;
 
-  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) {
+  PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
     throw "not implemented";
   }
 }

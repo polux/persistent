@@ -18,9 +18,9 @@
 #import('package:dart_immutable/dart_immutable.dart');
 
 main() {
-  var emptyMap = new ImmutableMap<String,int>();
+  var emptyMap = new PersistentMap<String,int>();
   var m1 = emptyMap.insert("a",1).insert("b",2);
-  var m2 = new ImmutableMap<String,int>.fromMap({"a": 3, "c":4});
+  var m2 = new PersistentMap<String,int>.fromMap({"a": 3, "c":4});
 
   print(m1);  // {a: 1, b: 2}
   print(m2);  // {c: 4, a: 3}

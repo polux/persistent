@@ -14,6 +14,8 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of dart_immutable;
+
 /**
  * Exception used for aborting forEach loops.
  */
@@ -22,27 +24,27 @@ class _Stop implements Exception {}
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _AImmutableMap<K, V> extends ImmutableMapBase<K, V> {
+abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   final int _size;
 
-  _AImmutableMap(this._size);
+  _APersistentMap(this._size);
 
-  abstract bool _isEmpty();
-  abstract bool _isLeaf();
+  bool _isEmpty();
+  bool _isLeaf();
 
-  abstract Option<V> _lookup(K key, int hash, int depth);
-  abstract ImmutableMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  Option<V> _lookup(K key, int hash, int depth);
+  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  abstract ImmutableMap<K, V> _delete(K key, int hash, int depth);
-  abstract ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth);
+  PersistentMap<K, V> _delete(K key, int hash, int depth);
+  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth);
 
-  abstract _AImmutableMap<K, V>
-      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K, V>
+  _APersistentMap<K, V>
+      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth);
+  _APersistentMap<K, V>
       _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K, V>
+  _APersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
-  abstract _AImmutableMap<K, V>
+  _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
 
   LList<Pair<K, V>> _onePair(K key, V value) =>
@@ -50,28 +52,28 @@ abstract class _AImmutableMap<K, V> extends ImmutableMapBase<K, V> {
           new LList<Pair<K, V>>.nil());
 
   Option<V> lookup(K key) =>
-      _lookup(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
+      _lookup(key, (key.hashCode >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) =>
+  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) =>
       _insertWith(_onePair(key, value),
           1,
           (combine != null) ? combine : (V x, V y) => y,
-          (key.hashCode() >> 2) & 0x3fffffff, 0);
+          (key.hashCode >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K, V> delete(K key) =>
-      _delete(key, (key.hashCode() >> 2) & 0x3fffffff, 0);
+  PersistentMap<K, V> delete(K key) =>
+      _delete(key, (key.hashCode >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K, V> adjust(K key, V update(V)) =>
-      _adjust(key, update, (key.hashCode() >> 2) & 0x3fffffff, 0);
+  PersistentMap<K, V> adjust(K key, V update(V)) =>
+      _adjust(key, update, (key.hashCode >> 2) & 0x3fffffff, 0);
 
-  ImmutableMap<K, V> union(ImmutableMap<K, V> other, [V combine(V x, V y)]) =>
+  PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 
   int size() => _size;
   // toString() => toDebugString();
 }
 
-class _EmptyMap<K, V> extends _AImmutableMap<K, V> {
+class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   _EmptyMap() : super(0);
 
   bool _isEmpty() => true;
@@ -79,41 +81,41 @@ class _EmptyMap<K, V> extends _AImmutableMap<K, V> {
 
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
-  ImmutableMap<K, V> _insertWith(
+  PersistentMap<K, V> _insertWith(
       LList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
       int depth) {
     assert(size == keyValues.length());
     return new _Leaf<K, V>(hash, keyValues, size);
   }
 
-  ImmutableMap<K, V> _delete(K key, int hash, int depth) => this;
+  PersistentMap<K, V> _delete(K key, int hash, int depth) => this;
 
-  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
+  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
 
-  ImmutableMap<K, V>
-      _unionWith(ImmutableMap<K, V> m, V combine(V x, V y), int depth) => m;
+  PersistentMap<K, V>
+      _unionWith(PersistentMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) {
     throw "should never be called";
   }
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  ImmutableMap mapValues(f(V)) => this;
+  PersistentMap mapValues(f(V)) => this;
 
   void forEach(f(K, V)) {}
 
-  bool operator ==(ImmutableMap<K, V> other) => other is _EmptyMap;
+  bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
 
   toDebugString() => "_EmptyMap()";
 }
 
-class _Leaf<K, V> extends _AImmutableMap<K, V> {
+class _Leaf<K, V> extends _APersistentMap<K, V> {
   int _hash;
   LList<Pair<K, V>> _pairs;
 
@@ -125,7 +127,7 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
   bool _isEmpty() => false;
   bool _isLeaf() => true;
 
-  ImmutableMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length());
     // newsize is incremented as a side effect of insertPair
@@ -176,14 +178,14 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
         return new _Leaf<K, V>(hash, newPairs, newsize);
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        List<_AImmutableMap<K, V>> array = <_AImmutableMap<K, V>>[this];
+        List<_APersistentMap<K, V>> array = <_APersistentMap<K, V>>[this];
         return new _SubMap<K, V>(1 << branch, array, _size)
             ._insertWith(keyValues, size, combine, hash, depth);
       }
     }
   }
 
-  ImmutableMap<K, V> _delete(K key, int hash, int depth) {
+  PersistentMap<K, V> _delete(K key, int hash, int depth) {
     if (hash != _hash)
       return this;
     bool found = false;
@@ -199,7 +201,7 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
         : new _Leaf<K, V>(_hash, newPairs, found ? _size - 1 : _size);
   }
 
-  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
     LList<Pair<K, V>> adjustPairs() {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
       LList<Pair<K, V>> it = _pairs;
@@ -221,19 +223,19 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
         : new _Leaf<K, V>(_hash, adjustPairs(), _size);
   }
 
-  ImmutableMap<K, V>
-      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth) =>
+  PersistentMap<K, V>
+      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithLeaf(this, combine, depth);
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, _size, combine, _hash, depth);
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, _size, combine, _hash, depth);
 
@@ -250,14 +252,14 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
     return new Option<V>.none();
   }
 
-  ImmutableMap mapValues(f(V)) =>
+  PersistentMap mapValues(f(V)) =>
       new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))), _size);
 
   void forEach(f(K, V)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
-  bool operator ==(ImmutableMap<K, V> other) {
+  bool operator ==(PersistentMap<K, V> other) {
     if (this === other) return true;
     if (other is! _Leaf) return false;
     if (_hash != other._hash) return false;
@@ -279,9 +281,9 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
   toDebugString() => "_Leaf($_hash, $_pairs)";
 }
 
-class _SubMap<K, V> extends _AImmutableMap<K, V> {
+class _SubMap<K, V> extends _APersistentMap<K, V> {
   int _bitmap;
-  List<_AImmutableMap<K, V>> _array;
+  List<_APersistentMap<K, V>> _array;
 
   _SubMap(this._bitmap, this._array, int size) : super(size);
 
@@ -302,14 +304,14 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K, V> map = _array[index];
+      _APersistentMap<K, V> map = _array[index];
       return map._lookup(key, hash, depth + 1);
     } else {
       return new Option<V>.none();
     }
   }
 
-  ImmutableMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length());
 
@@ -318,18 +320,18 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     int index = _popcount(_bitmap & (mask - 1));
 
     if ((_bitmap & mask) != 0) {
-      List<_AImmutableMap<K, V>> newarray =
-          new List<_AImmutableMap<K, V>>.from(_array);
-      _AImmutableMap<K, V> m = _array[index];
-      _AImmutableMap<K, V> newM =
+      List<_APersistentMap<K, V>> newarray =
+          new List<_APersistentMap<K, V>>.from(_array);
+      _APersistentMap<K, V> m = _array[index];
+      _APersistentMap<K, V> newM =
           m._insertWith(keyValues, size, combine, hash, depth + 1);
       newarray[index] = newM;
       int delta = newM._size - m._size;
       return new _SubMap<K, V>(_bitmap, newarray, _size + delta);
     } else {
       int newlength = _array.length + 1;
-      List<_AImmutableMap<K, V>> newarray =
-          new List<_AImmutableMap<K, V>>(newlength);
+      List<_APersistentMap<K, V>> newarray =
+          new List<_APersistentMap<K, V>>(newlength);
       // TODO: find out if there's a "copy array" native function somewhere
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
@@ -338,14 +340,14 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     }
   }
 
-  ImmutableMap<K, V> _delete(K key, int hash, int depth) {
+  PersistentMap<K, V> _delete(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K, V> m = _array[index];
-      _AImmutableMap<K, V> newm = m._delete(key, hash, depth + 1);
+      _APersistentMap<K, V> m = _array[index];
+      _APersistentMap<K, V> newm = m._delete(key, hash, depth + 1);
       int delta = newm._size - m._size;
       if (m === newm) {
         return this;
@@ -353,8 +355,8 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
       if (newm._isEmpty()) {
         if (_array.length > 2) {
           int newsize = _array.length - 1;
-          List<_AImmutableMap<K, V>> newarray =
-              new List<_AImmutableMap<K, V>>(newsize);
+          List<_APersistentMap<K, V>> newarray =
+              new List<_APersistentMap<K, V>>(newsize);
           for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
           for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
           assert(newarray.length >= 2);
@@ -362,25 +364,25 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
         } else {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
-          _AImmutableMap<K, V> onlyValueLeft = _array[1 - index];
+          _APersistentMap<K, V> onlyValueLeft = _array[1 - index];
           return onlyValueLeft._isLeaf()
               ? onlyValueLeft
               : new _SubMap(_bitmap ^ mask,
-                            <_AImmutableMap<K, V>>[onlyValueLeft],
+                            <_APersistentMap<K, V>>[onlyValueLeft],
                             _size + delta);
         }
       } else if (newm._isLeaf()){
         if (_array.length == 1) {
           return newm;
         } else {
-          List<_AImmutableMap<K, V>> newarray =
-              new List<_AImmutableMap<K, V>>.from(_array);
+          List<_APersistentMap<K, V>> newarray =
+              new List<_APersistentMap<K, V>>.from(_array);
           newarray[index] = newm;
           return new _SubMap(_bitmap, newarray, _size + delta);
         }
       } else {
-        List<_AImmutableMap<K, V>> newarray =
-            new List<_AImmutableMap<K, V>>.from(_array);
+        List<_APersistentMap<K, V>> newarray =
+            new List<_APersistentMap<K, V>>.from(_array);
         newarray[index] = newm;
         return new _SubMap(_bitmap, newarray, _size + delta);
       }
@@ -389,18 +391,18 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     }
   }
 
-  ImmutableMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _AImmutableMap<K, V> m = _array[index];
-      _AImmutableMap<K, V> newm = m._adjust(key, update, hash, depth + 1);
+      _APersistentMap<K, V> m = _array[index];
+      _APersistentMap<K, V> newm = m._adjust(key, update, hash, depth + 1);
       if (newm === m) {
         return this;
       }
-      List<_AImmutableMap<K, V>> newarray =
-          new List<_AImmutableMap<K, V>>.from(_array);
+      List<_APersistentMap<K, V>> newarray =
+          new List<_APersistentMap<K, V>>.from(_array);
       newarray[index] = newm;
       return new _SubMap(_bitmap, newarray, _size);
     } else {
@@ -408,32 +410,32 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     }
   }
 
-  ImmutableMap<K, V>
-      _unionWith(_AImmutableMap<K, V> m, V combine(V x, V y), int depth) =>
+  PersistentMap<K, V>
+      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithSubMap(this, combine, depth);
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           this._insertWith(m._pairs, m._size, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
-  ImmutableMap<K, V>
+  PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) {
     int ormap = _bitmap | m._bitmap;
     int andmap = _bitmap & m._bitmap;
-    List<_AImmutableMap<K, V>> newarray =
-        new List<_AImmutableMap<K, V>>(_popcount(ormap));
+    List<_APersistentMap<K, V>> newarray =
+        new List<_APersistentMap<K, V>>(_popcount(ormap));
     int mask = 1, i = 0, i1 = 0, i2 = 0;
     int newSize = 0;
     while (mask <= _bitmap) {
       if ((andmap & mask) != 0) {
         _array[i1];
         m._array[i2];
-        _AImmutableMap<K, V> newMap =
+        _APersistentMap<K, V> newMap =
             m._array[i2]._unionWith(_array[i1], combine, depth + 1);
         newarray[i] = newMap;
         newSize += newMap._size;
@@ -441,13 +443,13 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
         i2++;
         i++;
       } else if ((_bitmap & mask) != 0) {
-        _AImmutableMap<K, V> newMap = _array[i1];
+        _APersistentMap<K, V> newMap = _array[i1];
         newarray[i] = newMap;
         newSize += newMap._size;
         i1++;
         i++;
       } else if ((m._bitmap & mask) != 0) {
-        _AImmutableMap<K, V> newMap = _array[i2];
+        _APersistentMap<K, V> newMap = _array[i2];
         newarray[i] = newMap;
         newSize += newMap._size;
         i2++;
@@ -458,11 +460,11 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     return new _SubMap<K, V>(ormap, newarray, newSize);
   }
 
-  ImmutableMap mapValues(f(V)) {
-    List<_AImmutableMap<K, V>> newarray =
-        new List<_AImmutableMap<K, V>>.from(_array);
+  PersistentMap mapValues(f(V)) {
+    List<_APersistentMap<K, V>> newarray =
+        new List<_APersistentMap<K, V>>.from(_array);
     for (int i = 0; i < _array.length; i++) {
-      _AImmutableMap<K, V> mi = _array[i];
+      _APersistentMap<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(f);
     }
     return new _SubMap(_bitmap, newarray, _size);
@@ -472,15 +474,15 @@ class _SubMap<K, V> extends _AImmutableMap<K, V> {
     _array.forEach((mi) => mi.forEach(f));
   }
 
-  bool operator ==(ImmutableMap<K, V> other) {
+  bool operator ==(PersistentMap<K, V> other) {
     if (this === other) return true;
     if (other is! _SubMap) return false;
     if (_bitmap != other._bitmap) return false;
     if (_size != other._size) return false;
     assert(_array.length == other._array.length);
     for (int i = 0; i < _array.length; i++) {
-      _AImmutableMap<K, V> mi = _array[i];
-      _AImmutableMap<K, V> omi = other._array[i];
+      _APersistentMap<K, V> mi = _array[i];
+      _APersistentMap<K, V> omi = other._array[i];
       if (mi != omi) {
         return false;
       }

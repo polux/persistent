@@ -14,6 +14,8 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of map_test;
+
 /**
  * A datatype with an imperfect hash function
  */
@@ -25,7 +27,7 @@ class Key {
     if (other is! Key) return false;
     return i == other.i && b == other.b;
   }
-  int hashCode() => i.hashCode();
+  int get hashCode => i.hashCode;
   toString() => "Key($i,$b)";
 }
 
@@ -46,7 +48,7 @@ class Enumerations {
   }
 }
 
-ImmutableMap implemFrom(Map m) => new ImmutableMap.fromMap(m);
+PersistentMap implemFrom(Map m) => new PersistentMap.fromMap(m);
 ModelMap modelFrom(Map m) => new ModelMap(m);
 
 class _Stop implements Exception {}
@@ -64,4 +66,4 @@ bool mapEquals(Map m1, Map m2) {
   return true;
 }
 
-bool same(ImmutableMap im, ModelMap mm) => mapEquals(im.toMap(), mm.map);
+bool same(PersistentMap im, ModelMap mm) => mapEquals(im.toMap(), mm.map);

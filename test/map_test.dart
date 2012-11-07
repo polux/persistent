@@ -41,7 +41,7 @@ testInsert(Map<Key, int> map, Key key, int value) =>
          modelFrom(map).insert(key, value, minus));
 
 testDelete(Map<Key, int> map, Key key) {
-  ImmutableMap m = implemFrom(map).delete(key);
+  PersistentMap m = implemFrom(map).delete(key);
   return same(m, modelFrom(map).delete(key))
     // checks that delete's normalizes the map so that == is well defined
     && implemFrom(m.toMap()) == m;

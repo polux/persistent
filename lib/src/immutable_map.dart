@@ -14,24 +14,26 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of dart_immutable;
+
 /**
  * An immutable map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
  *
  * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
- * [ImmutableMap.fromMap({k1: v1, k2: v2, ...})].
+ * [PersistentMap.fromMap({k1: v1, k2: v2, ...})].
  */
-abstract class ImmutableMap<K, V> {
+abstract class PersistentMap<K, V> {
 
-  /** Creates an empty [ImmutableMap] using its default implementation. */
-  factory ImmutableMap() => new _EmptyMap();
+  /** Creates an empty [PersistentMap] using its default implementation. */
+  factory PersistentMap() => new _EmptyMap();
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
-   * [ImmutableMap].
+   * [PersistentMap].
    */
-  factory ImmutableMap.fromMap(Map<K, V> map) {
-    ImmutableMap<K, V> result = new _EmptyMap<K, V>();
+  factory PersistentMap.fromMap(Map<K, V> map) {
+    PersistentMap<K, V> result = new _EmptyMap<K, V>();
     map.forEach((K key, V value) {
       result = result.insert(key, value);
     });
@@ -51,7 +53,7 @@ abstract class ImmutableMap<K, V> {
    *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
-  ImmutableMap<K, V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+  PersistentMap<K, V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
    * Returns a new map identical to [this] except that it doesn't bind [key]
@@ -60,7 +62,7 @@ abstract class ImmutableMap<K, V> {
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
-  ImmutableMap<K, V> delete(K key);
+  PersistentMap<K, V> delete(K key);
 
   /**
    * Looks up the value possibly bound to [key] in [this]. Returns
@@ -83,7 +85,7 @@ abstract class ImmutableMap<K, V> {
    *     {'a': 1, 'b': 2}.update('b', (x) => x + 1) == {'a', 1, 'b', 3}
    *     {'a': 1}.update('b', (x) => x + 1) == {'a', 1}
    */
-  ImmutableMap<K, V> adjust(K key, V update(V value));
+  PersistentMap<K, V> adjust(K key, V update(V value));
 
   /**
    * Returns a new map identical to [this] where each value has been updated by
@@ -92,7 +94,7 @@ abstract class ImmutableMap<K, V> {
    *     {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}
    *     {}.map((x) => x + 1) == {}
    */
-  ImmutableMap mapValues(f(V value));
+  PersistentMap mapValues(f(V value));
 
   /**
    * Returns the number of (key, value) pairs in [this].
@@ -120,8 +122,8 @@ abstract class ImmutableMap<K, V> {
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  ImmutableMap<K, V>
-      union(ImmutableMap<K, V> other, [V combine(V left, V right)]);
+  PersistentMap<K, V>
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a mutable copy of [this].
@@ -130,9 +132,9 @@ abstract class ImmutableMap<K, V> {
 }
 
 /**
- * A base class for implementations of [ImmutableMap].
+ * A base class for implementations of [PersistentMap].
  */
-abstract class ImmutableMapBase<K, V> implements ImmutableMap<K, V> {
+abstract class PersistentMapBase<K, V> implements PersistentMap<K, V> {
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
     this.forEach((K k, V v) { result[k] = v; });

@@ -14,22 +14,24 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of map_test;
+
 /**
- * Naive implementation of ImmutableMap using dart:core [Map]s.
+ * Naive implementation of PersistentMap using dart:core [Map]s.
  */
-class ModelMap<K, V> extends ImmutableMapBase<K, V> {
+class ModelMap<K, V> extends PersistentMapBase<K, V> {
   final Map<K, V> map;
 
   ModelMap(this.map);
 
-  ImmutableMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
+  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     Map<K, V> newmap = new Map<K, V>.from(map);
     newmap[key] = map.containsKey(key) ? combine(map[key], value) : value;
     return new ModelMap(newmap);
   }
 
-  ImmutableMap<K, V> delete(K key) {
+  PersistentMap<K, V> delete(K key) {
     Map<K, V> newmap = new Map<K, V>.from(map);
     newmap.remove(key);
     return new ModelMap(newmap);
@@ -43,7 +45,7 @@ class ModelMap<K, V> extends ImmutableMapBase<K, V> {
     }
   }
 
-  ImmutableMap mapValues(f(V)) {
+  PersistentMap mapValues(f(V)) {
     Map newmap = new Map.from(map);
     map.forEach((K key, V value) {
       newmap[key] = f(value);
@@ -51,7 +53,7 @@ class ModelMap<K, V> extends ImmutableMapBase<K, V> {
     return new ModelMap(newmap);
   }
 
-  ImmutableMap<K, V> adjust(K key, V update(V)) {
+  PersistentMap<K, V> adjust(K key, V update(V)) {
     if (map.containsKey(key)) {
       Map newmap = new Map.from(map);
       newmap[key] = update(map[key]);
@@ -68,7 +70,7 @@ class ModelMap<K, V> extends ImmutableMapBase<K, V> {
 
   int size() => map.length;
 
-  ImmutableMap<K, V> union(ModelMap<K, V> other, [V combine(V x, V y)]) {
+  PersistentMap<K, V> union(ModelMap<K, V> other, [V combine(V x, V y)]) {
     Map newmap = new Map.from(map);
     other.map.forEach((K key, V value) {
       newmap[key] = newmap.containsKey(key)

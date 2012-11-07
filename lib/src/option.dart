@@ -14,6 +14,8 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of dart_immutable;
+
 class Option<T> {
   final T _value;
   final bool isDefined;

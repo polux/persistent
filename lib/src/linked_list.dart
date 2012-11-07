@@ -14,19 +14,21 @@
 
 // Author: Paul Brauner (polux@google.com)
 
+part of dart_immutable;
+
 abstract class LList<A> {
   factory LList.nil() => new Nil<A>();
   factory LList.cons(A x, LList<A> xs) => new Cons<A>(x, xs);
 
-  abstract bool isNil();
-  abstract Cons<A> asCons();
+  bool isNil();
+  Cons<A> asCons();
 
-  abstract void foreach(f(A));
+  void foreach(f(A));
   // forall B, LList<B> map(B f(A))
-  abstract LList map(f(A));
-  abstract LList<A> filter(bool f(A));
+  LList map(f(A));
+  LList<A> filter(bool f(A));
 
-  abstract int length();
+  int length();
 }
 
 class LListBuilder<A> {
