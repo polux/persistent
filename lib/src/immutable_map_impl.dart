@@ -68,7 +68,7 @@ abstract class _AImmutableMap<K, V> extends ImmutableMapBase<K, V> {
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 
   int size() => _size;
-  toString() => toDebugString();
+  // toString() => toDebugString();
 }
 
 class _EmptyMap<K, V> extends _AImmutableMap<K, V> {
@@ -190,9 +190,9 @@ class _Leaf<K, V> extends _AImmutableMap<K, V> {
     LList<Pair<K, V>> newPairs = _pairs.filter((p) {
       if (p.fst == key) {
         found = true;
-        return true;
+        return false;
       }
-      return false;
+      return true;
     });
     return newPairs.isNil()
         ? new _EmptyMap<K, V>()
