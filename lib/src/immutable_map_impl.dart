@@ -449,7 +449,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
         i1++;
         i++;
       } else if ((m._bitmap & mask) != 0) {
-        _APersistentMap<K, V> newMap = _array[i2];
+        _APersistentMap<K, V> newMap = m._array[i2];
         newarray[i] = newMap;
         newSize += newMap._size;
         i2++;
