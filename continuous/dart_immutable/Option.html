@@ -34,30 +34,30 @@
 <div class="doc">
 <pre class="source">
 class Option&lt;T&gt; {
-  final T _value;
-  final bool isDefined;
+ final T _value;
+ final bool isDefined;
 
-  Option._internal(this.isDefined, this._value);
+ Option._internal(this.isDefined, this._value);
 
-  factory Option.none() =&gt; new Option._internal(false, null);
+ factory Option.none() =&gt; new Option._internal(false, null);
 
-  factory Option.some(T value) =&gt; new Option._internal(true, value);
+ factory Option.some(T value) =&gt; new Option._internal(true, value);
 
-  T get value {
-    if (isDefined) return _value;
-    throw "undefined";
-  }
+ T get value {
+   if (isDefined) return _value;
+   throw "undefined";
+ }
 
-  // forall U, Option&lt;U&gt; map(U f(T))
-  Option map(f(T)) =&gt;
-      isDefined ? new Option.some(f(this.value)) : this;
+ // forall U, Option&lt;U&gt; map(U f(T))
+ Option map(f(T)) =&gt;
+     isDefined ? new Option.some(f(this.value)) : this;
 
-  bool operator ==(Option&lt;T&gt; other) =&gt;
-      (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
-   || (!isDefined &amp;&amp; !other.isDefined);
+ bool operator ==(Option&lt;T&gt; other) =&gt;
+     (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
+  || (!isDefined &amp;&amp; !other.isDefined);
 
-  String toString() =&gt;
-      isDefined ? "Option.some($_value)" : "Option.none()";
+ String toString() =&gt;
+     isDefined ? "Option.some($_value)" : "Option.none()";
 }
 </pre>
 </div>
@@ -83,16 +83,6 @@ factory Option.some(T value) =&gt; new Option._internal(true, value);
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="Option._internal">
-<button class="show-code">Code</button>
-new <strong>Option._internal</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> isDefined, <a href="../dart_immutable/Option.html">T</a> _value) <a class="anchor-link" href="#Option._internal"
-              title="Permalink to Option&lt;T&gt;.Option._internal">#</a></h4>
-<div class="doc">
-<pre class="source">
-Option._internal(this.isDefined, this._value);
-</pre>
-</div>
-</div>
 </div>
 <div>
 <h3>Properties</h3>
@@ -108,19 +98,6 @@ final bool isDefined;
 </pre>
 </div>
 </div>
-<div class="field inherited"><h4 id="runtimeType">
-<button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
-            href="#runtimeType"
-            title="Permalink to Option&lt;T&gt;.runtimeType">#</a>
-        </h4>
-        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>A representation of the runtime type of the object.</p>
-<pre class="source">
-external Type get runtimeType;
-</pre>
-</div>
-</div>
 <div class="field"><h4 id="value">
 <button class="show-code">Code</button>
 final <a href="../dart_immutable/Option.html">T</a>         <strong>value</strong> <a class="anchor-link"
@@ -130,8 +107,8 @@ final <a href="../dart_immutable/Option.html">T</a>         <strong>value</stron
         <div class="doc">
 <pre class="source">
 T get value {
-  if (isDefined) return _value;
-  throw "undefined";
+ if (isDefined) return _value;
+ throw "undefined";
 }
 </pre>
 </div>
@@ -154,32 +131,14 @@ the <code>hashCode</code> method as well to maintain consistency.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 bool operator ==(Option&lt;T&gt; other) =&gt;
-    (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
- || (!isDefined &amp;&amp; !other.isDefined);
+   (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
+|| (!isDefined &amp;&amp; !other.isDefined);
 </pre>
 </div>
 </div>
 </div>
 <div>
 <h3>Methods</h3>
-<div class="method inherited"><h4 id="hashCode">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
-              title="Permalink to Option&lt;T&gt;.hashCode">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>Get a hash code for this object.</p>
-<p>All objects have hash codes. Hash codes are guaranteed to be the
-same for objects that are equal when compared using the equality
-operator <code>==</code>. Other than that there are no guarantees about
-the hash codes. They will not be consistent between runs and
-there are no distribution guarantees.</p>
-<p>If a subclass overrides <code>hashCode</code> it should override the
-equality operator as well to maintain consistency.</p>
-<pre class="source">
-external int hashCode();
-</pre>
-</div>
-</div>
 <div class="method"><h4 id="map">
 <button class="show-code">Code</button>
 <a href="../dart_immutable/Option.html">Option</a> <strong>map</strong>(f(T)) <a class="anchor-link" href="#map"
@@ -187,68 +146,7 @@ external int hashCode();
 <div class="doc">
 <pre class="source">
 Option map(f(T)) =&gt;
-    isDefined ? new Option.some(f(this.value)) : this;
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="noSuchMethod">
-<button class="show-code">Code</button>
-<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
-              title="Permalink to Option&lt;T&gt;.noSuchMethod">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
-on an object. The name of the method and the arguments of the
-invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
-returns a value, that value becomes the result of the original
-invocation.</p>
-<p>The default behavior of <code>noSuchMethod</code> is to throw a
-<code>noSuchMethodError</code>.</p>
-<pre class="source">
-external Dynamic noSuchMethod(String name, List args);
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="Object">
-<button class="show-code">Code</button>
-const <strong>Object</strong>() <a class="anchor-link" href="#Object"
-              title="Permalink to Option&lt;T&gt;.Object">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>Creates a new <code>Object</code> instance.</p>
-<p><code>Object</code> instances have no meaningful state, and are only useful
-through their identity. An <code>Object</code> instance is equal to itself
-only.</p>
-<pre class="source">
-const Object();
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="Option._internal">
-<button class="show-code">Code</button>
-new <strong>Option._internal</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> isDefined, <a href="../dart_immutable/Option.html">T</a> _value) <a class="anchor-link" href="#Option._internal"
-              title="Permalink to Option&lt;T&gt;.Option._internal">#</a></h4>
-<div class="doc">
-<pre class="source">
-Option._internal(this.isDefined, this._value);
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="Option.none">
-<button class="show-code">Code</button>
-factory <strong>Option.none</strong>() <a class="anchor-link" href="#Option.none"
-              title="Permalink to Option&lt;T&gt;.Option.none">#</a></h4>
-<div class="doc">
-<pre class="source">
-factory Option.none() =&gt; new Option._internal(false, null);
-</pre>
-</div>
-</div>
-<div class="method"><h4 id="Option.some">
-<button class="show-code">Code</button>
-factory <strong>Option.some</strong>(<a href="../dart_immutable/Option.html">T</a> value) <a class="anchor-link" href="#Option.some"
-              title="Permalink to Option&lt;T&gt;.Option.some">#</a></h4>
-<div class="doc">
-<pre class="source">
-factory Option.some(T value) =&gt; new Option._internal(true, value);
+   isDefined ? new Option.some(f(this.value)) : this;
 </pre>
 </div>
 </div>
@@ -262,7 +160,7 @@ factory Option.some(T value) =&gt; new Option._internal(true, value);
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 String toString() =&gt;
-    isDefined ? "Option.some($_value)" : "Option.none()";
+   isDefined ? "Option.some($_value)" : "Option.none()";
 </pre>
 </div>
 </div>
@@ -272,7 +170,7 @@ String toString() =&gt;
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-17 18:32:50.209</div>
+          <div>This page was generated at 2012-11-13 03:27:02.659</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

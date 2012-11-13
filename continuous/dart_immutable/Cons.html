@@ -34,23 +34,23 @@
 <div class="doc">
 <pre class="source">
 class Cons&lt;A&gt; extends LListBase&lt;A&gt; {
-  int _length = null;
+ int _length = null;
 
-  final A elem;
-  LList&lt;A&gt; tail;
+ final A elem;
+ LList&lt;A&gt; tail;
 
-  Cons(this.elem, this.tail);
+ Cons(this.elem, this.tail);
 
-  isNil() =&gt; false;
-  asCons() =&gt; this;
-  toString() =&gt; "cons($elem, $tail)";
+ isNil() =&gt; false;
+ asCons() =&gt; this;
+ toString() =&gt; "cons($elem, $tail)";
 
-  int length() {
-    if (_length == null) {
-      _length = tail.length() + 1;
-    }
-    return _length;
-  }
+ int length() {
+   if (_length == null) {
+     _length = tail.length() + 1;
+   }
+   return _length;
+ }
 }
 </pre>
 </div>
@@ -84,19 +84,6 @@ final A elem;
 </pre>
 </div>
 </div>
-<div class="field inherited"><h4 id="runtimeType">
-<button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/Type.html">Type</a>         <strong>runtimeType</strong> <a class="anchor-link"
-            href="#runtimeType"
-            title="Permalink to Cons&lt;A&gt;.runtimeType">#</a>
-        </h4>
-        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>A representation of the runtime type of the object.</p>
-<pre class="source">
-external Type get runtimeType;
-</pre>
-</div>
-</div>
 <div class="field"><h4 id="tail">
 <button class="show-code">Code</button>
 <a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt;         <strong>tail</strong> <a class="anchor-link"
@@ -106,25 +93,6 @@ external Type get runtimeType;
         <div class="doc">
 <pre class="source">
 LList&lt;A&gt; tail;
-</pre>
-</div>
-</div>
-</div>
-<div>
-<h3>Operators</h3>
-<div class="method inherited"><h4 id="==">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(other) <a class="anchor-link" href="#=="
-              title="Permalink to Cons&lt;A&gt;.operator ==">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>The equality operator.</p>
-<p>The default behavior for all <code>Object</code>s is to return true if and
-only if <code>this</code> and 
-<span class="param">other</span> are the same object.</p>
-<p>If a subclass overrides the equality operator it should override
-the <code>hashCode</code> method as well to maintain consistency.</p>
-<pre class="source">
-bool operator ==(other) =&gt; identical(this, other);
 </pre>
 </div>
 </div>
@@ -141,16 +109,6 @@ asCons() =&gt; this;
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="Cons">
-<button class="show-code">Code</button>
-new <strong>Cons</strong>(<a href="../dart_immutable/Cons.html">A</a> elem, <a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt; tail) <a class="anchor-link" href="#Cons"
-              title="Permalink to Cons&lt;A&gt;.Cons">#</a></h4>
-<div class="doc">
-<pre class="source">
-Cons(this.elem, this.tail);
-</pre>
-</div>
-</div>
 <div class="method inherited"><h4 id="filter">
 <button class="show-code">Code</button>
 <a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt; <strong>filter</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(A)) <a class="anchor-link" href="#filter"
@@ -158,15 +116,15 @@ Cons(this.elem, this.tail);
 <div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 LList&lt;A&gt; filter(bool f(A)) {
-  LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
-  LList&lt;A&gt; it = this;
-  while (!it.isNil()) {
-    Cons&lt;A&gt; cons = it.asCons();
-    A elem = cons.elem;
-    if (f(elem)) builder.add(elem);
-    it = cons.tail;
-  }
-  return builder.build();
+ LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
+ LList&lt;A&gt; it = this;
+ while (!it.isNil()) {
+   Cons&lt;A&gt; cons = it.asCons();
+   A elem = cons.elem;
+   if (f(elem)) builder.add(elem);
+   it = cons.tail;
+ }
+ return builder.build();
 }
 </pre>
 </div>
@@ -178,31 +136,13 @@ void <strong>foreach</strong>(f(A)) <a class="anchor-link" href="#foreach"
 <div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 void foreach(f(A)) {
-  LList&lt;A&gt; it = this;
-  while (!it.isNil()) {
-    Cons&lt;A&gt; cons = it.asCons();
-    f(cons.elem);
-    it = cons.tail;
-  }
+ LList&lt;A&gt; it = this;
+ while (!it.isNil()) {
+   Cons&lt;A&gt; cons = it.asCons();
+   f(cons.elem);
+   it = cons.tail;
+ }
 }
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="hashCode">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>hashCode</strong>() <a class="anchor-link" href="#hashCode"
-              title="Permalink to Cons&lt;A&gt;.hashCode">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>Get a hash code for this object.</p>
-<p>All objects have hash codes. Hash codes are guaranteed to be the
-same for objects that are equal when compared using the equality
-operator <code>==</code>. Other than that there are no guarantees about
-the hash codes. They will not be consistent between runs and
-there are no distribution guarantees.</p>
-<p>If a subclass overrides <code>hashCode</code> it should override the
-equality operator as well to maintain consistency.</p>
-<pre class="source">
-external int hashCode();
 </pre>
 </div>
 </div>
@@ -223,31 +163,11 @@ isNil() =&gt; false;
 <div class="doc">
 <pre class="source">
 int length() {
-  if (_length == null) {
-    _length = tail.length() + 1;
-  }
-  return _length;
+ if (_length == null) {
+   _length = tail.length() + 1;
+ }
+ return _length;
 }
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="LList.cons">
-<button class="show-code">Code</button>
-factory <strong>LList.cons</strong>(<a href="../dart_immutable/Cons.html">A</a> x, <a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt; xs) <a class="anchor-link" href="#LList.cons"
-              title="Permalink to Cons&lt;A&gt;.LList.cons">#</a></h4>
-<div class="inherited-from">inherited from <a href="../dart_immutable/LList.html">LList</a> </div><div class="doc">
-<pre class="source">
-factory LList.cons(A x, LList&lt;A&gt; xs) =&gt; new Cons&lt;A&gt;(x, xs);
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="LList.nil">
-<button class="show-code">Code</button>
-factory <strong>LList.nil</strong>() <a class="anchor-link" href="#LList.nil"
-              title="Permalink to Cons&lt;A&gt;.LList.nil">#</a></h4>
-<div class="inherited-from">inherited from <a href="../dart_immutable/LList.html">LList</a> </div><div class="doc">
-<pre class="source">
-factory LList.nil() =&gt; new Nil&lt;A&gt;();
 </pre>
 </div>
 </div>
@@ -258,47 +178,16 @@ factory LList.nil() =&gt; new Nil&lt;A&gt;();
 <div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 LList map(f(A)) {
-  LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
-  LList&lt;A&gt; it = this;
-  while (!it.isNil()) {
-    Cons&lt;A&gt; cons = it.asCons();
-    A elem = cons.elem;
-    builder.add(f(elem));
-    it = cons.tail;
-  }
-  return builder.build();
+ LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
+ LList&lt;A&gt; it = this;
+ while (!it.isNil()) {
+   Cons&lt;A&gt; cons = it.asCons();
+   A elem = cons.elem;
+   builder.add(f(elem));
+   it = cons.tail;
+ }
+ return builder.build();
 }
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="noSuchMethod">
-<button class="show-code">Code</button>
-<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="http://api.dartlang.org/dart_core/List.html">List</a> args) <a class="anchor-link" href="#noSuchMethod"
-              title="Permalink to Cons&lt;A&gt;.noSuchMethod">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
-on an object. The name of the method and the arguments of the
-invocation are passed to <code>noSuchMethod</code>. If <code>noSuchMethod</code>
-returns a value, that value becomes the result of the original
-invocation.</p>
-<p>The default behavior of <code>noSuchMethod</code> is to throw a
-<code>noSuchMethodError</code>.</p>
-<pre class="source">
-external Dynamic noSuchMethod(String name, List args);
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="Object">
-<button class="show-code">Code</button>
-const <strong>Object</strong>() <a class="anchor-link" href="#Object"
-              title="Permalink to Cons&lt;A&gt;.Object">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div><div class="doc">
-<p>Creates a new <code>Object</code> instance.</p>
-<p><code>Object</code> instances have no meaningful state, and are only useful
-through their identity. An <code>Object</code> instance is equal to itself
-only.</p>
-<pre class="source">
-const Object();
 </pre>
 </div>
 </div>
@@ -321,7 +210,7 @@ toString() =&gt; "cons($elem, $tail)";
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-10-17 18:32:50.192</div>
+          <div>This page was generated at 2012-11-13 03:27:02.669</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
