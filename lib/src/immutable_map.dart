@@ -82,8 +82,8 @@ abstract class PersistentMap<K, V> {
    * Returns a new map identical to [this] except that the value it possibly
    * binds to [key] has been adjusted by [update].
    *
-   *     {'a': 1, 'b': 2}.update('b', (x) => x + 1) == {'a', 1, 'b', 3}
-   *     {'a': 1}.update('b', (x) => x + 1) == {'a', 1}
+   *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}
+   *     {'a': 1}.adjust('b', (x) => x + 1) == {'a', 1}
    */
   PersistentMap<K, V> adjust(K key, V update(V value));
 
