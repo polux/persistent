@@ -2,19 +2,19 @@
         <html manifest="/appcache.manifest">
         <head>
                 <meta charset="utf-8">
-        <title>PersistentMap&lt;K, V&gt; abstract class / dart_immutable Library / Dart Documentation</title>
+        <title>PersistentMap&lt;K, V&gt; abstract class / persistent Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dart_immutable" data-type="PersistentMap&amp;lt;K, V&amp;gt;">
+        <body data-library="persistent" data-type="PersistentMap&amp;lt;K, V&amp;gt;">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dart_immutable.html">dart_immutable</a> &rsaquo; <a href="../dart_immutable/PersistentMap.html">PersistentMap&lt;K, V&gt;</a>        <div id="search-box">
+         &rsaquo; <a href="../persistent.html">persistent</a> &rsaquo; <a href="../persistent/PersistentMap.html">PersistentMap&lt;K, V&gt;</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -148,7 +148,7 @@ abstract class PersistentMap&lt;K, V&gt; {
 </div>
 <h3>Subclasses</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../dart_immutable/PersistentMapBase.html">PersistentMapBase&lt;K, V&gt;</a></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../persistent/PersistentMapBase.html">PersistentMapBase&lt;K, V&gt;</a></span></p>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="PersistentMap">
@@ -156,7 +156,7 @@ abstract class PersistentMap&lt;K, V&gt; {
 factory <strong>PersistentMap</strong>() <a class="anchor-link" href="#PersistentMap"
               title="Permalink to PersistentMap&lt;K, V&gt;.PersistentMap">#</a></h4>
 <div class="doc">
-<p>Creates an empty <a class="crossref" href="../dart_immutable/PersistentMap.html#PersistentMap">PersistentMap</a> using its default implementation.</p>
+<p>Creates an empty <a class="crossref" href="../persistent/PersistentMap.html#PersistentMap">PersistentMap</a> using its default implementation.</p>
 <pre class="source">
 factory PersistentMap() =&gt; new _EmptyMap();
 </pre>
@@ -164,12 +164,12 @@ factory PersistentMap() =&gt; new _EmptyMap();
 </div>
 <div class="method"><h4 id="PersistentMap.fromMap">
 <button class="show-code">Code</button>
-factory <strong>PersistentMap.fromMap</strong>(<a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; map) <a class="anchor-link" href="#PersistentMap.fromMap"
+factory <strong>PersistentMap.fromMap</strong>(<a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; map) <a class="anchor-link" href="#PersistentMap.fromMap"
               title="Permalink to PersistentMap&lt;K, V&gt;.PersistentMap.fromMap">#</a></h4>
 <div class="doc">
 <p>Creates an immutable copy of 
 <span class="param">map</span> using the default implementation of
-<a class="crossref" href="../dart_immutable/PersistentMap.html#PersistentMap">PersistentMap</a>.</p>
+<a class="crossref" href="../persistent/PersistentMap.html#PersistentMap">PersistentMap</a>.</p>
 <pre class="source">
 factory PersistentMap.fromMap(Map&lt;K, V&gt; map) {
  PersistentMap&lt;K, V&gt; result = new _EmptyMap&lt;K, V&gt;();
@@ -185,7 +185,7 @@ factory PersistentMap.fromMap(Map&lt;K, V&gt; map) {
 <div>
 <h3>Methods</h3>
 <div class="method"><h4 id="adjust">
-abstract <a href="../dart_immutable/PersistentMap.html">PersistentMap</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>adjust</strong>(<a href="../dart_immutable/PersistentMap.html">K</a> key, <a href="../dart_immutable/PersistentMap.html">V</a> update(<a href="../dart_immutable/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#adjust"
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>adjust</strong>(<a href="../persistent/PersistentMap.html">K</a> key, <a href="../persistent/PersistentMap.html">V</a> update(<a href="../persistent/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#adjust"
               title="Permalink to PersistentMap&lt;K, V&gt;.adjust">#</a></h4>
 <div class="doc">
 <p>Returns a new map identical to <code>this</code> except that the value it possibly
@@ -198,7 +198,7 @@ binds to
 </div>
 </div>
 <div class="method"><h4 id="delete">
-abstract <a href="../dart_immutable/PersistentMap.html">PersistentMap</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>delete</strong>(<a href="../dart_immutable/PersistentMap.html">K</a> key) <a class="anchor-link" href="#delete"
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>delete</strong>(<a href="../persistent/PersistentMap.html">K</a> key) <a class="anchor-link" href="#delete"
               title="Permalink to PersistentMap&lt;K, V&gt;.delete">#</a></h4>
 <div class="doc">
 <p>Returns a new map identical to <code>this</code> except that it doesn't bind 
@@ -210,14 +210,14 @@ anymore.</p>
 </div>
 </div>
 <div class="method"><h4 id="forEach">
-abstract void <strong>forEach</strong>(f(<a href="../dart_immutable/PersistentMap.html">K</a> key, <a href="../dart_immutable/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#forEach"
+abstract void <strong>forEach</strong>(f(<a href="../persistent/PersistentMap.html">K</a> key, <a href="../persistent/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#forEach"
               title="Permalink to PersistentMap&lt;K, V&gt;.forEach">#</a></h4>
 <div class="doc">
 <p>Evaluates <code>f(key, value)</code> for each (<code>key</code>, <code>value</code>) pair in <code>this</code>.</p>
 </div>
 </div>
 <div class="method"><h4 id="insert">
-abstract <a href="../dart_immutable/PersistentMap.html">PersistentMap</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>insert</strong>(<a href="../dart_immutable/PersistentMap.html">K</a> key, <a href="../dart_immutable/PersistentMap.html">V</a> value, [<a href="../dart_immutable/PersistentMap.html">V</a> combine(<a href="../dart_immutable/PersistentMap.html">V</a> oldvalue, <a href="../dart_immutable/PersistentMap.html">V</a> newvalue)]) <a class="anchor-link" href="#insert"
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>insert</strong>(<a href="../persistent/PersistentMap.html">K</a> key, <a href="../persistent/PersistentMap.html">V</a> value, [<a href="../persistent/PersistentMap.html">V</a> combine(<a href="../persistent/PersistentMap.html">V</a> oldvalue, <a href="../persistent/PersistentMap.html">V</a> newvalue)]) <a class="anchor-link" href="#insert"
               title="Permalink to PersistentMap&lt;K, V&gt;.insert">#</a></h4>
 <div class="doc">
 <p>Returns a new map identical to <code>this</code> except that it binds 
@@ -240,7 +240,7 @@ to
 </div>
 </div>
 <div class="method"><h4 id="lookup">
-abstract <a href="../dart_immutable/Option.html">Option</a>&lt;<a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>lookup</strong>(<a href="../dart_immutable/PersistentMap.html">K</a> key) <a class="anchor-link" href="#lookup"
+abstract <a href="../persistent/Option.html">Option</a>&lt;<a href="../persistent/PersistentMap.html">V</a>&gt; <strong>lookup</strong>(<a href="../persistent/PersistentMap.html">K</a> key) <a class="anchor-link" href="#lookup"
               title="Permalink to PersistentMap&lt;K, V&gt;.lookup">#</a></h4>
 <div class="doc">
 <p>Looks up the value possibly bound to 
@@ -252,7 +252,7 @@ abstract <a href="../dart_immutable/Option.html">Option</a>&lt;<a href="../dart_
 </div>
 </div>
 <div class="method"><h4 id="mapValues">
-abstract <a href="../dart_immutable/PersistentMap.html">PersistentMap</a> <strong>mapValues</strong>(f(<a href="../dart_immutable/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#mapValues"
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a> <strong>mapValues</strong>(f(<a href="../persistent/PersistentMap.html">V</a> value)) <a class="anchor-link" href="#mapValues"
               title="Permalink to PersistentMap&lt;K, V&gt;.mapValues">#</a></h4>
 <div class="doc">
 <p>Returns a new map identical to <code>this</code> where each value has been updated by
@@ -275,14 +275,14 @@ abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>si
 </div>
 </div>
 <div class="method"><h4 id="toMap">
-abstract <a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>toMap</strong>() <a class="anchor-link" href="#toMap"
+abstract <a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>toMap</strong>() <a class="anchor-link" href="#toMap"
               title="Permalink to PersistentMap&lt;K, V&gt;.toMap">#</a></h4>
 <div class="doc">
 <p>Returns a mutable copy of <code>this</code>.</p>
 </div>
 </div>
 <div class="method"><h4 id="union">
-abstract <a href="../dart_immutable/PersistentMap.html">PersistentMap</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; <strong>union</strong>(<a href="../dart_immutable/PersistentMap.html">PersistentMap</a>&lt;<a href="../dart_immutable/PersistentMap.html">K</a>, <a href="../dart_immutable/PersistentMap.html">V</a>&gt; other, [<a href="../dart_immutable/PersistentMap.html">V</a> combine(<a href="../dart_immutable/PersistentMap.html">V</a> left, <a href="../dart_immutable/PersistentMap.html">V</a> right)]) <a class="anchor-link" href="#union"
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>union</strong>(<a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; other, [<a href="../persistent/PersistentMap.html">V</a> combine(<a href="../persistent/PersistentMap.html">V</a> left, <a href="../persistent/PersistentMap.html">V</a> right)]) <a class="anchor-link" href="#union"
               title="Permalink to PersistentMap&lt;K, V&gt;.union">#</a></h4>
 <div class="doc">
 <p>Returns a new map whose (key, value) pairs are the union of those of <code>this</code>
@@ -302,7 +302,7 @@ value for a <code>key</code> present in both <code>this</code> and
 {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
 {'a': 1}.union({'a': 3, 'b': 2}, (x,y) =&gt; x + y) == {'a': 4, 'b': 2}
 </code></pre>
-<p>Note that <a class="crossref" href="../dart_immutable/PersistentMap.html#union">union</a> is commutative if and only if 
+<p>Note that <a class="crossref" href="../persistent/PersistentMap.html#union">union</a> is commutative if and only if 
 <span class="param">combine</span> is provided and
 if it is commutative.</p>
 </div>
@@ -313,7 +313,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-13 12:50:45.709</div>
+          <div>This page was generated at 2012-11-14 20:20:21.354</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

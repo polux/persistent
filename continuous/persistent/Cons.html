@@ -2,19 +2,19 @@
         <html manifest="/appcache.manifest">
         <head>
                 <meta charset="utf-8">
-        <title>Cons&lt;A&gt; class / dart_immutable Library / Dart Documentation</title>
+        <title>Cons&lt;A&gt; class / persistent Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dart_immutable" data-type="Cons&amp;lt;A&amp;gt;">
+        <body data-library="persistent" data-type="Cons&amp;lt;A&amp;gt;">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dart_immutable.html">dart_immutable</a> &rsaquo; <a href="../dart_immutable/Cons.html">Cons&lt;A&gt;</a>        <div id="search-box">
+         &rsaquo; <a href="../persistent.html">persistent</a> &rsaquo; <a href="../persistent/Cons.html">Cons&lt;A&gt;</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -56,12 +56,12 @@ class Cons&lt;A&gt; extends LListBase&lt;A&gt; {
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../dart_immutable/LListBase.html">LListBase&lt;A&gt;</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>Cons&lt;A&gt;</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../persistent/LListBase.html">LListBase&lt;A&gt;</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>Cons&lt;A&gt;</strong></span></p>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="Cons">
 <button class="show-code">Code</button>
-new <strong>Cons</strong>(<a href="../dart_immutable/Cons.html">A</a> elem, <a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt; tail) <a class="anchor-link" href="#Cons"
+new <strong>Cons</strong>(<a href="../persistent/Cons.html">A</a> elem, <a href="../persistent/LList.html">LList</a>&lt;<a href="../persistent/Cons.html">A</a>&gt; tail) <a class="anchor-link" href="#Cons"
               title="Permalink to Cons&lt;A&gt;.Cons">#</a></h4>
 <div class="doc">
 <pre class="source">
@@ -74,7 +74,7 @@ Cons(this.elem, this.tail);
 <h3>Properties</h3>
 <div class="field"><h4 id="elem">
 <button class="show-code">Code</button>
-final <a href="../dart_immutable/Cons.html">A</a>         <strong>elem</strong> <a class="anchor-link"
+final <a href="../persistent/Cons.html">A</a>         <strong>elem</strong> <a class="anchor-link"
             href="#elem"
             title="Permalink to Cons&lt;A&gt;.elem">#</a>
         </h4>
@@ -86,7 +86,7 @@ final A elem;
 </div>
 <div class="field"><h4 id="tail">
 <button class="show-code">Code</button>
-<a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt;         <strong>tail</strong> <a class="anchor-link"
+<a href="../persistent/LList.html">LList</a>&lt;<a href="../persistent/Cons.html">A</a>&gt;         <strong>tail</strong> <a class="anchor-link"
             href="#tail"
             title="Permalink to Cons&lt;A&gt;.tail">#</a>
         </h4>
@@ -111,9 +111,9 @@ asCons() =&gt; this;
 </div>
 <div class="method inherited"><h4 id="filter">
 <button class="show-code">Code</button>
-<a href="../dart_immutable/LList.html">LList</a>&lt;<a href="../dart_immutable/Cons.html">A</a>&gt; <strong>filter</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(A)) <a class="anchor-link" href="#filter"
+<a href="../persistent/LList.html">LList</a>&lt;<a href="../persistent/Cons.html">A</a>&gt; <strong>filter</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(A)) <a class="anchor-link" href="#filter"
               title="Permalink to Cons&lt;A&gt;.filter">#</a></h4>
-<div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../persistent/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 LList&lt;A&gt; filter(bool f(A)) {
  LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
@@ -133,7 +133,7 @@ LList&lt;A&gt; filter(bool f(A)) {
 <button class="show-code">Code</button>
 void <strong>foreach</strong>(f(A)) <a class="anchor-link" href="#foreach"
               title="Permalink to Cons&lt;A&gt;.foreach">#</a></h4>
-<div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../persistent/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 void foreach(f(A)) {
  LList&lt;A&gt; it = this;
@@ -173,9 +173,9 @@ int length() {
 </div>
 <div class="method inherited"><h4 id="map">
 <button class="show-code">Code</button>
-<a href="../dart_immutable/LList.html">LList</a> <strong>map</strong>(f(A)) <a class="anchor-link" href="#map"
+<a href="../persistent/LList.html">LList</a> <strong>map</strong>(f(A)) <a class="anchor-link" href="#map"
               title="Permalink to Cons&lt;A&gt;.map">#</a></h4>
-<div class="inherited-from">inherited from <a href="../dart_immutable/LListBase.html">LListBase</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../persistent/LListBase.html">LListBase</a> </div><div class="doc">
 <pre class="source">
 LList map(f(A)) {
  LListBuilder&lt;A&gt; builder = new LListBuilder&lt;A&gt;();
@@ -210,7 +210,7 @@ toString() =&gt; "cons($elem, $tail)";
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-13 12:50:45.668</div>
+          <div>This page was generated at 2012-11-14 20:20:21.228</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
