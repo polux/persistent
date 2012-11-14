@@ -16,7 +16,7 @@
 
 library map_bench;
 
-import 'package:dart_immutable/dart_immutable.dart';
+import 'package:persistent/persistent.dart';
 
 part 'bench_src/benchmark.dart';
 part 'bench_src/simple_map_1.dart';

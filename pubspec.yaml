@@ -1,5 +1,5 @@
-name: dart_immutable
-description: Efficient immutable data structures for Dart
+name: persistent
+description: Efficient persistent data structures for Dart
 version: 0.0.1
 dependencies:
   dart_check:

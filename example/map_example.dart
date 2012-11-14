@@ -14,8 +14,9 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-#library('map_example');
-#import('package:dart_immutable/dart_immutable.dart');
+library map_example;
+
+import 'package:persistent/persistent.dart';
 
 main() {
   var emptyMap = new PersistentMap<String,int>();

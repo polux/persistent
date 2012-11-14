@@ -14,7 +14,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of dart_immutable;
+part of persistent;
 
 /**
  * Exception used for aborting forEach loops.

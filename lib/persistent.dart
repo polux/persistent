@@ -14,10 +14,10 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-library dart_immutable;
+library persistent;
 
-part 'src/immutable_map.dart';
-part 'src/immutable_map_impl.dart';
+part 'src/map.dart';
+part 'src/map_impl.dart';
 part 'src/linked_list.dart';
 part 'src/option.dart';
 part 'src/pair.dart';

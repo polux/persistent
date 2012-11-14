@@ -14,7 +14,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of dart_immutable;
+part of persistent;
 
 abstract class LList<A> {
   factory LList.nil() => new Nil<A>();

@@ -14,7 +14,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of dart_immutable;
+part of persistent;
 
 /**
  * An immutable map, binding keys of type [K] to values of type [V]. Null values
