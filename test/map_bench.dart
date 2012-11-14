@@ -23,6 +23,7 @@ part 'bench_src/simple_map_1.dart';
 part 'bench_src/simple_map_2.dart';
 
 void main() {
+  Benchmark.warmup();
   for (int n = 0; n < 20000; n += 100) {
     Benchmark benchmark = new Benchmark(n);
     print("$n: ${benchmark.bench()}");

@@ -22,6 +22,10 @@ class Benchmark {
 
   Benchmark([this.size = 1000]);
 
+  static warmup() {
+    new Benchmark(1000).bench();
+  }
+
   Map<String, int> bench() {
     var res = {};
     res["Linked List"] = _bench(() => new SimplePersistentMap());
