@@ -39,8 +39,8 @@ abstract class PersistentSet&lt;E&gt; {
  factory PersistentSet() =&gt; new _PersistentSetImpl&lt;E&gt;();
 
  /**
-  * Creates an immutable copy of [map] using the default implementation of
-  * [PersistentMap].
+  * Creates an immutable copy of [mutableSet] using the default implementation
+  * of [PersistentSet].
   */
  factory PersistentSet.fromSet(Set&lt;E&gt; mutableSet) {
    PersistentSet&lt;E&gt; result = new _PersistentSetImpl&lt;E&gt;();
@@ -106,8 +106,9 @@ factory PersistentSet() =&gt; new _PersistentSetImpl&lt;E&gt;();
 factory <strong>PersistentSet.fromSet</strong>(<a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; mutableSet) <a class="anchor-link" href="#PersistentSet.fromSet"
               title="Permalink to PersistentSet&lt;E&gt;.PersistentSet.fromSet">#</a></h4>
 <div class="doc">
-<p>Creates an immutable copy of <a class="crossref" href="../persistent/PersistentSet.html#map">map</a> using the default implementation of
-<a class="crossref" href="../persistent/PersistentMap.html">PersistentMap</a>.</p>
+<p>Creates an immutable copy of 
+<span class="param">mutableSet</span> using the default implementation
+of <a class="crossref" href="../persistent/PersistentSet.html#PersistentSet">PersistentSet</a>.</p>
 <pre class="source">
 factory PersistentSet.fromSet(Set&lt;E&gt; mutableSet) {
  PersistentSet&lt;E&gt; result = new _PersistentSetImpl&lt;E&gt;();
@@ -224,7 +225,7 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-23 23:27:16.024</div>
+          <div>This page was generated at 2012-11-23 23:30:38.886</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
