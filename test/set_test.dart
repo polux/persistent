@@ -16,11 +16,8 @@
 
 library set_test;
 
-import 'dart:math';
-import 'package:args/args.dart';
 import 'package:dart_check/dart_check.dart';
 import 'package:persistent/persistent.dart';
-import 'package:unittest/unittest.dart';
 import 'test_src/test_util.dart';
 
 // a unary function on Keys
@@ -71,26 +68,7 @@ testCartesianProduct(Set<Key> s1, Set<Key> s2) =>
             modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
 
 main() {
-  final parser = new ArgParser();
-  parser.addFlag('help', negatable: false);
-  parser.addFlag('quiet', negatable: false);
-  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
-  final flags = parser.parse(new Options().arguments);
-
-  if (flags['help']) {
-    print(parser.getUsage());
-    return;
-  }
-
   final e = new Enumerations();
-  final qc = new QuickCheck(
-      maxSize: int.parse(flags['quickCheckMaxSize']),
-      quiet: flags['quiet']);
-  final sc = new SmallCheck(
-      depth: int.parse(flags['smallCheckDepth']),
-      quiet: flags['quiet']);
-
   final properties = {
     'equals'       : forall2(e.sets, e.sets, testEquals),
     'insert'       : forall2(e.sets, e.keys, testInsert),
@@ -104,15 +82,5 @@ main() {
     'intersection' : forall2(e.sets, e.sets, testIntersection),
     'product'      : forall2(e.sets, e.sets, testCartesianProduct),
   };
-
-  group('quickcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => qc.check(prop));
-    });
-  });
-  group('smallcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => sc.check(prop));
-    });
-  });
+  testMain(properties);
 }

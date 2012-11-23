@@ -16,9 +16,12 @@
 
 library test_util;
 
+import 'package:args/args.dart';
+import 'package:dart_check/dart_check.dart';
 import 'package:dart_enumerators/combinators.dart' as c;
 import 'package:dart_enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
+import 'package:unittest/unittest.dart';
 
 part 'map_model.dart';
 part 'set_model.dart';
@@ -92,3 +95,35 @@ bool setEquals(Set s1, Set s2) {
 
 bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm.map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
+
+testMain(Map<String, Property> properties) {
+  final parser = new ArgParser();
+  parser.addFlag('help', negatable: false);
+  parser.addFlag('quiet', negatable: false);
+  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
+  parser.addOption('smallCheckDepth', defaultsTo: '15');
+  final flags = parser.parse(new Options().arguments);
+
+  if (flags['help']) {
+    print(parser.getUsage());
+    return;
+  }
+
+  final qc = new QuickCheck(
+      maxSize: int.parse(flags['quickCheckMaxSize']),
+      quiet: flags['quiet']);
+  final sc = new SmallCheck(
+      depth: int.parse(flags['smallCheckDepth']),
+      quiet: flags['quiet']);
+
+  group('quickcheck', () {
+    properties.forEach((name, prop) {
+      test(name, () => qc.check(prop));
+    });
+  });
+  group('smallcheck', () {
+    properties.forEach((name, prop) {
+      test(name, () => sc.check(prop));
+    });
+  });
+}

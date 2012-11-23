@@ -16,11 +16,8 @@
 
 library map_test;
 
-import 'dart:math';
-import 'package:args/args.dart';
 import 'package:dart_check/dart_check.dart';
 import 'package:persistent/persistent.dart';
-import 'package:unittest/unittest.dart';
 import 'test_src/test_util.dart';
 
 // a deliberately non-commutative operation on nullable integers
@@ -62,26 +59,7 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
             modelMapFrom(map1).union(modelMapFrom(map2), minus));
 
 main() {
-  final parser = new ArgParser();
-  parser.addFlag('help', negatable: false);
-  parser.addFlag('quiet', negatable: false);
-  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
-  final flags = parser.parse(new Options().arguments);
-
-  if (flags['help']) {
-    print(parser.getUsage());
-    return;
-  }
-
   final e = new Enumerations();
-  final qc = new QuickCheck(
-      maxSize: int.parse(flags['quickCheckMaxSize']),
-      quiet: flags['quiet']);
-  final sc = new SmallCheck(
-      depth: int.parse(flags['smallCheckDepth']),
-      quiet: flags['quiet']);
-
   final properties = {
     'equals'   : forall2(e.maps, e.maps, testEquals),
     'insert'   : forall3(e.maps, e.keys, e.values, testInsert),
@@ -92,15 +70,5 @@ main() {
     'size'     : forall(e.maps, testSize),
     'union'    : forall2(e.maps, e.maps, testUnion)
   };
-
-  group('quickcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => qc.check(prop));
-    });
-  });
-  group('smallcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => sc.check(prop));
-    });
-  });
+  testMain(properties);
 }
