@@ -27,11 +27,11 @@ import 'package:unittest/unittest.dart';
 part 'test_src/test_util.dart';
 part 'test_src/map_model.dart';
 
-// a deliberately non-commutative operation on ints
-minus(int x, int y) => x - y;
+// a deliberately non-commutative operation on nullable integers
+minus(int x, int y) => (x == null ? 0 : x) - (y == null ? 0 : y);
 
-// a unary function on integers
-times42(x) => x * 42;
+// a unary function on nullable integers
+times42(x) => (x == null ? 0 : x) * 42;
 
 testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
     (implemFrom(map1) == implemFrom(map2)) == mapEquals(map1, map2);
