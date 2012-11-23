@@ -40,7 +40,7 @@ are supported but null keys are not.</p>
 abstract class PersistentMap&lt;K, V&gt; {
 
  /** Creates an empty [PersistentMap] using its default implementation. */
- factory PersistentMap() =&gt; new _EmptyMap();
+ factory PersistentMap() =&gt; new _EmptyMap&lt;K, V&gt;();
 
  /**
   * Creates an immutable copy of [map] using the default implementation of
@@ -158,7 +158,7 @@ factory <strong>PersistentMap</strong>() <a class="anchor-link" href="#Persisten
 <div class="doc">
 <p>Creates an empty <a class="crossref" href="../persistent/PersistentMap.html#PersistentMap">PersistentMap</a> using its default implementation.</p>
 <pre class="source">
-factory PersistentMap() =&gt; new _EmptyMap();
+factory PersistentMap() =&gt; new _EmptyMap&lt;K, V&gt;();
 </pre>
 </div>
 </div>
@@ -313,7 +313,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-14 20:20:21.354</div>
+          <div>This page was generated at 2012-11-23 23:27:16.046</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

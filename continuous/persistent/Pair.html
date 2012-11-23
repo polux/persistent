@@ -37,6 +37,11 @@ class Pair&lt;A, B&gt; {
  final A fst;
  final B snd;
  Pair(this.fst, this.snd);
+ bool operator ==(Pair&lt;A, B&gt; other) =&gt;
+     (other is Pair&lt;A, B&gt;)
+     &amp;&amp; fst == other.fst
+     &amp;&amp; snd == other.snd;
+ int get hashCode =&gt; fst.hashCode + 31 * snd.hashCode;
  String toString() =&gt; "Pair($fst, $snd)";
 }
 </pre>
@@ -68,6 +73,28 @@ final A fst;
 </pre>
 </div>
 </div>
+<div class="field"><h4 id="hashCode">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>hashCode</strong> <a class="anchor-link"
+            href="#hashCode"
+            title="Permalink to Pair&lt;A, B&gt;.hashCode">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <a class="crossref" href="../persistent/Pair.html#hashCode">hashCode</a> it should override the
+equality operator as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+int get hashCode =&gt; fst.hashCode + 31 * snd.hashCode;
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="snd">
 <button class="show-code">Code</button>
 final <a href="../persistent/Pair.html">B</a>         <strong>snd</strong> <a class="anchor-link"
@@ -77,6 +104,30 @@ final <a href="../persistent/Pair.html">B</a>         <strong>snd</strong> <a cl
         <div class="doc">
 <pre class="source">
 final B snd;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(<a href="../persistent/Pair.html">Pair</a>&lt;<a href="../persistent/Pair.html">A</a>, <a href="../persistent/Pair.html">B</a>&gt; other) <a class="anchor-link" href="#=="
+              title="Permalink to Pair&lt;A, B&gt;.operator ==">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <a class="crossref" href="../persistent/Pair.html#hashCode">hashCode</a> method as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+bool operator ==(Pair&lt;A, B&gt; other) =&gt;
+   (other is Pair&lt;A, B&gt;)
+   &amp;&amp; fst == other.fst
+   &amp;&amp; snd == other.snd;
 </pre>
 </div>
 </div>
@@ -102,7 +153,7 @@ String toString() =&gt; "Pair($fst, $snd)";
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-14 20:20:21.201</div>
+          <div>This page was generated at 2012-11-23 23:27:15.935</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

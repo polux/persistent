@@ -1,0 +1,231 @@
+        <!DOCTYPE html>
+        <html manifest="/appcache.manifest">
+        <head>
+                <meta charset="utf-8">
+        <title>PersistentSet&lt;E&gt; abstract class / persistent Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="persistent" data-type="PersistentSet&amp;lt;E&amp;gt;">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../persistent.html">persistent</a> &rsaquo; <a href="../persistent/PersistentSet.html">PersistentSet&lt;E&gt;</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>PersistentSet&lt;E&gt;</strong>
+          abstract class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<pre class="source">
+abstract class PersistentSet&lt;E&gt; {
+
+ /** Creates an empty [PersistentSet] using its default implementation. */
+ factory PersistentSet() =&gt; new _PersistentSetImpl&lt;E&gt;();
+
+ /**
+  * Creates an immutable copy of [map] using the default implementation of
+  * [PersistentMap].
+  */
+ factory PersistentSet.fromSet(Set&lt;E&gt; mutableSet) {
+   PersistentSet&lt;E&gt; result = new _PersistentSetImpl&lt;E&gt;();
+   for (E element in mutableSet) {
+     result = result.insert(element);
+   }
+   return result;
+ }
+
+ PersistentSet&lt;E&gt; insert(E element);
+
+ PersistentSet&lt;E&gt; delete(E element);
+
+ bool contains(E element);
+
+ void forEach(f(E element));
+
+ PersistentSet map(f(E element));
+
+ PersistentSet&lt;E&gt; filter(bool f(E element));
+
+ int size();
+
+ PersistentSet&lt;E&gt; union(PersistentSet&lt;E&gt; persistentSet);
+
+ /** Alias for [union] */
+ PersistentSet&lt;E&gt; operator +(PersistentSet&lt;E&gt; persistentSet);
+
+ PersistentSet&lt;E&gt; difference(PersistentSet&lt;E&gt; persistentSet);
+
+ /** Alias for [difference] */
+ PersistentSet&lt;E&gt; operator -(PersistentSet&lt;E&gt; persistentSet);
+
+ PersistentSet&lt;Pair&gt; cartesianProduct(PersistentSet persistentSet);
+
+ /** Alias for [cartesianProduct] */
+ PersistentSet&lt;Pair&gt; operator *(PersistentSet persistentSet);
+
+ PersistentSet&lt;E&gt; intersection(PersistentSet&lt;E&gt; persistentSet);
+
+ Set&lt;E&gt; toSet();
+}
+</pre>
+</div>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../persistent/PersistentSetBase.html">PersistentSetBase&lt;E&gt;</a></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="PersistentSet">
+<button class="show-code">Code</button>
+factory <strong>PersistentSet</strong>() <a class="anchor-link" href="#PersistentSet"
+              title="Permalink to PersistentSet&lt;E&gt;.PersistentSet">#</a></h4>
+<div class="doc">
+<p>Creates an empty <a class="crossref" href="../persistent/PersistentSet.html#PersistentSet">PersistentSet</a> using its default implementation.</p>
+<pre class="source">
+factory PersistentSet() =&gt; new _PersistentSetImpl&lt;E&gt;();
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="PersistentSet.fromSet">
+<button class="show-code">Code</button>
+factory <strong>PersistentSet.fromSet</strong>(<a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; mutableSet) <a class="anchor-link" href="#PersistentSet.fromSet"
+              title="Permalink to PersistentSet&lt;E&gt;.PersistentSet.fromSet">#</a></h4>
+<div class="doc">
+<p>Creates an immutable copy of <a class="crossref" href="../persistent/PersistentSet.html#map">map</a> using the default implementation of
+<a class="crossref" href="../persistent/PersistentMap.html">PersistentMap</a>.</p>
+<pre class="source">
+factory PersistentSet.fromSet(Set&lt;E&gt; mutableSet) {
+ PersistentSet&lt;E&gt; result = new _PersistentSetImpl&lt;E&gt;();
+ for (E element in mutableSet) {
+   result = result.insert(element);
+ }
+ return result;
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="+">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>operator +</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; persistentSet) <a class="anchor-link" href="#+"
+              title="Permalink to PersistentSet&lt;E&gt;.operator +">#</a></h4>
+<div class="doc">
+<p>Alias for <a class="crossref" href="../persistent/PersistentSet.html#union">union</a></p>
+</div>
+</div>
+<div class="method"><h4 id="-">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>operator -</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; persistentSet) <a class="anchor-link" href="#-"
+              title="Permalink to PersistentSet&lt;E&gt;.operator -">#</a></h4>
+<div class="doc">
+<p>Alias for <a class="crossref" href="../persistent/PersistentSet.html#difference">difference</a></p>
+</div>
+</div>
+<div class="method"><h4 id="*">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/Pair.html">Pair</a>&gt; <strong>operator *</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a> persistentSet) <a class="anchor-link" href="#*"
+              title="Permalink to PersistentSet&lt;E&gt;.operator *">#</a></h4>
+<div class="doc">
+<p>Alias for <a class="crossref" href="../persistent/PersistentSet.html#cartesianProduct">cartesianProduct</a></p>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="cartesianProduct">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/Pair.html">Pair</a>&gt; <strong>cartesianProduct</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a> persistentSet) <a class="anchor-link" href="#cartesianProduct"
+              title="Permalink to PersistentSet&lt;E&gt;.cartesianProduct">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="contains">
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../persistent/PersistentSet.html">E</a> element) <a class="anchor-link" href="#contains"
+              title="Permalink to PersistentSet&lt;E&gt;.contains">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="delete">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>delete</strong>(<a href="../persistent/PersistentSet.html">E</a> element) <a class="anchor-link" href="#delete"
+              title="Permalink to PersistentSet&lt;E&gt;.delete">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="difference">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>difference</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; persistentSet) <a class="anchor-link" href="#difference"
+              title="Permalink to PersistentSet&lt;E&gt;.difference">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="filter">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>filter</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#filter"
+              title="Permalink to PersistentSet&lt;E&gt;.filter">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="forEach">
+abstract void <strong>forEach</strong>(f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#forEach"
+              title="Permalink to PersistentSet&lt;E&gt;.forEach">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="insert">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>insert</strong>(<a href="../persistent/PersistentSet.html">E</a> element) <a class="anchor-link" href="#insert"
+              title="Permalink to PersistentSet&lt;E&gt;.insert">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="intersection">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>intersection</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; persistentSet) <a class="anchor-link" href="#intersection"
+              title="Permalink to PersistentSet&lt;E&gt;.intersection">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="map">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a> <strong>map</strong>(f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#map"
+              title="Permalink to PersistentSet&lt;E&gt;.map">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="size">
+abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>size</strong>() <a class="anchor-link" href="#size"
+              title="Permalink to PersistentSet&lt;E&gt;.size">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="toSet">
+abstract <a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>toSet</strong>() <a class="anchor-link" href="#toSet"
+              title="Permalink to PersistentSet&lt;E&gt;.toSet">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="union">
+abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>union</strong>(<a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; persistentSet) <a class="anchor-link" href="#union"
+              title="Permalink to PersistentSet&lt;E&gt;.union">#</a></h4>
+<div class="doc">
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        
+        <div class="footer">
+          <div>This page was generated at 2012-11-23 23:27:16.024</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        
