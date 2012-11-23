@@ -22,8 +22,8 @@ abstract class PersistentSet<E> {
   factory PersistentSet() => new _PersistentSetImpl<E>();
 
   /**
-   * Creates an immutable copy of [map] using the default implementation of
-   * [PersistentMap].
+   * Creates an immutable copy of [mutableSet] using the default implementation
+   * of [PersistentSet].
    */
   factory PersistentSet.fromSet(Set<E> mutableSet) {
     PersistentSet<E> result = new _PersistentSetImpl<E>();
