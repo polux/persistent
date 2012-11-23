@@ -19,58 +19,60 @@ library map_test;
 import 'dart:math';
 import 'package:args/args.dart';
 import 'package:dart_check/dart_check.dart';
-import 'package:dart_enumerators/combinators.dart' as c;
-import 'package:dart_enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
-
-part 'test_src/test_util.dart';
-part 'test_src/map_model.dart';
+import 'test_src/test_util.dart';
 
 // a deliberately non-commutative operation on ints
-minus(int x, int y) => x - y;
+int minus(int x, int y) => x - y;
 
 // a unary function on integers
-times42(x) => x * 42;
+int times42(x) => x * 42;
 
 testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
-    (implemFrom(map1) == implemFrom(map2)) == mapEquals(map1, map2);
+    (implemMapFrom(map1) == implemMapFrom(map2)) == mapEquals(map1, map2);
 
 testInsert(Map<Key, int> map, Key key, int value) =>
-    same(implemFrom(map).insert(key, value, minus),
-         modelFrom(map).insert(key, value, minus));
+    sameMap(implemMapFrom(map).insert(key, value, minus),
+            modelMapFrom(map).insert(key, value, minus));
 
 testDelete(Map<Key, int> map, Key key) {
-  PersistentMap m = implemFrom(map).delete(key);
-  return same(m, modelFrom(map).delete(key))
+  PersistentMap m = implemMapFrom(map).delete(key);
+  return sameMap(m, modelMapFrom(map).delete(key))
     // checks that delete's normalizes the map so that == is well defined
-    && implemFrom(m.toMap()) == m;
+    && implemMapFrom(m.toMap()) == m;
 }
 
 testLookup(Map<Key, int> map, Key key) =>
-    implemFrom(map).lookup(key) == modelFrom(map).lookup(key);
+    implemMapFrom(map).lookup(key) == modelMapFrom(map).lookup(key);
 
 testAdjust(Map<Key, int> map, Key key) =>
-    same(implemFrom(map).adjust(key, times42),
-         modelFrom(map).adjust(key, times42));
+    sameMap(implemMapFrom(map).adjust(key, times42),
+            modelMapFrom(map).adjust(key, times42));
 
 testMapValues(Map<Key, int> map) =>
-    same(implemFrom(map).mapValues(times42),
-        modelFrom(map).mapValues(times42));
+    sameMap(implemMapFrom(map).mapValues(times42),
+            modelMapFrom(map).mapValues(times42));
 
 testSize(Map<Key, int> map) =>
-    implemFrom(map).size() == modelFrom(map).size();
+    implemMapFrom(map).size() == modelMapFrom(map).size();
 
 testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
-    same(implemFrom(map1).union(implemFrom(map2), minus),
-         modelFrom(map1).union(modelFrom(map2), minus));
+    sameMap(implemMapFrom(map1).union(implemMapFrom(map2), minus),
+            modelMapFrom(map1).union(modelMapFrom(map2), minus));
 
 main() {
   final parser = new ArgParser();
+  parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '300');
   parser.addOption('smallCheckDepth', defaultsTo: '15');
   final flags = parser.parse(new Options().arguments);
+
+  if (flags['help']) {
+    print(parser.getUsage());
+    return;
+  }
 
   final e = new Enumerations();
   final qc = new QuickCheck(

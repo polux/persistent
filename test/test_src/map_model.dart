@@ -14,7 +14,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of map_test;
+part of test_util;
 
 /**
  * Naive implementation of PersistentMap using dart:core [Map]s.

@@ -14,7 +14,14 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of map_test;
+library test_util;
+
+import 'package:dart_enumerators/combinators.dart' as c;
+import 'package:dart_enumerators/enumerators.dart' as en;
+import 'package:persistent/persistent.dart';
+
+part 'map_model.dart';
+part 'set_model.dart';
 
 /**
  * A datatype with an imperfect hash function
@@ -38,6 +45,7 @@ class Enumerations {
   en.Enumeration<Key> keys;
   en.Enumeration<int> values;
   en.Enumeration<Map<Key, int>> maps;
+  en.Enumeration<Set<Key>> sets;
 
   Enumerations() {
     keys = en.singleton((i) => (b) => new Key(i, b))
@@ -45,11 +53,15 @@ class Enumerations {
              .apply(c.bools);
     values = c.ints;
     maps = c.mapsOf(keys, values);
+    sets = c.setsOf(keys);
   }
 }
 
-PersistentMap implemFrom(Map m) => new PersistentMap.fromMap(m);
-ModelMap modelFrom(Map m) => new ModelMap(m);
+PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);
+ModelMap modelMapFrom(Map m) => new ModelMap(m);
+
+PersistentSet implemSetFrom(Set s) => new PersistentSet.fromSet(s);
+ModelSet modelSetFrom(Set s) => new ModelSet(s);
 
 class _Stop implements Exception {}
 
@@ -66,4 +78,17 @@ bool mapEquals(Map m1, Map m2) {
   return true;
 }
 
-bool same(PersistentMap im, ModelMap mm) => mapEquals(im.toMap(), mm.map);
+bool setEquals(Set s1, Set s2) {
+  if (s1.length != s2.length) return false;
+  try {
+    s1.forEach((e) {
+      if (!s2.contains(e)) throw new _Stop();
+    });
+  } on _Stop catch(e) {
+    return false;
+  }
+  return true;
+}
+
+bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm.map);
+bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);

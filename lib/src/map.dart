@@ -26,7 +26,7 @@ part of persistent;
 abstract class PersistentMap<K, V> {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new _EmptyMap();
+  factory PersistentMap() => new _EmptyMap<K, V>();
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
