@@ -51,7 +51,7 @@ class Enumerations {
     keys = en.singleton((i) => (b) => new Key(i, b))
              .apply(c.ints)
              .apply(c.bools);
-    values = c.ints;
+    values = c.ints + new en.Enumeration.singleton(null);
     maps = c.mapsOf(keys, values);
     sets = c.setsOf(keys);
   }
