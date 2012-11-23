@@ -67,7 +67,7 @@ class ModelSet<E> extends PersistentSetBase<E> {
   }
 
   PersistentSet<Pair> cartesianProduct(ModelSet other) {
-    Set<E> newset = new Set<E>();
+    Set<Pair> newset = new Set<Pair>();
     for (E e1 in zet) {
       for (final e2 in other.zet) {
         newset.add(new Pair(e1, e2));
@@ -81,4 +81,3 @@ class ModelSet<E> extends PersistentSetBase<E> {
     return new ModelSet(newset.filter((E e) => other.contains(e)));
   }
 }
-
