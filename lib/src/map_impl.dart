@@ -259,7 +259,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   }
 
   bool operator ==(PersistentMap<K, V> other) {
-    if (this === other) return true;
+    if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
     if (_hash != other._hash) return false;
     if (length != other.length) return false;
@@ -350,7 +350,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       _APersistentMap<K, V> m = _array[index];
       _APersistentMap<K, V> newm = m._delete(key, hash, depth + 1);
       int delta = newm.length - m.length;
-      if (m === newm) {
+      if (identical(m, newm)) {
         return this;
       }
       if (newm._isEmpty()) {
@@ -399,7 +399,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       int index = _popcount(_bitmap & (mask - 1));
       _APersistentMap<K, V> m = _array[index];
       _APersistentMap<K, V> newm = m._adjust(key, update, hash, depth + 1);
-      if (newm === m) {
+      if (identical(newm, m)) {
         return this;
       }
       List<_APersistentMap<K, V>> newarray =
@@ -476,7 +476,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   }
 
   bool operator ==(PersistentMap<K, V> other) {
-    if (this === other) return true;
+    if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
     if (_bitmap != other._bitmap) return false;
     if (length != other.length) return false;
