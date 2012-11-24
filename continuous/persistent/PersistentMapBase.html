@@ -58,6 +58,26 @@ abstract class PersistentMapBase&lt;K, V&gt; implements PersistentMap&lt;K, V&gt
 <h3>Implements</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../persistent/PersistentMap.html">PersistentMap&lt;K, V&gt;</a></span></p>
+<div class="inherited">
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="length">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>length</strong> <a class="anchor-link"
+            href="#length"
+            title="Permalink to PersistentMapBase&lt;K, V&gt;.length">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../persistent/PersistentMap.html">PersistentMap</a> </div><div class="doc">
+<p>The number of (key, value) pairs in <code>this</code>.</p>
+<pre><code>{}.length == 0
+{'a': 1}.length == 1
+{'a': 1, 'b': 2}.length == 2
+</code></pre>
+<pre class="source">
+int get length;
+</pre>
+</div>
+</div>
+</div>
 <div>
 <h3>Methods</h3>
 <div class="method inherited"><h4 id="adjust">
@@ -139,17 +159,6 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a> <strong>ma
 </code></pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="size">
-abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>size</strong>() <a class="anchor-link" href="#size"
-              title="Permalink to PersistentMapBase&lt;K, V&gt;.size">#</a></h4>
-<div class="inherited-from">inherited from <a href="../persistent/PersistentMap.html">PersistentMap</a> </div><div class="doc">
-<p>Returns the number of (key, value) pairs in <code>this</code>.</p>
-<pre><code>{}.size() == 0
-{'a': 1}.size() == 1
-{'a': 1, 'b': 2}.size() == 2
-</code></pre>
-</div>
-</div>
 <div class="method"><h4 id="toMap">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../persistent/PersistentMapBase.html">K</a>, <a href="../persistent/PersistentMapBase.html">V</a>&gt; <strong>toMap</strong>() <a class="anchor-link" href="#toMap"
@@ -222,7 +231,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-23 23:30:38.897</div>
+          <div>This page was generated at 2012-11-24 20:50:11.279</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

@@ -111,13 +111,13 @@ abstract class PersistentMap&lt;K, V&gt; {
  PersistentMap mapValues(f(V value));
 
  /**
-  * Returns the number of (key, value) pairs in [this].
+  * The number of (key, value) pairs in [this].
   *
-  *     {}.size() == 0
-  *     {'a': 1}.size() == 1
-  *     {'a': 1, 'b': 2}.size() == 2
+  *     {}.length == 0
+  *     {'a': 1}.length == 1
+  *     {'a': 1, 'b': 2}.length == 2
   */
- int size();
+ int get length;
 
  /**
   * Returns a new map whose (key, value) pairs are the union of those of [this]
@@ -178,6 +178,26 @@ factory PersistentMap.fromMap(Map&lt;K, V&gt; map) {
  });
  return result;
 }
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="length">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>length</strong> <a class="anchor-link"
+            href="#length"
+            title="Permalink to PersistentMap&lt;K, V&gt;.length">#</a>
+        </h4>
+        <div class="doc">
+<p>The number of (key, value) pairs in <code>this</code>.</p>
+<pre><code>{}.length == 0
+{'a': 1}.length == 1
+{'a': 1, 'b': 2}.length == 2
+</code></pre>
+<pre class="source">
+int get length;
 </pre>
 </div>
 </div>
@@ -263,17 +283,6 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a> <strong>ma
 </code></pre>
 </div>
 </div>
-<div class="method"><h4 id="size">
-abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>size</strong>() <a class="anchor-link" href="#size"
-              title="Permalink to PersistentMap&lt;K, V&gt;.size">#</a></h4>
-<div class="doc">
-<p>Returns the number of (key, value) pairs in <code>this</code>.</p>
-<pre><code>{}.size() == 0
-{'a': 1}.size() == 1
-{'a': 1, 'b': 2}.size() == 2
-</code></pre>
-</div>
-</div>
 <div class="method"><h4 id="toMap">
 abstract <a href="http://api.dartlang.org/dart_core/Map.html">Map</a>&lt;<a href="../persistent/PersistentMap.html">K</a>, <a href="../persistent/PersistentMap.html">V</a>&gt; <strong>toMap</strong>() <a class="anchor-link" href="#toMap"
               title="Permalink to PersistentMap&lt;K, V&gt;.toMap">#</a></h4>
@@ -313,7 +322,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-23 23:30:38.906</div>
+          <div>This page was generated at 2012-11-24 20:50:11.289</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

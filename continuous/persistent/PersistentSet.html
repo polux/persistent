@@ -62,7 +62,7 @@ abstract class PersistentSet&lt;E&gt; {
 
  PersistentSet&lt;E&gt; filter(bool f(E element));
 
- int size();
+ int get length;
 
  PersistentSet&lt;E&gt; union(PersistentSet&lt;E&gt; persistentSet);
 
@@ -117,6 +117,21 @@ factory PersistentSet.fromSet(Set&lt;E&gt; mutableSet) {
  }
  return result;
 }
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="length">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>length</strong> <a class="anchor-link"
+            href="#length"
+            title="Permalink to PersistentSet&lt;E&gt;.length">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+int get length;
 </pre>
 </div>
 </div>
@@ -201,12 +216,6 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a> <strong>ma
 <div class="doc">
 </div>
 </div>
-<div class="method"><h4 id="size">
-abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>size</strong>() <a class="anchor-link" href="#size"
-              title="Permalink to PersistentSet&lt;E&gt;.size">#</a></h4>
-<div class="doc">
-</div>
-</div>
 <div class="method"><h4 id="toSet">
 abstract <a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>toSet</strong>() <a class="anchor-link" href="#toSet"
               title="Permalink to PersistentSet&lt;E&gt;.toSet">#</a></h4>
@@ -225,7 +234,7 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-23 23:30:38.886</div>
+          <div>This page was generated at 2012-11-24 20:50:11.264</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
