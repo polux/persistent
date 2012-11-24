@@ -102,6 +102,11 @@ testMain(Map<String, Property> properties) {
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '300');
   parser.addOption('smallCheckDepth', defaultsTo: '15');
+  parser.addOption('property',
+                   help: 'property to test or "all"',
+                   allowed: new List.from(properties.keys)..add('all'),
+                   allowMultiple: true,
+                   defaultsTo: 'all');
   final flags = parser.parse(new Options().arguments);
 
   if (flags['help']) {
@@ -116,14 +121,19 @@ testMain(Map<String, Property> properties) {
       depth: int.parse(flags['smallCheckDepth']),
       quiet: flags['quiet']);
 
+  Collection<String> toTest = flags['property'];
+  if (toTest.contains('all')) {
+    toTest = properties.keys;
+  }
+
   group('quickcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => qc.check(prop));
-    });
+    for (final property in toTest) {
+      test(property, () => qc.check(properties[property]));
+    }
   });
   group('smallcheck', () {
-    properties.forEach((name, prop) {
-      test(name, () => sc.check(prop));
-    });
+    for (final property in toTest) {
+      test(property, () => sc.check(properties[property]));
+    }
   });
 }
