@@ -70,7 +70,7 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
 
   String toString() => _map.toString();
 
-  int size() => _map.length;
+  int get length => _map.length;
 
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
     throw "not implemented";
