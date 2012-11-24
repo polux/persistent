@@ -45,7 +45,7 @@ abstract class PersistentSet<E> {
 
   PersistentSet<E> filter(bool f(E element));
 
-  int size();
+  int get length;
 
   PersistentSet<E> union(PersistentSet<E> persistentSet);
 

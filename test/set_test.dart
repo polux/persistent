@@ -48,8 +48,8 @@ testMap(Set<Key> s) =>
 testFilter(Set<Key> s) =>
     sameSet(implemSetFrom(s).filter(pred), modelSetFrom(s).filter(pred));
 
-testSize(Set<Key> s) =>
-    implemSetFrom(s).size() == modelSetFrom(s).size();
+testLength(Set<Key> s) =>
+    implemSetFrom(s).length == modelSetFrom(s).length;
 
 testUnion(Set<Key> s1, Set<Key> s2) =>
     sameSet(implemSetFrom(s1).union(implemSetFrom(s2)),
@@ -76,7 +76,7 @@ main() {
     'contains'     : forall2(e.sets, e.keys, testContains),
     'map'          : forall(e.sets, testMap),
     'filter'       : forall(e.sets, testFilter),
-    'size'         : forall(e.sets, testSize),
+    'length'       : forall(e.sets, testLength),
     'union'        : forall2(e.sets, e.sets, testUnion),
     'difference'   : forall2(e.sets, e.sets, testDifference),
     'intersection' : forall2(e.sets, e.sets, testIntersection),

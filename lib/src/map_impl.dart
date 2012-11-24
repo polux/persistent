@@ -25,9 +25,9 @@ class _Stop implements Exception {}
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
 abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
-  final int _size;
+  final int length;
 
-  _APersistentMap(this._size);
+  _APersistentMap(this.length);
 
   bool _isEmpty();
   bool _isLeaf();
@@ -69,7 +69,6 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 
-  int size() => _size;
   // toString() => toDebugString();
 }
 
@@ -131,7 +130,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length());
     // newsize is incremented as a side effect of insertPair
-    int newsize = _size;
+    int newsize = length;
 
     LList<Pair<K, V>> insertPair(Pair<K, V> toInsert, LList<Pair<K, V>> pairs) {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
@@ -179,7 +178,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
         List<_APersistentMap<K, V>> array = <_APersistentMap<K, V>>[this];
-        return new _SubMap<K, V>(1 << branch, array, _size)
+        return new _SubMap<K, V>(1 << branch, array, length)
             ._insertWith(keyValues, size, combine, hash, depth);
       }
     }
@@ -198,7 +197,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     });
     return newPairs.isNil()
         ? new _EmptyMap<K, V>()
-        : new _Leaf<K, V>(_hash, newPairs, found ? _size - 1 : _size);
+        : new _Leaf<K, V>(_hash, newPairs, found ? length - 1 : length);
   }
 
   PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
@@ -220,7 +219,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
     return (hash != _hash)
         ? this
-        : new _Leaf<K, V>(_hash, adjustPairs(), _size);
+        : new _Leaf<K, V>(_hash, adjustPairs(), length);
   }
 
   PersistentMap<K, V>
@@ -233,11 +232,11 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
-          m._insertWith(_pairs, _size, combine, _hash, depth);
+          m._insertWith(_pairs, length, combine, _hash, depth);
 
   PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
-          m._insertWith(_pairs, _size, combine, _hash, depth);
+          m._insertWith(_pairs, length, combine, _hash, depth);
 
   Option<V> _lookup(K key, int hash, int depth) {
     if (hash != _hash)
@@ -253,7 +252,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   }
 
   PersistentMap mapValues(f(V)) =>
-      new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))), _size);
+      new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))), length);
 
   void forEach(f(K, V)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
@@ -263,7 +262,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     if (this === other) return true;
     if (other is! _Leaf) return false;
     if (_hash != other._hash) return false;
-    if (_size != other._size) return false;
+    if (length != other.length) return false;
     Map<K, V> thisAsMap = toMap();
     int counter = 0;
     LList<Pair<K, V>> it = other._pairs;
@@ -328,8 +327,8 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       _APersistentMap<K, V> newM =
           m._insertWith(keyValues, size, combine, hash, depth + 1);
       newarray[index] = newM;
-      int delta = newM._size - m._size;
-      return new _SubMap<K, V>(_bitmap, newarray, _size + delta);
+      int delta = newM.length - m.length;
+      return new _SubMap<K, V>(_bitmap, newarray, length + delta);
     } else {
       int newlength = _array.length + 1;
       List<_APersistentMap<K, V>> newarray =
@@ -338,7 +337,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
       newarray[index] = new _Leaf<K, V>(hash, keyValues, size);
-      return new _SubMap<K, V>(_bitmap | mask, newarray, _size + size);
+      return new _SubMap<K, V>(_bitmap | mask, newarray, length + size);
     }
   }
 
@@ -350,7 +349,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       int index = _popcount(_bitmap & (mask - 1));
       _APersistentMap<K, V> m = _array[index];
       _APersistentMap<K, V> newm = m._delete(key, hash, depth + 1);
-      int delta = newm._size - m._size;
+      int delta = newm.length - m.length;
       if (m === newm) {
         return this;
       }
@@ -362,7 +361,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
           for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
           for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
           assert(newarray.length >= 2);
-          return new _SubMap(_bitmap ^ mask, newarray, _size + delta);
+          return new _SubMap(_bitmap ^ mask, newarray, length + delta);
         } else {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
@@ -371,7 +370,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
               ? onlyValueLeft
               : new _SubMap(_bitmap ^ mask,
                             <_APersistentMap<K, V>>[onlyValueLeft],
-                            _size + delta);
+                            length + delta);
         }
       } else if (newm._isLeaf()){
         if (_array.length == 1) {
@@ -380,13 +379,13 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
           List<_APersistentMap<K, V>> newarray =
               new List<_APersistentMap<K, V>>.from(_array);
           newarray[index] = newm;
-          return new _SubMap(_bitmap, newarray, _size + delta);
+          return new _SubMap(_bitmap, newarray, length + delta);
         }
       } else {
         List<_APersistentMap<K, V>> newarray =
             new List<_APersistentMap<K, V>>.from(_array);
         newarray[index] = newm;
-        return new _SubMap(_bitmap, newarray, _size + delta);
+        return new _SubMap(_bitmap, newarray, length + delta);
       }
     } else {
       return this;
@@ -406,7 +405,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       List<_APersistentMap<K, V>> newarray =
           new List<_APersistentMap<K, V>>.from(_array);
       newarray[index] = newm;
-      return new _SubMap(_bitmap, newarray, _size);
+      return new _SubMap(_bitmap, newarray, length);
     } else {
       return this;
     }
@@ -422,7 +421,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
-          this._insertWith(m._pairs, m._size, (V v1, V v2) => combine(v2, v1),
+          this._insertWith(m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
   PersistentMap<K, V>
@@ -440,20 +439,20 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
         _APersistentMap<K, V> newMap =
             m._array[i2]._unionWith(_array[i1], combine, depth + 1);
         newarray[i] = newMap;
-        newSize += newMap._size;
+        newSize += newMap.length;
         i1++;
         i2++;
         i++;
       } else if ((_bitmap & mask) != 0) {
         _APersistentMap<K, V> newMap = _array[i1];
         newarray[i] = newMap;
-        newSize += newMap._size;
+        newSize += newMap.length;
         i1++;
         i++;
       } else if ((m._bitmap & mask) != 0) {
         _APersistentMap<K, V> newMap = m._array[i2];
         newarray[i] = newMap;
-        newSize += newMap._size;
+        newSize += newMap.length;
         i2++;
         i++;
       }
@@ -469,7 +468,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       _APersistentMap<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(f);
     }
-    return new _SubMap(_bitmap, newarray, _size);
+    return new _SubMap(_bitmap, newarray, length);
   }
 
   forEach(f(K, V)) {
@@ -480,7 +479,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     if (this === other) return true;
     if (other is! _SubMap) return false;
     if (_bitmap != other._bitmap) return false;
-    if (_size != other._size) return false;
+    if (length != other.length) return false;
     assert(_array.length == other._array.length);
     for (int i = 0; i < _array.length; i++) {
       _APersistentMap<K, V> mi = _array[i];

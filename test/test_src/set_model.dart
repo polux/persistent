@@ -52,7 +52,7 @@ class ModelSet<E> extends PersistentSetBase<E> {
     return new ModelSet(zet.filter(f));
   }
 
-  int size() => zet.length;
+  int get length => zet.length;
 
   PersistentSet<E> union(ModelSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);

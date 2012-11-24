@@ -51,8 +51,8 @@ testMapValues(Map<Key, int> map) =>
     sameMap(implemMapFrom(map).mapValues(times42),
             modelMapFrom(map).mapValues(times42));
 
-testSize(Map<Key, int> map) =>
-    implemMapFrom(map).size() == modelMapFrom(map).size();
+testLength(Map<Key, int> map) =>
+    implemMapFrom(map).length == modelMapFrom(map).length;
 
 testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
     sameMap(implemMapFrom(map1).union(implemMapFrom(map2), minus),
@@ -67,7 +67,7 @@ main() {
     'lookup'   : forall2(e.maps, e.keys, testLookup),
     'adjust'   : forall2(e.maps, e.keys, testAdjust),
     'mapValues': forall(e.maps, testMapValues),
-    'size'     : forall(e.maps, testSize),
+    'length'   : forall(e.maps, testLength),
     'union'    : forall2(e.maps, e.maps, testUnion)
   };
   testMain(properties);

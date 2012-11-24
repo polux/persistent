@@ -68,7 +68,7 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
 
   String toString() => map.toString();
 
-  int size() => map.length;
+  int get length => map.length;
 
   PersistentMap<K, V> union(ModelMap<K, V> other, [V combine(V x, V y)]) {
     Map newmap = new Map.from(map);

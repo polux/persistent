@@ -97,13 +97,13 @@ abstract class PersistentMap<K, V> {
   PersistentMap mapValues(f(V value));
 
   /**
-   * Returns the number of (key, value) pairs in [this].
+   * The number of (key, value) pairs in [this].
    *
-   *     {}.size() == 0
-   *     {'a': 1}.size() == 1
-   *     {'a': 1, 'b': 2}.size() == 2
+   *     {}.length == 0
+   *     {'a': 1}.length == 1
+   *     {'a': 1, 'b': 2}.length == 2
    */
-  int size();
+  int get length;
 
   /**
    * Returns a new map whose (key, value) pairs are the union of those of [this]

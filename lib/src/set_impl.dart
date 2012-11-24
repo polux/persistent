@@ -50,7 +50,7 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
     return result;
   }
 
-  int size() => _map.size();
+  int get length => _map.length;
 
   _PersistentSetImpl<E> union(_PersistentSetImpl<E> persistentSet) =>
       new _PersistentSetImpl._internal(_map.union(persistentSet._map));
