@@ -35,6 +35,8 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   Option<V> _lookup(K key, int hash, int depth);
   PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
+  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+      V combine(V x, V y), int hash, int depth);
   PersistentMap<K, V> _delete(K key, int hash, int depth);
   PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth);
 
@@ -46,6 +48,17 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
   _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
+
+  _APersistentMap<K, V>
+      _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
+                        int depth);
+  _APersistentMap<K, V>
+      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
+                                int depth);
+  _APersistentMap<K, V>
+      _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
+  _APersistentMap<K, V>
+      _intersectionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
 
   LList<Pair<K, V>> _onePair(K key, V value) =>
       new LList<Pair<K, V>>.cons(new Pair<K, V>(key, value),
@@ -69,6 +82,11 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
 
+  PersistentMap<K, V>
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
+    this._intersectionWith(other,
+        (combine != null) ? combine : (V x, V y) => y, 0);
+
   // toString() => toDebugString();
 }
 
@@ -85,6 +103,12 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
       int depth) {
     assert(size == keyValues.length());
     return new _Leaf<K, V>(hash, keyValues, size);
+  }
+
+  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+      V combine(V x, V y), int hash, int depth) {
+    assert(size == keyValues.length());
+    return this;
   }
 
   PersistentMap<K, V> _delete(K key, int hash, int depth) => this;
@@ -104,6 +128,22 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) => m;
+
+  PersistentMap<K, V>
+      _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
+                        int depth) => this;
+
+  PersistentMap<K, V>
+      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
+                                int depth) {
+        throw "should never be called";
+  }
+
+  PersistentMap<K, V> _intersectionWithLeaf(
+      _Leaf<K, V> m, V combine(V x, V y), int depth) => this;
+
+  PersistentMap<K, V> _intersectionWithSubMap(
+      _SubMap<K, V> m, V combine(V x, V y), int depth) => this;
 
   PersistentMap mapValues(f(V)) => this;
 
@@ -148,7 +188,6 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
         it = cons.tail;
       }
       builder.add(toInsert);
-      //print("ici ${builder.build()} $newsize");
       newsize++;
       return builder.build();
     }
@@ -182,6 +221,22 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
             ._insertWith(keyValues, size, combine, hash, depth);
       }
     }
+  }
+
+  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+      V combine(V x, V y), int hash, int depth) {
+    assert(size == keyValues.length());
+    // TODO(polux): possibly faster implementation
+    Map<K, V> map = toMap();
+    LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
+    int newsize = 0;
+    keyValues.foreach((Pair<K, V> pair) {
+      if (map.containsKey(pair.fst)) {
+        builder.add(new Pair<K, V>(pair.fst, combine(map[pair.fst], pair.snd)));
+        newsize++;
+      }
+    });
+    return new _Leaf(_hash, builder.build(), newsize);
   }
 
   PersistentMap<K, V> _delete(K key, int hash, int depth) {
@@ -237,6 +292,23 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, length, combine, _hash, depth);
+
+  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+                                        V combine(V x, V y), int depth) =>
+      m._intersectionWithLeaf(this, combine, depth);
+
+  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
+                                                V combine(V x, V y),
+                                                int depth) =>
+      m;
+
+  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+                                            int depth) =>
+      m._intersectWith(_pairs, length, combine, _hash, depth);
+
+  PersistentMap<K, V> _intersectionWithSubMap(_SubMap<K, V> m,
+                                              V combine(V x, V y), int depth) =>
+      m._intersectWith(_pairs, length, combine, _hash, depth);
 
   Option<V> _lookup(K key, int hash, int depth) {
     if (hash != _hash)
@@ -338,6 +410,22 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
       newarray[index] = new _Leaf<K, V>(hash, keyValues, size);
       return new _SubMap<K, V>(_bitmap | mask, newarray, length + size);
+    }
+  }
+
+  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+      V combine(V x, V y), int hash, int depth) {
+    assert(size == keyValues.length());
+
+    int branch = (hash >> (depth * 5)) & 0x1f;
+    int mask = 1 << branch;
+
+    if ((_bitmap & mask) != 0) {
+      int index = _popcount(_bitmap & (mask - 1));
+      _APersistentMap<K, V> m = _array[index];
+      return m._intersectWith(keyValues, size, combine, hash, depth + 1);
+    } else {
+      return new _EmptyMap();
     }
   }
 
@@ -459,6 +547,56 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       mask <<= 1;
     }
     return new _SubMap<K, V>(ormap, newarray, newSize);
+  }
+
+  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+                                        V combine(V x, V y), int depth) =>
+      m._intersectionWithSubMap(this, combine, depth);
+
+  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
+                                                V combine(V x, V y),
+                                                int depth) =>
+      m;
+
+  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+                                            int depth) =>
+      _intersectWith(m._pairs,  m.length, (V v1, V v2) => combine(v2, v1),
+                     m._hash, depth);
+
+  PersistentMap<K, V> _intersectionWithSubMap(
+      _SubMap<K, V> m, V combine(V x, V y), int depth) {
+    int andmap = _bitmap & m._bitmap;
+    List<_APersistentMap<K, V>> newarray = new List<_APersistentMap<K, V>>();
+    int mask = 1, i1 = 0, i2 = 0;
+    int newSize = 0;
+    int newMask = 0;
+    while (mask <= _bitmap) {
+      if ((andmap & mask) != 0) {
+        _array[i1];
+        m._array[i2];
+        _APersistentMap<K, V> newMap =
+            m._array[i2]._intersectionWith(_array[i1], combine, depth + 1);
+        newarray.add(newMap);
+        newSize += newMap.length;
+        newMask |= mask;
+        i1++;
+        i2++;
+      } else if ((_bitmap & mask) != 0) {
+        i1++;
+      } else if ((m._bitmap & mask) != 0) {
+        i2++;
+      }
+      mask <<= 1;
+    }
+    if (newarray.length > 1) {
+      return new _SubMap<K, V>(newMask, newarray, newSize);
+    } else {
+      assert(newarray.length == 1);
+      _APersistentMap<K, V> onlyValueLeft = newarray[0];
+      return onlyValueLeft._isLeaf()
+          ? onlyValueLeft
+          : new _SubMap<K, V>(newMask, newarray, newSize);
+    }
   }
 
   PersistentMap mapValues(f(V)) {

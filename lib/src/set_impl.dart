@@ -55,15 +55,8 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
   _PersistentSetImpl<E> union(_PersistentSetImpl<E> persistentSet) =>
       new _PersistentSetImpl._internal(_map.union(persistentSet._map));
 
-  _PersistentSetImpl<E> difference(_PersistentSetImpl<E> persistentSet) {
-    _PersistentSetImpl result = new _PersistentSetImpl();
-    _map.forEach((E k, v) {
-      if (!persistentSet.contains(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
-  }
+  _PersistentSetImpl<E> difference(_PersistentSetImpl<E> persistentSet) =>
+      new _PersistentSetImpl._internal(_map.intersection(persistentSet._map));
 
   _PersistentSetImpl<E> intersection(_PersistentSetImpl<E> persistentSet) {
     _PersistentSetImpl result = new _PersistentSetImpl();

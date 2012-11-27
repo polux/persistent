@@ -126,6 +126,26 @@ abstract class PersistentMap<K, V> {
       union(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /**
+   * Returns a new map whose (key, value) pairs are the intersection of those of
+   * [this] and [other].
+   *
+   * The intersection is right-biased: values from [other] are retained. If
+   * [combine] is provided, the retained value for a [key] present in both
+   * [this] and [other] is then [combine(leftvalue, rightvalue)] where
+   * [leftvalue] is the value bound to [key] in [this] and [rightvalue] is the
+   * one bound to [key] in [other].
+   *
+   *     {'a': 1}.intersection({'b': 2}) == {}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}
+   *
+   * Note that [intersection] is commutative if and only if [combine] is
+   * provided and if it is commutative.
+   */
+  PersistentMap<K, V>
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+
+  /**
    * Returns a mutable copy of [this].
    */
   Map<K, V> toMap();

@@ -79,10 +79,15 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   int get length => toMap().length;
 
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
-    throw "not implemented";
+    throw new UnsupportedError("union is not supported");
+  }
+
+  PersistentMap<K, V> intersection(PersistentMap<K, V> other,
+                                   [V combine(V x, V y)]) {
+    throw new UnsupportedError("intersection is not supported");
   }
 
   PersistentMap<K, V> adjust(K key, V update(V)) {
-    throw "not implemented";
+    throw new UnsupportedError("adjust is not supported");
   }
 }

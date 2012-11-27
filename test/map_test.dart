@@ -58,17 +58,27 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
     sameMap(implemMapFrom(map1).union(implemMapFrom(map2), minus),
             modelMapFrom(map1).union(modelMapFrom(map2), minus));
 
+testIntersection(Map<Key, int> map1, Map<Key, int> map2) {
+  if (!sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
+      modelMapFrom(map1).intersection(modelMapFrom(map2), minus))) {
+    print("from $map1 and $map2: ${implemMapFrom(map1).intersection(implemMapFrom(map2), minus)} VS ${modelMapFrom(map1).intersection(modelMapFrom(map2), minus)}");
+  }
+  return  sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
+            modelMapFrom(map1).intersection(modelMapFrom(map2), minus));
+}
+
 main() {
   final e = new Enumerations();
   final properties = {
-    'equals'   : forall2(e.maps, e.maps, testEquals),
-    'insert'   : forall3(e.maps, e.keys, e.values, testInsert),
-    'delete'   : forall2(e.maps, e.keys, testDelete),
-    'lookup'   : forall2(e.maps, e.keys, testLookup),
-    'adjust'   : forall2(e.maps, e.keys, testAdjust),
-    'mapValues': forall(e.maps, testMapValues),
-    'length'   : forall(e.maps, testLength),
-    'union'    : forall2(e.maps, e.maps, testUnion)
+    'equals'      : forall2(e.maps, e.maps, testEquals),
+    'insert'      : forall3(e.maps, e.keys, e.values, testInsert),
+    'delete'      : forall2(e.maps, e.keys, testDelete),
+    'lookup'      : forall2(e.maps, e.keys, testLookup),
+    'adjust'      : forall2(e.maps, e.keys, testAdjust),
+    'mapValues'   : forall(e.maps, testMapValues),
+    'length'      : forall(e.maps, testLength),
+    'union'       : forall2(e.maps, e.maps, testUnion),
+    'intersection': forall2(e.maps, e.maps, testIntersection)
   };
   testMain(properties);
 }
