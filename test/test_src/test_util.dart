@@ -42,7 +42,7 @@ class Key {
 }
 
 /**
- * Enumerations of [Key] and [Map<Key, int>].
+ * Enumerations of [Key], [Map<Key, int>] and [Set<Key>].
  */
 class Enumerations {
   en.Enumeration<Key> keys;
@@ -96,7 +96,7 @@ bool setEquals(Set s1, Set s2) {
 bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm.map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
 
-testMain(Map<String, Property> properties) {
+void testMain(Map<String, Property> properties) {
   final parser = new ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
