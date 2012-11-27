@@ -135,6 +135,31 @@ to
 </code></pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="intersection">
+abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMapBase.html">K</a>, <a href="../persistent/PersistentMapBase.html">V</a>&gt; <strong>intersection</strong>(<a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href="../persistent/PersistentMapBase.html">K</a>, <a href="../persistent/PersistentMapBase.html">V</a>&gt; other, [<a href="../persistent/PersistentMapBase.html">V</a> combine(<a href="../persistent/PersistentMapBase.html">V</a> left, <a href="../persistent/PersistentMapBase.html">V</a> right)]) <a class="anchor-link" href="#intersection"
+              title="Permalink to PersistentMapBase&lt;K, V&gt;.intersection">#</a></h4>
+<div class="inherited-from">inherited from <a href="../persistent/PersistentMap.html">PersistentMap</a> </div><div class="doc">
+<p>Returns a new map whose (key, value) pairs are the intersection of those of
+<code>this</code> and 
+<span class="param">other</span>.</p>
+<p>The intersection is right-biased: values from 
+<span class="param">other</span> are retained. If
+
+<span class="param">combine</span> is provided, the retained value for a <code>key</code> present in both
+<code>this</code> and 
+<span class="param">other</span> is then <code>combine(leftvalue, rightvalue)</code> where
+<code>leftvalue</code> is the value bound to <code>key</code> in <code>this</code> and <code>rightvalue</code> is the
+one bound to <code>key</code> in 
+<span class="param">other</span>.</p>
+<pre><code>{'a': 1}.intersection({'b': 2}) == {}
+{'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
+{'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) =&gt; x + y) == {'a': 4}
+</code></pre>
+<p>Note that <code>intersection</code> is commutative if and only if 
+<span class="param">combine</span> is
+provided and if it is commutative.</p>
+</div>
+</div>
 <div class="method inherited"><h4 id="lookup">
 abstract <a href="../persistent/Option.html">Option</a>&lt;<a href="../persistent/PersistentMapBase.html">V</a>&gt; <strong>lookup</strong>(<a href="../persistent/PersistentMapBase.html">K</a> key) <a class="anchor-link" href="#lookup"
               title="Permalink to PersistentMapBase&lt;K, V&gt;.lookup">#</a></h4>
@@ -231,7 +256,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-24 20:50:11.279</div>
+          <div>This page was generated at 2012-11-28 00:13:52.027</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
