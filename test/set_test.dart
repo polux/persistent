@@ -20,50 +20,50 @@ import 'package:dart_check/dart_check.dart';
 import 'package:persistent/persistent.dart';
 import 'test_src/test_util.dart';
 
-// a unary function on Keys
-Key times42(Key key) => new Key(key.i * 42, key.b);
+// a unary function on Elements
+Element times42(Element e) => new Element(e.i * 42, e.b);
 
-// a predicate on Keys
-bool pred(Key key) => key.i % 3 == 0;
+// a predicate on Elements
+bool pred(Element e) => e.i % 3 == 0;
 
-testEquals(Set<Key> s1, Set<Key> s2) =>
+testEquals(Set<Element> s1, Set<Element> s2) =>
     (implemSetFrom(s1) == implemSetFrom(s2)) == setEquals(s1, s2);
 
-testInsert(Set<Key> s, Key elem) =>
+testInsert(Set<Element> s, Element elem) =>
     sameSet(implemSetFrom(s).insert(elem), modelSetFrom(s).insert(elem));
 
-testDelete(Set<Key> s, Key elem) {
+testDelete(Set<Element> s, Element elem) {
   PersistentSet ps = implemSetFrom(s).delete(elem);
   return sameSet(ps, modelSetFrom(s).delete(elem))
     // checks that delete's normalizes the set so that == is well defined
     && implemSetFrom(ps.toSet()) == ps;
 }
 
-testContains(Set<Key> s, Key elem) =>
+testContains(Set<Element> s, Element elem) =>
     implemSetFrom(s).contains(elem) == modelSetFrom(s).contains(elem);
 
-testMap(Set<Key> s) =>
+testMap(Set<Element> s) =>
     sameSet(implemSetFrom(s).map(times42), modelSetFrom(s).map(times42));
 
-testFilter(Set<Key> s) =>
+testFilter(Set<Element> s) =>
     sameSet(implemSetFrom(s).filter(pred), modelSetFrom(s).filter(pred));
 
-testLength(Set<Key> s) =>
+testLength(Set<Element> s) =>
     implemSetFrom(s).length == modelSetFrom(s).length;
 
-testUnion(Set<Key> s1, Set<Key> s2) =>
+testUnion(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).union(implemSetFrom(s2)),
             modelSetFrom(s1).union(modelSetFrom(s2)));
 
-testDifference(Set<Key> s1, Set<Key> s2) =>
+testDifference(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).difference(implemSetFrom(s2)),
             modelSetFrom(s1).difference(modelSetFrom(s2)));
 
-testIntersection(Set<Key> s1, Set<Key> s2) =>
+testIntersection(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).intersection(implemSetFrom(s2)),
             modelSetFrom(s1).intersection(modelSetFrom(s2)));
 
-testCartesianProduct(Set<Key> s1, Set<Key> s2) =>
+testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).cartesianProduct(implemSetFrom(s2)),
             modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
 
@@ -71,9 +71,9 @@ main() {
   final e = new Enumerations();
   final properties = {
     'equals'       : forall2(e.sets, e.sets, testEquals),
-    'insert'       : forall2(e.sets, e.keys, testInsert),
-    'delete'       : forall2(e.sets, e.keys, testDelete),
-    'contains'     : forall2(e.sets, e.keys, testContains),
+    'insert'       : forall2(e.sets, e.elements, testInsert),
+    'delete'       : forall2(e.sets, e.elements, testDelete),
+    'contains'     : forall2(e.sets, e.elements, testContains),
     'map'          : forall(e.sets, testMap),
     'filter'       : forall(e.sets, testFilter),
     'length'       : forall(e.sets, testLength),

@@ -27,36 +27,93 @@ part 'map_model.dart';
 part 'set_model.dart';
 
 /**
- * A datatype with an imperfect hash function
+ * A datatype with an imperfect hash function to use as a key for testing maps.
  */
 class Key {
-  int i;
-  bool b;
-  Key(this.i, this.b);
+  // a list of of size 6 made of integers in [0..31]
+  final List<int> key;
+  final bool b;
+  final int hashCode;
+
+  static int computeHashCode(key) {
+    int result = 0;
+    for(int i = 0; i < 6; i++) {
+      result |= key[i] << (5 * i);
+    }
+    return result;
+  }
+
+  Key(List<int> key, bool b)
+      : this.key = key
+      , this.b = b
+      , this.hashCode = computeHashCode(key) {
+    assert(key.length == 6);
+  }
+
+  static bool _eqList(List xs, List ys) {
+    if (xs.length != ys.length) return false;
+    for (int i = 0; i < xs.length; i++) {
+      if (xs[i] != ys[i]) return false;
+    }
+    return true;
+  }
+
   bool operator ==(Key other) {
     if (other is! Key) return false;
-    return i == other.i && b == other.b;
+    return _eqList(key, other.key) && b == other.b;
   }
-  int get hashCode => i.hashCode;
-  toString() => "Key($i,$b)";
+
+  toString() => "Key($key, $b)";
 }
 
 /**
- * Enumerations of [Key], [Map<Key, int>] and [Set<Key>].
+ * A datatype with an imperfect hash function to use as an element for testing
+ * sets.
+ */
+class Element {
+  final int i;
+  final bool b;
+  Element(this.i, this.b);
+  int get hashCode => i.hashCode;
+  bool operator ==(other) =>
+    (other is Element)
+    && i == other.i
+    && b == other.b;
+  String toString() => "Element($i, $b)";
+}
+
+/**
+ * Enumerations of [Key], [Element], [Map<Key, int>] and [Set<Element>].
  */
 class Enumerations {
   en.Enumeration<Key> keys;
+  en.Enumeration<Element> elements;
   en.Enumeration<int> values;
   en.Enumeration<Map<Key, int>> maps;
-  en.Enumeration<Set<Key>> sets;
+  en.Enumeration<Set<Element>> sets;
+
+  static _list6(a) => (b) => (c) => (d) => (e)  => (f) => [a, b, c, d, e, f];
 
   Enumerations() {
-    keys = en.singleton((i) => (b) => new Key(i, b))
-             .apply(c.ints)
+    // [{0}, {1}, ..., {31}]
+    var smallints = en.empty();
+    for (int i = 0; i < 32; i++) {
+      var n = en.singleton(i);
+      for (int s = 0; s < i; s++) { n = n.pay(); }
+      smallints += n;
+    }
+    final smalllists = en.singleton(_list6)
+        .apply(smallints).apply(smallints).apply(smallints)
+        .apply(smallints).apply(smallints).apply(smallints);
+    keys = en.singleton((k) => (b) => new Key(k, b))
+             .apply(smalllists)
              .apply(c.bools);
     values = c.ints + new en.Enumeration.singleton(null);
     maps = c.mapsOf(keys, values);
-    sets = c.setsOf(keys);
+    elements = en.singleton((i) => (b) => new Element(i, b))
+                 .apply(c.ints)
+                 .apply(c.bools);
+    sets = c.setsOf(elements);
   }
 }
 
