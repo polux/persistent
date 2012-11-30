@@ -30,14 +30,14 @@ part 'set_model.dart';
  * A datatype with an imperfect hash function to use as a key for testing maps.
  */
 class Key {
-  // a list of of size 6 made of integers in [0..31]
+  // a list of of 7 integers in [0..31] and 1 integer in [0..3]
   final List<int> key;
   final bool b;
   final int hashCode;
 
   static int computeHashCode(key) {
     int result = 0;
-    for(int i = 0; i < 6; i++) {
+    for(int i = 0; i < 7; i++) {
       result |= key[i] << (5 * i);
     }
     return result;
@@ -47,7 +47,7 @@ class Key {
       : this.key = key
       , this.b = b
       , this.hashCode = computeHashCode(key) {
-    assert(key.length == 6);
+    assert(key.length == 7);
   }
 
   static bool _eqList(List xs, List ys) {
@@ -92,7 +92,8 @@ class Enumerations {
   en.Enumeration<Map<Key, int>> maps;
   en.Enumeration<Set<Element>> sets;
 
-  static _list6(a) => (b) => (c) => (d) => (e)  => (f) => [a, b, c, d, e, f];
+  static _list7(a) => (b) => (c) => (d) => (e)  => (f) => (g) =>
+      [a, b, c, d, e, f, g];
 
   Enumerations() {
     // [{0}, {1}, ..., {31}]
@@ -102,9 +103,17 @@ class Enumerations {
       for (int s = 0; s < i; s++) { n = n.pay(); }
       smallints += n;
     }
-    final smalllists = en.singleton(_list6)
+    // [{0}, {1}, {2}, {3}]
+    var twoBits = en.empty();
+    for (int i = 0; i < 3; i++) {
+      var n = en.singleton(i);
+      for (int s = 0; s < i; s++) { n = n.pay(); }
+      twoBits += n;
+    }
+    final smalllists = en.singleton(_list7)
         .apply(smallints).apply(smallints).apply(smallints)
-        .apply(smallints).apply(smallints).apply(smallints);
+        .apply(smallints).apply(smallints).apply(smallints)
+        .apply(twoBits);
     keys = en.singleton((k) => (b) => new Key(k, b))
              .apply(smalllists)
              .apply(c.bools);
