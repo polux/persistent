@@ -65,19 +65,18 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
           new LList<Pair<K, V>>.nil());
 
   Option<V> lookup(K key) =>
-      _lookup(key, (key.hashCode >> 2) & 0x3fffffff, 0);
+      _lookup(key, key.hashCode << 2, 0);
 
   PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) =>
       _insertWith(_onePair(key, value),
           1,
           (combine != null) ? combine : (V x, V y) => y,
-          (key.hashCode >> 2) & 0x3fffffff, 0);
+          key.hashCode << 2, 0);
 
-  PersistentMap<K, V> delete(K key) =>
-      _delete(key, (key.hashCode >> 2) & 0x3fffffff, 0);
+  PersistentMap<K, V> delete(K key) => _delete(key, key.hashCode << 2, 0);
 
   PersistentMap<K, V> adjust(K key, V update(V)) =>
-      _adjust(key, update, (key.hashCode >> 2) & 0x3fffffff, 0);
+      _adjust(key, update, key.hashCode << 2, 0);
 
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
