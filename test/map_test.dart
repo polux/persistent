@@ -58,14 +58,9 @@ testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
     sameMap(implemMapFrom(map1).union(implemMapFrom(map2), minus),
             modelMapFrom(map1).union(modelMapFrom(map2), minus));
 
-testIntersection(Map<Key, int> map1, Map<Key, int> map2) {
-  if (!sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
-      modelMapFrom(map1).intersection(modelMapFrom(map2), minus))) {
-    print("from $map1 and $map2: ${implemMapFrom(map1).intersection(implemMapFrom(map2), minus)} VS ${modelMapFrom(map1).intersection(modelMapFrom(map2), minus)}");
-  }
-  return  sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
+testIntersection(Map<Key, int> map1, Map<Key, int> map2) =>
+    sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
             modelMapFrom(map1).intersection(modelMapFrom(map2), minus));
-}
 
 main() {
   final e = new Enumerations();

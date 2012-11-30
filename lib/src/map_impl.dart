@@ -520,7 +520,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
         new List<_APersistentMap<K, V>>(_popcount(ormap));
     int mask = 1, i = 0, i1 = 0, i2 = 0;
     int newSize = 0;
-    while (mask <= _bitmap) {
+    while (mask <= ormap) {
       if ((andmap & mask) != 0) {
         _array[i1];
         m._array[i2];

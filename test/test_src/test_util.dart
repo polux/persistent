@@ -92,8 +92,8 @@ class Enumerations {
   en.Enumeration<Map<Key, int>> maps;
   en.Enumeration<Set<Element>> sets;
 
-  static _list7(a) => (b) => (c) => (d) => (e)  => (f) => (g) =>
-      [a, b, c, d, e, f, g];
+  static _list7(x1) => (x2) => (x3) => (x4) => (x5)  => (x6) => (x7) =>
+      [x1, x2, x3, x4, x5, x6, x7];
 
   Enumerations() {
     // [{0}, {1}, ..., {31}]
