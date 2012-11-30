@@ -590,12 +590,13 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
     if (newarray.length > 1) {
       return new _SubMap<K, V>(newMask, newarray, newSize);
-    } else {
-      assert(newarray.length == 1);
+    } else if (newarray.length == 1) {
       _APersistentMap<K, V> onlyValueLeft = newarray[0];
       return onlyValueLeft._isLeaf()
           ? onlyValueLeft
           : new _SubMap<K, V>(newMask, newarray, newSize);
+    } else {
+      return new _EmptyMap();
     }
   }
 
