@@ -129,7 +129,7 @@ class Enumerations {
 PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);
 ModelMap modelMapFrom(Map m) => new ModelMap(m);
 
-PersistentSet implemSetFrom(Set s) => new PersistentSet.fromSet(s);
+PersistentSet implemSetFrom(Set s) => new PersistentSet.from(s);
 ModelSet modelSetFrom(Set s) => new ModelSet(s);
 
 class _Stop implements Exception {}

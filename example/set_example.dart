@@ -21,7 +21,7 @@ import 'package:persistent/persistent.dart';
 main() {
   final emptySet = new PersistentSet<String>();
   final s1 = emptySet.insert("a").insert("b");
-  final s2 = new PersistentSet<String>.fromSet(new Set.from(["a", "c"]));
+  final s2 = new PersistentSet<String>.from(["a", "c"]);
 
   print(s1);  // {a, b}
   print(s2);  // {a, c}

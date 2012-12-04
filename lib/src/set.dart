@@ -22,12 +22,12 @@ abstract class PersistentSet<E> {
   factory PersistentSet() => new _PersistentSetImpl<E>();
 
   /**
-   * Creates an immutable copy of [mutableSet] using the default implementation
+   * Creates an immutable copy of [elements] using the default implementation
    * of [PersistentSet].
    */
-  factory PersistentSet.fromSet(Set<E> mutableSet) {
+  factory PersistentSet.from(Iterable<E> elements) {
     PersistentSet<E> result = new _PersistentSetImpl<E>();
-    for (E element in mutableSet) {
+    for (E element in elements) {
       result = result.insert(element);
     }
     return result;
