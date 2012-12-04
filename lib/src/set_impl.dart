@@ -24,6 +24,8 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
   factory _PersistentSetImpl() =>
       new _PersistentSetImpl._internal(new PersistentMap<E, Object>());
 
+  bool get isEmpty => _map.isEmpty;
+
   _PersistentSetImpl<E> insert(E element) =>
       new _PersistentSetImpl._internal(_map.insert(element, null));
 

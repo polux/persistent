@@ -33,6 +33,8 @@ abstract class PersistentSet<E> {
     return result;
   }
 
+  bool get isEmpty;
+
   PersistentSet<E> insert(E element);
 
   PersistentSet<E> delete(E element);

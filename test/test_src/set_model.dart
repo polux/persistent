@@ -24,6 +24,8 @@ class ModelSet<E> extends PersistentSetBase<E> {
 
   ModelSet(this.zet);
 
+  bool get isEmpty => zet.isEmpty;
+
   PersistentSet<E> insert(E element) {
     Set<E> newset = new Set<E>.from(zet);
     newset.add(element);

@@ -26,6 +26,9 @@ Element times42(Element e) => new Element(e.i * 42, e.b);
 // a predicate on Elements
 bool pred(Element e) => e.i % 3 == 0;
 
+testIsEmpty(Set<Element> s) =>
+    implemSetFrom(s).isEmpty == modelSetFrom(s).isEmpty;
+
 testEquals(Set<Element> s1, Set<Element> s2) =>
     (implemSetFrom(s1) == implemSetFrom(s2)) == setEquals(s1, s2);
 
@@ -70,6 +73,7 @@ testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
 main() {
   final e = new Enumerations();
   final properties = {
+    'isEmpty'      : forall(e.sets, testIsEmpty),
     'equals'       : forall2(e.sets, e.sets, testEquals),
     'insert'       : forall2(e.sets, e.elements, testInsert),
     'delete'       : forall2(e.sets, e.elements, testDelete),
