@@ -22,6 +22,8 @@ part of map_bench;
 class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   final LList<Pair<K, V>> _list;
 
+  bool get isEmpty => _list.isNil();
+
   SimplePersistentMap._internal(this._list);
   factory SimplePersistentMap() =>
       new SimplePersistentMap._internal(new LList.nil());

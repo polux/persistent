@@ -26,6 +26,9 @@ int minus(int x, int y) => (x == null ? 0 : x) - (y == null ? 0 : y);
 // a unary function on nullable integers
 int times42(x) => (x == null ? 0 : x) * 42;
 
+testIsEmpty(Map<Key, int> map) =>
+    implemMapFrom(map).isEmpty == modelMapFrom(map).isEmpty;
+
 testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
     (implemMapFrom(map1) == implemMapFrom(map2)) == mapEquals(map1, map2);
 
@@ -65,6 +68,7 @@ testIntersection(Map<Key, int> map1, Map<Key, int> map2) =>
 main() {
   final e = new Enumerations();
   final properties = {
+    'isEmpty'     : forall(e.maps, testIsEmpty),
     'equals'      : forall2(e.maps, e.maps, testEquals),
     'insert'      : forall3(e.maps, e.keys, e.values, testInsert),
     'delete'      : forall2(e.maps, e.keys, testDelete),

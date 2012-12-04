@@ -40,6 +40,9 @@ abstract class PersistentMap<K, V> {
     return result;
   }
 
+  /// True when [this] is empty.
+  bool get isEmpty;
+
   /**
    * Returns a new map identical to [this] except that it binds [key] to
    * [value].

@@ -22,6 +22,8 @@ part of map_bench;
 class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
   final Map<K, V> _map;
 
+  bool get isEmpty => _map.isEmpty;
+
   SimplePersistentMap2._internal(this._map);
   factory SimplePersistentMap2() =>
       new SimplePersistentMap2._internal(new Map<K, V>());

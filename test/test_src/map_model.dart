@@ -24,6 +24,8 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
 
   ModelMap(this.map);
 
+  bool get isEmpty => map.isEmpty;
+
   PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     Map<K, V> newmap = new Map<K, V>.from(map);

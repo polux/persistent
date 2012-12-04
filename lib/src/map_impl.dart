@@ -27,10 +27,10 @@ class _Stop implements Exception {}
 abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   final int length;
 
-  _APersistentMap(this.length);
+  _APersistentMap(this.length, this.isEmpty, this._isLeaf);
 
-  bool _isEmpty();
-  bool _isLeaf();
+  final bool isEmpty;
+  final bool _isLeaf;
 
   Option<V> _lookup(K key, int hash, int depth);
   PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
@@ -91,10 +91,7 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
 }
 
 class _EmptyMap<K, V> extends _APersistentMap<K, V> {
-  _EmptyMap() : super(0);
-
-  bool _isEmpty() => true;
-  bool _isLeaf() => false;
+  _EmptyMap() : super(0, true, false);
 
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
@@ -158,13 +155,10 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   int _hash;
   LList<Pair<K, V>> _pairs;
 
-  _Leaf(this._hash, pairs, int size) : super(size) {
+  _Leaf(this._hash, pairs, int size) : super(size, false, true) {
     this._pairs = pairs;
     assert(size == pairs.length());
   }
-
-  bool _isEmpty() => false;
-  bool _isLeaf() => true;
 
   PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
@@ -358,7 +352,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   int _bitmap;
   List<_APersistentMap<K, V>> _array;
 
-  _SubMap(this._bitmap, this._array, int size) : super(size);
+  _SubMap(this._bitmap, this._array, int size) : super(size, false, false);
 
   static _popcount(int n) {
     n = n - ((n >> 1) & 0x55555555);
@@ -368,9 +362,6 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     n = n + (n >> 16);
     return n & 0x0000003F;
   }
-
-  bool _isEmpty() => false;
-  bool _isLeaf() => false;
 
   Option<V> _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
@@ -441,7 +432,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       if (identical(m, newm)) {
         return this;
       }
-      if (newm._isEmpty()) {
+      if (newm.isEmpty) {
         if (_array.length > 2) {
           int newsize = _array.length - 1;
           List<_APersistentMap<K, V>> newarray =
@@ -454,13 +445,13 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
           _APersistentMap<K, V> onlyValueLeft = _array[1 - index];
-          return onlyValueLeft._isLeaf()
+          return onlyValueLeft._isLeaf
               ? onlyValueLeft
               : new _SubMap(_bitmap ^ mask,
                             <_APersistentMap<K, V>>[onlyValueLeft],
                             length + delta);
         }
-      } else if (newm._isLeaf()){
+      } else if (newm._isLeaf){
         if (_array.length == 1) {
           return newm;
         } else {
@@ -592,7 +583,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       return new _SubMap<K, V>(newMask, newarray, newSize);
     } else if (newarray.length == 1) {
       _APersistentMap<K, V> onlyValueLeft = newarray[0];
-      return onlyValueLeft._isLeaf()
+      return onlyValueLeft._isLeaf
           ? onlyValueLeft
           : new _SubMap<K, V>(newMask, newarray, newSize);
     } else {
