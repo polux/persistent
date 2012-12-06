@@ -54,6 +54,9 @@ abstract class PersistentMap&lt;K, V&gt; {
    return result;
  }
 
+ /// True when [this] is empty.
+ bool get isEmpty;
+
  /**
   * Returns a new map identical to [this] except that it binds [key] to
   * [value].
@@ -204,6 +207,19 @@ factory PersistentMap.fromMap(Map&lt;K, V&gt; map) {
 </div>
 <div>
 <h3>Properties</h3>
+<div class="field"><h4 id="isEmpty">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isEmpty</strong> <a class="anchor-link"
+            href="#isEmpty"
+            title="Permalink to PersistentMap&lt;K, V&gt;.isEmpty">#</a>
+        </h4>
+        <div class="doc">
+<p>True when <code>this</code> is empty.</p>
+<pre class="source">
+bool get isEmpty;
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="length">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>length</strong> <a class="anchor-link"
@@ -367,7 +383,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-11-28 00:13:52.040</div>
+          <div>This page was generated at 2012-12-06 01:32:18.511</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

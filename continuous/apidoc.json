@@ -1,0 +1,2192 @@
+
+[
+  {
+    "kind": "library",
+    "name": "persistent",
+    "children": [
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "Pair",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "Pair",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "fst",
+                "id": "fst"
+              },
+              {
+                "ref": {
+                  "name": "B",
+                  "refId": "B"
+                },
+                "kind": "param",
+                "name": "snd",
+                "id": "snd"
+              }
+            ],
+            "id": "Pair2()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "==",
+            "children": [
+              {
+                "ref": {
+                  "name": "Pair",
+                  "refId": "Pair",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    },
+                    {
+                      "name": "B",
+                      "refId": "B"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "other",
+                "id": "other"
+              }
+            ],
+            "id": "==1()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "name": "hashCode",
+            "id": "hashCode0()"
+          },
+          {
+            "returnType": {
+              "name": "String",
+              "refId": "String"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "name": "hashCode",
+            "id": "hashCode"
+          },
+          {
+            "ref": {
+              "name": "A",
+              "refId": "A"
+            },
+            "kind": "property",
+            "name": "fst",
+            "id": "fst"
+          },
+          {
+            "ref": {
+              "name": "B",
+              "refId": "B"
+            },
+            "kind": "property",
+            "name": "snd",
+            "id": "snd"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "Pair",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "fst",
+                "id": "fst"
+              },
+              {
+                "ref": {
+                  "name": "B",
+                  "refId": "B"
+                },
+                "kind": "param",
+                "name": "snd",
+                "id": "snd"
+              }
+            ],
+            "id": "Pair2()"
+          }
+        ],
+        "id": "Pair"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "Option",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "Option._internal",
+            "children": [
+              {
+                "ref": {
+                  "name": "bool",
+                  "refId": "bool"
+                },
+                "kind": "param",
+                "name": "isDefined",
+                "id": "isDefined"
+              },
+              {
+                "ref": {
+                  "name": "T",
+                  "refId": "T"
+                },
+                "kind": "param",
+                "name": "_value",
+                "id": "_value"
+              }
+            ],
+            "id": "Option._internal2()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "Option.none",
+            "id": "Option.none0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "Option.some",
+            "children": [
+              {
+                "ref": {
+                  "name": "T",
+                  "refId": "T"
+                },
+                "kind": "param",
+                "name": "value",
+                "id": "value"
+              }
+            ],
+            "id": "Option.some1()"
+          },
+          {
+            "returnType": {
+              "name": "T",
+              "refId": "T"
+            },
+            "kind": "method",
+            "name": "value",
+            "id": "value0()"
+          },
+          {
+            "returnType": {
+              "name": "Option",
+              "refId": "Option"
+            },
+            "kind": "method",
+            "name": "map",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "map1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "==",
+            "children": [
+              {
+                "ref": {
+                  "name": "Option",
+                  "refId": "Option",
+                  "arguments": [
+                    {
+                      "name": "T",
+                      "refId": "T"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "other",
+                "id": "other"
+              }
+            ],
+            "id": "==1()"
+          },
+          {
+            "returnType": {
+              "name": "String",
+              "refId": "String"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          },
+          {
+            "ref": {
+              "name": "T",
+              "refId": "T"
+            },
+            "kind": "property",
+            "name": "value",
+            "id": "value"
+          },
+          {
+            "ref": {
+              "name": "T",
+              "refId": "T"
+            },
+            "kind": "property",
+            "name": "_value",
+            "id": "_value"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isDefined",
+            "id": "isDefined"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "Option._internal",
+            "children": [
+              {
+                "ref": {
+                  "name": "bool",
+                  "refId": "bool"
+                },
+                "kind": "param",
+                "name": "isDefined",
+                "id": "isDefined"
+              },
+              {
+                "ref": {
+                  "name": "T",
+                  "refId": "T"
+                },
+                "kind": "param",
+                "name": "_value",
+                "id": "_value"
+              }
+            ],
+            "id": "Option._internal2()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "Option.none",
+            "id": "Option.none0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "Option.some",
+            "children": [
+              {
+                "ref": {
+                  "name": "T",
+                  "refId": "T"
+                },
+                "kind": "param",
+                "name": "value",
+                "id": "value"
+              }
+            ],
+            "id": "Option.some1()"
+          }
+        ],
+        "id": "Option"
+      },
+      {
+        "superclass": {
+          "name": "LListBase",
+          "refId": "LListBase",
+          "arguments": [
+            {
+              "name": "A",
+              "refId": "A"
+            }
+          ]
+        },
+        "kind": "class",
+        "name": "Cons",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "Cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "elem",
+                "id": "elem"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "tail",
+                "id": "tail"
+              }
+            ],
+            "id": "Cons2()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "isNil",
+            "id": "isNil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "asCons",
+            "id": "asCons0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "name": "length",
+            "id": "length0()"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "name": "_length",
+            "id": "_length"
+          },
+          {
+            "ref": {
+              "name": "A",
+              "refId": "A"
+            },
+            "kind": "property",
+            "name": "elem",
+            "id": "elem"
+          },
+          {
+            "ref": {
+              "name": "LList",
+              "refId": "LList",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "tail",
+            "id": "tail"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "Cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "elem",
+                "id": "elem"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "tail",
+                "id": "tail"
+              }
+            ],
+            "id": "Cons2()"
+          }
+        ],
+        "id": "Cons"
+      },
+      {
+        "superclass": {
+          "name": "LListBase",
+          "refId": "LListBase",
+          "arguments": [
+            {
+              "name": "A",
+              "refId": "A"
+            }
+          ]
+        },
+        "kind": "class",
+        "name": "Nil",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "isNil",
+            "id": "isNil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "asCons",
+            "id": "asCons0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "name": "length",
+            "id": "length0()"
+          }
+        ],
+        "id": "Nil"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "LListFactory",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "LList.nil",
+            "id": "LList.nil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "LList.cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "x",
+                "id": "x"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "xs",
+                "id": "xs"
+              }
+            ],
+            "id": "LList.cons2()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "LList.nil",
+            "id": "LList.nil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "LList.cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "x",
+                "id": "x"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "xs",
+                "id": "xs"
+              }
+            ],
+            "id": "LList.cons2()"
+          }
+        ],
+        "id": "LListFactory"
+      },
+      {
+        "interfaces": [
+          {
+            "name": "LList",
+            "refId": "LList",
+            "arguments": [
+              {
+                "name": "A",
+                "refId": "A"
+              }
+            ]
+          }
+        ],
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "LListBase",
+        "children": [
+          {
+            "returnType": {
+              "name": "void",
+              "refId": "void"
+            },
+            "kind": "method",
+            "name": "foreach",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "foreach1()"
+          },
+          {
+            "returnType": {
+              "name": "LList",
+              "refId": "LList"
+            },
+            "kind": "method",
+            "name": "map",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "map1()"
+          },
+          {
+            "returnType": {
+              "name": "LList",
+              "refId": "LList",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "filter",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "filter1()"
+          }
+        ],
+        "id": "LListBase"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "LListBuilder",
+        "children": [
+          {
+            "returnType": {
+              "name": "void",
+              "refId": "void"
+            },
+            "kind": "method",
+            "name": "add",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "x",
+                "id": "x"
+              }
+            ],
+            "id": "add1()"
+          },
+          {
+            "returnType": {
+              "name": "LList",
+              "refId": "LList",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "build",
+            "children": [
+              {
+                "ref": {
+                  "name": "Dynamic_",
+                  "refId": "Dynamic_"
+                },
+                "isOptional": true,
+                "kind": "param",
+                "name": "tail",
+                "id": "tail"
+              }
+            ],
+            "id": "build1()"
+          },
+          {
+            "ref": {
+              "name": "LList",
+              "refId": "LList",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "_first",
+            "id": "_first"
+          },
+          {
+            "ref": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "_last",
+            "id": "_last"
+          }
+        ],
+        "id": "LListBuilder"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "LList",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "LList.nil",
+            "id": "LList.nil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "name": "LList.cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "x",
+                "id": "x"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "xs",
+                "id": "xs"
+              }
+            ],
+            "id": "LList.cons2()"
+          },
+          {
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "isNil",
+            "id": "isNil0()"
+          },
+          {
+            "returnType": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "asCons",
+            "id": "asCons0()"
+          },
+          {
+            "returnType": {
+              "name": "void",
+              "refId": "void"
+            },
+            "kind": "method",
+            "name": "foreach",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "foreach1()"
+          },
+          {
+            "returnType": {
+              "name": "LList",
+              "refId": "LList"
+            },
+            "kind": "method",
+            "name": "map",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "map1()"
+          },
+          {
+            "returnType": {
+              "name": "LList",
+              "refId": "LList",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "filter",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "filter1()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "name": "length",
+            "id": "length0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "LList.nil",
+            "id": "LList.nil0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "name": "LList.cons",
+            "children": [
+              {
+                "ref": {
+                  "name": "A",
+                  "refId": "A"
+                },
+                "kind": "param",
+                "name": "x",
+                "id": "x"
+              },
+              {
+                "ref": {
+                  "name": "LList",
+                  "refId": "LList",
+                  "arguments": [
+                    {
+                      "name": "A",
+                      "refId": "A"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "xs",
+                "id": "xs"
+              }
+            ],
+            "id": "LList.cons2()"
+          }
+        ],
+        "id": "LList"
+      },
+      {
+        "interfaces": [
+          {
+            "name": "PersistentSet",
+            "refId": "PersistentSet",
+            "arguments": [
+              {
+                "name": "E",
+                "refId": "E"
+              }
+            ]
+          }
+        ],
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "comment": "\nA base class for implementations of [PersistentSet].\n\n",
+        "name": "PersistentSetBase",
+        "children": [
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "+",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "+1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "-",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "-1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "Pair",
+                  "refId": "Pair"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "*",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet"
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "*1()"
+          },
+          {
+            "returnType": {
+              "name": "Set",
+              "refId": "Set",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "toSet",
+            "id": "toSet0()"
+          },
+          {
+            "returnType": {
+              "name": "String",
+              "refId": "String"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          }
+        ],
+        "id": "PersistentSetBase"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "name": "PersistentSet",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "comment": "Creates an empty [PersistentSet] using its default implementation.\n",
+            "name": "PersistentSet",
+            "id": "PersistentSet0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n\n",
+            "name": "PersistentSet.from",
+            "children": [
+              {
+                "ref": {
+                  "name": "Iterable",
+                  "refId": "Iterable",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "elements",
+                "id": "elements"
+              }
+            ],
+            "id": "PersistentSet.from1()"
+          },
+          {
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "isEmpty",
+            "id": "isEmpty0()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "insert",
+            "children": [
+              {
+                "ref": {
+                  "name": "E",
+                  "refId": "E"
+                },
+                "kind": "param",
+                "name": "element",
+                "id": "element"
+              }
+            ],
+            "id": "insert1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "delete",
+            "children": [
+              {
+                "ref": {
+                  "name": "E",
+                  "refId": "E"
+                },
+                "kind": "param",
+                "name": "element",
+                "id": "element"
+              }
+            ],
+            "id": "delete1()"
+          },
+          {
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "contains",
+            "children": [
+              {
+                "ref": {
+                  "name": "E",
+                  "refId": "E"
+                },
+                "kind": "param",
+                "name": "element",
+                "id": "element"
+              }
+            ],
+            "id": "contains1()"
+          },
+          {
+            "returnType": {
+              "name": "void",
+              "refId": "void"
+            },
+            "kind": "method",
+            "name": "forEach",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "forEach1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet"
+            },
+            "kind": "method",
+            "name": "map",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "map1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "filter",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "filter1()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "name": "length",
+            "id": "length0()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "union",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "union1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "Alias for [union]\n",
+            "name": "+",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "+1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "difference",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "difference1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "Alias for [difference]\n",
+            "name": "-",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "-1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "Pair",
+                  "refId": "Pair"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "cartesianProduct",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet"
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "cartesianProduct1()"
+          },
+          {
+            "isOperator": true,
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "Pair",
+                  "refId": "Pair"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "Alias for [cartesianProduct]\n",
+            "name": "*",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet"
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "*1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentSet",
+              "refId": "PersistentSet",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "intersection",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentSet",
+                  "refId": "PersistentSet",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "persistentSet",
+                "id": "persistentSet"
+              }
+            ],
+            "id": "intersection1()"
+          },
+          {
+            "returnType": {
+              "name": "Set",
+              "refId": "Set",
+              "arguments": [
+                {
+                  "name": "E",
+                  "refId": "E"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "toSet",
+            "id": "toSet0()"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isEmpty",
+            "id": "isEmpty"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "name": "length",
+            "id": "length"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "comment": "Creates an empty [PersistentSet] using its default implementation.\n",
+            "name": "PersistentSet",
+            "id": "PersistentSet0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n\n",
+            "name": "PersistentSet.from",
+            "children": [
+              {
+                "ref": {
+                  "name": "Iterable",
+                  "refId": "Iterable",
+                  "arguments": [
+                    {
+                      "name": "E",
+                      "refId": "E"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "elements",
+                "id": "elements"
+              }
+            ],
+            "id": "PersistentSet.from1()"
+          }
+        ],
+        "id": "PersistentSet"
+      },
+      {
+        "interfaces": [
+          {
+            "name": "PersistentMap",
+            "refId": "PersistentMap",
+            "arguments": [
+              {
+                "name": "K",
+                "refId": "K"
+              },
+              {
+                "name": "V",
+                "refId": "V"
+              }
+            ]
+          }
+        ],
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "comment": "\nA base class for implementations of [PersistentMap].\n\n",
+        "name": "PersistentMapBase",
+        "children": [
+          {
+            "returnType": {
+              "name": "Map",
+              "refId": "Map",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "toMap",
+            "id": "toMap0()"
+          },
+          {
+            "returnType": {
+              "name": "String",
+              "refId": "String"
+            },
+            "kind": "method",
+            "name": "toString",
+            "id": "toString0()"
+          }
+        ],
+        "id": "PersistentMapBase"
+      },
+      {
+        "superclass": {
+          "name": "Object",
+          "refId": "Object"
+        },
+        "kind": "class",
+        "comment": "\nAn immutable map, binding keys of type [K] to values of type [V]. Null values\nare supported but null keys are not.\n\nIn all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for\n[PersistentMap.fromMap({k1: v1, k2: v2, ...})].\n\n",
+        "name": "PersistentMap",
+        "children": [
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "comment": "Creates an empty [PersistentMap] using its default implementation.\n",
+            "name": "PersistentMap",
+            "id": "PersistentMap0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "method",
+            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n\n",
+            "name": "PersistentMap.fromMap",
+            "children": [
+              {
+                "ref": {
+                  "name": "Map",
+                  "refId": "Map",
+                  "arguments": [
+                    {
+                      "name": "K",
+                      "refId": "K"
+                    },
+                    {
+                      "name": "V",
+                      "refId": "V"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "map",
+                "id": "map"
+              }
+            ],
+            "id": "PersistentMap.fromMap1()"
+          },
+          {
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "comment": "True when [this] is empty.",
+            "name": "isEmpty",
+            "id": "isEmpty0()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map identical to [this] except that it binds [key] to\n[value].\n\nIf [key] was bound to some [oldvalue] in [this], it is nevertheless bound\nto [value] in the new map. If [key] was bound to some [oldvalue] in\n[this] and if [combine] is provided then [key] it is bound to\n[combine(oldvalue, value)] in the new map.\n\n    {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}\n    {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}\n    {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}\n\n",
+            "name": "insert",
+            "children": [
+              {
+                "ref": {
+                  "name": "K",
+                  "refId": "K"
+                },
+                "kind": "param",
+                "name": "key",
+                "id": "key"
+              },
+              {
+                "ref": {
+                  "name": "V",
+                  "refId": "V"
+                },
+                "kind": "param",
+                "name": "value",
+                "id": "value"
+              },
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "isOptional": true,
+                "kind": "param",
+                "name": "combine",
+                "id": "combine"
+              }
+            ],
+            "id": "insert3()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map identical to [this] except that it doesn't bind [key]\nanymore.\n\n    {'a': 1, 'b': 2}.delete('b') == {'a': 1}\n    {'a': 1}.delete('b') == {'a': 1}\n\n",
+            "name": "delete",
+            "children": [
+              {
+                "ref": {
+                  "name": "K",
+                  "refId": "K"
+                },
+                "kind": "param",
+                "name": "key",
+                "id": "key"
+              }
+            ],
+            "id": "delete1()"
+          },
+          {
+            "returnType": {
+              "name": "Option",
+              "refId": "Option",
+              "arguments": [
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nLooks up the value possibly bound to [key] in [this]. Returns\n[Option.some(value)] if it exists, [Option.none()] otherwise.\n\n    {'a': 1}.lookup('b') == Option.none()\n    {'a': 1, 'b': 2}.lookup('b') == Option.some(2)\n\n",
+            "name": "lookup",
+            "children": [
+              {
+                "ref": {
+                  "name": "K",
+                  "refId": "K"
+                },
+                "kind": "param",
+                "name": "key",
+                "id": "key"
+              }
+            ],
+            "id": "lookup1()"
+          },
+          {
+            "returnType": {
+              "name": "void",
+              "refId": "void"
+            },
+            "kind": "method",
+            "comment": "\nEvaluates [f(key, value)] for each ([key], [value]) pair in [this].\n\n",
+            "name": "forEach",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "forEach1()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map identical to [this] except that the value it possibly\nbinds to [key] has been adjusted by [update].\n\n    {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}\n    {'a': 1}.adjust('b', (x) => x + 1) == {'a', 1}\n\n",
+            "name": "adjust",
+            "children": [
+              {
+                "ref": {
+                  "name": "K",
+                  "refId": "K"
+                },
+                "kind": "param",
+                "name": "key",
+                "id": "key"
+              },
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "update",
+                "id": "update"
+              }
+            ],
+            "id": "adjust2()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap"
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map identical to [this] where each value has been updated by\n[f].\n\n    {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}\n    {}.map((x) => x + 1) == {}\n\n",
+            "name": "mapValues",
+            "children": [
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "kind": "param",
+                "name": "f",
+                "id": "f"
+              }
+            ],
+            "id": "mapValues1()"
+          },
+          {
+            "returnType": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "method",
+            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n\n",
+            "name": "length",
+            "id": "length0()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map whose (key, value) pairs are the union of those of [this]\nand [other].\n\nThe union is right-biased: if a key is present in both [this] and [other],\nthe value from [other] is retained. If [combine] is provided, the retained\nvalue for a [key] present in both [this] and [other] is then\n[combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to\n[key] in [this] and [rightvalue] is the one bound to [key] in [other].\n\n    {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}\n\nNote that [union] is commutative if and only if [combine] is provided and\nif it is commutative.\n\n",
+            "name": "union",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentMap",
+                  "refId": "PersistentMap",
+                  "arguments": [
+                    {
+                      "name": "K",
+                      "refId": "K"
+                    },
+                    {
+                      "name": "V",
+                      "refId": "V"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "other",
+                "id": "other"
+              },
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "isOptional": true,
+                "kind": "param",
+                "name": "combine",
+                "id": "combine"
+              }
+            ],
+            "id": "union2()"
+          },
+          {
+            "returnType": {
+              "name": "PersistentMap",
+              "refId": "PersistentMap",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a new map whose (key, value) pairs are the intersection of those of\n[this] and [other].\n\nThe intersection is right-biased: values from [other] are retained. If\n[combine] is provided, the retained value for a [key] present in both\n[this] and [other] is then [combine(leftvalue, rightvalue)] where\n[leftvalue] is the value bound to [key] in [this] and [rightvalue] is the\none bound to [key] in [other].\n\n    {'a': 1}.intersection({'b': 2}) == {}\n    {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}\n    {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}\n\nNote that [intersection] is commutative if and only if [combine] is\nprovided and if it is commutative.\n\n",
+            "name": "intersection",
+            "children": [
+              {
+                "ref": {
+                  "name": "PersistentMap",
+                  "refId": "PersistentMap",
+                  "arguments": [
+                    {
+                      "name": "K",
+                      "refId": "K"
+                    },
+                    {
+                      "name": "V",
+                      "refId": "V"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "other",
+                "id": "other"
+              },
+              {
+                "ref": {
+                  "name": "Function",
+                  "refId": "Function"
+                },
+                "isOptional": true,
+                "kind": "param",
+                "name": "combine",
+                "id": "combine"
+              }
+            ],
+            "id": "intersection2()"
+          },
+          {
+            "returnType": {
+              "name": "Map",
+              "refId": "Map",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "\nReturns a mutable copy of [this].\n\n",
+            "name": "toMap",
+            "id": "toMap0()"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "comment": "True when [this] is empty.",
+            "name": "isEmpty",
+            "id": "isEmpty"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n\n",
+            "name": "length",
+            "id": "length"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "comment": "Creates an empty [PersistentMap] using its default implementation.\n",
+            "name": "PersistentMap",
+            "id": "PersistentMap0()"
+          },
+          {
+            "returnType": {
+              "name": "Dynamic_",
+              "refId": "Dynamic_"
+            },
+            "kind": "constructor",
+            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n\n",
+            "name": "PersistentMap.fromMap",
+            "children": [
+              {
+                "ref": {
+                  "name": "Map",
+                  "refId": "Map",
+                  "arguments": [
+                    {
+                      "name": "K",
+                      "refId": "K"
+                    },
+                    {
+                      "name": "V",
+                      "refId": "V"
+                    }
+                  ]
+                },
+                "kind": "param",
+                "name": "map",
+                "id": "map"
+              }
+            ],
+            "id": "PersistentMap.fromMap1()"
+          }
+        ],
+        "id": "PersistentMap"
+      }
+    ],
+    "id": "file:///tmp/tmp.Coce5UWdA1/dart-immutable/lib/persistent.dart"
+  }
+]
