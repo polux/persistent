@@ -578,105 +578,6 @@
         "id": "Nil"
       },
       {
-        "superclass": {
-          "name": "Object",
-          "refId": "Object"
-        },
-        "kind": "class",
-        "name": "LListFactory",
-        "children": [
-          {
-            "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
-            },
-            "kind": "method",
-            "name": "LList.nil",
-            "id": "LList.nil0()"
-          },
-          {
-            "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
-            },
-            "kind": "method",
-            "name": "LList.cons",
-            "children": [
-              {
-                "ref": {
-                  "name": "A",
-                  "refId": "A"
-                },
-                "kind": "param",
-                "name": "x",
-                "id": "x"
-              },
-              {
-                "ref": {
-                  "name": "LList",
-                  "refId": "LList",
-                  "arguments": [
-                    {
-                      "name": "A",
-                      "refId": "A"
-                    }
-                  ]
-                },
-                "kind": "param",
-                "name": "xs",
-                "id": "xs"
-              }
-            ],
-            "id": "LList.cons2()"
-          },
-          {
-            "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
-            },
-            "kind": "constructor",
-            "name": "LList.nil",
-            "id": "LList.nil0()"
-          },
-          {
-            "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
-            },
-            "kind": "constructor",
-            "name": "LList.cons",
-            "children": [
-              {
-                "ref": {
-                  "name": "A",
-                  "refId": "A"
-                },
-                "kind": "param",
-                "name": "x",
-                "id": "x"
-              },
-              {
-                "ref": {
-                  "name": "LList",
-                  "refId": "LList",
-                  "arguments": [
-                    {
-                      "name": "A",
-                      "refId": "A"
-                    }
-                  ]
-                },
-                "kind": "param",
-                "name": "xs",
-                "id": "xs"
-              }
-            ],
-            "id": "LList.cons2()"
-          }
-        ],
-        "id": "LListFactory"
-      },
-      {
         "interfaces": [
           {
             "name": "LList",
@@ -2187,6 +2088,6 @@
         "id": "PersistentMap"
       }
     ],
-    "id": "file:///tmp/tmp.Coce5UWdA1/dart-immutable/lib/persistent.dart"
+    "id": "file:///tmp/tmp.RtkvNFYL0w/dart-immutable/lib/persistent.dart"
   }
 ]

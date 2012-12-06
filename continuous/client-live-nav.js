@@ -3876,7 +3876,7 @@ $$.AbstractScanner = {"":"Object;",
   } else
     isDynamicBuiltIn = false;
   if (typeof next !== 'number')
-    return this.tokenizeIdentifier$3$bailout(2, start, allowDollar, isDynamicBuiltIn, next);
+    return this.tokenizeIdentifier$3$bailout(2, start, allowDollar, next, isDynamicBuiltIn);
   for (isAscii = true; true; isDynamicBuiltIn = false) {
     if (!($.leB(97, next) && $.leB(next, 122)))
       if (!($.leB(65, next) && $.leB(next, 90)))
@@ -3927,8 +3927,8 @@ $$.AbstractScanner = {"":"Object;",
       next = env0;
       break;
     case 2:
-      next = env3;
-      isDynamicBuiltIn = env2;
+      isDynamicBuiltIn = env3;
+      next = env2;
       allowDollar = env1;
       start = env0;
       break;
@@ -5125,7 +5125,7 @@ $$._convertDartToNative_PrepareForStructuredClone_walk = {"":"Closure;findSlot_8
             t3.call$2(slot, copy0);
           }
           if (typeof copy0 !== 'object' || copy0 === null || (copy0.constructor !== Array || !!copy0.immutable$list) && !copy0.is$JavaScriptIndexingBehavior())
-            return this.call$1$bailout(3, e, t3, elementCopy, i, length$, copy0, slot, t2, copy);
+            return this.call$1$bailout(3, e, t3, elementCopy, length$, copy0, slot, t2, copy, i);
           for (t1 = e.length, t2 = copy0.length, j = 0; j < i; ++j) {
             if (j >= t1)
               throw $.ioore(j);
@@ -5152,7 +5152,7 @@ $$._convertDartToNative_PrepareForStructuredClone_walk = {"":"Closure;findSlot_8
       i = 0;
     }
     if (typeof copy !== 'object' || copy === null || (copy.constructor !== Array || !!copy.immutable$list) && !copy.is$JavaScriptIndexingBehavior())
-      return this.call$1$bailout(4, copy, e, length$, i);
+      return this.call$1$bailout(4, e, length$, copy, i);
     for (; i < length$; ++i) {
       if (i >= e.length)
         throw $.ioore(i);
@@ -5175,21 +5175,21 @@ $$._convertDartToNative_PrepareForStructuredClone_walk = {"":"Closure;findSlot_8
       e = env0;
       break;
     case 3:
-      copy = env8;
-      t3 = env7;
-      slot = env6;
-      copy0 = env5;
-      length$ = env4;
-      i = env3;
+      i = env8;
+      copy = env7;
+      t3 = env6;
+      slot = env5;
+      copy0 = env4;
+      length$ = env3;
       elementCopy = env2;
       t2 = env1;
       e = env0;
       break;
     case 4:
       i = env3;
-      length$ = env2;
-      e = env1;
-      copy = env0;
+      copy = env2;
+      length$ = env1;
+      e = env0;
       break;
   }
   switch (state0) {
@@ -5329,10 +5329,10 @@ $$.BoundClosure0 = {'':
 call$1: function(p0) { return this.self[this.target](p0); }
 };
 $.classifySource = function(text) {
-  var html, token, t1, t2, inString, whitespaceOffset, whitespaceOffset0, kind, escapedText, stringClass;
+  var html, token, t1, t2, whitespaceOffset, inString, whitespaceOffset0, kind, escapedText, stringClass;
   html = $.StringBuffer_StringBuffer("");
   token = $.StringScanner$(text, true).tokenize$0();
-  for (t1 = $.getInterceptor$JSArray(html), t2 = $.getInterceptor$JSString(text), inString = false, whitespaceOffset = 0; !$.eqB(token.get$kind(), 0); whitespaceOffset = whitespaceOffset0) {
+  for (t1 = $.getInterceptor$JSArray(html), t2 = $.getInterceptor$JSString(text), whitespaceOffset = 0, inString = false; !$.eqB(token.get$kind(), 0); whitespaceOffset = whitespaceOffset0) {
     t1.add$1(html, t2.substring$2(text, whitespaceOffset, token.get$charOffset()));
     whitespaceOffset0 = $.add(token.get$charOffset(), token.get$slowCharCount());
     switch (token.get$kind()) {
@@ -5733,18 +5733,18 @@ $.KeywordState_computeKeywordStateTable = function(start, strings, offset, lengt
     t3 = strings[i];
     t3 = $.getInterceptor$JSStringJSArray(t3).get$length(t3);
     if (typeof t3 !== 'number')
-      return $.KeywordState_computeKeywordStateTable$bailout(1, start, strings, offset, length$, t3, result, t1, i, chunk, chunkStart, isLeaf, t2);
+      return $.KeywordState_computeKeywordStateTable$bailout(1, start, strings, offset, length$, t3, result, t1, chunk, chunkStart, isLeaf, i, t2);
     if (t3 === start)
       isLeaf = true;
     t3 = strings[i];
     t3 = $.getInterceptor$JSStringJSArray(t3).get$length(t3);
     if (typeof t3 !== 'number')
-      return $.KeywordState_computeKeywordStateTable$bailout(2, start, strings, offset, length$, result, isLeaf, t1, t3, i, chunk, chunkStart, t2);
+      return $.KeywordState_computeKeywordStateTable$bailout(2, start, strings, offset, length$, result, isLeaf, t1, t3, chunk, chunkStart, i, t2);
     if (t3 > start) {
       t3 = strings[i];
       c = $.getInterceptor$JSString(t3).charCodeAt$1(t3, start);
       if (c !== (c | 0))
-        return $.KeywordState_computeKeywordStateTable$bailout(3, start, strings, offset, length$, result, isLeaf, t1, i, chunk, chunkStart, c, t2);
+        return $.KeywordState_computeKeywordStateTable$bailout(3, start, strings, offset, length$, result, isLeaf, t1, chunk, chunkStart, i, t2, c);
       if (chunk !== c) {
         if (chunkStart !== -1) {
           t3 = chunk - 97;
@@ -6236,10 +6236,6 @@ $.DOMApplicationCacheEvents$ = function(_ptr) {
   return new $.DOMApplicationCacheEvents(_ptr);
 };
 
-$.StackOverflowError$ = function() {
-  return new $.StackOverflowError();
-};
-
 $._ExceptionImplementation$ = function(message) {
   return new $._ExceptionImplementation(message);
 };
@@ -6256,8 +6252,8 @@ $._DOMWindowCrossFrame__createSafe = function(w) {
     return $._DOMWindowCrossFrame$(w);
 };
 
-$.RuntimeError$ = function(message) {
-  return new $.RuntimeError(message);
+$.StackOverflowError$ = function() {
+  return new $.StackOverflowError();
 };
 
 $.Result$ = function(match, kind, url, args, library, noargs, prefix, type) {
@@ -6311,6 +6307,18 @@ $.index = function(a, index) {
   return $.index$slow(a, index);
 };
 
+$.indexSet = function(a, index, value) {
+  var key;
+  if (a.constructor === Array && !a.immutable$list) {
+    key = index >>> 0;
+    if (key === index && key < a.length) {
+      a[key] = value;
+      return;
+    }
+  }
+  $.indexSet$slow(a, index, value);
+};
+
 $.checkNumbers = function(a, b) {
   if (typeof a === 'number')
     if (typeof b === 'number')
@@ -6330,22 +6338,14 @@ $.add$slow = function(a, b) {
   return a.operator$add$1(b);
 };
 
+$.RuntimeError$ = function(message) {
+  return new $.RuntimeError(message);
+};
+
 $.mul$slow = function(a, b) {
   if ($.checkNumbers(a, b))
     return a * b;
   return a.operator$mul$1(b);
-};
-
-$.indexSet = function(a, index, value) {
-  var key;
-  if (a.constructor === Array && !a.immutable$list) {
-    key = index >>> 0;
-    if (key === index && key < a.length) {
-      a[key] = value;
-      return;
-    }
-  }
-  $.indexSet$slow(a, index, value);
 };
 
 $.sub$slow = function(a, b) {
@@ -6475,11 +6475,6 @@ $.indexSet$slow = function(a, index, value) {
   a.operator$indexSet$2(index, value);
 };
 
-$.checkMutable = function(list, reason) {
-  if (!!(list.immutable$list))
-    throw $.$$throw($.UnsupportedError$(reason));
-};
-
 $.checkGrowable = function(list, reason) {
   if (!!(list.fixed$length))
     throw $.$$throw($.UnsupportedError$(reason));
@@ -6490,6 +6485,11 @@ $.S = function(value) {
   if (!(typeof res === 'string'))
     throw $.$$throw($.ArgumentError$(value));
   return res;
+};
+
+$.checkMutable = function(list, reason) {
+  if (!!(list.immutable$list))
+    throw $.$$throw($.UnsupportedError$(reason));
 };
 
 $.iae = function(argument) {
@@ -7581,20 +7581,12 @@ $.enableShowHideInherited = function() {
   $.getInterceptor$JSArray(t1).add$1(t1, new $.enableShowHideInherited_anon0(showInherited));
 };
 
-$.TableElement_TableElement = function() {
-  return $.document().$dom_createElement$1("table");
-};
-
 $.getTypeName = function(typeInfo) {
   return typeInfo.containsKey$1("args") === true ? $.S($.index(typeInfo, "name")) + "&lt;" + $.S($.index(typeInfo, "name")) + "&gt;" : $.index(typeInfo, "name");
 };
 
-$.getLibraryMemberUrl = function(libraryName, memberInfo) {
-  var t1, t2, t3;
-  t1 = $.S($.prefix);
-  t2 = $.getInterceptor$JSString(libraryName).replaceAll$2(libraryName, ":", "_");
-  t3 = t1 + $.S($.getInterceptor$JSString(t2).replaceAll$2(t2, "/", "_")) + ".html#";
-  return t3 + $.S(memberInfo.containsKey$1("link_name") === true ? $.index(memberInfo, "link_name") : $.index(memberInfo, "name"));
+$.TableElement_TableElement = function() {
+  return $.document().$dom_createElement$1("table");
 };
 
 $.getTypeMemberUrl = function(libraryName, typeName, memberInfo) {
@@ -7605,6 +7597,14 @@ $.getTypeMemberUrl = function(libraryName, typeName, memberInfo) {
   t4 = $.getInterceptor$JSString(typeName).replaceAll$2(typeName, ":", "_");
   t5 = t3 + $.S($.getInterceptor$JSString(t4).replaceAll$2(t4, "/", "_")) + ".html#";
   return t5 + $.S(memberInfo.containsKey$1("link_name") === true ? $.index(memberInfo, "link_name") : $.index(memberInfo, "name"));
+};
+
+$.getLibraryMemberUrl = function(libraryName, memberInfo) {
+  var t1, t2, t3;
+  t1 = $.S($.prefix);
+  t2 = $.getInterceptor$JSString(libraryName).replaceAll$2(libraryName, ":", "_");
+  t3 = t1 + $.S($.getInterceptor$JSString(t2).replaceAll$2(t2, "/", "_")) + ".html#";
+  return t3 + $.S(memberInfo.containsKey$1("link_name") === true ? $.index(memberInfo, "link_name") : $.index(memberInfo, "name"));
 };
 
 $.window = function() {
@@ -7710,9 +7710,9 @@ $._Sort__dualPivotQuicksort = function(a, left, right, compare) {
     throw $.ioore(index5);
   el5 = a[index5];
   if ($.gtB(compare.call$2(el1, el2), 0)) {
-    t0 = el2;
-    el2 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el2;
+    el2 = t0;
   }
   if ($.gtB(compare.call$2(el4, el5), 0)) {
     t0 = el5;
@@ -7720,9 +7720,9 @@ $._Sort__dualPivotQuicksort = function(a, left, right, compare) {
     el4 = t0;
   }
   if ($.gtB(compare.call$2(el1, el3), 0)) {
-    t0 = el3;
-    el3 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el3;
+    el3 = t0;
   }
   if ($.gtB(compare.call$2(el2, el3), 0)) {
     t0 = el3;
@@ -7730,9 +7730,9 @@ $._Sort__dualPivotQuicksort = function(a, left, right, compare) {
     el2 = t0;
   }
   if ($.gtB(compare.call$2(el1, el4), 0)) {
-    t0 = el4;
-    el4 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el4;
+    el4 = t0;
   }
   if ($.gtB(compare.call$2(el3, el4), 0)) {
     t0 = el4;
@@ -7870,8 +7870,8 @@ $._Sort__dualPivotQuicksort = function(a, left, right, compare) {
             if (great >= a.length)
               throw $.ioore(great);
             t1 = $.ltB(compare.call$2(a[great], el2), 0);
-            t2 = a.length;
             great0 = great - 1;
+            t2 = a.length;
             if (t1) {
               if (less >= t2)
                 throw $.ioore(less);
@@ -8246,9 +8246,9 @@ $._Sort__dualPivotQuicksort$bailout = function(state0, a, left, right, compare) 
     throw $.ioore(index5);
   el5 = a[index5];
   if ($.gtB(compare.call$2(el1, el2), 0)) {
-    t0 = el2;
-    el2 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el2;
+    el2 = t0;
   }
   if ($.gtB(compare.call$2(el4, el5), 0)) {
     t0 = el5;
@@ -8256,9 +8256,9 @@ $._Sort__dualPivotQuicksort$bailout = function(state0, a, left, right, compare) 
     el4 = t0;
   }
   if ($.gtB(compare.call$2(el1, el3), 0)) {
-    t0 = el3;
-    el3 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el3;
+    el3 = t0;
   }
   if ($.gtB(compare.call$2(el2, el3), 0)) {
     t0 = el3;
@@ -8266,9 +8266,9 @@ $._Sort__dualPivotQuicksort$bailout = function(state0, a, left, right, compare) 
     el2 = t0;
   }
   if ($.gtB(compare.call$2(el1, el4), 0)) {
-    t0 = el4;
-    el4 = el1;
-    el1 = t0;
+    t0 = el1;
+    el1 = el4;
+    el4 = t0;
   }
   if ($.gtB(compare.call$2(el3, el4), 0)) {
     t0 = el4;
@@ -8379,8 +8379,8 @@ $._Sort__dualPivotQuicksort$bailout = function(state0, a, left, right, compare) 
             if (great >= a.length)
               throw $.ioore(great);
             t1 = $.ltB(compare.call$2(a[great], el2), 0);
-            t2 = a.length;
             great0 = great - 1;
+            t2 = a.length;
             if (t1) {
               if (less >= t2)
                 throw $.ioore(less);
@@ -8516,10 +8516,10 @@ $.KeywordState_computeKeywordStateTable$bailout = function(state0, env0, env1, e
   switch (state0) {
     case 1:
       t2 = env11;
-      isLeaf = env10;
-      chunkStart = env9;
-      chunk = env8;
-      i = env7;
+      i = env10;
+      isLeaf = env9;
+      chunkStart = env8;
+      chunk = env7;
       t1 = env6;
       result = env5;
       t3 = env4;
@@ -8530,9 +8530,9 @@ $.KeywordState_computeKeywordStateTable$bailout = function(state0, env0, env1, e
       break;
     case 2:
       t2 = env11;
-      chunkStart = env10;
-      chunk = env9;
-      i = env8;
+      i = env10;
+      chunkStart = env9;
+      chunk = env8;
       t3 = env7;
       t1 = env6;
       isLeaf = env5;
@@ -8543,11 +8543,11 @@ $.KeywordState_computeKeywordStateTable$bailout = function(state0, env0, env1, e
       start = env0;
       break;
     case 3:
-      t2 = env11;
-      c = env10;
-      chunkStart = env9;
-      chunk = env8;
-      i = env7;
+      c = env11;
+      t2 = env10;
+      i = env9;
+      chunkStart = env8;
+      chunk = env7;
       t1 = env6;
       isLeaf = env5;
       result = env4;
@@ -8633,16 +8633,6 @@ $.KeywordState_computeKeywordStateTable$bailout = function(state0, env0, env1, e
   }
 };
 
-$.toStringWrapper.call$0 = $.toStringWrapper;
-$.toStringWrapper.$name = "toStringWrapper";
-$.resultComparator.call$2 = $.resultComparator;
-$.resultComparator.$name = "resultComparator";
-$.Comparable_compare.call$2 = $.Comparable_compare;
-$.Comparable_compare.$name = "Comparable_compare";
-$.typeNameInChrome.call$1 = $.typeNameInChrome;
-$.typeNameInChrome.$name = "typeNameInChrome";
-$.typeNameInSafari.call$1 = $.typeNameInSafari;
-$.typeNameInSafari.$name = "typeNameInSafari";
 $.invokeClosure.call$5 = $.invokeClosure;
 $.invokeClosure.$name = "invokeClosure";
 $.typeNameInFirefox.call$1 = $.typeNameInFirefox;
@@ -8661,6 +8651,16 @@ $.dynamicBind.call$4 = $.dynamicBind;
 $.dynamicBind.$name = "dynamicBind";
 $.updateDropDown.call$1 = $.updateDropDown;
 $.updateDropDown.$name = "updateDropDown";
+$.toStringWrapper.call$0 = $.toStringWrapper;
+$.toStringWrapper.$name = "toStringWrapper";
+$.resultComparator.call$2 = $.resultComparator;
+$.resultComparator.$name = "resultComparator";
+$.Comparable_compare.call$2 = $.Comparable_compare;
+$.Comparable_compare.$name = "Comparable_compare";
+$.typeNameInChrome.call$1 = $.typeNameInChrome;
+$.typeNameInChrome.$name = "typeNameInChrome";
+$.typeNameInSafari.call$1 = $.typeNameInSafari;
+$.typeNameInSafari.$name = "typeNameInSafari";
 Isolate.$finishClasses($$);
 $$ = {};
 Isolate.makeConstantList = function(list) {
@@ -8863,8 +8863,8 @@ $.CTC8 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolatePropertie
 $.CTC7 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC181, 0, 92);
 $.CTC78 = new Isolate.$isolateProperties.Link();
 $.CTC58 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC153, 12, 43);
-$.CTC31 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC173, 1, 131);
 $.CTC66 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC174, 10, 138);
+$.CTC31 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC173, 1, 131);
 $.CTC46 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC186, 5, 144);
 $.CTC28 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC180, 0, 159);
 $.CTC51 = new Isolate.$isolateProperties.PrecedenceInfo(Isolate.$isolateProperties.CTC184, 1, 148);
@@ -9042,13 +9042,12 @@ $.$$AMPERSAND = 38;
 $.$$SQ = 39;
 $.Classification_NONE = null;
 $.$$OPEN_PAREN = 40;
-$.Classification_ERROR = "e";
 $.$$CLOSE_PAREN = 41;
-$.Classification_COMMENT = "c";
+$.Classification_ERROR = "e";
 $.$$STAR = 42;
 $.Classification_IDENTIFIER = "i";
-$.Classification_KEYWORD = "k";
 $.$$PLUS = 43;
+$.Classification_KEYWORD = "k";
 $.$$COMMA = 44;
 $.$$MINUS = 45;
 $.Classification_STRING = "s";
@@ -9078,6 +9077,7 @@ $.HttpRequest_DONE = 4;
 $.$$EQ = 61;
 $.$$GT = 62;
 $.$$QUESTION = 63;
+$.Classification_COMMENT = "c";
 $.$$AT = 64;
 $.$$A = 65;
 $.$$D = 68;
@@ -9140,8 +9140,8 @@ $._JsonParser_CHAR_CAPITAL_E = 69;
 $._JsonParser_LBRACKET = 91;
 $.KeywordState__KEYWORD_STATE = null;
 $._JsonParser_BACKSLASH = 92;
-$._JsonParser_CHAR_B = 98;
 $._JsonParser_RBRACKET = 93;
+$._JsonParser_CHAR_B = 98;
 $._JsonParser_CHAR_E = 101;
 $._JsonParser_CHAR_F = 102;
 $._JsonParser_CHAR_N = 110;

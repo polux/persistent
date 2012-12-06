@@ -9,5 +9,6 @@ git clone https://code.google.com/p/dart-immutable/
 cd dart-immutable
 pub install
 rm -rf $OUTDIR
-dartdoc -v --generate-app-cache --link-api --pkg=packages/ --out $OUTDIR lib/persistent.dart
+dartdoc -v --link-api --pkg=packages/ --out $OUTDIR lib/persistent.dart
+#dartdoc -v --generate-app-cache --link-api --pkg=packages/ --out $OUTDIR lib/persistent.dart
 rm -rf $TMPDIR
