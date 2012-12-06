@@ -16,7 +16,7 @@
 
 library map_test;
 
-import 'package:dart_check/dart_check.dart';
+import 'package:propcheck/propcheck.dart';
 import 'package:persistent/persistent.dart';
 import 'test_src/test_util.dart';
 

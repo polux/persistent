@@ -1,14 +1,10 @@
 name: persistent
-description: Efficient persistent data structures for Dart
 version: 0.0.1
-dependencies:
-  dart_check:
-    git: https://code.google.com/p/dart-check/
-  dart_enumerators:
-    git: https://code.google.com/p/dart-enumerators/
-  args:
-    sdk: args
-  unittest:
-    sdk: unittest
+description: Efficient persistent data structures for Dart
 author: Paul Brauner <polux@google.com>
 homepage: https://code.google.com/p/dart-immutable/
+dependencies:
+  args:
+  unittest:
+  propcheck:
+  enumerators:

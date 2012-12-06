@@ -93,11 +93,6 @@ abstract class LListBase<A> implements LList<A> {
   }
 }
 
-class LListFactory<A> {
-  factory LList.nil() => new Nil<A>();
-  factory LList.cons(A x, LList<A> xs) => new Cons<A>(x, xs);
-}
-
 class Nil<A> extends LListBase<A> {
   isNil() => true;
   asCons() { throw "Nil is not a Cons"; }

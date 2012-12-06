@@ -17,9 +17,9 @@
 library test_util;
 
 import 'package:args/args.dart';
-import 'package:dart_check/dart_check.dart';
-import 'package:dart_enumerators/combinators.dart' as c;
-import 'package:dart_enumerators/enumerators.dart' as en;
+import 'package:propcheck/propcheck.dart';
+import 'package:enumerators/combinators.dart' as c;
+import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
