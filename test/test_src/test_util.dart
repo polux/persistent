@@ -176,7 +176,7 @@ void testMain(Map<String, Property> properties) {
       depth: int.parse(flags['smallCheckDepth']),
       quiet: flags['quiet']);
 
-  Collection<String> toTest = flags['property'];
+  Iterable<String> toTest = flags['property'];
   if (toTest.contains('all')) {
     toTest = properties.keys;
   }
