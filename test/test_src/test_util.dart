@@ -5,7 +5,7 @@
 
 library test_util;
 
-import 'package:args/args.dart';
+import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';
 import 'package:enumerators/combinators.dart' as c;
 import 'package:enumerators/enumerators.dart' as en;
@@ -152,7 +152,7 @@ bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm.map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
 
 void testMain(Map<String, Property> properties) {
-  final parser = new ArgParser();
+  final parser = new args.ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '300');
