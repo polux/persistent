@@ -1,7 +1,8 @@
-# Efficient Persistent Data Structures for Dart
+# Efficient Persistent Data Structures
 
-Mostly persistent maps and sets for now. "Persistent" means immutable here, not
-"saved on disk".
+Mostly persistent maps and sets for now.
+
+"Persistent" means immutable here, not "saved on disk".
 
 ```dart
 import 'package:persistent/persistent.dart';
