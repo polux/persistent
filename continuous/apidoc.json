@@ -14,8 +14,8 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "Pair",
@@ -119,8 +119,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "Pair",
@@ -159,8 +159,8 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "Option._internal",
@@ -188,8 +188,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "Option.none",
@@ -197,8 +197,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "Option.some",
@@ -309,8 +309,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "Option._internal",
@@ -338,8 +338,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "Option.none",
@@ -347,8 +347,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "Option.some",
@@ -384,8 +384,8 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "Cons",
@@ -419,8 +419,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "isNil",
@@ -428,8 +428,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "asCons",
@@ -437,8 +437,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "toString",
@@ -488,8 +488,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "Cons",
@@ -540,8 +540,8 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "isNil",
@@ -549,8 +549,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "asCons",
@@ -558,8 +558,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "toString",
@@ -710,8 +710,8 @@
             "children": [
               {
                 "ref": {
-                  "name": "Dynamic_",
-                  "refId": "Dynamic_"
+                  "name": "dynamic",
+                  "refId": "dynamic"
                 },
                 "isOptional": true,
                 "kind": "param",
@@ -764,8 +764,8 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "LList.nil",
@@ -773,8 +773,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
             "name": "LList.cons",
@@ -907,8 +907,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "LList.nil",
@@ -916,8 +916,8 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
             "name": "LList.cons",
@@ -970,7 +970,7 @@
           "refId": "Object"
         },
         "kind": "class",
-        "comment": "\nA base class for implementations of [PersistentSet].\n\n",
+        "comment": "\nA base class for implementations of [PersistentSet].\n",
         "name": "PersistentSetBase",
         "children": [
           {
@@ -1103,21 +1103,21 @@
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
-            "comment": "Creates an empty [PersistentSet] using its default implementation.\n",
+            "comment": "Creates an empty [PersistentSet] using its default implementation. ",
             "name": "PersistentSet",
             "id": "PersistentSet0()"
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
-            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n\n",
+            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n",
             "name": "PersistentSet.from",
             "children": [
               {
@@ -1339,7 +1339,7 @@
               ]
             },
             "kind": "method",
-            "comment": "Alias for [union]\n",
+            "comment": "Alias for [union] ",
             "name": "+",
             "children": [
               {
@@ -1405,7 +1405,7 @@
               ]
             },
             "kind": "method",
-            "comment": "Alias for [difference]\n",
+            "comment": "Alias for [difference] ",
             "name": "-",
             "children": [
               {
@@ -1465,7 +1465,7 @@
               ]
             },
             "kind": "method",
-            "comment": "Alias for [cartesianProduct]\n",
+            "comment": "Alias for [cartesianProduct] ",
             "name": "*",
             "children": [
               {
@@ -1547,21 +1547,21 @@
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
-            "comment": "Creates an empty [PersistentSet] using its default implementation.\n",
+            "comment": "Creates an empty [PersistentSet] using its default implementation. ",
             "name": "PersistentSet",
             "id": "PersistentSet0()"
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
-            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n\n",
+            "comment": "\nCreates an immutable copy of [elements] using the default implementation\nof [PersistentSet].\n",
             "name": "PersistentSet.from",
             "children": [
               {
@@ -1607,7 +1607,7 @@
           "refId": "Object"
         },
         "kind": "class",
-        "comment": "\nA base class for implementations of [PersistentMap].\n\n",
+        "comment": "\nA base class for implementations of [PersistentMap].\n",
         "name": "PersistentMapBase",
         "children": [
           {
@@ -1647,26 +1647,26 @@
           "refId": "Object"
         },
         "kind": "class",
-        "comment": "\nAn immutable map, binding keys of type [K] to values of type [V]. Null values\nare supported but null keys are not.\n\nIn all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for\n[PersistentMap.fromMap({k1: v1, k2: v2, ...})].\n\n",
+        "comment": "\nAn immutable map, binding keys of type [K] to values of type [V]. Null values\nare supported but null keys are not.\n\nIn all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for\n[PersistentMap.fromMap({k1: v1, k2: v2, ...})].\n",
         "name": "PersistentMap",
         "children": [
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
-            "comment": "Creates an empty [PersistentMap] using its default implementation.\n",
+            "comment": "Creates an empty [PersistentMap] using its default implementation. ",
             "name": "PersistentMap",
             "id": "PersistentMap0()"
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "method",
-            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n\n",
+            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n",
             "name": "PersistentMap.fromMap",
             "children": [
               {
@@ -1717,7 +1717,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a new map identical to [this] except that it binds [key] to\n[value].\n\nIf [key] was bound to some [oldvalue] in [this], it is nevertheless bound\nto [value] in the new map. If [key] was bound to some [oldvalue] in\n[this] and if [combine] is provided then [key] it is bound to\n[combine(oldvalue, value)] in the new map.\n\n    {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}\n    {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}\n    {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}\n\n",
+            "comment": "\nReturns a new map identical to [this] except that it binds [key] to\n[value].\n\nIf [key] was bound to some [oldvalue] in [this], it is nevertheless bound\nto [value] in the new map. If [key] was bound to some [oldvalue] in\n[this] and if [combine] is provided then [key] it is bound to\n[combine(oldvalue, value)] in the new map.\n\n    {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}\n    {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}\n    {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}\n",
             "name": "insert",
             "children": [
               {
@@ -1767,7 +1767,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a new map identical to [this] except that it doesn't bind [key]\nanymore.\n\n    {'a': 1, 'b': 2}.delete('b') == {'a': 1}\n    {'a': 1}.delete('b') == {'a': 1}\n\n",
+            "comment": "\nReturns a new map identical to [this] except that it doesn't bind [key]\nanymore.\n\n    {'a': 1, 'b': 2}.delete('b') == {'a': 1}\n    {'a': 1}.delete('b') == {'a': 1}\n",
             "name": "delete",
             "children": [
               {
@@ -1794,7 +1794,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nLooks up the value possibly bound to [key] in [this]. Returns\n[Option.some(value)] if it exists, [Option.none()] otherwise.\n\n    {'a': 1}.lookup('b') == Option.none()\n    {'a': 1, 'b': 2}.lookup('b') == Option.some(2)\n\n",
+            "comment": "\nLooks up the value possibly bound to [key] in [this]. Returns\n[Option.some(value)] if it exists, [Option.none()] otherwise.\n\n    {'a': 1}.lookup('b') == Option.none()\n    {'a': 1, 'b': 2}.lookup('b') == Option.some(2)\n",
             "name": "lookup",
             "children": [
               {
@@ -1815,7 +1815,7 @@
               "refId": "void"
             },
             "kind": "method",
-            "comment": "\nEvaluates [f(key, value)] for each ([key], [value]) pair in [this].\n\n",
+            "comment": "\nEvaluates [f(key, value)] for each ([key], [value]) pair in [this].\n",
             "name": "forEach",
             "children": [
               {
@@ -1846,7 +1846,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a new map identical to [this] except that the value it possibly\nbinds to [key] has been adjusted by [update].\n\n    {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}\n    {'a': 1}.adjust('b', (x) => x + 1) == {'a', 1}\n\n",
+            "comment": "\nReturns a new map identical to [this] except that the value it possibly\nbinds to [key] has been adjusted by [update].\n\n    {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}\n    {'a': 1}.adjust('b', (x) => x + 1) == {'a', 1}\n",
             "name": "adjust",
             "children": [
               {
@@ -1876,7 +1876,7 @@
               "refId": "PersistentMap"
             },
             "kind": "method",
-            "comment": "\nReturns a new map identical to [this] where each value has been updated by\n[f].\n\n    {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}\n    {}.map((x) => x + 1) == {}\n\n",
+            "comment": "\nReturns a new map identical to [this] where each value has been updated by\n[f].\n\n    {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}\n    {}.map((x) => x + 1) == {}\n",
             "name": "mapValues",
             "children": [
               {
@@ -1897,7 +1897,7 @@
               "refId": "int"
             },
             "kind": "method",
-            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n\n",
+            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n",
             "name": "length",
             "id": "length0()"
           },
@@ -1917,7 +1917,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a new map whose (key, value) pairs are the union of those of [this]\nand [other].\n\nThe union is right-biased: if a key is present in both [this] and [other],\nthe value from [other] is retained. If [combine] is provided, the retained\nvalue for a [key] present in both [this] and [other] is then\n[combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to\n[key] in [this] and [rightvalue] is the one bound to [key] in [other].\n\n    {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}\n\nNote that [union] is commutative if and only if [combine] is provided and\nif it is commutative.\n\n",
+            "comment": "\nReturns a new map whose (key, value) pairs are the union of those of [this]\nand [other].\n\nThe union is right-biased: if a key is present in both [this] and [other],\nthe value from [other] is retained. If [combine] is provided, the retained\nvalue for a [key] present in both [this] and [other] is then\n[combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to\n[key] in [this] and [rightvalue] is the one bound to [key] in [other].\n\n    {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}\n    {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}\n\nNote that [union] is commutative if and only if [combine] is provided and\nif it is commutative.\n",
             "name": "union",
             "children": [
               {
@@ -1968,7 +1968,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a new map whose (key, value) pairs are the intersection of those of\n[this] and [other].\n\nThe intersection is right-biased: values from [other] are retained. If\n[combine] is provided, the retained value for a [key] present in both\n[this] and [other] is then [combine(leftvalue, rightvalue)] where\n[leftvalue] is the value bound to [key] in [this] and [rightvalue] is the\none bound to [key] in [other].\n\n    {'a': 1}.intersection({'b': 2}) == {}\n    {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}\n    {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}\n\nNote that [intersection] is commutative if and only if [combine] is\nprovided and if it is commutative.\n\n",
+            "comment": "\nReturns a new map whose (key, value) pairs are the intersection of those of\n[this] and [other].\n\nThe intersection is right-biased: values from [other] are retained. If\n[combine] is provided, the retained value for a [key] present in both\n[this] and [other] is then [combine(leftvalue, rightvalue)] where\n[leftvalue] is the value bound to [key] in [this] and [rightvalue] is the\none bound to [key] in [other].\n\n    {'a': 1}.intersection({'b': 2}) == {}\n    {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}\n    {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}\n\nNote that [intersection] is commutative if and only if [combine] is\nprovided and if it is commutative.\n",
             "name": "intersection",
             "children": [
               {
@@ -2019,7 +2019,7 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a mutable copy of [this].\n\n",
+            "comment": "\nReturns a mutable copy of [this].\n",
             "name": "toMap",
             "id": "toMap0()"
           },
@@ -2039,27 +2039,27 @@
               "refId": "int"
             },
             "kind": "property",
-            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n\n",
+            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n",
             "name": "length",
             "id": "length"
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
-            "comment": "Creates an empty [PersistentMap] using its default implementation.\n",
+            "comment": "Creates an empty [PersistentMap] using its default implementation. ",
             "name": "PersistentMap",
             "id": "PersistentMap0()"
           },
           {
             "returnType": {
-              "name": "Dynamic_",
-              "refId": "Dynamic_"
+              "name": "dynamic",
+              "refId": "dynamic"
             },
             "kind": "constructor",
-            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n\n",
+            "comment": "\nCreates an immutable copy of [map] using the default implementation of\n[PersistentMap].\n",
             "name": "PersistentMap.fromMap",
             "children": [
               {
@@ -2088,6 +2088,6 @@
         "id": "PersistentMap"
       }
     ],
-    "id": "file:///tmp/tmp.RtkvNFYL0w/dart-immutable/lib/persistent.dart"
+    "id": "file:///tmp/tmp.kf50AIq6lq/dart-immutable/lib/persistent.dart"
   }
 ]

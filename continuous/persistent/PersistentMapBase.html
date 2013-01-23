@@ -81,10 +81,9 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
         </h4>
         <div class="inherited-from">inherited from <a href="../persistent/PersistentMap.html">PersistentMap</a> </div><div class="doc">
 <p>The number of (key, value) pairs in <code>this</code>.</p>
-<pre><code>{}.length == 0
-{'a': 1}.length == 1
-{'a': 1, 'b': 2}.length == 2
-</code></pre>
+<pre><span class="p ">{</span><span class="p ">}</span><span class="p ">.</span><span class="i ">length</span> <span class="o ">==</span> <span class="n ">0</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">length</span> <span class="o ">==</span> <span class="n ">1</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">length</span> <span class="o ">==</span> <span class="n ">2</span></pre>
 <pre class="source">
 int get length;
 </pre>
@@ -101,9 +100,8 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href
 binds to 
 <span class="param">key</span> has been adjusted by 
 <span class="param">update</span>.</p>
-<pre><code>{'a': 1, 'b': 2}.adjust('b', (x) =&gt; x + 1) == {'a', 1, 'b', 3}
-{'a': 1}.adjust('b', (x) =&gt; x + 1) == {'a', 1}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">adjust</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">,</span> <span class="p ">(</span><span class="i ">x</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="n ">1</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">,</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">,</span> <span class="n ">3</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">adjust</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">,</span> <span class="p ">(</span><span class="i ">x</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="n ">1</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">,</span> <span class="n ">1</span><span class="p ">}</span></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="delete">
@@ -113,9 +111,8 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href
 <p>Returns a new map identical to <code>this</code> except that it doesn't bind 
 <span class="param">key</span>
 anymore.</p>
-<pre><code>{'a': 1, 'b': 2}.delete('b') == {'a': 1}
-{'a': 1}.delete('b') == {'a': 1}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">delete</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">delete</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="forEach">
@@ -142,10 +139,9 @@ to
 <span class="param">combine</span> is provided then 
 <span class="param">key</span> it is bound to
 <code>combine(oldvalue, value)</code> in the new map.</p>
-<pre><code>{'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}
-{'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
-{'a': 1, 'b': 2}.insert('b', 3, (x,y) =&gt; x - y) == {'a': 3, 'b', -1}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">insert</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">,</span> <span class="n ">2</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">,</span> <span class="n ">2</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">insert</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">,</span> <span class="n ">3</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">,</span> <span class="n ">3</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">insert</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">,</span> <span class="n ">3</span><span class="p ">,</span> <span class="p ">(</span><span class="i ">x</span><span class="p ">,</span><span class="i ">y</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">-</span> <span class="i ">y</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">,</span> <span class="o ">-</span><span class="n ">1</span><span class="p ">}</span></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="intersection">
@@ -164,10 +160,9 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href
 <code>leftvalue</code> is the value bound to <code>key</code> in <code>this</code> and <code>rightvalue</code> is the
 one bound to <code>key</code> in 
 <span class="param">other</span>.</p>
-<pre><code>{'a': 1}.intersection({'b': 2}) == {}
-{'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
-{'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) =&gt; x + y) == {'a': 4}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">intersection</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">intersection</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">intersection</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">,</span> <span class="p ">(</span><span class="i ">x</span><span class="p ">,</span><span class="i ">y</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="i ">y</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">4</span><span class="p ">}</span></pre>
 <p>Note that <code>intersection</code> is commutative if and only if 
 <span class="param">combine</span> is
 provided and if it is commutative.</p>
@@ -180,9 +175,8 @@ abstract <a href="../persistent/Option.html">Option</a>&lt;<a href="../persisten
 <p>Looks up the value possibly bound to 
 <span class="param">key</span> in <code>this</code>. Returns
 <code>Option.some(value)</code> if it exists, <code>Option.none()</code> otherwise.</p>
-<pre><code>{'a': 1}.lookup('b') == Option.none()
-{'a': 1, 'b': 2}.lookup('b') == Option.some(2)
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">lookup</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">)</span> <span class="o ">==</span> <span class="t ">Option</span><span class="p ">.</span><span class="i ">none</span><span class="p ">(</span><span class="p ">)</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">lookup</span><span class="p ">(</span><span class="s si">'b'</span><span class="p ">)</span> <span class="o ">==</span> <span class="t ">Option</span><span class="p ">.</span><span class="i ">some</span><span class="p ">(</span><span class="n ">2</span><span class="p ">)</span></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="mapValues">
@@ -192,9 +186,8 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a> <strong>ma
 <p>Returns a new map identical to <code>this</code> where each value has been updated by
 
 <span class="param">f</span>.</p>
-<pre><code>{'a': 1, 'b': 2}.map((x) =&gt; x + 1) == {'a', 2, 'b', 3}
-{}.map((x) =&gt; x + 1) == {}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">.</span><span class="i ">map</span><span class="p ">(</span><span class="p ">(</span><span class="i ">x</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="n ">1</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">,</span> <span class="n ">2</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">,</span> <span class="n ">3</span><span class="p ">}</span>
+<span class="p ">{</span><span class="p ">}</span><span class="p ">.</span><span class="i ">map</span><span class="p ">(</span><span class="p ">(</span><span class="i ">x</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="n ">1</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="p ">}</span></pre>
 </div>
 </div>
 <div class="method"><h4 id="toMap">
@@ -254,10 +247,9 @@ value for a <code>key</code> present in both <code>this</code> and
 <code>combine(leftvalue, rightvalue)</code> where <code>leftvalue</code> is the value bound to
 <code>key</code> in <code>this</code> and <code>rightvalue</code> is the one bound to <code>key</code> in 
 <span class="param">other</span>.</p>
-<pre><code>{'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
-{'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
-{'a': 1}.union({'a': 3, 'b': 2}, (x,y) =&gt; x + y) == {'a': 4, 'b': 2}
-</code></pre>
+<pre><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">union</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">union</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span>
+<span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">1</span><span class="p ">}</span><span class="p ">.</span><span class="i ">union</span><span class="p ">(</span><span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">3</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span><span class="p ">,</span> <span class="p ">(</span><span class="i ">x</span><span class="p ">,</span><span class="i ">y</span><span class="p ">)</span> <span class="a ">=&gt;</span> <span class="i ">x</span> <span class="o ">+</span> <span class="i ">y</span><span class="p ">)</span> <span class="o ">==</span> <span class="p ">{</span><span class="s si">'a'</span><span class="p ">:</span> <span class="n ">4</span><span class="p ">,</span> <span class="s si">'b'</span><span class="p ">:</span> <span class="n ">2</span><span class="p ">}</span></pre>
 <p>Note that <code>union</code> is commutative if and only if 
 <span class="param">combine</span> is provided and
 if it is commutative.</p>
@@ -269,7 +261,7 @@ if it is commutative.</p>
         </div>
         
         <div class="footer">
-          <div>This page was generated at 2012-12-06 03:00:10.043</div>
+          <div>This page was generated at 2013-01-23 02:23:25.843</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
