@@ -36,11 +36,11 @@ class ModelSet<E> extends PersistentSetBase<E> {
   }
 
   PersistentSet map(f(E element)) {
-    return new ModelSet(zet.mappedBy(f));
+    return new ModelSet(zet.mappedBy(f).toSet());
   }
 
   PersistentSet<E> filter(bool f(E element)) {
-    return new ModelSet(zet.where(f));
+    return new ModelSet(zet.where(f).toSet());
   }
 
   int get length => zet.length;
@@ -69,6 +69,6 @@ class ModelSet<E> extends PersistentSetBase<E> {
 
   PersistentSet<E> intersection(PersistentSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);
-    return new ModelSet(newset.where((E e) => other.contains(e)));
+    return new ModelSet(newset.where((E e) => other.contains(e)).toSet());
   }
 }
