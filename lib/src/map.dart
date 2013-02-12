@@ -137,10 +137,14 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   PersistentMap<K, V>
       intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
-  /**
-   * Returns a mutable copy of [this].
-   */
+  /// Returns a mutable copy of [this].
   Map<K, V> toMap();
+
+  /// The keys of [this].
+  Iterable<K> get keys;
+
+  /// The values of [this].
+  Iterable<V> get values;
 }
 
 /**
@@ -167,4 +171,8 @@ abstract class PersistentMapBase<K, V>
     buffer.add('}');
     return buffer.toString();
   }
+
+  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
+
+  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
 }

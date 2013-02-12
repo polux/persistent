@@ -31,6 +31,9 @@ main() {
   print(m6);  // {a: 2, b: 2}
 
   for (final pair in m4) {
-    print(pair);
+    print(pair);  // Pair(a, 4), Pair(c, 4), Pair(b, 2)
   }
+
+  print(m4.keys.toList());  // [a, c, b]
+  print(m4.values.toList());  // [4, 4, 2]
 }
