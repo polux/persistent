@@ -34,12 +34,6 @@ testDelete(Set<Element> s, Element elem) {
 testContains(Set<Element> s, Element elem) =>
     implemSetFrom(s).contains(elem) == modelSetFrom(s).contains(elem);
 
-testMap(Set<Element> s) =>
-    sameSet(implemSetFrom(s).map(times42), modelSetFrom(s).map(times42));
-
-testFilter(Set<Element> s) =>
-    sameSet(implemSetFrom(s).filter(pred), modelSetFrom(s).filter(pred));
-
 testLength(Set<Element> s) =>
     implemSetFrom(s).length == modelSetFrom(s).length;
 
@@ -59,6 +53,9 @@ testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).cartesianProduct(implemSetFrom(s2)),
             modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
 
+testIterator(Set<Element> s) =>
+    setEquals(implemSetFrom(s).toSet(), modelSetFrom(s).toSet());
+
 main() {
   final e = new Enumerations();
   final properties = {
@@ -67,13 +64,12 @@ main() {
     'insert'       : forall2(e.sets, e.elements, testInsert),
     'delete'       : forall2(e.sets, e.elements, testDelete),
     'contains'     : forall2(e.sets, e.elements, testContains),
-    'map'          : forall(e.sets, testMap),
-    'filter'       : forall(e.sets, testFilter),
     'length'       : forall(e.sets, testLength),
     'union'        : forall2(e.sets, e.sets, testUnion),
     'difference'   : forall2(e.sets, e.sets, testDifference),
     'intersection' : forall2(e.sets, e.sets, testIntersection),
     'product'      : forall2(e.sets, e.sets, testCartesianProduct),
+    'iterator'     : forall(e.sets, testIterator)
   };
   testMain(properties);
 }

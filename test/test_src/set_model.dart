@@ -13,8 +13,6 @@ class ModelSet<E> extends PersistentSetBase<E> {
 
   ModelSet(this.zet);
 
-  bool get isEmpty => zet.isEmpty;
-
   PersistentSet<E> insert(E element) {
     Set<E> newset = new Set<E>.from(zet);
     newset.add(element);
@@ -26,24 +24,6 @@ class ModelSet<E> extends PersistentSetBase<E> {
     newset.remove(element);
     return new ModelSet(newset);
   }
-
-  bool contains(E element) {
-    return zet.contains(element);
-  }
-
-  void forEach(f(E element)) {
-    zet.forEach(f);
-  }
-
-  PersistentSet map(f(E element)) {
-    return new ModelSet(zet.mappedBy(f).toSet());
-  }
-
-  PersistentSet<E> filter(bool f(E element)) {
-    return new ModelSet(zet.where(f).toSet());
-  }
-
-  int get length => zet.length;
 
   PersistentSet<E> union(ModelSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);
@@ -71,4 +51,6 @@ class ModelSet<E> extends PersistentSetBase<E> {
     Set<E> newset = new Set<E>.from(zet);
     return new ModelSet(newset.where((E e) => other.contains(e)).toSet());
   }
+
+  Iterator<E> get iterator => zet.iterator;
 }

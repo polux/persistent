@@ -5,7 +5,7 @@
 
 part of persistent;
 
-abstract class PersistentSet<E> {
+abstract class PersistentSet<E> implements Iterable<E> {
 
   /** Creates an empty [PersistentSet] using its default implementation. */
   factory PersistentSet() => new _PersistentSetImpl<E>();
@@ -22,21 +22,9 @@ abstract class PersistentSet<E> {
     return result;
   }
 
-  bool get isEmpty;
-
   PersistentSet<E> insert(E element);
 
   PersistentSet<E> delete(E element);
-
-  bool contains(E element);
-
-  void forEach(f(E element));
-
-  PersistentSet map(f(E element));
-
-  PersistentSet<E> filter(bool f(E element));
-
-  int get length;
 
   PersistentSet<E> union(PersistentSet<E> persistentSet);
 
@@ -54,14 +42,15 @@ abstract class PersistentSet<E> {
   PersistentSet<Pair> operator *(PersistentSet persistentSet);
 
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
-
-  Set<E> toSet();
 }
 
 /**
  * A base class for implementations of [PersistentSet].
  */
-abstract class PersistentSetBase<E> implements PersistentSet<E> {
+abstract class PersistentSetBase<E>
+    extends Iterable<E>
+    implements PersistentSet<E> {
+
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
       union(persistentSet);
 
@@ -70,12 +59,6 @@ abstract class PersistentSetBase<E> implements PersistentSet<E> {
 
   PersistentSet<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
-
-  Set<E> toSet() {
-    Set<E> result = new Set<E>();
-    this.forEach((E e) { result.add(e); });
-    return result;
-  }
 
   String toString() {
     StringBuffer buffer = new StringBuffer('{');

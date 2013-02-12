@@ -29,9 +29,6 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
     return result;
   }
 
-  /// True when [this] is empty.
-  bool get isEmpty;
-
   /**
    * Returns a new map identical to [this] except that it binds [key] to
    * [value].
@@ -87,15 +84,6 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {}.map((x) => x + 1) == {}
    */
   PersistentMap mapValues(f(V value));
-
-  /**
-   * The number of (key, value) pairs in [this].
-   *
-   *     {}.length == 0
-   *     {'a': 1}.length == 1
-   *     {'a': 1, 'b': 2}.length == 2
-   */
-  int get length;
 
   /**
    * Returns a new map whose (key, value) pairs are the union of those of [this]

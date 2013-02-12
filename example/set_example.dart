@@ -35,4 +35,8 @@ main() {
 
   final s8 = s1.intersection(s2);
   print(s8);  // {a}
+
+  for (final e in s4) {
+    print(e);  // a, b, c
+  }
 }
