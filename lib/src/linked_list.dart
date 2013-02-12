@@ -5,19 +5,19 @@
 
 part of persistent;
 
-abstract class LList<A> {
+abstract class LList<A> implements Iterable<A> {
   factory LList.nil() => new Nil<A>();
   factory LList.cons(A x, LList<A> xs) => new Cons<A>(x, xs);
 
-  bool isNil();
-  Cons<A> asCons();
+  bool get isNil;
+  bool get isCons;
+  Nil<A> get asNil;
+  Cons<A> get asCons;
 
   void foreach(f(A));
   // forall B, LList<B> map(B f(A))
   LList map(f(A));
   LList<A> filter(bool f(A));
-
-  int length();
 }
 
 class LListBuilder<A> {
@@ -46,12 +46,12 @@ class LListBuilder<A> {
   }
 }
 
-abstract class LListBase<A> implements LList<A> {
+abstract class _LListBase<A> extends Iterable<A> implements LList<A> {
 
   void foreach(f(A)) {
     LList<A> it = this;
-    while (!it.isNil()) {
-      Cons<A> cons = it.asCons();
+    while (!it.isNil) {
+      Cons<A> cons = it.asCons;
       f(cons.elem);
       it = cons.tail;
     }
@@ -60,8 +60,8 @@ abstract class LListBase<A> implements LList<A> {
   LList map(f(A)) {
     LListBuilder<A> builder = new LListBuilder<A>();
     LList<A> it = this;
-    while (!it.isNil()) {
-      Cons<A> cons = it.asCons();
+    while (it.isCons) {
+      Cons<A> cons = it.asCons;
       A elem = cons.elem;
       builder.add(f(elem));
       it = cons.tail;
@@ -72,8 +72,8 @@ abstract class LListBase<A> implements LList<A> {
   LList<A> filter(bool f(A)) {
     LListBuilder<A> builder = new LListBuilder<A>();
     LList<A> it = this;
-    while (!it.isNil()) {
-      Cons<A> cons = it.asCons();
+    while (it.isCons) {
+      Cons<A> cons = it.asCons;
       A elem = cons.elem;
       if (f(elem)) builder.add(elem);
       it = cons.tail;
@@ -82,15 +82,47 @@ abstract class LListBase<A> implements LList<A> {
   }
 }
 
-class Nil<A> extends LListBase<A> {
-  isNil() => true;
-  asCons() { throw "Nil is not a Cons"; }
-  toString() => "nil()";
-
-  int length() => 0;
+class _NilIterator<A> implements Iterator<A> {
+  const _NilIterator();
+  A get current => null;
+  bool moveNext() => false;
 }
 
-class Cons<A> extends LListBase<A> {
+class Nil<A> extends _LListBase<A> {
+  bool get isNil => true;
+  bool get isCons => false;
+  Nil<A> get asNil => this;
+  Cons<A> get asCons => null;
+
+  toString() => "nil()";
+
+  int get length => 0;
+
+  Iterator<A> get iterator => const _NilIterator();
+}
+
+class _ConsIterator<A> implements Iterator<A> {
+  final LList<A> _head;
+  LList<A> _current = null;
+
+  _ConsIterator(this._head);
+
+  A get current => _current.isCons ? _current.asCons.elem : null;
+
+  bool moveNext() {
+    if (_current == null) {
+      _current = _head;
+      return _current.isCons;
+    }
+    if (_current.isCons) {
+      _current = _current.asCons.tail;
+      return _current.isCons;
+    }
+    return false;
+  }
+}
+
+class Cons<A> extends _LListBase<A> {
   int _length = null;
 
   final A elem;
@@ -98,14 +130,19 @@ class Cons<A> extends LListBase<A> {
 
   Cons(this.elem, this.tail);
 
-  isNil() => false;
-  asCons() => this;
+  bool get isNil => false;
+  bool get isCons => true;
+  Nil<A> get asNil => null;
+  Cons<A> get asCons => this;
+
   toString() => "cons($elem, $tail)";
 
-  int length() {
+  int get length {
     if (_length == null) {
-      _length = tail.length() + 1;
+      _length = tail.length + 1;
     }
     return _length;
   }
+
+  Iterator<A> get iterator => new _ConsIterator<A>(this);
 }

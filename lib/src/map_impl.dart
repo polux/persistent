@@ -79,6 +79,12 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   // toString() => toDebugString();
 }
 
+class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
+  const _EmptyMapIterator();
+  Pair<K, V> get current => null;
+  bool moveNext() => false;
+}
+
 class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   _EmptyMap() : super(0, true, false);
 
@@ -87,13 +93,13 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, V> _insertWith(
       LList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
       int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
     return new _Leaf<K, V>(hash, keyValues, size);
   }
 
   PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
     return this;
   }
 
@@ -133,9 +139,11 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap mapValues(f(V)) => this;
 
-  void forEach(f(K, V)) {}
+  void forEachKeyValue(f(K, V)) {}
 
   bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
+
+  Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
   toDebugString() => "_EmptyMap()";
 }
@@ -146,20 +154,20 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
   _Leaf(this._hash, pairs, int size) : super(size, false, true) {
     this._pairs = pairs;
-    assert(size == pairs.length());
+    assert(size == pairs.length);
   }
 
   PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
     // newsize is incremented as a side effect of insertPair
     int newsize = length;
 
     LList<Pair<K, V>> insertPair(Pair<K, V> toInsert, LList<Pair<K, V>> pairs) {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
       LList<Pair<K, V>> it = pairs;
-      while (!it.isNil()) {
-        Cons<Pair<K, V>> cons = it.asCons();
+      while (it.isCons) {
+        Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
         if (elem.fst == toInsert.fst) {
           builder.add(new Pair<K, V>(
@@ -179,13 +187,13 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
         LList<Pair<K, V>> toInsert, LList<Pair<K, V>> pairs) {
       LList<Pair<K, V>> res = pairs;
       LList<Pair<K, V>> it = toInsert;
-      while (!it.isNil()) {
-        Cons<Pair<K, V>> cons = it.asCons();
+      while (it.isCons) {
+        Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
         res = insertPair(elem, res);
         it = cons.tail;
       }
-      assert(newsize == res.length());
+      assert(newsize == res.length);
       return res;
     }
 
@@ -208,7 +216,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
     // TODO(polux): possibly faster implementation
     Map<K, V> map = toMap();
     LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
@@ -233,7 +241,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
       }
       return true;
     });
-    return newPairs.isNil()
+    return newPairs.isNil
         ? new _EmptyMap<K, V>()
         : new _Leaf<K, V>(_hash, newPairs, found ? length - 1 : length);
   }
@@ -242,8 +250,8 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     LList<Pair<K, V>> adjustPairs() {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
       LList<Pair<K, V>> it = _pairs;
-      while (!it.isNil()) {
-        Cons<Pair<K, V>> cons = it.asCons();
+      while (it.isCons) {
+        Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
         if (elem.fst == key) {
           builder.add(new Pair<K, V>(key, update(elem.snd)));
@@ -297,8 +305,8 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     if (hash != _hash)
       return new Option<V>.none();
     LList<Pair<K, V>> it = _pairs;
-    while (!it.isNil()) {
-      Cons<Pair<K, V>> cons = it.asCons();
+    while (it.isCons) {
+      Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
       if (elem.fst == key) return new Option<V>.some(elem.snd);
       it = cons.tail;
@@ -309,7 +317,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   PersistentMap mapValues(f(V)) =>
       new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))), length);
 
-  void forEach(f(K, V)) {
+  void forEachKeyValue(f(K, V)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
@@ -321,8 +329,8 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     Map<K, V> thisAsMap = toMap();
     int counter = 0;
     LList<Pair<K, V>> it = other._pairs;
-    while (!it.isNil()) {
-      Cons<Pair<K, V>> cons = it.asCons();
+    while (it.isCons) {
+      Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
       if (elem.snd == null && !thisAsMap.containsKey(elem.fst))
         return false;
@@ -334,7 +342,36 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     return thisAsMap.length == counter;
   }
 
+  Iterator<Pair<K, V>> get iterator => _pairs.iterator;
+
   toDebugString() => "_Leaf($_hash, $_pairs)";
+}
+
+class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
+  List<_APersistentMap<K, V>> _array;
+  int _index = 0;
+  // invariant: _currentIterator != null => _currentIterator.current != null
+  Iterator<Pair<K, V>> _currentIterator = null;
+
+  _SubMapIterator(this._array);
+
+  Pair<K, V> get current =>
+      (_currentIterator != null) ? _currentIterator.current : null;
+
+  bool moveNext() {
+    while (_index < _array.length) {
+      if (_currentIterator == null) {
+        _currentIterator = _array[_index].iterator;
+      }
+      if (_currentIterator.moveNext()) {
+        return true;
+      } else {
+        _currentIterator = null;
+        _index++;
+      }
+    }
+    return false;
+  }
 }
 
 class _SubMap<K, V> extends _APersistentMap<K, V> {
@@ -366,7 +403,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
 
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
@@ -395,7 +432,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
-    assert(size == keyValues.length());
+    assert(size == keyValues.length);
 
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
@@ -590,8 +627,8 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     return new _SubMap(_bitmap, newarray, length);
   }
 
-  forEach(f(K, V)) {
-    _array.forEach((mi) => mi.forEach(f));
+  forEachKeyValue(f(K, V)) {
+    _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 
   bool operator ==(PersistentMap<K, V> other) {
@@ -609,6 +646,8 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
     return true;
   }
+
+  Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);
 
   toDebugString() => "_SubMap($_array)";
 }

@@ -55,7 +55,7 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
     return this;
   }
 
-  void forEach(f(K, V)) {
+  void forEachKeyValue(f(K, V)) {
     _map.forEach(f);
   }
 
@@ -70,5 +70,13 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> intersection(PersistentMap<K, V> other,
                                    [V combine(V x, V y)]) {
     throw new UnsupportedError("intersection is not supported");
+  }
+
+  Iterator<Pair<K, V>> get iterator {
+    final res = <Pair<K, V>>[];
+    this.forEachKeyValue((k, v) {
+      res.add(new Pair<K, V>(k, v));
+    });
+    return res.iterator;
   }
 }

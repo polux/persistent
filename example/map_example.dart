@@ -29,4 +29,8 @@ main() {
 
   final m6 = m1.adjust('a', (n) => n + 1);
   print(m6);  // {a: 2, b: 2}
+
+  for (final pair in m4) {
+    print(pair);
+  }
 }

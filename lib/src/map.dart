@@ -12,7 +12,7 @@ part of persistent;
  * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
  * [PersistentMap.fromMap({k1: v1, k2: v2, ...})].
  */
-abstract class PersistentMap<K, V> {
+abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
   factory PersistentMap() => new _EmptyMap<K, V>();
@@ -68,7 +68,7 @@ abstract class PersistentMap<K, V> {
   /**
    * Evaluates [f(key, value)] for each ([key], [value]) pair in [this].
    */
-  void forEach(f(K key, V value));
+  void forEachKeyValue(f(K key, V value));
 
   /**
    * Returns a new map identical to [this] except that the value it possibly
@@ -146,17 +146,20 @@ abstract class PersistentMap<K, V> {
 /**
  * A base class for implementations of [PersistentMap].
  */
-abstract class PersistentMapBase<K, V> implements PersistentMap<K, V> {
+abstract class PersistentMapBase<K, V>
+    extends Iterable<Pair<K, V>>
+    implements PersistentMap<K, V> {
+
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
-    this.forEach((K k, V v) { result[k] = v; });
+    this.forEachKeyValue((K k, V v) { result[k] = v; });
     return result;
   }
 
   String toString() {
     StringBuffer buffer = new StringBuffer('{');
     bool comma = false;
-    this.forEach((K k, V v) {
+    this.forEachKeyValue((K k, V v) {
       if (comma) buffer.add(', ');
       buffer.add('$k: $v');
       comma = true;

@@ -148,8 +148,16 @@ bool setEquals(Set s1, Set s2) {
   return true;
 }
 
-bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm.map);
+bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm._map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
+
+bool sameIterator(Iterator it1, Iterator it2) {
+  while (it1.moveNext()) {
+    if (!it2.moveNext()) return false;
+    if (it1.current != it2.current) return false;
+  }
+  return !it2.moveNext();
+}
 
 void testMain(Map<String, Property> properties) {
   final parser = new args.ArgParser();

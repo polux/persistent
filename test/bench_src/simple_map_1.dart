@@ -11,7 +11,7 @@ part of map_bench;
 class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   final LList<Pair<K, V>> _list;
 
-  bool get isEmpty => _list.isNil();
+  bool get isEmpty => _list.isNil;
 
   SimplePersistentMap._internal(this._list);
   factory SimplePersistentMap() =>
@@ -22,8 +22,8 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
     LList<Pair<K, V>> newList() {
       LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
       LList<Pair<K, V>> it = _list;
-      while (!it.isNil()) {
-        Cons<Pair<K, V>> cons = it.asCons();
+      while (it.isCons) {
+        Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
         if (elem.fst == key) {
           builder.add(new Pair<K, V>(key, combine(elem.snd, value)));
@@ -43,8 +43,8 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
 
   Option<V> lookup(K key) {
     LList<Pair<K, V>> it = _list;
-    while (!it.isNil()) {
-      Cons<Pair<K, V>> cons = it.asCons();
+    while (it.isCons) {
+      Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
       if (elem.fst == key) return new Option<V>.some(elem.snd);
       it = cons.tail;
@@ -56,7 +56,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
     new SimplePersistentMap._internal(
       _list.map((p) => new Pair(p.fst, f(p.snd))));
 
-  forEach(f(K, V)) {
+  forEachKeyValue(f(K, V)) {
     Map<K, V> tmp = new Map<K, V>();
     _list.foreach((pair) {
       if (!tmp.containsKey(pair.fst))
@@ -80,5 +80,13 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
 
   PersistentMap<K, V> adjust(K key, V update(V)) {
     throw new UnsupportedError("adjust is not supported");
+  }
+
+  Iterator<Pair<K, V>> get iterator {
+    final res = <Pair<K, V>>[];
+    this.forEachKeyValue((k, v) {
+      res.add(new Pair<K, V>(k, v));
+    });
+    return res.iterator;
   }
 }

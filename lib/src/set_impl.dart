@@ -23,17 +23,17 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   bool contains(E element) => _map.lookup(element).isDefined;
 
-  void forEach(f(E element)) => _map.forEach((E k, v) => f(k));
+  void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
   _PersistentSetImpl map(f(E element)) {
     _PersistentSetImpl result = new _PersistentSetImpl();
-    _map.forEach((E k, v) { result = result.insert(f(k)); });
+    _map.forEachKeyValue((E k, v) { result = result.insert(f(k)); });
     return result;
   }
 
   _PersistentSetImpl<E> filter(bool f(E element)) {
     _PersistentSetImpl result = new _PersistentSetImpl();
-    _map.forEach((E k, v) {
+    _map.forEachKeyValue((E k, v) {
       if (f(k)) {
         result = result.insert(k);
       }
@@ -48,7 +48,7 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   _PersistentSetImpl<E> difference(_PersistentSetImpl<E> persistentSet) {
     _PersistentSetImpl result = new _PersistentSetImpl();
-    _map.forEach((E k, v) {
+    _map.forEachKeyValue((E k, v) {
       if (!persistentSet.contains(k)) {
         result = result.insert(k);
       }
@@ -61,8 +61,8 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   PersistentSet<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
     _PersistentSetImpl<Pair> result = new _PersistentSetImpl();
-    _map.forEach((E e1, _) {
-      persistentSet._map.forEach((e2, _) {
+    _map.forEachKeyValue((E e1, _) {
+      persistentSet._map.forEachKeyValue((e2, _) {
         result = result.insert(new Pair<E,Object>(e1, e2));
       });
     });

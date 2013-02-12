@@ -54,6 +54,9 @@ testIntersection(Map<Key, int> map1, Map<Key, int> map2) =>
     sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
             modelMapFrom(map1).intersection(modelMapFrom(map2), minus));
 
+testIterator(Map<Key, int> map) =>
+    setEquals(implemMapFrom(map).toSet(), modelMapFrom(map).toSet());
+
 main() {
   final e = new Enumerations();
   final properties = {
@@ -66,7 +69,8 @@ main() {
     'mapValues'   : forall(e.maps, testMapValues),
     'length'      : forall(e.maps, testLength),
     'union'       : forall2(e.maps, e.maps, testUnion),
-    'intersection': forall2(e.maps, e.maps, testIntersection)
+    'intersection': forall2(e.maps, e.maps, testIntersection),
+    'iterator'    : forall(e.maps, testIterator)
   };
   testMain(properties);
 }
