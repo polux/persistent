@@ -1,4 +1,3 @@
-
 [
   {
     "kind": "library",
@@ -370,8 +369,8 @@
       },
       {
         "superclass": {
-          "name": "LListBase",
-          "refId": "LListBase",
+          "name": "_LListBase",
+          "refId": "_LListBase",
           "arguments": [
             {
               "name": "A",
@@ -419,8 +418,8 @@
           },
           {
             "returnType": {
-              "name": "dynamic",
-              "refId": "dynamic"
+              "name": "bool",
+              "refId": "bool"
             },
             "kind": "method",
             "name": "isNil",
@@ -428,8 +427,38 @@
           },
           {
             "returnType": {
-              "name": "dynamic",
-              "refId": "dynamic"
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "isCons",
+            "id": "isCons0()"
+          },
+          {
+            "returnType": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "asNil",
+            "id": "asNil0()"
+          },
+          {
+            "returnType": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
             },
             "kind": "method",
             "name": "asCons",
@@ -452,6 +481,93 @@
             "kind": "method",
             "name": "length",
             "id": "length0()"
+          },
+          {
+            "returnType": {
+              "name": "Iterator",
+              "refId": "Iterator",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "iterator",
+            "id": "iterator0()"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isNil",
+            "id": "isNil"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isCons",
+            "id": "isCons"
+          },
+          {
+            "ref": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asNil",
+            "id": "asNil"
+          },
+          {
+            "ref": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asCons",
+            "id": "asCons"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "name": "length",
+            "id": "length"
+          },
+          {
+            "ref": {
+              "name": "Iterator",
+              "refId": "Iterator",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "iterator",
+            "id": "iterator"
           },
           {
             "ref": {
@@ -526,8 +642,8 @@
       },
       {
         "superclass": {
-          "name": "LListBase",
-          "refId": "LListBase",
+          "name": "_LListBase",
+          "refId": "_LListBase",
           "arguments": [
             {
               "name": "A",
@@ -540,8 +656,8 @@
         "children": [
           {
             "returnType": {
-              "name": "dynamic",
-              "refId": "dynamic"
+              "name": "bool",
+              "refId": "bool"
             },
             "kind": "method",
             "name": "isNil",
@@ -549,8 +665,38 @@
           },
           {
             "returnType": {
-              "name": "dynamic",
-              "refId": "dynamic"
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "isCons",
+            "id": "isCons0()"
+          },
+          {
+            "returnType": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "asNil",
+            "id": "asNil0()"
+          },
+          {
+            "returnType": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
             },
             "kind": "method",
             "name": "asCons",
@@ -573,74 +719,11 @@
             "kind": "method",
             "name": "length",
             "id": "length0()"
-          }
-        ],
-        "id": "Nil"
-      },
-      {
-        "interfaces": [
-          {
-            "name": "LList",
-            "refId": "LList",
-            "arguments": [
-              {
-                "name": "A",
-                "refId": "A"
-              }
-            ]
-          }
-        ],
-        "superclass": {
-          "name": "Object",
-          "refId": "Object"
-        },
-        "kind": "class",
-        "name": "LListBase",
-        "children": [
-          {
-            "returnType": {
-              "name": "void",
-              "refId": "void"
-            },
-            "kind": "method",
-            "name": "foreach",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "foreach1()"
           },
           {
             "returnType": {
-              "name": "LList",
-              "refId": "LList"
-            },
-            "kind": "method",
-            "name": "map",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "map1()"
-          },
-          {
-            "returnType": {
-              "name": "LList",
-              "refId": "LList",
+              "name": "Iterator",
+              "refId": "Iterator",
               "arguments": [
                 {
                   "name": "A",
@@ -649,22 +732,83 @@
               ]
             },
             "kind": "method",
-            "name": "filter",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "filter1()"
+            "name": "iterator",
+            "id": "iterator0()"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isNil",
+            "id": "isNil"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isCons",
+            "id": "isCons"
+          },
+          {
+            "ref": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asNil",
+            "id": "asNil"
+          },
+          {
+            "ref": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asCons",
+            "id": "asCons"
+          },
+          {
+            "ref": {
+              "name": "int",
+              "refId": "int"
+            },
+            "kind": "property",
+            "name": "length",
+            "id": "length"
+          },
+          {
+            "ref": {
+              "name": "Iterator",
+              "refId": "Iterator",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "iterator",
+            "id": "iterator"
           }
         ],
-        "id": "LListBase"
+        "id": "Nil"
       },
       {
         "superclass": {
@@ -755,6 +899,18 @@
         "id": "LListBuilder"
       },
       {
+        "interfaces": [
+          {
+            "name": "Iterable",
+            "refId": "Iterable",
+            "arguments": [
+              {
+                "name": "A",
+                "refId": "A"
+              }
+            ]
+          }
+        ],
         "superclass": {
           "name": "Object",
           "refId": "Object"
@@ -814,6 +970,30 @@
             "kind": "method",
             "name": "isNil",
             "id": "isNil0()"
+          },
+          {
+            "returnType": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "method",
+            "name": "isCons",
+            "id": "isCons0()"
+          },
+          {
+            "returnType": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "asNil",
+            "id": "asNil0()"
           },
           {
             "returnType": {
@@ -897,13 +1077,52 @@
             "id": "filter1()"
           },
           {
-            "returnType": {
-              "name": "int",
-              "refId": "int"
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
             },
-            "kind": "method",
-            "name": "length",
-            "id": "length0()"
+            "kind": "property",
+            "name": "isNil",
+            "id": "isNil"
+          },
+          {
+            "ref": {
+              "name": "bool",
+              "refId": "bool"
+            },
+            "kind": "property",
+            "name": "isCons",
+            "id": "isCons"
+          },
+          {
+            "ref": {
+              "name": "Nil",
+              "refId": "Nil",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asNil",
+            "id": "asNil"
+          },
+          {
+            "ref": {
+              "name": "Cons",
+              "refId": "Cons",
+              "arguments": [
+                {
+                  "name": "A",
+                  "refId": "A"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "asCons",
+            "id": "asCons"
           },
           {
             "returnType": {
@@ -966,8 +1185,14 @@
           }
         ],
         "superclass": {
-          "name": "Object",
-          "refId": "Object"
+          "name": "Iterable",
+          "refId": "Iterable",
+          "arguments": [
+            {
+              "name": "E",
+              "refId": "E"
+            }
+          ]
         },
         "kind": "class",
         "comment": "\nA base class for implementations of [PersistentSet].\n",
@@ -1068,21 +1293,6 @@
           },
           {
             "returnType": {
-              "name": "Set",
-              "refId": "Set",
-              "arguments": [
-                {
-                  "name": "E",
-                  "refId": "E"
-                }
-              ]
-            },
-            "kind": "method",
-            "name": "toSet",
-            "id": "toSet0()"
-          },
-          {
-            "returnType": {
               "name": "String",
               "refId": "String"
             },
@@ -1094,6 +1304,18 @@
         "id": "PersistentSetBase"
       },
       {
+        "interfaces": [
+          {
+            "name": "Iterable",
+            "refId": "Iterable",
+            "arguments": [
+              {
+                "name": "E",
+                "refId": "E"
+              }
+            ]
+          }
+        ],
         "superclass": {
           "name": "Object",
           "refId": "Object"
@@ -1137,15 +1359,6 @@
               }
             ],
             "id": "PersistentSet.from1()"
-          },
-          {
-            "returnType": {
-              "name": "bool",
-              "refId": "bool"
-            },
-            "kind": "method",
-            "name": "isEmpty",
-            "id": "isEmpty0()"
           },
           {
             "returnType": {
@@ -1198,101 +1411,6 @@
               }
             ],
             "id": "delete1()"
-          },
-          {
-            "returnType": {
-              "name": "bool",
-              "refId": "bool"
-            },
-            "kind": "method",
-            "name": "contains",
-            "children": [
-              {
-                "ref": {
-                  "name": "E",
-                  "refId": "E"
-                },
-                "kind": "param",
-                "name": "element",
-                "id": "element"
-              }
-            ],
-            "id": "contains1()"
-          },
-          {
-            "returnType": {
-              "name": "void",
-              "refId": "void"
-            },
-            "kind": "method",
-            "name": "forEach",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "forEach1()"
-          },
-          {
-            "returnType": {
-              "name": "PersistentSet",
-              "refId": "PersistentSet"
-            },
-            "kind": "method",
-            "name": "map",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "map1()"
-          },
-          {
-            "returnType": {
-              "name": "PersistentSet",
-              "refId": "PersistentSet",
-              "arguments": [
-                {
-                  "name": "E",
-                  "refId": "E"
-                }
-              ]
-            },
-            "kind": "method",
-            "name": "filter",
-            "children": [
-              {
-                "ref": {
-                  "name": "Function",
-                  "refId": "Function"
-                },
-                "kind": "param",
-                "name": "f",
-                "id": "f"
-              }
-            ],
-            "id": "filter1()"
-          },
-          {
-            "returnType": {
-              "name": "int",
-              "refId": "int"
-            },
-            "kind": "method",
-            "name": "length",
-            "id": "length0()"
           },
           {
             "returnType": {
@@ -1514,39 +1632,6 @@
           },
           {
             "returnType": {
-              "name": "Set",
-              "refId": "Set",
-              "arguments": [
-                {
-                  "name": "E",
-                  "refId": "E"
-                }
-              ]
-            },
-            "kind": "method",
-            "name": "toSet",
-            "id": "toSet0()"
-          },
-          {
-            "ref": {
-              "name": "bool",
-              "refId": "bool"
-            },
-            "kind": "property",
-            "name": "isEmpty",
-            "id": "isEmpty"
-          },
-          {
-            "ref": {
-              "name": "int",
-              "refId": "int"
-            },
-            "kind": "property",
-            "name": "length",
-            "id": "length"
-          },
-          {
-            "returnType": {
               "name": "dynamic",
               "refId": "dynamic"
             },
@@ -1603,8 +1688,24 @@
           }
         ],
         "superclass": {
-          "name": "Object",
-          "refId": "Object"
+          "name": "Iterable",
+          "refId": "Iterable",
+          "arguments": [
+            {
+              "name": "Pair",
+              "refId": "Pair",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                },
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            }
+          ]
         },
         "kind": "class",
         "comment": "\nA base class for implementations of [PersistentMap].\n",
@@ -1637,11 +1738,93 @@
             "kind": "method",
             "name": "toString",
             "id": "toString0()"
+          },
+          {
+            "returnType": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "keys",
+            "id": "keys0()"
+          },
+          {
+            "returnType": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "name": "values",
+            "id": "values0()"
+          },
+          {
+            "ref": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "keys",
+            "id": "keys"
+          },
+          {
+            "ref": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "property",
+            "name": "values",
+            "id": "values"
           }
         ],
         "id": "PersistentMapBase"
       },
       {
+        "interfaces": [
+          {
+            "name": "Iterable",
+            "refId": "Iterable",
+            "arguments": [
+              {
+                "name": "Pair",
+                "refId": "Pair",
+                "arguments": [
+                  {
+                    "name": "K",
+                    "refId": "K"
+                  },
+                  {
+                    "name": "V",
+                    "refId": "V"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         "superclass": {
           "name": "Object",
           "refId": "Object"
@@ -1690,16 +1873,6 @@
               }
             ],
             "id": "PersistentMap.fromMap1()"
-          },
-          {
-            "returnType": {
-              "name": "bool",
-              "refId": "bool"
-            },
-            "kind": "method",
-            "comment": "True when [this] is empty.",
-            "name": "isEmpty",
-            "id": "isEmpty0()"
           },
           {
             "returnType": {
@@ -1816,7 +1989,7 @@
             },
             "kind": "method",
             "comment": "\nEvaluates [f(key, value)] for each ([key], [value]) pair in [this].\n",
-            "name": "forEach",
+            "name": "forEachKeyValue",
             "children": [
               {
                 "ref": {
@@ -1828,7 +2001,7 @@
                 "id": "f"
               }
             ],
-            "id": "forEach1()"
+            "id": "forEachKeyValue1()"
           },
           {
             "returnType": {
@@ -1890,16 +2063,6 @@
               }
             ],
             "id": "mapValues1()"
-          },
-          {
-            "returnType": {
-              "name": "int",
-              "refId": "int"
-            },
-            "kind": "method",
-            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n",
-            "name": "length",
-            "id": "length0()"
           },
           {
             "returnType": {
@@ -2019,29 +2182,73 @@
               ]
             },
             "kind": "method",
-            "comment": "\nReturns a mutable copy of [this].\n",
+            "comment": "Returns a mutable copy of [this].",
             "name": "toMap",
             "id": "toMap0()"
           },
           {
-            "ref": {
-              "name": "bool",
-              "refId": "bool"
+            "returnType": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                }
+              ]
             },
-            "kind": "property",
-            "comment": "True when [this] is empty.",
-            "name": "isEmpty",
-            "id": "isEmpty"
+            "kind": "method",
+            "comment": "The keys of [this].",
+            "name": "keys",
+            "id": "keys0()"
+          },
+          {
+            "returnType": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "method",
+            "comment": "The values of [this].",
+            "name": "values",
+            "id": "values0()"
           },
           {
             "ref": {
-              "name": "int",
-              "refId": "int"
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "K",
+                  "refId": "K"
+                }
+              ]
             },
             "kind": "property",
-            "comment": "\nThe number of (key, value) pairs in [this].\n\n    {}.length == 0\n    {'a': 1}.length == 1\n    {'a': 1, 'b': 2}.length == 2\n",
-            "name": "length",
-            "id": "length"
+            "comment": "The keys of [this].",
+            "name": "keys",
+            "id": "keys"
+          },
+          {
+            "ref": {
+              "name": "Iterable",
+              "refId": "Iterable",
+              "arguments": [
+                {
+                  "name": "V",
+                  "refId": "V"
+                }
+              ]
+            },
+            "kind": "property",
+            "comment": "The values of [this].",
+            "name": "values",
+            "id": "values"
           },
           {
             "returnType": {
@@ -2088,6 +2295,6 @@
         "id": "PersistentMap"
       }
     ],
-    "id": "file:///tmp/tmp.kf50AIq6lq/dart-immutable/lib/persistent.dart"
+    "id": "file:///tmp/tmp.TbS0paauPC/dart-immutable/lib/persistent.dart"
   }
 ]
