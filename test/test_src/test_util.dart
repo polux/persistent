@@ -5,8 +5,6 @@
 
 library test_util;
 
-import 'dart:math';
-
 import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';
 import 'package:enumerators/combinators.dart' as c;
@@ -117,10 +115,17 @@ class Enumerations {
   }
 }
 
-class FakeRandom implements Random {
-  final value;
-  FakeRandom(this.value);
-  int nextInt(int max) => value;
+// Copied from Dart's Iterable
+naiveLast(Iterable iterable) {
+  Iterator it = iterable.iterator;
+  if (!it.moveNext()) {
+    throw new StateError("No elements");
+  }
+  var result;
+  do {
+    result = it.current;
+  } while(it.moveNext());
+  return result;
 }
 
 PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);

@@ -51,7 +51,7 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   _APersistentMap<K, V>
       _intersectionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
 
-  Pair<K, V> _entryAt(int index);
+  Pair<K, V> _elementAt(int index);
 
   LList<Pair<K, V>> _onePair(K key, V value) =>
       new LList<Pair<K, V>>.cons(new Pair<K, V>(key, value),
@@ -80,8 +80,10 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
     this._intersectionWith(other,
         (combine != null) ? combine : (V x, V y) => y, 0);
 
-  Pair<K, V> pickRandomEntry([Random random]) =>
-      _entryAt((random != null ? random : _random).nextInt(this.length));
+  Pair<K, V> elementAt(int index) {
+    if (index < 0 || index >= length) throw new RangeError.value(index);
+    return _elementAt(index);
+  }
 
   // toString() => toDebugString();
 }
@@ -152,7 +154,11 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
-  Pair<K, V> _entryAt(int index) {
+  Pair<K, V> _elementAt(int index) {
+    throw new RangeError.value(index);
+  }
+
+  Pair<K, V> get last {
     throw new StateError("Empty map has no entries");
   }
 
@@ -355,13 +361,20 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
   Iterator<Pair<K, V>> get iterator => _pairs.iterator;
 
-  Pair<K, V> _entryAt(int index) {
-    assert(index < _pairs.length);
+  Pair<K, V> _elementAt(int index) {
     var tail = _pairs;
     for (int i = 0; i < index; i++) {
       tail = tail.asCons.tail;
     }
     return tail.asCons.elem;
+  }
+
+  Pair<K, V> get last {
+    Cons pairs = _pairs.asCons;
+    while (!pairs.tail.isNil) {
+      pairs = pairs.tail;
+    }
+    return pairs.elem;
   }
 
   toDebugString() => "_Leaf($_hash, $_pairs)";
@@ -669,13 +682,14 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
   Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);
 
-  Pair<K, V> _entryAt(int index) {
-    assert(index < this.length);
+  Pair<K, V> get last => _array.last.last;
+
+  Pair<K, V> _elementAt(int index) {
     int newIndex = index;
     for (final subMap in _array) {
       int subLength = subMap.length;
       if (newIndex < subLength) {
-        return subMap._entryAt(newIndex);
+        return subMap._elementAt(newIndex);
       }
       newIndex -= subLength;
     }

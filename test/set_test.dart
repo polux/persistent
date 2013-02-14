@@ -56,15 +56,20 @@ testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
 testIterator(Set<Element> s) =>
     setEquals(implemSetFrom(s).toSet(), modelSetFrom(s).toSet());
 
-// This test knows about the implementation details of pickRandomElement and
-// tests in fact _entryAt which is sadly not visible from this module.
-testPickRandom(Set<Element> s) {
+testElementAt(Set<Element> s) {
   final expected = implemSetFrom(s);
-  var observed = new PersistentSet();
-  for (int i = 0; i < expected.length; i++) {
-    observed = observed.insert(expected.pickRandomElement(new FakeRandom(i)));
+  int i = 0;
+  for (final entry in expected) {
+    if (entry != expected.elementAt(i)) return false;
+    i++;
   }
-  return expected == observed;
+  return true;
+}
+
+testLast(Set<Element> s) {
+  if (s.isEmpty) return true;
+  final implem = implemSetFrom(s);
+  return implem.last == naiveLast(implem);
 }
 
 main() {
@@ -81,7 +86,8 @@ main() {
     'intersection' : forall2(e.sets, e.sets, testIntersection),
     'product'      : forall2(e.sets, e.sets, testCartesianProduct),
     'iterator'     : forall(e.sets, testIterator),
-    'pickRandom'   : forall(e.sets, testPickRandom)
+    'elementAt'    : forall(e.sets, testElementAt),
+    'last'         : forall(e.sets, testLast)
   };
   testMain(properties);
 }

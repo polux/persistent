@@ -163,7 +163,16 @@ abstract class PersistentMapBase<K, V>
     return buffer.toString();
   }
 
+  // Optimized version of Iterable's contains
+  bool contains(Pair<K, V> entry) {
+    final value = this.lookup(entry.fst);
+    return value.isDefined && value.value == entry.snd;
+  }
+
   Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
 
   Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
+
+  Pair<K, V> pickRandomEntry([Random random]) =>
+      elementAt((random != null ? random : _random).nextInt(this.length));
 }
