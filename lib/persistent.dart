@@ -5,6 +5,8 @@
 
 library persistent;
 
+import 'dart:math';
+
 part 'src/map.dart';
 part 'src/map_impl.dart';
 part 'src/set.dart';

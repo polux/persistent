@@ -5,6 +5,8 @@
 
 part of test_util;
 
+final _random = new Random();
+
 /**
  * Naive implementation of PersistentMap using dart:core [Map]s.
  */
@@ -90,5 +92,9 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
       res.add(new Pair<K, V>(k, v));
     });
     return res.iterator;
+  }
+
+  Pair<K, V> pickRandomEntry([Random random]) {
+    throw new UnsupportedError("");
   }
 }

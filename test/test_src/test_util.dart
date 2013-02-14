@@ -5,6 +5,8 @@
 
 library test_util;
 
+import 'dart:math';
+
 import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';
 import 'package:enumerators/combinators.dart' as c;
@@ -16,7 +18,7 @@ part 'map_model.dart';
 part 'set_model.dart';
 
 /**
- * A datatype with an imperfect hash function to use as a key for testing maps.
+ / A datatype with an imperfect hash function to use as a key for testing maps.
  */
 class Key {
   // a list of of 7 integers in [0..31] and 1 integer in [0..3]
@@ -113,6 +115,12 @@ class Enumerations {
                  .apply(c.bools);
     sets = c.setsOf(elements);
   }
+}
+
+class FakeRandom implements Random {
+  final value;
+  FakeRandom(this.value);
+  int nextInt(int max) => value;
 }
 
 PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);

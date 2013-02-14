@@ -57,6 +57,18 @@ testIntersection(Map<Key, int> map1, Map<Key, int> map2) =>
 testIterator(Map<Key, int> map) =>
     setEquals(implemMapFrom(map).toSet(), modelMapFrom(map).toSet());
 
+// This test knows about the implementation details of pickRandomEntry and
+// tests in fact _entryAt which is sadly not visible from this module.
+testPickRandom(Map<Key, int> map) {
+  final expected = implemMapFrom(map);
+  var observed = new PersistentMap();
+  for (int i = 0; i < expected.length; i++) {
+    final entry = expected.pickRandomEntry(new FakeRandom(i));
+    observed = observed.insert(entry.fst, entry.snd);
+  }
+  return expected == observed;
+}
+
 main() {
   final e = new Enumerations();
   final properties = {
@@ -70,7 +82,8 @@ main() {
     'length'      : forall(e.maps, testLength),
     'union'       : forall2(e.maps, e.maps, testUnion),
     'intersection': forall2(e.maps, e.maps, testIntersection),
-    'iterator'    : forall(e.maps, testIterator)
+    'iterator'    : forall(e.maps, testIterator),
+    'pickRandom'  : forall(e.maps, testPickRandom)
   };
   testMain(properties);
 }

@@ -79,4 +79,8 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
     });
     return res.iterator;
   }
+
+  Pair<K, V> pickRandomEntry([Random random]) {
+    throw new UnsupportedError("");
+  }
 }

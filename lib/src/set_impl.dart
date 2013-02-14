@@ -73,4 +73,6 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   Iterator<E> get iterator =>
       _map.map((Pair<E, Object> pair) => pair.fst).iterator;
+
+  E pickRandomElement([Random random]) => _map.pickRandomEntry(random).fst;
 }

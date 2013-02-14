@@ -133,6 +133,9 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// The values of [this].
   Iterable<V> get values;
+
+  /// Randomly picks an entry of [this].
+  Pair<K, V> pickRandomEntry([Random random]);
 }
 
 /**

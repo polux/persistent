@@ -5,6 +5,8 @@
 
 part of persistent;
 
+final _random = new Random();
+
 /**
  * Exception used for aborting forEach loops.
  */
@@ -49,6 +51,8 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   _APersistentMap<K, V>
       _intersectionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
 
+  Pair<K, V> _entryAt(int index);
+
   LList<Pair<K, V>> _onePair(K key, V value) =>
       new LList<Pair<K, V>>.cons(new Pair<K, V>(key, value),
           new LList<Pair<K, V>>.nil());
@@ -75,6 +79,9 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
       intersection(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
     this._intersectionWith(other,
         (combine != null) ? combine : (V x, V y) => y, 0);
+
+  Pair<K, V> pickRandomEntry([Random random]) =>
+      _entryAt((random != null ? random : _random).nextInt(this.length));
 
   // toString() => toDebugString();
 }
@@ -144,6 +151,10 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
 
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
+
+  Pair<K, V> _entryAt(int index) {
+    throw new StateError("Empty map has no entries");
+  }
 
   toDebugString() => "_EmptyMap()";
 }
@@ -343,6 +354,15 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   }
 
   Iterator<Pair<K, V>> get iterator => _pairs.iterator;
+
+  Pair<K, V> _entryAt(int index) {
+    assert(index < _pairs.length);
+    var tail = _pairs;
+    for (int i = 0; i < index; i++) {
+      tail = tail.asCons.tail;
+    }
+    return tail.asCons.elem;
+  }
 
   toDebugString() => "_Leaf($_hash, $_pairs)";
 }
@@ -648,6 +668,18 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   }
 
   Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);
+
+  Pair<K, V> _entryAt(int index) {
+    assert(index < this.length);
+    int newIndex = index;
+    for (final subMap in _array) {
+      int subLength = subMap.length;
+      if (newIndex < subLength) {
+        return subMap._entryAt(newIndex);
+      }
+      newIndex -= subLength;
+    }
+  }
 
   toDebugString() => "_SubMap($_array)";
 }

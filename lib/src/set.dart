@@ -28,20 +28,23 @@ abstract class PersistentSet<E> implements Iterable<E> {
 
   PersistentSet<E> union(PersistentSet<E> persistentSet);
 
-  /** Alias for [union] */
+  /// Alias for [union]
   PersistentSet<E> operator +(PersistentSet<E> persistentSet);
 
   PersistentSet<E> difference(PersistentSet<E> persistentSet);
 
-  /** Alias for [difference] */
+  /// Alias for [difference]
   PersistentSet<E> operator -(PersistentSet<E> persistentSet);
 
   PersistentSet<Pair> cartesianProduct(PersistentSet persistentSet);
 
-  /** Alias for [cartesianProduct] */
+  /// Alias for [cartesianProduct]
   PersistentSet<Pair> operator *(PersistentSet persistentSet);
 
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
+
+  /// Randomly picks an element of [this].
+  E pickRandomElement([Random random]);
 }
 
 /**
