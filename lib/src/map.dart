@@ -155,11 +155,11 @@ abstract class PersistentMapBase<K, V>
     StringBuffer buffer = new StringBuffer('{');
     bool comma = false;
     this.forEachKeyValue((K k, V v) {
-      if (comma) buffer.add(', ');
-      buffer.add('$k: $v');
+      if (comma) buffer.write(', ');
+      buffer.write('$k: $v');
       comma = true;
     });
-    buffer.add('}');
+    buffer.write('}');
     return buffer.toString();
   }
 

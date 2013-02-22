@@ -53,4 +53,9 @@ class ModelSet<E> extends PersistentSetBase<E> {
   }
 
   Iterator<E> get iterator => zet.iterator;
+
+
+  E pickRandomElement([Random random]) {
+    throw new UnsupportedError("");
+  }
 }

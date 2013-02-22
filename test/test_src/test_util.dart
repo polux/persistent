@@ -5,6 +5,8 @@
 
 library test_util;
 
+import 'dart:math';
+
 import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';
 import 'package:enumerators/combinators.dart' as c;

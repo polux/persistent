@@ -67,11 +67,11 @@ abstract class PersistentSetBase<E>
     StringBuffer buffer = new StringBuffer('{');
     bool comma = false;
     this.forEach((E e) {
-      if (comma) buffer.add(', ');
-      buffer.add(e.toString());
+      if (comma) buffer.write(', ');
+      buffer.write(e.toString());
       comma = true;
     });
-    buffer.add('}');
+    buffer.write('}');
     return buffer.toString();
   }
 }
