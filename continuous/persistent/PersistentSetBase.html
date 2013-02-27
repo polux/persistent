@@ -51,11 +51,11 @@ abstract class PersistentSetBase&lt;E&gt;
    StringBuffer buffer = new StringBuffer('{');
    bool comma = false;
    this.forEach((E e) {
-     if (comma) buffer.add(', ');
-     buffer.add(e.toString());
+     if (comma) buffer.write(', ');
+     buffer.write(e.toString());
      comma = true;
    });
-   buffer.add('}');
+   buffer.write('}');
    return buffer.toString();
  }
 }
@@ -191,7 +191,7 @@ E get single {
               title="Permalink to PersistentSetBase&lt;E&gt;.operator +">#</a></h4>
 <div class="doc">
 <div class="inherited">
-<p>Alias for <code>union</code> </p>
+<p>Alias for <code>union</code></p>
 <div class="docs-inherited-from">docs inherited from <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSetBase.html">E</a>&gt; </div></div>
 <pre class="source">
 PersistentSet&lt;E&gt; operator +(PersistentSet&lt;E&gt; persistentSet) =&gt;
@@ -205,7 +205,7 @@ PersistentSet&lt;E&gt; operator +(PersistentSet&lt;E&gt; persistentSet) =&gt;
               title="Permalink to PersistentSetBase&lt;E&gt;.operator -">#</a></h4>
 <div class="doc">
 <div class="inherited">
-<p>Alias for <code>difference</code> </p>
+<p>Alias for <code>difference</code></p>
 <div class="docs-inherited-from">docs inherited from <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSetBase.html">E</a>&gt; </div></div>
 <pre class="source">
 PersistentSet&lt;E&gt; operator -(PersistentSet&lt;E&gt; persistentSet) =&gt;
@@ -219,7 +219,7 @@ PersistentSet&lt;E&gt; operator -(PersistentSet&lt;E&gt; persistentSet) =&gt;
               title="Permalink to PersistentSetBase&lt;E&gt;.operator *">#</a></h4>
 <div class="doc">
 <div class="inherited">
-<p>Alias for <code>cartesianProduct</code> </p>
+<p>Alias for <code>cartesianProduct</code></p>
 <div class="docs-inherited-from">docs inherited from <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href="../persistent/PersistentSetBase.html">E</a>&gt; </div></div>
 <pre class="source">
 PersistentSet&lt;Pair&gt; operator *(PersistentSet persistentSet) =&gt;
@@ -474,18 +474,6 @@ Iterable map(f(E element)) =&gt; new MappedIterable&lt;E, dynamic&gt;(this, f);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="mappedBy">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>mappedBy</strong>(f(<a href="../persistent/PersistentSetBase.html">E</a> element)) <a class="anchor-link" href="#mappedBy"
-              title="Permalink to PersistentSetBase&lt;E&gt;.mappedBy">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Deprecated alias for <code>map</code>.</p>
-<pre class="source">
-@deprecated
-Iterable mappedBy(f(E element)) =&gt; map(f);
-</pre>
-</div>
-</div>
 <div class="method inherited"><h4 id="max">
 <button class="show-code">Code</button>
 <a href="../persistent/PersistentSetBase.html">E</a> <strong>max</strong>([<a href="http://api.dartlang.org/dart_core/int.html">int</a> compare(<a href="../persistent/PersistentSetBase.html">E</a> a, <a href="../persistent/PersistentSetBase.html">E</a> b)]) <a class="anchor-link" href="#max"
@@ -542,6 +530,13 @@ E min([int compare(E a, E b)]) {
  return min;
 }
 </pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="pickRandomElement">
+abstract <a href="../persistent/PersistentSetBase.html">E</a> <strong>pickRandomElement</strong>([<a href="http://api.dartlang.org/dart_math/Random.html">Random</a> random]) <a class="anchor-link" href="#pickRandomElement"
+              title="Permalink to PersistentSetBase&lt;E&gt;.pickRandomElement">#</a></h4>
+<div class="inherited-from">inherited from <a href="../persistent/PersistentSet.html">PersistentSet</a> </div><div class="doc">
+<p>Randomly picks an element of <code>this</code>.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="reduce">
@@ -703,11 +698,11 @@ String toString() {
  StringBuffer buffer = new StringBuffer('{');
  bool comma = false;
  this.forEach((E e) {
-   if (comma) buffer.add(', ');
-   buffer.add(e.toString());
+   if (comma) buffer.write(', ');
+   buffer.write(e.toString());
    comma = true;
  });
- buffer.add('}');
+ buffer.write('}');
  return buffer.toString();
 }
 </pre>
@@ -744,7 +739,7 @@ Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-02-12 03:00:29.048</div>
+          <div>This page was generated at 2013-02-27 22:27:34.714</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
