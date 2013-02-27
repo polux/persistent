@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>LListBuilder&lt;A&gt; class / persistent Library / Dart Documentation</title>
+        <title>LinkedListBuilder&lt;E&gt; class / persistent Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="persistent" data-type="LListBuilder&amp;lt;A&amp;gt;">
+        <body data-library="persistent" data-type="LinkedListBuilder&amp;lt;E&amp;gt;">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../persistent.html">persistent</a> &rsaquo; <a href="../persistent/LListBuilder.html">LListBuilder&lt;A&gt;</a>        <div id="search-box">
+         &rsaquo; <a href="../persistent.html">persistent</a> &rsaquo; <a href="../persistent/LinkedListBuilder.html">LinkedListBuilder&lt;E&gt;</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -26,19 +26,19 @@
         
 </div>
 <div class="content">
-        <h2><strong>LListBuilder&lt;A&gt;</strong>
+        <h2><strong>LinkedListBuilder&lt;E&gt;</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
 <pre class="source">
-class LListBuilder&lt;A&gt; {
- LList&lt;A&gt; _first = null;
- Cons&lt;A&gt; _last = null;
+class LinkedListBuilder&lt;E&gt; {
+ LinkedList&lt;E&gt; _first = null;
+ Cons&lt;E&gt; _last = null;
 
- void add(A x) {
-   Cons&lt;A&gt; cons = new Cons&lt;A&gt;(x, null);
+ void add(E x) {
+   Cons&lt;E&gt; cons = new Cons&lt;E&gt;(x, null);
    if (_first == null) {
      _first = cons;
    } else {
@@ -47,9 +47,9 @@ class LListBuilder&lt;A&gt; {
    _last = cons;
  }
 
- LList&lt;A&gt; build([tail = null]) {
+ LinkedList&lt;E&gt; build([tail = null]) {
    if (tail == null)
-     tail = new Nil&lt;A&gt;();
+     tail = new Nil&lt;E&gt;();
    if (_first == null) {
      return tail;
    } else {
@@ -64,12 +64,12 @@ class LListBuilder&lt;A&gt; {
 <h3>Methods</h3>
 <div class="method"><h4 id="add">
 <button class="show-code">Code</button>
-void <strong>add</strong>(<a href="../persistent/LListBuilder.html">A</a> x) <a class="anchor-link" href="#add"
-              title="Permalink to LListBuilder&lt;A&gt;.add">#</a></h4>
+void <strong>add</strong>(<a href="../persistent/LinkedListBuilder.html">E</a> x) <a class="anchor-link" href="#add"
+              title="Permalink to LinkedListBuilder&lt;E&gt;.add">#</a></h4>
 <div class="doc">
 <pre class="source">
-void add(A x) {
- Cons&lt;A&gt; cons = new Cons&lt;A&gt;(x, null);
+void add(E x) {
+ Cons&lt;E&gt; cons = new Cons&lt;E&gt;(x, null);
  if (_first == null) {
    _first = cons;
  } else {
@@ -82,13 +82,13 @@ void add(A x) {
 </div>
 <div class="method"><h4 id="build">
 <button class="show-code">Code</button>
-<a href="../persistent/LList.html">LList</a>&lt;<a href="../persistent/LListBuilder.html">A</a>&gt; <strong>build</strong>([tail = null]) <a class="anchor-link" href="#build"
-              title="Permalink to LListBuilder&lt;A&gt;.build">#</a></h4>
+<a href="../persistent/LinkedList.html">LinkedList</a>&lt;<a href="../persistent/LinkedListBuilder.html">E</a>&gt; <strong>build</strong>([tail = null]) <a class="anchor-link" href="#build"
+              title="Permalink to LinkedListBuilder&lt;E&gt;.build">#</a></h4>
 <div class="doc">
 <pre class="source">
-LList&lt;A&gt; build([tail = null]) {
+LinkedList&lt;E&gt; build([tail = null]) {
  if (tail == null)
-   tail = new Nil&lt;A&gt;();
+   tail = new Nil&lt;E&gt;();
  if (_first == null) {
    return tail;
  } else {
@@ -104,7 +104,7 @@ LList&lt;A&gt; build([tail = null]) {
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-02-27 22:27:34.669</div>
+          <div>This page was generated at 2013-02-27 22:53:46.693</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
