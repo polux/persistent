@@ -6,22 +6,23 @@
 part of map_bench;
 
 /**
- * Naive implementation of PersistentMap using a [LList] of [Pair]s.
+ * Naive implementation of PersistentMap using a [LinkedList] of [Pair]s.
  */
 class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
-  final LList<Pair<K, V>> _list;
+  final LinkedList<Pair<K, V>> _list;
 
   bool get isEmpty => _list.isNil;
 
   SimplePersistentMap._internal(this._list);
   factory SimplePersistentMap() =>
-      new SimplePersistentMap._internal(new LList.nil());
+      new SimplePersistentMap._internal(new Nil());
 
   PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
-    LList<Pair<K, V>> newList() {
-      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
-      LList<Pair<K, V>> it = _list;
+    LinkedList<Pair<K, V>> newList() {
+      LinkedListBuilder<Pair<K, V>> builder =
+          new LinkedListBuilder<Pair<K, V>>();
+      LinkedList<Pair<K, V>> it = _list;
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
@@ -39,10 +40,10 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   }
 
   PersistentMap<K, V> delete(K key) =>
-      new SimplePersistentMap._internal(_list.filter((p) => p.fst != key));
+      new SimplePersistentMap._internal(_list.strictWhere((p) => p.fst != key));
 
   Option<V> lookup(K key) {
-    LList<Pair<K, V>> it = _list;
+    LinkedList<Pair<K, V>> it = _list;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
@@ -54,7 +55,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
 
   PersistentMap mapValues(f(V)) =>
     new SimplePersistentMap._internal(
-      _list.map((p) => new Pair(p.fst, f(p.snd))));
+      _list.strictMap((p) => new Pair(p.fst, f(p.snd))));
 
   forEachKeyValue(f(K, V)) {
     Map<K, V> tmp = new Map<K, V>();

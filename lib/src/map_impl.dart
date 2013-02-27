@@ -24,9 +24,9 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   final bool _isLeaf;
 
   Option<V> _lookup(K key, int hash, int depth);
-  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
   PersistentMap<K, V> _delete(K key, int hash, int depth);
   PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth);
@@ -53,9 +53,8 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
 
   Pair<K, V> _elementAt(int index);
 
-  LList<Pair<K, V>> _onePair(K key, V value) =>
-      new LList<Pair<K, V>>.cons(new Pair<K, V>(key, value),
-          new LList<Pair<K, V>>.nil());
+  LinkedList<Pair<K, V>> _onePair(K key, V value) =>
+      new Cons<Pair<K, V>>(new Pair<K, V>(key, value), new Nil<Pair<K, V>>());
 
   Option<V> lookup(K key) =>
       _lookup(key, key.hashCode & 0x3fffffff, 0);
@@ -100,13 +99,13 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
   PersistentMap<K, V> _insertWith(
-      LList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
+      LinkedList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
       int depth) {
     assert(size == keyValues.length);
     return new _Leaf<K, V>(hash, keyValues, size);
   }
 
-  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     return this;
@@ -167,22 +166,24 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
 class _Leaf<K, V> extends _APersistentMap<K, V> {
   int _hash;
-  LList<Pair<K, V>> _pairs;
+  LinkedList<Pair<K, V>> _pairs;
 
   _Leaf(this._hash, pairs, int size) : super(size, false, true) {
     this._pairs = pairs;
     assert(size == pairs.length);
   }
 
-  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // newsize is incremented as a side effect of insertPair
     int newsize = length;
 
-    LList<Pair<K, V>> insertPair(Pair<K, V> toInsert, LList<Pair<K, V>> pairs) {
-      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
-      LList<Pair<K, V>> it = pairs;
+    LinkedList<Pair<K, V>> insertPair(Pair<K, V> toInsert,
+                                      LinkedList<Pair<K, V>> pairs) {
+      LinkedListBuilder<Pair<K, V>> builder =
+          new LinkedListBuilder<Pair<K, V>>();
+      LinkedList<Pair<K, V>> it = pairs;
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
@@ -200,10 +201,10 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
       return builder.build();
     }
 
-    LList<Pair<K, V>> insertPairs(
-        LList<Pair<K, V>> toInsert, LList<Pair<K, V>> pairs) {
-      LList<Pair<K, V>> res = pairs;
-      LList<Pair<K, V>> it = toInsert;
+    LinkedList<Pair<K, V>> insertPairs(
+        LinkedList<Pair<K, V>> toInsert, LinkedList<Pair<K, V>> pairs) {
+      LinkedList<Pair<K, V>> res = pairs;
+      LinkedList<Pair<K, V>> it = toInsert;
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
@@ -216,11 +217,11 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
     if (depth > 5) {
       assert(_hash == hash);
-      final LList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
+      final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
       return new _Leaf<K, V>(hash, newPairs, newsize);
     } else {
       if (hash == _hash) {
-        final LList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
+        final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
         return new _Leaf<K, V>(hash, newPairs, newsize);
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
@@ -231,12 +232,12 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // TODO(polux): possibly faster implementation
     Map<K, V> map = toMap();
-    LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
+    LinkedListBuilder<Pair<K, V>> builder = new LinkedListBuilder<Pair<K, V>>();
     int newsize = 0;
     keyValues.foreach((Pair<K, V> pair) {
       if (map.containsKey(pair.fst)) {
@@ -251,7 +252,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     if (hash != _hash)
       return this;
     bool found = false;
-    LList<Pair<K, V>> newPairs = _pairs.filter((p) {
+    LinkedList<Pair<K, V>> newPairs = _pairs.strictWhere((p) {
       if (p.fst == key) {
         found = true;
         return false;
@@ -264,9 +265,10 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   }
 
   PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
-    LList<Pair<K, V>> adjustPairs() {
-      LListBuilder<Pair<K, V>> builder = new LListBuilder<Pair<K, V>>();
-      LList<Pair<K, V>> it = _pairs;
+    LinkedList<Pair<K, V>> adjustPairs() {
+      LinkedListBuilder<Pair<K, V>> builder =
+          new LinkedListBuilder<Pair<K, V>>();
+      LinkedList<Pair<K, V>> it = _pairs;
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
@@ -321,7 +323,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   Option<V> _lookup(K key, int hash, int depth) {
     if (hash != _hash)
       return new Option<V>.none();
-    LList<Pair<K, V>> it = _pairs;
+    LinkedList<Pair<K, V>> it = _pairs;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
@@ -332,7 +334,8 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   }
 
   PersistentMap mapValues(f(V)) =>
-      new _Leaf(_hash, _pairs.map((p) => new Pair(p.fst, f(p.snd))), length);
+      new _Leaf(_hash,
+                _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
 
   void forEachKeyValue(f(K, V)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
@@ -345,7 +348,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     if (length != other.length) return false;
     Map<K, V> thisAsMap = toMap();
     int counter = 0;
-    LList<Pair<K, V>> it = other._pairs;
+    LinkedList<Pair<K, V>> it = other._pairs;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
@@ -434,7 +437,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap<K, V> _insertWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 
@@ -463,7 +466,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap<K, V> _intersectWith(LList<Pair<K, V>> keyValues, int size,
+  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 

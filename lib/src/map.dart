@@ -80,8 +80,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    * Returns a new map identical to [this] where each value has been updated by
    * [f].
    *
-   *     {'a': 1, 'b': 2}.map((x) => x + 1) == {'a', 2, 'b', 3}
-   *     {}.map((x) => x + 1) == {}
+   *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a', 2, 'b', 3}
+   *     {}.mapValues((x) => x + 1) == {}
    */
   PersistentMap mapValues(f(V value));
 
