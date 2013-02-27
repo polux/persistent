@@ -34,12 +34,14 @@ main() {
 
 ## Try it!
 
+```
 git clone https://code.google.com/p/dart-immutable/
 cd dart-immutable
 pub install
 dart example/map_example.dart
 dart example/set_example.dart
 dart test/map_bench.dart
+```
 
 ## More
 
