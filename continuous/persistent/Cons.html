@@ -730,11 +730,12 @@ Iterable&lt;E&gt; takeWhile(bool test(E value)) {
 </div>
 <div class="method inherited"><h4 id="toList">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../persistent/Cons.html">E</a>&gt; <strong>toList</strong>() <a class="anchor-link" href="#toList"
+<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../persistent/Cons.html">E</a>&gt; <strong>toList</strong>({<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> growable: true}) <a class="anchor-link" href="#toList"
               title="Permalink to Cons&lt;E&gt;.toList">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <pre class="source">
-List&lt;E&gt; toList() =&gt; new List&lt;E&gt;.from(this);
+List&lt;E&gt; toList({ bool growable: true }) =&gt;
+   new List&lt;E&gt;.from(this, growable: growable);
 </pre>
 </div>
 </div>
@@ -786,7 +787,7 @@ Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-02-27 22:53:46.666</div>
+          <div>This page was generated at 2013-03-08 10:51:57.486</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
