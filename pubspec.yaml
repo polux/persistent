@@ -1,5 +1,5 @@
 name: persistent
-version: 0.5.2
+version: 0.5.3
 description: Efficient persistent data structures for Dart
 author: Paul Brauner <polux@google.com>
 homepage: https://code.google.com/p/dart-immutable/

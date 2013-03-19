@@ -24,12 +24,13 @@ class Benchmark {
   }
 
   int _bench(PersistentMap empty()) {
-    int start = new Date.now().millisecondsSinceEpoch;
+    final stopWatch = new StopWatch();
+    stopWatch.start();
 
     PersistentMap map = empty();
     for (int i = 0; i < size; i++) {
-      map = map.insert("key$i", "foo", (String x, String y) => x.concat(y));
-      map = map.insert("key$i", "bar", (String x, String y) => x.concat(y));
+      map = map.insert("key$i", "foo", (String x, String y) => x + y);
+      map = map.insert("key$i", "bar", (String x, String y) => x + y);
     }
 
     for (int i = size * 2; i >= 0; i--) {
@@ -48,6 +49,7 @@ class Benchmark {
       map = map.delete("key$i");
     }
 
-    return new Date.now().millisecondsSinceEpoch - start;
+    stopWatch.stop();
+    return stopWatch.elapsedMicroseconds;
   }
 }
