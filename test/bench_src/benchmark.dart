@@ -24,8 +24,8 @@ class Benchmark {
   }
 
   int _bench(PersistentMap empty()) {
-    final stopWatch = new StopWatch();
-    stopWatch.start();
+    final stopwatch = new Stopwatch();
+    stopwatch.start();
 
     PersistentMap map = empty();
     for (int i = 0; i < size; i++) {
@@ -49,7 +49,7 @@ class Benchmark {
       map = map.delete("key$i");
     }
 
-    stopWatch.stop();
-    return stopWatch.elapsedMicroseconds;
+    stopwatch.stop();
+    return stopwatch.elapsedMicroseconds;
   }
 }
