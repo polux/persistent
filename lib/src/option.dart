@@ -6,23 +6,44 @@
 part of persistent;
 
 class Option<T> {
+  static final _none = new Option._internal(false, null);
+
   final T _value;
   final bool isDefined;
 
   Option._internal(this.isDefined, this._value);
 
-  factory Option.none() => new Option._internal(false, null);
+  factory Option.none() => _none;
 
   factory Option.some(T value) => new Option._internal(true, value);
 
+  factory Option.fromNullable(T nullableValue) =>
+      nullableValue == null ? _none : new Option.some(nullableValue);
+
   T get value {
     if (isDefined) return _value;
-    throw "undefined";
+    throw new StateError('Option.none() has no value');
   }
 
-  // forall U, Option<U> map(U f(T))
-  Option map(f(T)) =>
-      isDefined ? new Option.some(f(this.value)) : this;
+  T get asNullable => isDefined ? _value : null;
+
+  T orElse(T defaultValue) => isDefined ? _value : defaultValue;
+
+  T orElseCompute(T defaultValue()) => isDefined ? _value : defaultValue();
+
+  /// forall U, Option<U> map(U f(T value))
+  Option map(f(T value)) =>
+      isDefined ? new Option.some(f(_value)) : this;
+
+  /// forall U, Option<U> map(Option<U> f(T value))
+  Option expand(Option f(T value)) =>
+      isDefined ? f(_value) : this;
+
+  /// Precondition: this is Option<Option>
+  Option get flattened {
+    assert(isDefined ? _value is Option : true);
+    return orElse(_none);
+  }
 
   bool operator ==(Option<T> other) =>
       (isDefined && other.isDefined && _value == other._value)
