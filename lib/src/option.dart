@@ -31,15 +31,15 @@ class Option<T> {
 
   T orElseCompute(T defaultValue()) => isDefined ? _value : defaultValue();
 
-  /// forall U, Option<U> map(U f(T value))
+  /// [:forall U, Option<U> map(U f(T value)):]
   Option map(f(T value)) =>
       isDefined ? new Option.some(f(_value)) : this;
 
-  /// forall U, Option<U> map(Option<U> f(T value))
+  /// [:forall U, Option<U> map(Option<U> f(T value)):]
   Option expand(Option f(T value)) =>
       isDefined ? f(_value) : this;
 
-  /// Precondition: this is Option<Option>
+  /// Precondition: [:this is Option<Option>:]
   Option get flattened {
     assert(isDefined ? _value is Option : true);
     return orElse(_none);
