@@ -59,15 +59,15 @@ class Option&lt;T&gt; {
 
  T orElseCompute(T defaultValue()) =&gt; isDefined ? _value : defaultValue();
 
- /// forall U, Option&lt;U&gt; map(U f(T value))
+ /// [:forall U, Option&lt;U&gt; map(U f(T value)):]
  Option map(f(T value)) =&gt;
      isDefined ? new Option.some(f(_value)) : this;
 
- /// forall U, Option&lt;U&gt; map(Option&lt;U&gt; f(T value))
+ /// [:forall U, Option&lt;U&gt; map(Option&lt;U&gt; f(T value)):]
  Option expand(Option f(T value)) =&gt;
      isDefined ? f(_value) : this;
 
- /// Precondition: this is Option&lt;Option&gt;
+ /// Precondition: [:this is Option&lt;Option&gt;:]
  Option get flattened {
    assert(isDefined ? _value is Option : true);
    return orElse(_none);
@@ -76,6 +76,8 @@ class Option&lt;T&gt; {
  bool operator ==(Option&lt;T&gt; other) =&gt;
      (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
   || (!isDefined &amp;&amp; !other.isDefined);
+
+ int get hashCode =&gt; asNullable.hashCode;
 
  String toString() =&gt;
      isDefined ? "Option.some($_value)" : "Option.none()";
@@ -137,12 +139,34 @@ final <a href="../persistent/Option.html">Option</a>         <strong>flattened</
             title="Permalink to Option&lt;T&gt;.flattened">#</a>
         </h4>
         <div class="doc">
-<p>Precondition: this is Option&lt;Option></p>
+<p>Precondition: <code>this is Option&lt;Option&gt;</code></p>
 <pre class="source">
 Option get flattened {
  assert(isDefined ? _value is Option : true);
  return orElse(_none);
 }
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="hashCode">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>hashCode</strong> <a class="anchor-link"
+            href="#hashCode"
+            title="Permalink to Option&lt;T&gt;.hashCode">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <a class="crossref" href="../persistent/Option.html#hashCode">hashCode</a> it should override the
+equality operator as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+int get hashCode =&gt; asNullable.hashCode;
 </pre>
 </div>
 </div>
@@ -187,7 +211,7 @@ T get value {
 only if <code>this</code> and 
 <span class="param">other</span> are the same object.</p>
 <p>If a subclass overrides the equality operator it should override
-the <code>hashCode</code> method as well to maintain consistency.</p>
+the <a class="crossref" href="../persistent/Option.html#hashCode">hashCode</a> method as well to maintain consistency.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 bool operator ==(Option&lt;T&gt; other) =&gt;
@@ -204,7 +228,7 @@ bool operator ==(Option&lt;T&gt; other) =&gt;
 <a href="../persistent/Option.html">Option</a> <strong>expand</strong>(<a href="../persistent/Option.html">Option</a> f(<a href="../persistent/Option.html">T</a> value)) <a class="anchor-link" href="#expand"
               title="Permalink to Option&lt;T&gt;.expand">#</a></h4>
 <div class="doc">
-<p>forall U, Option&lt;U> map(Option&lt;U> f(T value))</p>
+<p><code>forall U, Option&lt;U&gt; map(Option&lt;U&gt; f(T value))</code></p>
 <pre class="source">
 Option expand(Option f(T value)) =&gt;
    isDefined ? f(_value) : this;
@@ -216,7 +240,7 @@ Option expand(Option f(T value)) =&gt;
 <a href="../persistent/Option.html">Option</a> <strong>map</strong>(f(<a href="../persistent/Option.html">T</a> value)) <a class="anchor-link" href="#map"
               title="Permalink to Option&lt;T&gt;.map">#</a></h4>
 <div class="doc">
-<p>forall U, Option&lt;U> map(U f(T value))</p>
+<p><code>forall U, Option&lt;U&gt; map(U f(T value))</code></p>
 <pre class="source">
 Option map(f(T value)) =&gt;
    isDefined ? new Option.some(f(_value)) : this;
@@ -262,7 +286,7 @@ String toString() =&gt;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-15 15:01:18.789</div>
+          <div>This page was generated at 2013-04-15 15:10:39.824</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
