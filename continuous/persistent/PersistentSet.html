@@ -5,7 +5,7 @@
         <title>PersistentSet&lt;E&gt; abstract class / persistent Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -373,10 +373,10 @@ Iterable expand(Iterable f(E element)) =&gt;
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="firstMatching">
+<div class="method inherited"><h4 id="firstWhere">
 <button class="show-code">Code</button>
-<a href="../persistent/PersistentSet.html">E</a> <strong>firstMatching</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#firstMatching"
-              title="Permalink to PersistentSet&lt;E&gt;.firstMatching">#</a></h4>
+<a href="../persistent/PersistentSet.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
+              title="Permalink to PersistentSet&lt;E&gt;.firstWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the first element that satisfies the given predicate <code>f</code>.</p>
 <p>If none matches, the result of invoking the 
@@ -385,13 +385,36 @@ returned. By default, when
 <span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
 thrown.</p>
 <pre class="source">
-E firstMatching(bool test(E value), { E orElse() }) {
+E firstWhere(bool test(E value), { E orElse() }) {
  // TODO(floitsch): check that arguments are of correct type?
  for (E element in this) {
    if (test(element)) return element;
  }
  if (orElse != null) return orElse();
  throw new StateError("No matching element");
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="fold">
+<button class="show-code">Code</button>
+dynamic<strong>fold</strong>(initialValue, combine(previousValue, <a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#fold"
+              title="Permalink to PersistentSet&lt;E&gt;.fold">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
+<p>Reduce a collection to a single value by iteratively combining each element
+of the collection with an existing value using the provided function.
+Use 
+<span class="param">initialValue</span> as the initial value, and the function 
+<span class="param">combine</span> to
+create a new value from the previous one and an element.</p>
+<p>Example of calculating the sum of an iterable:</p>
+<p>  iterable.fold(0, (prev, element) => prev + element);</p>
+<pre class="source">
+dynamic fold(var initialValue,
+            dynamic combine(var previousValue, E element)) {
+ var value = initialValue;
+ for (E element in this) value = combine(value, element);
+ return value;
 }
 </pre>
 </div>
@@ -434,29 +457,17 @@ Then concatenates the strings, optionally separated by the
 string.</p>
 <pre class="source">
 String join([String separator]) {
- Iterator&lt;E&gt; iterator = this.iterator;
- if (!iterator.moveNext()) return "";
  StringBuffer buffer = new StringBuffer();
- if (separator == null || separator == "") {
-   do {
-     buffer.add("${iterator.current}");
-   } while (iterator.moveNext());
- } else {
-   buffer.add("${iterator.current}");
-   while (iterator.moveNext()) {
-     buffer.add(separator);
-     buffer.add("${iterator.current}");
-   }
- }
+ buffer.writeAll(this, separator == null ? "" : separator);
  return buffer.toString();
 }
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="lastMatching">
+<div class="method inherited"><h4 id="lastWhere">
 <button class="show-code">Code</button>
-<a href="../persistent/PersistentSet.html">E</a> <strong>lastMatching</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#lastMatching"
-              title="Permalink to PersistentSet&lt;E&gt;.lastMatching">#</a></h4>
+<a href="../persistent/PersistentSet.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
+              title="Permalink to PersistentSet&lt;E&gt;.lastWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the last element that satisfies the given predicate <code>f</code>.</p>
 <p>If none matches, the result of invoking the 
@@ -465,7 +476,7 @@ returned. By default, when
 <span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
 thrown.</p>
 <pre class="source">
-E lastMatching(bool test(E value), {E orElse()}) {
+E lastWhere(bool test(E value), {E orElse()}) {
  // TODO(floitsch): check that arguments are of correct type?
  E result = null;
  bool foundMatching = false;
@@ -515,7 +526,9 @@ other elements <code>y</code> in the iterable.</p>
 <span class="param">compare</span> function must be a proper [Comparator<T>]. If a function is
 not provided, 
 <span class="param">compare</span> defaults to <code>Comparable.compare</code>.</p>
+<p><em>Deprecated</em>. Use <code>reduce</code> with a binary max method if needed.</p>
 <pre class="source">
+@deprecated
 E max([int compare(E a, E b)]) {
  if (compare == null) compare = Comparable.compare;
  Iterator it = iterator;
@@ -544,7 +557,9 @@ other elements <code>y</code> in the iterable.</p>
 <span class="param">compare</span> function must be a proper [Comparator<T>]. If a function is
 not provided, 
 <span class="param">compare</span> defaults to <code>Comparable.compare</code>.</p>
+<p><em>Deprecated</em>. Use <code>reduce</code> with a binary min method if needed.</p>
 <pre class="source">
+@deprecated
 E min([int compare(E a, E b)]) {
  if (compare == null) compare = Comparable.compare;
  Iterator it = iterator;
@@ -568,7 +583,7 @@ abstract <a href="../persistent/PersistentSet.html">E</a> <strong>pickRandomElem
 </div>
 <div class="method inherited"><h4 id="reduce">
 <button class="show-code">Code</button>
-<strong>reduce</strong>(initialValue, combine(previousValue, <a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#reduce"
+dynamic<strong>reduce</strong>(initialValue, combine(previousValue, <a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#reduce"
               title="Permalink to PersistentSet&lt;E&gt;.reduce">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Reduce a collection to a single value by iteratively combining each element
@@ -577,27 +592,28 @@ Use
 <span class="param">initialValue</span> as the initial value, and the function 
 <span class="param">combine</span> to
 create a new value from the previous one and an element.</p>
-<p>Example of calculating the sum of a collection:</p>
-<p>  collection.reduce(0, (prev, element) => prev + element);</p>
+<p>Example of calculating the sum of an iterable:</p>
+<p>  iterable.reduce((prev, element) => prev + element);</p>
+<p><em>UPCOMING API-CHANGE</em>: this method will soon be changed to not take
+an initial value: <code>iterable.reduce(min)</code>. Use <code>fold</code> instead.</p>
 <pre class="source">
+@deprecated
 dynamic reduce(var initialValue,
               dynamic combine(var previousValue, E element)) {
- var value = initialValue;
- for (E element in this) value = combine(value, element);
- return value;
+ return fold(initialValue, combine);
 }
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="singleMatching">
+<div class="method inherited"><h4 id="singleWhere">
 <button class="show-code">Code</button>
-<a href="../persistent/PersistentSet.html">E</a> <strong>singleMatching</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value)) <a class="anchor-link" href="#singleMatching"
-              title="Permalink to PersistentSet&lt;E&gt;.singleMatching">#</a></h4>
+<a href="../persistent/PersistentSet.html">E</a> <strong>singleWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value)) <a class="anchor-link" href="#singleWhere"
+              title="Permalink to PersistentSet&lt;E&gt;.singleWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the single element that satisfies <code>f</code>. If no or more than one
 element match then a <code>StateError</code> is thrown.</p>
 <pre class="source">
-E singleMatching(bool test(E value)) {
+E singleWhere(bool test(E value)) {
  // TODO(floitsch): check that argument is of correct type?
  E result = null;
  bool foundMatching = false;
@@ -744,7 +760,7 @@ Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-03-08 10:51:57.578</div>
+          <div>This page was generated at 2013-04-15 15:01:18.975</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

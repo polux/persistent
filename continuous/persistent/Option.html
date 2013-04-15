@@ -5,7 +5,7 @@
         <title>Option&lt;T&gt; class / persistent Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
@@ -34,23 +34,44 @@
 <div class="doc">
 <pre class="source">
 class Option&lt;T&gt; {
+ static final _none = new Option._internal(false, null);
+
  final T _value;
  final bool isDefined;
 
  Option._internal(this.isDefined, this._value);
 
- factory Option.none() =&gt; new Option._internal(false, null);
+ factory Option.none() =&gt; _none;
 
  factory Option.some(T value) =&gt; new Option._internal(true, value);
 
+ factory Option.fromNullable(T nullableValue) =&gt;
+     nullableValue == null ? _none : new Option.some(nullableValue);
+
  T get value {
    if (isDefined) return _value;
-   throw "undefined";
+   throw new StateError('Option.none() has no value');
  }
 
- // forall U, Option&lt;U&gt; map(U f(T))
- Option map(f(T)) =&gt;
-     isDefined ? new Option.some(f(this.value)) : this;
+ T get asNullable =&gt; isDefined ? _value : null;
+
+ T orElse(T defaultValue) =&gt; isDefined ? _value : defaultValue;
+
+ T orElseCompute(T defaultValue()) =&gt; isDefined ? _value : defaultValue();
+
+ /// forall U, Option&lt;U&gt; map(U f(T value))
+ Option map(f(T value)) =&gt;
+     isDefined ? new Option.some(f(_value)) : this;
+
+ /// forall U, Option&lt;U&gt; map(Option&lt;U&gt; f(T value))
+ Option expand(Option f(T value)) =&gt;
+     isDefined ? f(_value) : this;
+
+ /// Precondition: this is Option&lt;Option&gt;
+ Option get flattened {
+   assert(isDefined ? _value is Option : true);
+   return orElse(_none);
+ }
 
  bool operator ==(Option&lt;T&gt; other) =&gt;
      (isDefined &amp;&amp; other.isDefined &amp;&amp; _value == other._value)
@@ -63,13 +84,24 @@ class Option&lt;T&gt; {
 </div>
 <div>
 <h3>Constructors</h3>
+<div class="method"><h4 id="Option.fromNullable">
+<button class="show-code">Code</button>
+factory <strong>Option.fromNullable</strong>(<a href="../persistent/Option.html">T</a> nullableValue) <a class="anchor-link" href="#Option.fromNullable"
+              title="Permalink to Option&lt;T&gt;.Option.fromNullable">#</a></h4>
+<div class="doc">
+<pre class="source">
+factory Option.fromNullable(T nullableValue) =&gt;
+   nullableValue == null ? _none : new Option.some(nullableValue);
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="Option.none">
 <button class="show-code">Code</button>
 factory <strong>Option.none</strong>() <a class="anchor-link" href="#Option.none"
               title="Permalink to Option&lt;T&gt;.Option.none">#</a></h4>
 <div class="doc">
 <pre class="source">
-factory Option.none() =&gt; new Option._internal(false, null);
+factory Option.none() =&gt; _none;
 </pre>
 </div>
 </div>
@@ -86,6 +118,34 @@ factory Option.some(T value) =&gt; new Option._internal(true, value);
 </div>
 <div>
 <h3>Properties</h3>
+<div class="field"><h4 id="asNullable">
+<button class="show-code">Code</button>
+final <a href="../persistent/Option.html">T</a>         <strong>asNullable</strong> <a class="anchor-link"
+            href="#asNullable"
+            title="Permalink to Option&lt;T&gt;.asNullable">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+T get asNullable =&gt; isDefined ? _value : null;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="flattened">
+<button class="show-code">Code</button>
+final <a href="../persistent/Option.html">Option</a>         <strong>flattened</strong> <a class="anchor-link"
+            href="#flattened"
+            title="Permalink to Option&lt;T&gt;.flattened">#</a>
+        </h4>
+        <div class="doc">
+<p>Precondition: this is Option&lt;Option></p>
+<pre class="source">
+Option get flattened {
+ assert(isDefined ? _value is Option : true);
+ return orElse(_none);
+}
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="isDefined">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isDefined</strong> <a class="anchor-link"
@@ -94,7 +154,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
         </h4>
         <div class="doc">
 <pre class="source">
-isDefined
+final bool isDefined
 </pre>
 </div>
 </div>
@@ -108,7 +168,7 @@ final <a href="../persistent/Option.html">T</a>         <strong>value</strong> <
 <pre class="source">
 T get value {
  if (isDefined) return _value;
- throw "undefined";
+ throw new StateError('Option.none() has no value');
 }
 </pre>
 </div>
@@ -139,14 +199,47 @@ bool operator ==(Option&lt;T&gt; other) =&gt;
 </div>
 <div>
 <h3>Methods</h3>
+<div class="method"><h4 id="expand">
+<button class="show-code">Code</button>
+<a href="../persistent/Option.html">Option</a> <strong>expand</strong>(<a href="../persistent/Option.html">Option</a> f(<a href="../persistent/Option.html">T</a> value)) <a class="anchor-link" href="#expand"
+              title="Permalink to Option&lt;T&gt;.expand">#</a></h4>
+<div class="doc">
+<p>forall U, Option&lt;U> map(Option&lt;U> f(T value))</p>
+<pre class="source">
+Option expand(Option f(T value)) =&gt;
+   isDefined ? f(_value) : this;
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="map">
 <button class="show-code">Code</button>
-<a href="../persistent/Option.html">Option</a> <strong>map</strong>(f(T)) <a class="anchor-link" href="#map"
+<a href="../persistent/Option.html">Option</a> <strong>map</strong>(f(<a href="../persistent/Option.html">T</a> value)) <a class="anchor-link" href="#map"
               title="Permalink to Option&lt;T&gt;.map">#</a></h4>
 <div class="doc">
+<p>forall U, Option&lt;U> map(U f(T value))</p>
 <pre class="source">
-Option map(f(T)) =&gt;
-   isDefined ? new Option.some(f(this.value)) : this;
+Option map(f(T value)) =&gt;
+   isDefined ? new Option.some(f(_value)) : this;
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="orElse">
+<button class="show-code">Code</button>
+<a href="../persistent/Option.html">T</a> <strong>orElse</strong>(<a href="../persistent/Option.html">T</a> defaultValue) <a class="anchor-link" href="#orElse"
+              title="Permalink to Option&lt;T&gt;.orElse">#</a></h4>
+<div class="doc">
+<pre class="source">
+T orElse(T defaultValue) =&gt; isDefined ? _value : defaultValue;
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="orElseCompute">
+<button class="show-code">Code</button>
+<a href="../persistent/Option.html">T</a> <strong>orElseCompute</strong>(<a href="../persistent/Option.html">T</a> defaultValue()) <a class="anchor-link" href="#orElseCompute"
+              title="Permalink to Option&lt;T&gt;.orElseCompute">#</a></h4>
+<div class="doc">
+<pre class="source">
+T orElseCompute(T defaultValue()) =&gt; isDefined ? _value : defaultValue();
 </pre>
 </div>
 </div>
@@ -169,7 +262,7 @@ String toString() =&gt;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-03-08 10:51:57.455</div>
+          <div>This page was generated at 2013-04-15 15:01:18.789</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
