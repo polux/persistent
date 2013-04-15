@@ -1,11 +1,11 @@
 name: persistent
-version: 0.5.5
+version: 0.6.0
 author: Paul Brauner <polux@google.com>
 description: Efficient persistent data structures for Dart
 homepage: https://code.google.com/p/dart-immutable/
 documentation: http://goo.gl/IWWDn
 dev_dependencies:
-  enumerators: '>=0.2.6 <0.3.0'
   unittest: any
+  enumerators: '>=0.3.0 <0.4.0'
   args: any
-  propcheck: '>=0.1.11 <0.2.0'
+  propcheck: '>=0.2.0 <0.3.0'
