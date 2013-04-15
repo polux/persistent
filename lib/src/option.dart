@@ -49,6 +49,8 @@ class Option<T> {
       (isDefined && other.isDefined && _value == other._value)
    || (!isDefined && !other.isDefined);
 
+  int get hashCode => asNullable.hashCode;
+
   String toString() =>
       isDefined ? "Option.some($_value)" : "Option.none()";
 }
