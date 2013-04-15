@@ -1,6 +1,6 @@
 # Efficient Persistent Data Structures
 
-Mostly persistent maps and sets for now.
+Mostly efficient persistent maps and sets for now. Also option types.
 
 "Persistent" means immutable here, not "saved on disk".
 
