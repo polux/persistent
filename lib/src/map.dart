@@ -142,7 +142,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
  * A base class for implementations of [PersistentMap].
  */
 abstract class PersistentMapBase<K, V>
-    extends Iterable<Pair<K, V>>
+    extends IterableBase<Pair<K, V>>
     implements PersistentMap<K, V> {
 
   Map<K, V> toMap() {

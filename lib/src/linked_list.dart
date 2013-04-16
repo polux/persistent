@@ -44,7 +44,8 @@ class LinkedListBuilder<E> {
   }
 }
 
-abstract class _LinkedListBase<E> extends Iterable<E> implements LinkedList<E> {
+abstract class _LinkedListBase<E> extends IterableBase<E>
+    implements LinkedList<E> {
 
   void foreach(f(A)) {
     LinkedList<E> it = this;

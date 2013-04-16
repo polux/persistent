@@ -51,7 +51,7 @@ abstract class PersistentSet<E> implements Iterable<E> {
  * A base class for implementations of [PersistentSet].
  */
 abstract class PersistentSetBase<E>
-    extends Iterable<E>
+    extends IterableBase<E>
     implements PersistentSet<E> {
 
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
