@@ -87,13 +87,7 @@ final <a href="../persistent/LinkedList.html">E</a>         <strong>first</stron
 <p>If <code>this</code> is empty throws a <code>StateError</code>. Otherwise this method is
 equivalent to <code>this.elementAt(0)</code></p>
 <pre class="source">
-E get first {
- Iterator it = iterator;
- if (!it.moveNext()) {
-   throw new StateError("No elements");
- }
- return it.current;
-}
+E get first;
 </pre>
 </div>
 </div>
@@ -118,7 +112,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns true if there is no element in this collection.</p>
 <pre class="source">
-bool get isEmpty =&gt; !iterator.moveNext();
+bool get isEmpty;
 </pre>
 </div>
 </div>
@@ -157,17 +151,7 @@ final <a href="../persistent/LinkedList.html">E</a>         <strong>last</strong
 <p>Returns the last element.</p>
 <p>If <code>this</code> is empty throws a <code>StateError</code>.</p>
 <pre class="source">
-E get last {
- Iterator it = iterator;
- if (!it.moveNext()) {
-   throw new StateError("No elements");
- }
- E result;
- do {
-   result = it.current;
- } while(it.moveNext());
- return result;
-}
+E get last;
 </pre>
 </div>
 </div>
@@ -182,14 +166,7 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
 <p>Counting all elements may be involve running through all elements and can
 therefore be slow.</p>
 <pre class="source">
-int get length {
- int count = 0;
- Iterator it = iterator;
- while (it.moveNext()) {
-   count++;
- }
- return count;
-}
+int get length;
 </pre>
 </div>
 </div>
@@ -203,13 +180,7 @@ final <a href="../persistent/LinkedList.html">E</a>         <strong>single</stro
 <p>Returns the single element in <code>this</code>.</p>
 <p>If <code>this</code> is empty or has more than one element throws a <code>StateError</code>.</p>
 <pre class="source">
-E get single {
- Iterator it = iterator;
- if (!it.moveNext()) throw new StateError("No elements");
- E result = it.current;
- if (it.moveNext()) throw new StateError("More than one element");
- return result;
-}
+E get single;
 </pre>
 </div>
 </div>
@@ -217,43 +188,24 @@ E get single {
 <div>
 <h3>Methods</h3>
 <div class="method inherited"><h4 id="any">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>any</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#any"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>any</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#any"
               title="Permalink to LinkedList&lt;E&gt;.any">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns true if one element of this collection satisfies the
 predicate 
 <span class="param">f</span>. Returns false otherwise.</p>
-<pre class="source">
-bool any(bool f(E element)) {
- for (E element in this) {
-   if (f(element)) return true;
- }
- return false;
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="contains">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../persistent/LinkedList.html">E</a> element) <a class="anchor-link" href="#contains"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../persistent/LinkedList.html">E</a> element) <a class="anchor-link" href="#contains"
               title="Permalink to LinkedList&lt;E&gt;.contains">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Check whether the collection contains an element equal to 
 <span class="param">element</span>.</p>
-<pre class="source">
-bool contains(E element) {
- for (E e in this) {
-   if (e == element) return true;
- }
- return false;
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="elementAt">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>elementAt</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#elementAt"
+abstract <a href="../persistent/LinkedList.html">E</a> <strong>elementAt</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#elementAt"
               title="Permalink to LinkedList&lt;E&gt;.elementAt">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the 
@@ -265,40 +217,19 @@ bool contains(E element) {
 function may simply return any element without any iteration if there are
 at least 
 <span class="param">index</span> elements in <code>this</code>.</p>
-<pre class="source">
-E elementAt(int index) {
- if (index is! int || index &lt; 0) throw new RangeError.value(index);
- int remaining = index;
- for (E element in this) {
-   if (remaining == 0) return element;
-   remaining--;
- }
- throw new RangeError.value(index);
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="every">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>every</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#every"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>every</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#every"
               title="Permalink to LinkedList&lt;E&gt;.every">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns true if every elements of this collection satisify the
 predicate 
 <span class="param">f</span>. Returns false otherwise.</p>
-<pre class="source">
-bool every(bool f(E element)) {
- for (E element in this) {
-   if (!f(element)) return false;
- }
- return true;
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="expand">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>expand</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#expand"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>expand</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#expand"
               title="Permalink to LinkedList&lt;E&gt;.expand">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Expand each element of this <code>Iterable</code> into zero or more elements.</p>
@@ -308,15 +239,10 @@ by
 <p>The returned <code>Iterable</code> is lazy, and will call 
 <span class="param">f</span> for each element
 of this every time it's iterated.</p>
-<pre class="source">
-Iterable expand(Iterable f(E element)) =&gt;
-   new ExpandIterable&lt;E, dynamic&gt;(this, f);
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="firstWhere">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value), {<a href="../persistent/LinkedList.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
+abstract <a href="../persistent/LinkedList.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value), {<a href="../persistent/LinkedList.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
               title="Permalink to LinkedList&lt;E&gt;.firstWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the first element that satisfies the given predicate <code>f</code>.</p>
@@ -325,53 +251,30 @@ Iterable expand(Iterable f(E element)) =&gt;
 returned. By default, when 
 <span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
 thrown.</p>
-<pre class="source">
-E firstWhere(bool test(E value), { E orElse() }) {
- // TODO(floitsch): check that arguments are of correct type?
- for (E element in this) {
-   if (test(element)) return element;
- }
- if (orElse != null) return orElse();
- throw new StateError("No matching element");
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="fold">
-<button class="show-code">Code</button>
-dynamic<strong>fold</strong>(initialValue, combine(previousValue, <a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#fold"
+abstract dynamic <strong>fold</strong>(initialValue, combine(previousValue, <a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#fold"
               title="Permalink to LinkedList&lt;E&gt;.fold">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Reduce a collection to a single value by iteratively combining each element
-of the collection with an existing value using the provided function.
-Use 
+<p>Reduces a collection to a single value by iteratively combining each
+element of the collection with an existing value using the provided
+function.</p>
+<p>Use 
 <span class="param">initialValue</span> as the initial value, and the function 
 <span class="param">combine</span> to
 create a new value from the previous one and an element.</p>
 <p>Example of calculating the sum of an iterable:</p>
-<p>  iterable.fold(0, (prev, element) => prev + element);</p>
-<pre class="source">
-dynamic fold(var initialValue,
-            dynamic combine(var previousValue, E element)) {
- var value = initialValue;
- for (E element in this) value = combine(value, element);
- return value;
-}
-</pre>
+<pre><code>iterable.fold(0, (prev, element) =&gt; prev + element);
+</code></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="forEach">
-<button class="show-code">Code</button>
-void <strong>forEach</strong>(void f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#forEach"
+abstract void <strong>forEach</strong>(void f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#forEach"
               title="Permalink to LinkedList&lt;E&gt;.forEach">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Applies the function 
 <span class="param">f</span> to each element of this collection.</p>
-<pre class="source">
-void forEach(void f(E element)) {
- for (E element in this) f(element);
-}
-</pre>
 </div>
 </div>
 <div class="method"><h4 id="foreach">
@@ -382,26 +285,25 @@ abstract void <strong>foreach</strong>(f(A)) <a class="anchor-link" href="#forea
 </div>
 <div class="method inherited"><h4 id="join">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>join</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> separator]) <a class="anchor-link" href="#join"
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>join</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> separator = ""]) <a class="anchor-link" href="#join"
               title="Permalink to LinkedList&lt;E&gt;.join">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Convert each element to a <code>String</code> and concatenate the strings.</p>
+<p>Converts each element to a <code>String</code> and concatenates the strings.</p>
 <p>Converts each element to a <code>String</code> by calling <code>Object.toString</code> on it.
 Then concatenates the strings, optionally separated by the 
 <span class="param">separator</span>
 string.</p>
 <pre class="source">
-String join([String separator]) {
+String join([String separator = ""]) {
  StringBuffer buffer = new StringBuffer();
- buffer.writeAll(this, separator == null ? "" : separator);
+ buffer.writeAll(this, separator);
  return buffer.toString();
 }
 </pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="lastWhere">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value), {<a href="../persistent/LinkedList.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
+abstract <a href="../persistent/LinkedList.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value), {<a href="../persistent/LinkedList.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
               title="Permalink to LinkedList&lt;E&gt;.lastWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the last element that satisfies the given predicate <code>f</code>.</p>
@@ -410,27 +312,10 @@ String join([String separator]) {
 returned. By default, when 
 <span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
 thrown.</p>
-<pre class="source">
-E lastWhere(bool test(E value), {E orElse()}) {
- // TODO(floitsch): check that arguments are of correct type?
- E result = null;
- bool foundMatching = false;
- for (E element in this) {
-   if (test(element)) {
-     result = element;
-     foundMatching = true;
-   }
- }
- if (foundMatching) return result;
- if (orElse != null) return orElse();
- throw new StateError("No matching element");
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="map">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>map</strong>(f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#map"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>map</strong>(f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#map"
               title="Permalink to LinkedList&lt;E&gt;.map">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns a lazy <code>Iterable</code> where each element <code>e</code> of <code>this</code> is replaced
@@ -442,127 +327,29 @@ not be invoked. The transformed elements will not be cached. Iterating
 multiple times over the the returned <code>Iterable</code> will invoke the supplied
 function 
 <span class="param">f</span> multiple times on the same element.</p>
-<pre class="source">
-Iterable map(f(E element)) =&gt; new MappedIterable&lt;E, dynamic&gt;(this, f);
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="max">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>max</strong>([<a href="http://api.dartlang.org/dart_core/int.html">int</a> compare(<a href="../persistent/LinkedList.html">E</a> a, <a href="../persistent/LinkedList.html">E</a> b)]) <a class="anchor-link" href="#max"
-              title="Permalink to LinkedList&lt;E&gt;.max">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Find the largest element in the iterable.</p>
-<p>Returns null if the iterable is empty.
-Otherwise returns an element <code>x</code> of this <code>Iterable</code> so that
-<code>x</code> is not smaller than <code>y</code> (that is, <code>compare(x, y) &gt;= 0</code>) for all
-other elements <code>y</code> in the iterable.</p>
-<p>The 
-<span class="param">compare</span> function must be a proper [Comparator<T>]. If a function is
-not provided, 
-<span class="param">compare</span> defaults to <code>Comparable.compare</code>.</p>
-<p><em>Deprecated</em>. Use <code>reduce</code> with a binary max method if needed.</p>
-<pre class="source">
-@deprecated
-E max([int compare(E a, E b)]) {
- if (compare == null) compare = Comparable.compare;
- Iterator it = iterator;
- if (!it.moveNext()) return null;
- E max = it.current;
- while (it.moveNext()) {
-   E current = it.current;
-   if (compare(max, current) &lt; 0) max = current;
- }
- return max;
-}
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="min">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>min</strong>([<a href="http://api.dartlang.org/dart_core/int.html">int</a> compare(<a href="../persistent/LinkedList.html">E</a> a, <a href="../persistent/LinkedList.html">E</a> b)]) <a class="anchor-link" href="#min"
-              title="Permalink to LinkedList&lt;E&gt;.min">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Find the least element in the iterable.</p>
-<p>Returns null if the iterable is empty.
-Otherwise returns an element <code>x</code> of this <code>Iterable</code> so that
-<code>x</code> is not greater than <code>y</code> (that is, <code>compare(x, y) &lt;= 0</code>) for all
-other elements <code>y</code> in the iterable.</p>
-<p>The 
-<span class="param">compare</span> function must be a proper [Comparator<T>]. If a function is
-not provided, 
-<span class="param">compare</span> defaults to <code>Comparable.compare</code>.</p>
-<p><em>Deprecated</em>. Use <code>reduce</code> with a binary min method if needed.</p>
-<pre class="source">
-@deprecated
-E min([int compare(E a, E b)]) {
- if (compare == null) compare = Comparable.compare;
- Iterator it = iterator;
- if (!it.moveNext()) return null;
- E min = it.current;
- while (it.moveNext()) {
-   E current = it.current;
-   if (compare(min, current) &gt; 0) min = current;
- }
- return min;
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="reduce">
-<button class="show-code">Code</button>
-dynamic<strong>reduce</strong>(initialValue, combine(previousValue, <a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#reduce"
+abstract <a href="../persistent/LinkedList.html">E</a> <strong>reduce</strong>(<a href="../persistent/LinkedList.html">E</a> combine(<a href="../persistent/LinkedList.html">E</a> value, <a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#reduce"
               title="Permalink to LinkedList&lt;E&gt;.reduce">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Reduce a collection to a single value by iteratively combining each element
-of the collection with an existing value using the provided function.
-Use 
-<span class="param">initialValue</span> as the initial value, and the function 
-<span class="param">combine</span> to
-create a new value from the previous one and an element.</p>
+<p>Reduces a collection to a single value by iteratively combining elements
+of the collection using the provided function.</p>
 <p>Example of calculating the sum of an iterable:</p>
-<p>  iterable.reduce((prev, element) => prev + element);</p>
-<p><em>UPCOMING API-CHANGE</em>: this method will soon be changed to not take
-an initial value: <code>iterable.reduce(min)</code>. Use <code>fold</code> instead.</p>
-<pre class="source">
-@deprecated
-dynamic reduce(var initialValue,
-              dynamic combine(var previousValue, E element)) {
- return fold(initialValue, combine);
-}
-</pre>
+<pre><code>iterable.reduce((value, element) =&gt; value + element);
+</code></pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="singleWhere">
-<button class="show-code">Code</button>
-<a href="../persistent/LinkedList.html">E</a> <strong>singleWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#singleWhere"
+abstract <a href="../persistent/LinkedList.html">E</a> <strong>singleWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#singleWhere"
               title="Permalink to LinkedList&lt;E&gt;.singleWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the single element that satisfies <code>f</code>. If no or more than one
 element match then a <code>StateError</code> is thrown.</p>
-<pre class="source">
-E singleWhere(bool test(E value)) {
- // TODO(floitsch): check that argument is of correct type?
- E result = null;
- bool foundMatching = false;
- for (E element in this) {
-   if (test(element)) {
-     if (foundMatching) {
-       throw new StateError("More than one matching element");
-     }
-     result = element;
-     foundMatching = true;
-   }
- }
- if (foundMatching) return result;
- throw new StateError("No matching element");
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="skip">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>skip</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#skip"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>skip</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#skip"
               title="Permalink to LinkedList&lt;E&gt;.skip">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns an <code>Iterable</code> that skips the first 
@@ -570,16 +357,10 @@ E singleWhere(bool test(E value)) {
 <p>If <code>this</code> has fewer than 
 <span class="param">n</span> elements, then the resulting <code>Iterable</code> will
 be empty.</p>
-<pre class="source">
-Iterable&lt;E&gt; skip(int n) {
- return new SkipIterable&lt;E&gt;(this, n);
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="skipWhile">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>skipWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#skipWhile"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>skipWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#skipWhile"
               title="Permalink to LinkedList&lt;E&gt;.skipWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns an <code>Iterable</code> that skips elements while 
@@ -591,11 +372,6 @@ As long as the iterator's elements do not satisfy
 discarded. Once an element satisfies the 
 <span class="param">test</span> the iterator stops testing
 and uses every element unconditionally.</p>
-<pre class="source">
-Iterable&lt;E&gt; skipWhile(bool test(E value)) {
- return new SkipWhileIterable&lt;E&gt;(this, test);
-}
-</pre>
 </div>
 </div>
 <div class="method"><h4 id="strictMap">
@@ -613,8 +389,7 @@ abstract <a href="../persistent/LinkedList.html">LinkedList</a>&lt;<a href="../p
 </div>
 </div>
 <div class="method inherited"><h4 id="take">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>take</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#take"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>take</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#take"
               title="Permalink to LinkedList&lt;E&gt;.take">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns an <code>Iterable</code> with at most 
@@ -623,16 +398,10 @@ abstract <a href="../persistent/LinkedList.html">LinkedList</a>&lt;<a href="../p
 <span class="param">n</span> elements, if <code>this</code>
 contains fewer than 
 <span class="param">n</span> elements.</p>
-<pre class="source">
-Iterable&lt;E&gt; take(int n) {
- return new TakeIterable&lt;E&gt;(this, n);
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="takeWhile">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>takeWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#takeWhile"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>takeWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/LinkedList.html">E</a> value)) <a class="anchor-link" href="#takeWhile"
               title="Permalink to LinkedList&lt;E&gt;.takeWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns an <code>Iterable</code> that stops once 
@@ -643,37 +412,27 @@ When the iterator encounters an element <code>e</code> that does not satisfy
 <span class="param">test</span>,
 it discards <code>e</code> and moves into the finished state. That is, it will not
 ask or provide any more elements.</p>
-<pre class="source">
-Iterable&lt;E&gt; takeWhile(bool test(E value)) {
- return new TakeWhileIterable&lt;E&gt;(this, test);
-}
-</pre>
 </div>
 </div>
 <div class="method inherited"><h4 id="toList">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>toList</strong>({<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> growable: true}) <a class="anchor-link" href="#toList"
+abstract <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>toList</strong>({<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> growable: true}) <a class="anchor-link" href="#toList"
               title="Permalink to LinkedList&lt;E&gt;.toList">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<pre class="source">
-List&lt;E&gt; toList({ bool growable: true }) =&gt;
-   new List&lt;E&gt;.from(this, growable: growable);
-</pre>
+<p>Creates a <code>List</code> containing the elements of this <code>Iterable</code>.</p>
+<p>The elements will be in iteration order. The list is fixed-length
+if 
+<span class="param">growable</span> is false.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="toSet">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>toSet</strong>() <a class="anchor-link" href="#toSet"
+abstract <a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>toSet</strong>() <a class="anchor-link" href="#toSet"
               title="Permalink to LinkedList&lt;E&gt;.toSet">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<pre class="source">
-Set&lt;E&gt; toSet() =&gt; new Set&lt;E&gt;.from(this);
-</pre>
+<p>Creates a <code>Set</code> containing the elements of this <code>Iterable</code>.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="where">
-<button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>where</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#where"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/LinkedList.html">E</a>&gt; <strong>where</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/LinkedList.html">E</a> element)) <a class="anchor-link" href="#where"
               title="Permalink to LinkedList&lt;E&gt;.where">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns a lazy <code>Iterable</code> with all elements that satisfy the
@@ -686,9 +445,6 @@ not be invoked. Iterating will not cache results, and thus iterating
 multiple times over the the returned <code>Iterable</code> will invoke the supplied
 function 
 <span class="param">f</span> multiple times on the same element.</p>
-<pre class="source">
-Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this, f);
-</pre>
 </div>
 </div>
 </div>
@@ -696,7 +452,7 @@ Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-15 15:10:39.962</div>
+          <div>This page was generated at 2013-04-16 21:26:29.461</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
