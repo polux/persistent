@@ -7,7 +7,8 @@ documentation: http://goo.gl/IWWDn
 environment:
   sdk: '>=0.4.7'
 dev_dependencies:
-  enumerators: '>=0.4.0 <0.5.0'
   unittest: any
+  enumerators: '>=0.4.0 <0.5.0'
+  http: any
   args: any
   propcheck: '>=0.3.0 <0.4.0'
