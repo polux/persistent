@@ -22,7 +22,7 @@ part 'set_model.dart';
  / A datatype with an imperfect hash function to use as a key for testing maps.
  */
 class Key {
-  // a list of of 7 integers in [0..31] and 1 integer in [0..3]
+  // a list of of 6 integers in [0..31] and 1 integer in [0..3]
   final List<int> key;
   final bool b;
   final int hashCode;
