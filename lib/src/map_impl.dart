@@ -447,7 +447,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
     if ((_bitmap & mask) != 0) {
       List<_APersistentMap<K, V>> newarray =
-          new List<_APersistentMap<K, V>>.from(_array);
+          new List<_APersistentMap<K, V>>.from(_array, growable: false);
       _APersistentMap<K, V> m = _array[index];
       _APersistentMap<K, V> newM =
           m._insertWith(keyValues, size, combine, hash, depth + 1);
@@ -518,13 +518,13 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
           return newm;
         } else {
           List<_APersistentMap<K, V>> newarray =
-              new List<_APersistentMap<K, V>>.from(_array);
+              new List<_APersistentMap<K, V>>.from(_array, growable: false);
           newarray[index] = newm;
           return new _SubMap(_bitmap, newarray, length + delta);
         }
       } else {
         List<_APersistentMap<K, V>> newarray =
-            new List<_APersistentMap<K, V>>.from(_array);
+            new List<_APersistentMap<K, V>>.from(_array, growable: false);
         newarray[index] = newm;
         return new _SubMap(_bitmap, newarray, length + delta);
       }
@@ -544,7 +544,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
         return this;
       }
       List<_APersistentMap<K, V>> newarray =
-          new List<_APersistentMap<K, V>>.from(_array);
+          new List<_APersistentMap<K, V>>.from(_array, growable: false);
       newarray[index] = newm;
       return new _SubMap(_bitmap, newarray, length);
     } else {
@@ -655,7 +655,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap mapValues(f(V)) {
     List<_APersistentMap<K, V>> newarray =
-        new List<_APersistentMap<K, V>>.from(_array);
+        new List<_APersistentMap<K, V>>.from(_array, growable: false);
     for (int i = 0; i < _array.length; i++) {
       _APersistentMap<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(f);
