@@ -55,22 +55,23 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  }
 
  /**
-  * Returns a new map identical to [this] except that it binds [key] to
+  * Returns a new map identical to `this` except that it binds [key] to
   * [value].
   *
-  * If [key] was bound to some [oldvalue] in [this], it is nevertheless bound
-  * to [value] in the new map. If [key] was bound to some [oldvalue] in
-  * [this] and if [combine] is provided then [key] it is bound to
-  * [combine(oldvalue, value)] in the new map.
+  * If [key] was bound to some `oldvalue` in `this`, it is nevertheless bound
+  * to [value] in the new map. If [key] was bound to some `oldvalue` in `this`
+  * and if [combine] is provided then [key] it is bound to
+  * `combine(oldvalue, value)` in the new map.
   *
   *     {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}
   *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
   *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) =&gt; x - y) == {'a': 3, 'b', -1}
   */
- PersistentMap&lt;K, V&gt; insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+ PersistentMap&lt;K, V&gt;
+     insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
  /**
-  * Returns a new map identical to [this] except that it doesn't bind [key]
+  * Returns a new map identical to `this` except that it doesn't bind [key]
   * anymore.
   *
   *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
@@ -79,8 +80,8 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  PersistentMap&lt;K, V&gt; delete(K key);
 
  /**
-  * Looks up the value possibly bound to [key] in [this]. Returns
-  * [Option.some(value)] if it exists, [Option.none()] otherwise.
+  * Looks up the value possibly bound to [key] in `this`. Returns
+  * `Option.some(value)` if it exists, `Option.none()` otherwise.
   *
   *     {'a': 1}.lookup('b') == Option.none()
   *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
@@ -88,12 +89,12 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  Option&lt;V&gt; lookup(K key);
 
  /**
-  * Evaluates [f(key, value)] for each ([key], [value]) pair in [this].
+  * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
   */
  void forEachKeyValue(f(K key, V value));
 
  /**
-  * Returns a new map identical to [this] except that the value it possibly
+  * Returns a new map identical to `this` except that the value it possibly
   * binds to [key] has been adjusted by [update].
   *
   *     {'a': 1, 'b': 2}.adjust('b', (x) =&gt; x + 1) == {'a', 1, 'b', 3}
@@ -102,7 +103,7 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  PersistentMap&lt;K, V&gt; adjust(K key, V update(V value));
 
  /**
-  * Returns a new map identical to [this] where each value has been updated by
+  * Returns a new map identical to `this` where each value has been updated by
   * [f].
   *
   *     {'a': 1, 'b': 2}.mapValues((x) =&gt; x + 1) == {'a', 2, 'b', 3}
@@ -111,14 +112,14 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  PersistentMap mapValues(f(V value));
 
  /**
-  * Returns a new map whose (key, value) pairs are the union of those of [this]
+  * Returns a new map whose (key, value) pairs are the union of those of `this`
   * and [other].
   *
-  * The union is right-biased: if a key is present in both [this] and [other],
+  * The union is right-biased: if a key is present in both `this` and [other],
   * the value from [other] is retained. If [combine] is provided, the retained
-  * value for a [key] present in both [this] and [other] is then
-  * [combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to
-  * [key] in [this] and [rightvalue] is the one bound to [key] in [other].
+  * value for a `key` present in both `this` and [other] is then
+  * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
+  * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
   *
   *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
   *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
@@ -132,13 +133,13 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
 
  /**
   * Returns a new map whose (key, value) pairs are the intersection of those of
-  * [this] and [other].
+  * `this` and [other].
   *
   * The intersection is right-biased: values from [other] are retained. If
-  * [combine] is provided, the retained value for a [key] present in both
-  * [this] and [other] is then [combine(leftvalue, rightvalue)] where
-  * [leftvalue] is the value bound to [key] in [this] and [rightvalue] is the
-  * one bound to [key] in [other].
+  * [combine] is provided, the retained value for a `key` present in both
+  * `this` and [other] is then `combine(leftvalue, rightvalue)` where
+  * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
+  * one bound to `key` in [other].
   *
   *     {'a': 1}.intersection({'b': 2}) == {}
   *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
@@ -150,16 +151,16 @@ abstract class PersistentMap&lt;K, V&gt; implements Iterable&lt;Pair&lt;K, V&gt;
  PersistentMap&lt;K, V&gt;
      intersection(PersistentMap&lt;K, V&gt; other, [V combine(V left, V right)]);
 
- /// Returns a mutable copy of [this].
+ /// Returns a mutable copy of `this`.
  Map&lt;K, V&gt; toMap();
 
- /// The keys of [this].
+ /// The keys of `this`.
  Iterable&lt;K&gt; get keys;
 
- /// The values of [this].
+ /// The values of `this`.
  Iterable&lt;V&gt; get values;
 
- /// Randomly picks an entry of [this].
+ /// Randomly picks an entry of `this`.
  Pair&lt;K, V&gt; pickRandomEntry([Random random]);
 }
 </pre>
@@ -452,8 +453,8 @@ abstract <a href="../persistent/PersistentMap.html">PersistentMap</a>&lt;<a href
 <span class="param">key</span> was bound to some <code>oldvalue</code> in <code>this</code>, it is nevertheless bound
 to 
 <span class="param">value</span> in the new map. If 
-<span class="param">key</span> was bound to some <code>oldvalue</code> in
-<code>this</code> and if 
+<span class="param">key</span> was bound to some <code>oldvalue</code> in <code>this</code>
+and if 
 <span class="param">combine</span> is provided then 
 <span class="param">key</span> it is bound to
 <code>combine(oldvalue, value)</code> in the new map.</p>
@@ -707,7 +708,7 @@ function
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-04-16 21:26:29.554</div>
+          <div>This page was generated at 2013-05-01 01:23:52.475</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
