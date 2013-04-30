@@ -9,8 +9,8 @@ part of persistent;
  * An immutable map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
  *
- * In all the examples below [{k1: v1, k2: v2, ...}] is a shorthand for
- * [PersistentMap.fromMap({k1: v1, k2: v2, ...})].
+ * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
+ * `PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
 abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
@@ -30,22 +30,23 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   }
 
   /**
-   * Returns a new map identical to [this] except that it binds [key] to
+   * Returns a new map identical to `this` except that it binds [key] to
    * [value].
    *
-   * If [key] was bound to some [oldvalue] in [this], it is nevertheless bound
-   * to [value] in the new map. If [key] was bound to some [oldvalue] in
-   * [this] and if [combine] is provided then [key] it is bound to
-   * [combine(oldvalue, value)] in the new map.
+   * If [key] was bound to some `oldvalue` in `this`, it is nevertheless bound
+   * to [value] in the new map. If [key] was bound to some `oldvalue` in `this`
+   * and if [combine] is provided then [key] it is bound to
+   * `combine(oldvalue, value)` in the new map.
    *
    *     {'a': 1}.insert('b', 2) == {'a': 1, 'b', 2}
    *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
-  PersistentMap<K, V> insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+  PersistentMap<K, V>
+      insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
-   * Returns a new map identical to [this] except that it doesn't bind [key]
+   * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
@@ -54,8 +55,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   PersistentMap<K, V> delete(K key);
 
   /**
-   * Looks up the value possibly bound to [key] in [this]. Returns
-   * [Option.some(value)] if it exists, [Option.none()] otherwise.
+   * Looks up the value possibly bound to [key] in `this`. Returns
+   * `Option.some(value)` if it exists, `Option.none()` otherwise.
    *
    *     {'a': 1}.lookup('b') == Option.none()
    *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
@@ -63,12 +64,12 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   Option<V> lookup(K key);
 
   /**
-   * Evaluates [f(key, value)] for each ([key], [value]) pair in [this].
+   * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
   void forEachKeyValue(f(K key, V value));
 
   /**
-   * Returns a new map identical to [this] except that the value it possibly
+   * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
    *
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}
@@ -77,7 +78,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   PersistentMap<K, V> adjust(K key, V update(V value));
 
   /**
-   * Returns a new map identical to [this] where each value has been updated by
+   * Returns a new map identical to `this` where each value has been updated by
    * [f].
    *
    *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a', 2, 'b', 3}
@@ -86,14 +87,14 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   PersistentMap mapValues(f(V value));
 
   /**
-   * Returns a new map whose (key, value) pairs are the union of those of [this]
+   * Returns a new map whose (key, value) pairs are the union of those of `this`
    * and [other].
    *
-   * The union is right-biased: if a key is present in both [this] and [other],
+   * The union is right-biased: if a key is present in both `this` and [other],
    * the value from [other] is retained. If [combine] is provided, the retained
-   * value for a [key] present in both [this] and [other] is then
-   * [combine(leftvalue, rightvalue)] where [leftvalue] is the value bound to
-   * [key] in [this] and [rightvalue] is the one bound to [key] in [other].
+   * value for a `key` present in both `this` and [other] is then
+   * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
+   * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
    *
    *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
    *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
@@ -107,13 +108,13 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
-   * [this] and [other].
+   * `this` and [other].
    *
    * The intersection is right-biased: values from [other] are retained. If
-   * [combine] is provided, the retained value for a [key] present in both
-   * [this] and [other] is then [combine(leftvalue, rightvalue)] where
-   * [leftvalue] is the value bound to [key] in [this] and [rightvalue] is the
-   * one bound to [key] in [other].
+   * [combine] is provided, the retained value for a `key` present in both
+   * `this` and [other] is then `combine(leftvalue, rightvalue)` where
+   * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
+   * one bound to `key` in [other].
    *
    *     {'a': 1}.intersection({'b': 2}) == {}
    *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
@@ -125,16 +126,16 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   PersistentMap<K, V>
       intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
-  /// Returns a mutable copy of [this].
+  /// Returns a mutable copy of `this`.
   Map<K, V> toMap();
 
-  /// The keys of [this].
+  /// The keys of `this`.
   Iterable<K> get keys;
 
-  /// The values of [this].
+  /// The values of `this`.
   Iterable<V> get values;
 
-  /// Randomly picks an entry of [this].
+  /// Randomly picks an entry of `this`.
   Pair<K, V> pickRandomEntry([Random random]);
 }
 

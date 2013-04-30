@@ -7,7 +7,7 @@ part of persistent;
 
 abstract class PersistentSet<E> implements Iterable<E> {
 
-  /** Creates an empty [PersistentSet] using its default implementation. */
+  /// Creates an empty [PersistentSet] using its default implementation.
   factory PersistentSet() => new _PersistentSetImpl<E>();
 
   /**
@@ -28,17 +28,17 @@ abstract class PersistentSet<E> implements Iterable<E> {
 
   PersistentSet<E> union(PersistentSet<E> persistentSet);
 
-  /// Alias for [union]
+  /// Alias for [union].
   PersistentSet<E> operator +(PersistentSet<E> persistentSet);
 
   PersistentSet<E> difference(PersistentSet<E> persistentSet);
 
-  /// Alias for [difference]
+  /// Alias for [difference].
   PersistentSet<E> operator -(PersistentSet<E> persistentSet);
 
   PersistentSet<Pair> cartesianProduct(PersistentSet persistentSet);
 
-  /// Alias for [cartesianProduct]
+  /// Alias for [cartesianProduct].
   PersistentSet<Pair> operator *(PersistentSet persistentSet);
 
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
