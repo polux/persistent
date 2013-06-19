@@ -12,3 +12,4 @@ dev_dependencies:
   http: any
   args: any
   propcheck: '>=0.3.0 <0.4.0'
+  crypto: any
