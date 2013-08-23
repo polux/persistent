@@ -344,11 +344,12 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   bool operator ==(PersistentMap<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
-    if (_hash != other._hash) return false;
-    if (length != other.length) return false;
+    _Leaf otherLeaf = other;
+    if (_hash != otherLeaf._hash) return false;
+    if (length != otherLeaf.length) return false;
     Map<K, V> thisAsMap = toMap();
     int counter = 0;
-    LinkedList<Pair<K, V>> it = other._pairs;
+    LinkedList<Pair<K, V>> it = otherLeaf._pairs;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
@@ -670,12 +671,13 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   bool operator ==(PersistentMap<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
-    if (_bitmap != other._bitmap) return false;
-    if (length != other.length) return false;
-    assert(_array.length == other._array.length);
+    _SubMap otherSubMap = other;
+    if (_bitmap != otherSubMap._bitmap) return false;
+    if (length != otherSubMap.length) return false;
+    assert(_array.length == otherSubMap._array.length);
     for (int i = 0; i < _array.length; i++) {
       _APersistentMap<K, V> mi = _array[i];
-      _APersistentMap<K, V> omi = other._array[i];
+      _APersistentMap<K, V> omi = otherSubMap._array[i];
       if (mi != omi) {
         return false;
       }
