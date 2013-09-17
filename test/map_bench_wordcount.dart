@@ -18,7 +18,7 @@ void run(List<String> doyle, List<String> austeen) {
   final map1 = count(austeen);
   final map2 = count(doyle);
   final result = map1.union(map2, add);
-  if (result.length != 36027) {
+  if (result.length != 36028) {
     throw new StateError("something's wrong");
   }
 }
