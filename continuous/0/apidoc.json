@@ -1,1 +1,1 @@
-{"name":"dart:","dependencies":[],"revision":"0","libraries":[{"refId":"persistent"}],"description":"Dart System Libraries"}
+{"name":"dart:","description":"Dart System Libraries","libraries":[{"refId":"persistent"}],"revision":"0","dependencies":[]}

@@ -84,25 +84,25 @@ abstract class PersistentSet&lt;E&gt; implements Iterable&lt;E&gt; {
 <span class="type-box"><span class="icon-class"></span><a href="../dart_core/Iterable.html">Iterable&lt;E&gt;</a></span></p>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="PersistentSet">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-factory <strong>PersistentSet</strong>() <a class="anchor-link" href="#PersistentSet"
+factory <strong>PersistentSet</strong>() <a class="anchor-link" href="#"
               title="Permalink to PersistentSet&lt;E&gt;.PersistentSet">#</a></h4>
 <div class="doc">
-<p>Creates an empty <a class="crossref" href="../persistent/PersistentSet.html#PersistentSet">PersistentSet</a> using its default implementation.</p>
+<p>Creates an empty <a class="crossref" href="../persistent/PersistentSet.html">PersistentSet</a> using its default implementation.</p>
 <pre class="source">
 factory PersistentSet() =&gt; new _PersistentSetImpl&lt;E&gt;();
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="PersistentSet.from">
+<div class="method"><h4 id="from">
 <button class="show-code">Code</button>
-factory <strong>PersistentSet.from</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; elements) <a class="anchor-link" href="#PersistentSet.from"
+factory <strong>PersistentSet.from</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; elements) <a class="anchor-link" href="#from"
               title="Permalink to PersistentSet&lt;E&gt;.PersistentSet.from">#</a></h4>
 <div class="doc">
 <p>Creates an immutable copy of 
 <span class="param">elements</span> using the default implementation
-of <a class="crossref" href="../persistent/PersistentSet.html#PersistentSet">PersistentSet</a>.</p>
+of <a class="crossref" href="../persistent/PersistentSet.html">PersistentSet</a>.</p>
 <pre class="source">
 factory PersistentSet.from(Iterable&lt;E&gt; elements) {
  PersistentSet&lt;E&gt; result = new _PersistentSetImpl&lt;E&gt;();
@@ -125,7 +125,7 @@ final <a href="../persistent/PersistentSet.html">E</a>         <strong>first</st
         </h4>
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the first element.</p>
-<p>If <code>this</code> is empty throws a <code>StateError</code>. Otherwise this method is
+<p>If <code>this</code> is empty throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>. Otherwise this method is
 equivalent to <code>this.elementAt(0)</code></p>
 <pre class="source">
 E get first;
@@ -145,6 +145,19 @@ bool get isEmpty;
 </pre>
 </div>
 </div>
+<div class="field inherited"><h4 id="isNotEmpty">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isNotEmpty</strong> <a class="anchor-link"
+            href="#isNotEmpty"
+            title="Permalink to PersistentSet&lt;E&gt;.isNotEmpty">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
+<p>Returns true if there is at least one element in this collection.</p>
+<pre class="source">
+bool get isNotEmpty;
+</pre>
+</div>
+</div>
 <div class="field inherited"><h4 id="iterator">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt;         <strong>iterator</strong> <a class="anchor-link"
@@ -152,7 +165,7 @@ final <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;
             title="Permalink to PersistentSet&lt;E&gt;.iterator">#</a>
         </h4>
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns an <code>Iterator</code> that iterates over this <code>Iterable</code> object.</p>
+<p>Returns an Iterator that iterates over this Iterable object.</p>
 <pre class="source">
 Iterator&lt;E&gt; get iterator;
 </pre>
@@ -166,7 +179,7 @@ final <a href="../persistent/PersistentSet.html">E</a>         <strong>last</str
         </h4>
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the last element.</p>
-<p>If <code>this</code> is empty throws a <code>StateError</code>.</p>
+<p>If <code>this</code> is empty throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>.</p>
 <pre class="source">
 E get last;
 </pre>
@@ -195,7 +208,7 @@ final <a href="../persistent/PersistentSet.html">E</a>         <strong>single</s
         </h4>
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the single element in <code>this</code>.</p>
-<p>If <code>this</code> is empty or has more than one element throws a <code>StateError</code>.</p>
+<p>If <code>this</code> is empty or has more than one element throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>.</p>
 <pre class="source">
 E get single;
 </pre>
@@ -229,12 +242,12 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
 <div>
 <h3>Methods</h3>
 <div class="method inherited"><h4 id="any">
-abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>any</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#any"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>any</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#any"
               title="Permalink to PersistentSet&lt;E&gt;.any">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns true if one element of this collection satisfies the
 predicate 
-<span class="param">f</span>. Returns false otherwise.</p>
+<span class="param">test</span>. Returns false otherwise.</p>
 </div>
 </div>
 <div class="method"><h4 id="cartesianProduct">
@@ -244,10 +257,10 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
 </div>
 </div>
 <div class="method inherited"><h4 id="contains">
-abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../persistent/PersistentSet.html">E</a> element) <a class="anchor-link" href="#contains"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="http://api.dartlang.org/dart_core/Object.html">Object</a> element) <a class="anchor-link" href="#contains"
               title="Permalink to PersistentSet&lt;E&gt;.contains">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Check whether the collection contains an element equal to 
+<p>Returns true if the collection contains an element equal to 
 <span class="param">element</span>.</p>
 </div>
 </div>
@@ -269,9 +282,8 @@ abstract <a href="../persistent/PersistentSet.html">E</a> <strong>elementAt</str
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns the 
 <span class="param">index</span>th element.</p>
-<p>If [this] [Iterable] has fewer than 
-<span class="param">index</span> elements throws a
-<code>RangeError</code>.</p>
+<p>If <code>this</code> has fewer than 
+<span class="param">index</span> elements throws a <a class="crossref" href="../dart_core/RangeError.html">RangeError</a>.</p>
 <p>Note: if <code>this</code> does not have a deterministic iteration order then the
 function may simply return any element without any iteration if there are
 at least 
@@ -279,36 +291,37 @@ at least
 </div>
 </div>
 <div class="method inherited"><h4 id="every">
-abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>every</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#every"
+abstract <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>every</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#every"
               title="Permalink to PersistentSet&lt;E&gt;.every">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
 <p>Returns true if every elements of this collection satisify the
 predicate 
-<span class="param">f</span>. Returns false otherwise.</p>
+<span class="param">test</span>. Returns <code>false</code> otherwise.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="expand">
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>expand</strong>(<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#expand"
               title="Permalink to PersistentSet&lt;E&gt;.expand">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Expand each element of this <code>Iterable</code> into zero or more elements.</p>
-<p>The resulting Iterable will run through the elements returned
+<p>Expands each element of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> into zero or more elements.</p>
+<p>The resulting Iterable runs through the elements returned
 by 
 <span class="param">f</span> for each element of this, in order.</p>
-<p>The returned <code>Iterable</code> is lazy, and will call 
+<p>The returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is lazy, and calls 
 <span class="param">f</span> for each element
 of this every time it's iterated.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="firstWhere">
-abstract <a href="../persistent/PersistentSet.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
+abstract <a href="../persistent/PersistentSet.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
               title="Permalink to PersistentSet&lt;E&gt;.firstWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns the first element that satisfies the given predicate <code>f</code>.</p>
+<p>Returns the first element that satisfies the given predicate 
+<span class="param">test</span>.</p>
 <p>If none matches, the result of invoking the 
 <span class="param">orElse</span> function is
 returned. By default, when 
-<span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
+<span class="param">orElse</span> is <code>null</code>, a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is
 thrown.</p>
 </div>
 </div>
@@ -353,8 +366,8 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>join</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> separator = ""]) <a class="anchor-link" href="#join"
               title="Permalink to PersistentSet&lt;E&gt;.join">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Converts each element to a <code>String</code> and concatenates the strings.</p>
-<p>Converts each element to a <code>String</code> by calling <code>Object.toString</code> on it.
+<p>Converts each element to a <a class="crossref" href="../dart_core/String.html">String</a> and concatenates the strings.</p>
+<p>Converts each element to a <a class="crossref" href="../dart_core/String.html">String</a> by calling <a class="crossref" href="../dart_core/Object.html#toString">Object.toString</a> on it.
 Then concatenates the strings, optionally separated by the 
 <span class="param">separator</span>
 string.</p>
@@ -368,14 +381,15 @@ String join([String separator = ""]) {
 </div>
 </div>
 <div class="method inherited"><h4 id="lastWhere">
-abstract <a href="../persistent/PersistentSet.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
+abstract <a href="../persistent/PersistentSet.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element), {<a href="../persistent/PersistentSet.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
               title="Permalink to PersistentSet&lt;E&gt;.lastWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns the last element that satisfies the given predicate <code>f</code>.</p>
+<p>Returns the last element that satisfies the given predicate 
+<span class="param">test</span>.</p>
 <p>If none matches, the result of invoking the 
 <span class="param">orElse</span> function is
 returned. By default, when 
-<span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
+<span class="param">orElse</span> is <code>null</code>, a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is
 thrown.</p>
 </div>
 </div>
@@ -383,13 +397,13 @@ thrown.</p>
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>map</strong>(f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#map"
               title="Permalink to PersistentSet&lt;E&gt;.map">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns a lazy <code>Iterable</code> where each element <code>e</code> of <code>this</code> is replaced
+<p>Returns a lazy <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> where each element <code>e</code> of <code>this</code> is replaced
 by the result of <code>f(e)</code>.</p>
 <p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function 
+returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is not iterated over, the supplied function 
 <span class="param">f</span> will
 not be invoked. The transformed elements will not be cached. Iterating
-multiple times over the the returned <code>Iterable</code> will invoke the supplied
+multiple times over the the returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> will invoke the supplied
 function 
 <span class="param">f</span> multiple times on the same element.</p>
 </div>
@@ -413,71 +427,79 @@ of the collection using the provided function.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="singleWhere">
-abstract <a href="../persistent/PersistentSet.html">E</a> <strong>singleWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value)) <a class="anchor-link" href="#singleWhere"
+abstract <a href="../persistent/PersistentSet.html">E</a> <strong>singleWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#singleWhere"
               title="Permalink to PersistentSet&lt;E&gt;.singleWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns the single element that satisfies <code>f</code>. If no or more than one
-element match then a <code>StateError</code> is thrown.</p>
+<p>Returns the single element that satisfies 
+<span class="param">test</span>. If no or more than one
+element match then a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is thrown.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="skip">
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>skip</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#skip"
               title="Permalink to PersistentSet&lt;E&gt;.skip">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns an <code>Iterable</code> that skips the first 
+<p>Returns an Iterable that skips the first 
 <span class="param">n</span> elements.</p>
 <p>If <code>this</code> has fewer than 
-<span class="param">n</span> elements, then the resulting <code>Iterable</code> will
-be empty.</p>
+<span class="param">n</span> elements, then the resulting Iterable is 
+empty.</p>
+<p>It is an error if 
+<span class="param">n</span> is negative.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="skipWhile">
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>skipWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value)) <a class="anchor-link" href="#skipWhile"
               title="Permalink to PersistentSet&lt;E&gt;.skipWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns an <code>Iterable</code> that skips elements while 
+<p>Returns an Iterable that skips elements while 
 <span class="param">test</span> is satisfied.</p>
-<p>The filtering happens lazily. Every new <code>Iterator</code> of the returned
-<code>Iterable</code> will iterate over all elements of <code>this</code>.
-As long as the iterator's elements do not satisfy 
+<p>The filtering happens lazily. Every new Iterator of the returned
+Iterable iterates over all elements of <code>this</code>.</p>
+<p>As long as the iterator's elements satisfy 
 <span class="param">test</span> they are
-discarded. Once an element satisfies the 
-<span class="param">test</span> the iterator stops testing
-and uses every element unconditionally.</p>
+discarded. Once an element does not satisfy the 
+<span class="param">test</span> the iterator stops
+testing and uses every later element unconditionally. That is, the elements
+of the returned Iterable are the elements of <code>this</code> starting from the
+first element that does not satisfy 
+<span class="param">test</span>.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="take">
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>take</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> n) <a class="anchor-link" href="#take"
               title="Permalink to PersistentSet&lt;E&gt;.take">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns an <code>Iterable</code> with at most 
+<p>Returns an <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> with at most 
 <span class="param">n</span> elements.</p>
-<p>The returned <code>Iterable</code> may contain fewer than 
+<p>The returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> may contain fewer than 
 <span class="param">n</span> elements, if <code>this</code>
 contains fewer than 
 <span class="param">n</span> elements.</p>
+<p>It is an error if 
+<span class="param">n</span> is negative.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="takeWhile">
 abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>takeWhile</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> value)) <a class="anchor-link" href="#takeWhile"
               title="Permalink to PersistentSet&lt;E&gt;.takeWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns an <code>Iterable</code> that stops once 
+<p>Returns an Iterable that stops once 
 <span class="param">test</span> is not satisfied anymore.</p>
-<p>The filtering happens lazily. Every new <code>Iterator</code> of the returned
-<code>Iterable</code> will start iterating over the elements of <code>this</code>.
-When the iterator encounters an element <code>e</code> that does not satisfy 
+<p>The filtering happens lazily. Every new Iterator of the returned
+Iterable starts iterating over the elements of <code>this</code>.</p>
+<p>When the iterator encounters an element <code>e</code> that does not satisfy 
 <span class="param">test</span>,
-it discards <code>e</code> and moves into the finished state. That is, it will not
-ask or provide any more elements.</p>
+it discards <code>e</code> and moves into the finished state. That is, it does not
+get or provide any more elements.</p>
 </div>
 </div>
 <div class="method inherited"><h4 id="toList">
 abstract <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>toList</strong>({<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> growable: true}) <a class="anchor-link" href="#toList"
               title="Permalink to PersistentSet&lt;E&gt;.toList">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Creates a <code>List</code> containing the elements of this <code>Iterable</code>.</p>
-<p>The elements will be in iteration order. The list is fixed-length
+<p>Creates a <a class="crossref" href="../dart_core/List.html">List</a> containing the elements of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a>.</p>
+<p>The elements are in iteration order. The list is fixed-length
 if 
 <span class="param">growable</span> is false.</p>
 </div>
@@ -486,7 +508,7 @@ if
 abstract <a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>toSet</strong>() <a class="anchor-link" href="#toSet"
               title="Permalink to PersistentSet&lt;E&gt;.toSet">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Creates a <code>Set</code> containing the elements of this <code>Iterable</code>.</p>
+<p>Creates a <a class="crossref" href="../dart_core/Set.html">Set</a> containing the elements of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a>.</p>
 </div>
 </div>
 <div class="method"><h4 id="union">
@@ -496,19 +518,19 @@ abstract <a href="../persistent/PersistentSet.html">PersistentSet</a>&lt;<a href
 </div>
 </div>
 <div class="method inherited"><h4 id="where">
-abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>where</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> f(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#where"
+abstract <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/PersistentSet.html">E</a>&gt; <strong>where</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/PersistentSet.html">E</a> element)) <a class="anchor-link" href="#where"
               title="Permalink to PersistentSet&lt;E&gt;.where">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> </div><div class="doc">
-<p>Returns a lazy <code>Iterable</code> with all elements that satisfy the
+<p>Returns a lazy <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> with all elements that satisfy the
 predicate 
-<span class="param">f</span>.</p>
+<span class="param">test</span>.</p>
 <p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function 
-<span class="param">f</span> will
+returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is not iterated over, the supplied function 
+<span class="param">test</span> will
 not be invoked. Iterating will not cache results, and thus iterating
-multiple times over the the returned <code>Iterable</code> will invoke the supplied
+multiple times over the returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> will invoke the supplied
 function 
-<span class="param">f</span> multiple times on the same element.</p>
+<span class="param">test</span> multiple times on the same element.</p>
 </div>
 </div>
 </div>
@@ -516,7 +538,7 @@ function
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-05-01 01:23:52.429</div>
+          <div>This page was generated at 2013-10-03 01:19:27.276</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

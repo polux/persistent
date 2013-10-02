@@ -86,9 +86,9 @@ class Option&lt;T&gt; {
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="Option.fromNullable">
+<div class="method"><h4 id="fromNullable">
 <button class="show-code">Code</button>
-factory <strong>Option.fromNullable</strong>(<a href="../persistent/Option.html">T</a> nullableValue) <a class="anchor-link" href="#Option.fromNullable"
+factory <strong>Option.fromNullable</strong>(<a href="../persistent/Option.html">T</a> nullableValue) <a class="anchor-link" href="#fromNullable"
               title="Permalink to Option&lt;T&gt;.Option.fromNullable">#</a></h4>
 <div class="doc">
 <pre class="source">
@@ -97,9 +97,9 @@ factory Option.fromNullable(T nullableValue) =&gt;
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="Option.none">
+<div class="method"><h4 id="none">
 <button class="show-code">Code</button>
-factory <strong>Option.none</strong>() <a class="anchor-link" href="#Option.none"
+factory <strong>Option.none</strong>() <a class="anchor-link" href="#none"
               title="Permalink to Option&lt;T&gt;.Option.none">#</a></h4>
 <div class="doc">
 <pre class="source">
@@ -107,9 +107,9 @@ factory Option.none() =&gt; _none;
 </pre>
 </div>
 </div>
-<div class="method"><h4 id="Option.some">
+<div class="method"><h4 id="some">
 <button class="show-code">Code</button>
-factory <strong>Option.some</strong>(<a href="../persistent/Option.html">T</a> value) <a class="anchor-link" href="#Option.some"
+factory <strong>Option.some</strong>(<a href="../persistent/Option.html">T</a> value) <a class="anchor-link" href="#some"
               title="Permalink to Option&lt;T&gt;.Option.some">#</a></h4>
 <div class="doc">
 <pre class="source">
@@ -207,9 +207,22 @@ T get value {
 <div class="doc">
 <div class="inherited">
 <p>The equality operator.</p>
-<p>The default behavior for all <code>Object</code>s is to return true if and
+<p>The default behavior for all <a class="crossref" href="../dart_core/Object.html">Object</a>s is to return true if and
 only if <code>this</code> and 
 <span class="param">other</span> are the same object.</p>
+<p>Override this method to specify a different equality relation on
+a class. The overriding method must still be an equivalence relation.
+That is, it must be:</p><ul><li>
+<p>Total: It must return a boolean for all arguments. It should never throw
+   or return <code>null</code>.</p></li><li>
+<p>Reflexive: For all objects <code>o</code>, <code>o == o</code> must be true.</p></li><li>
+<p>Symmetric: For all objects <code>o1</code> and <code>o2</code>, <code>o1 == o2</code> and <code>o2 == o1</code> must
+   either both be true, or both be false.</p></li><li>
+<p>Transitive: For all objects <code>o1</code>, <code>o2</code>, and <code>o3</code>, if <code>o1 == o2</code> and
+   <code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
+<p>The method should also be consistent over time, so equality of two objects
+should not change over time, or at least only change if one of the objects
+was modified.</p>
 <p>If a subclass overrides the equality operator it should override
 the <a class="crossref" href="../persistent/Option.html#hashCode">hashCode</a> method as well to maintain consistency.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
@@ -286,7 +299,7 @@ String toString() =&gt;
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-05-01 01:23:52.266</div>
+          <div>This page was generated at 2013-10-03 01:19:27.061</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

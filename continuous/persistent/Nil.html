@@ -85,7 +85,7 @@ final <a href="../persistent/Nil.html">E</a>         <strong>first</strong> <a c
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns the first element.</p>
-<p>If <code>this</code> is empty throws a <code>StateError</code>. Otherwise this method is
+<p>If <code>this</code> is empty throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>. Otherwise this method is
 equivalent to <code>this.elementAt(0)</code></p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
@@ -138,6 +138,21 @@ bool get isNil =&gt; true;
 </pre>
 </div>
 </div>
+<div class="field inherited"><h4 id="isNotEmpty">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isNotEmpty</strong> <a class="anchor-link"
+            href="#isNotEmpty"
+            title="Permalink to Nil&lt;E&gt;.isNotEmpty">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
+<div class="inherited">
+<p>Returns true if there is at least one element in this collection.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
+<pre class="source">
+bool get isNotEmpty =&gt; !isEmpty;
+</pre>
+</div>
+</div>
 <div class="field"><h4 id="iterator">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;<a href="../persistent/Nil.html">E</a>&gt;         <strong>iterator</strong> <a class="anchor-link"
@@ -146,7 +161,7 @@ final <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;
         </h4>
         <div class="doc">
 <div class="inherited">
-<p>Returns an <code>Iterator</code> that iterates over this <code>Iterable</code> object.</p>
+<p>Returns an Iterator that iterates over this Iterable object.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterator&lt;E&gt; get iterator =&gt; const _NilIterator();
@@ -162,7 +177,7 @@ final <a href="../persistent/Nil.html">E</a>         <strong>last</strong> <a cl
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns the last element.</p>
-<p>If <code>this</code> is empty throws a <code>StateError</code>.</p>
+<p>If <code>this</code> is empty throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 E get last {
@@ -205,7 +220,7 @@ final <a href="../persistent/Nil.html">E</a>         <strong>single</strong> <a 
         <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns the single element in <code>this</code>.</p>
-<p>If <code>this</code> is empty or has more than one element throws a <code>StateError</code>.</p>
+<p>If <code>this</code> is empty or has more than one element throws a <a class="crossref" href="../dart_core/StateError.html">StateError</a>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 E get single {
@@ -228,8 +243,7 @@ E get single {
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns true if one element of this collection satisfies the
-predicate 
-<span class="param">f</span>. Returns false otherwise.</p>
+predicate <code>test</code>. Returns false otherwise.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 bool any(bool f(E element)) {
@@ -243,15 +257,15 @@ bool any(bool f(E element)) {
 </div>
 <div class="method inherited"><h4 id="contains">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="../persistent/Nil.html">E</a> element) <a class="anchor-link" href="#contains"
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>contains</strong>(<a href="http://api.dartlang.org/dart_core/Object.html">Object</a> element) <a class="anchor-link" href="#contains"
               title="Permalink to Nil&lt;E&gt;.contains">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Check whether the collection contains an element equal to 
+<p>Returns true if the collection contains an element equal to 
 <span class="param">element</span>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
-bool contains(E element) {
+bool contains(Object element) {
  for (E e in this) {
    if (e == element) return true;
  }
@@ -268,9 +282,8 @@ bool contains(E element) {
 <div class="inherited">
 <p>Returns the 
 <span class="param">index</span>th element.</p>
-<p>If [this] [Iterable] has fewer than 
-<span class="param">index</span> elements throws a
-<code>RangeError</code>.</p>
+<p>If <code>this</code> has fewer than 
+<span class="param">index</span> elements throws a <a class="crossref" href="../dart_core/RangeError.html">RangeError</a>.</p>
 <p>Note: if <code>this</code> does not have a deterministic iteration order then the
 function may simply return any element without any iteration if there are
 at least 
@@ -296,8 +309,7 @@ E elementAt(int index) {
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns true if every elements of this collection satisify the
-predicate 
-<span class="param">f</span>. Returns false otherwise.</p>
+predicate <code>test</code>. Returns <code>false</code> otherwise.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 bool every(bool f(E element)) {
@@ -315,11 +327,11 @@ bool every(bool f(E element)) {
               title="Permalink to Nil&lt;E&gt;.expand">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Expand each element of this <code>Iterable</code> into zero or more elements.</p>
-<p>The resulting Iterable will run through the elements returned
+<p>Expands each element of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> into zero or more elements.</p>
+<p>The resulting Iterable runs through the elements returned
 by 
 <span class="param">f</span> for each element of this, in order.</p>
-<p>The returned <code>Iterable</code> is lazy, and will call 
+<p>The returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is lazy, and calls 
 <span class="param">f</span> for each element
 of this every time it's iterated.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
@@ -331,20 +343,20 @@ Iterable expand(Iterable f(E element)) =&gt;
 </div>
 <div class="method inherited"><h4 id="firstWhere">
 <button class="show-code">Code</button>
-<a href="../persistent/Nil.html">E</a> <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/Nil.html">E</a> value), {<a href="../persistent/Nil.html">E</a> orElse()}) <a class="anchor-link" href="#firstWhere"
+dynamic <strong>firstWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/Nil.html">E</a> value), {<a href="http://api.dartlang.org/dart_core/Object.html">Object</a> orElse()}) <a class="anchor-link" href="#firstWhere"
               title="Permalink to Nil&lt;E&gt;.firstWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns the first element that satisfies the given predicate <code>f</code>.</p>
+<p>Returns the first element that satisfies the given predicate 
+<span class="param">test</span>.</p>
 <p>If none matches, the result of invoking the 
 <span class="param">orElse</span> function is
 returned. By default, when 
-<span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
+<span class="param">orElse</span> is <code>null</code>, a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is
 thrown.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
-E firstWhere(bool test(E value), { E orElse() }) {
- // TODO(floitsch): check that arguments are of correct type?
+dynamic firstWhere(bool test(E value), { Object orElse() }) {
  for (E element in this) {
    if (test(element)) return element;
  }
@@ -381,22 +393,6 @@ dynamic fold(var initialValue,
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="forEach">
-<button class="show-code">Code</button>
-void <strong>forEach</strong>(void f(<a href="../persistent/Nil.html">E</a> element)) <a class="anchor-link" href="#forEach"
-              title="Permalink to Nil&lt;E&gt;.forEach">#</a></h4>
-<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
-<div class="inherited">
-<p>Applies the function 
-<span class="param">f</span> to each element of this collection.</p>
-<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
-<pre class="source">
-void forEach(void f(E element)) {
- for (E element in this) f(element);
-}
-</pre>
-</div>
-</div>
 <div class="method inherited"><h4 id="foreach">
 <button class="show-code">Code</button>
 void <strong>foreach</strong>(f(A)) <a class="anchor-link" href="#foreach"
@@ -414,20 +410,36 @@ void foreach(f(A)) {
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="forEach">
+<button class="show-code">Code</button>
+void <strong>forEach</strong>(void f(<a href="../persistent/Nil.html">E</a> element)) <a class="anchor-link" href="#forEach"
+              title="Permalink to Nil&lt;E&gt;.forEach">#</a></h4>
+<div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
+<div class="inherited">
+<p>Applies the function 
+<span class="param">f</span> to each element of this collection.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
+<pre class="source">
+void forEach(void f(E element)) {
+ for (E element in this) f(element);
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="join">
 <button class="show-code">Code</button>
-<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>join</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> separator]) <a class="anchor-link" href="#join"
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>join</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> separator = ""]) <a class="anchor-link" href="#join"
               title="Permalink to Nil&lt;E&gt;.join">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Converts each element to a <code>String</code> and concatenates the strings.</p>
-<p>Converts each element to a <code>String</code> by calling <code>Object.toString</code> on it.
+<p>Converts each element to a <a class="crossref" href="../dart_core/String.html">String</a> and concatenates the strings.</p>
+<p>Converts each element to a <a class="crossref" href="../dart_core/String.html">String</a> by calling <a class="crossref" href="../dart_core/Object.html#toString">Object.toString</a> on it.
 Then concatenates the strings, optionally separated by the 
 <span class="param">separator</span>
 string.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
-String join([String separator]) {
+String join([String separator = ""]) {
  Iterator&lt;E&gt; iterator = this.iterator;
  if (!iterator.moveNext()) return "";
  StringBuffer buffer = new StringBuffer();
@@ -449,20 +461,20 @@ String join([String separator]) {
 </div>
 <div class="method inherited"><h4 id="lastWhere">
 <button class="show-code">Code</button>
-<a href="../persistent/Nil.html">E</a> <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/Nil.html">E</a> value), {<a href="../persistent/Nil.html">E</a> orElse()}) <a class="anchor-link" href="#lastWhere"
+dynamic <strong>lastWhere</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> test(<a href="../persistent/Nil.html">E</a> value), {<a href="http://api.dartlang.org/dart_core/Object.html">Object</a> orElse()}) <a class="anchor-link" href="#lastWhere"
               title="Permalink to Nil&lt;E&gt;.lastWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns the last element that satisfies the given predicate <code>f</code>.</p>
+<p>Returns the last element that satisfies the given predicate 
+<span class="param">test</span>.</p>
 <p>If none matches, the result of invoking the 
 <span class="param">orElse</span> function is
 returned. By default, when 
-<span class="param">orElse</span> is <code>null</code>, a <code>StateError</code> is
+<span class="param">orElse</span> is <code>null</code>, a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is
 thrown.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
-E lastWhere(bool test(E value), {E orElse()}) {
- // TODO(floitsch): check that arguments are of correct type?
+dynamic lastWhere(bool test(E value), { Object orElse() }) {
  E result = null;
  bool foundMatching = false;
  for (E element in this) {
@@ -484,13 +496,13 @@ E lastWhere(bool test(E value), {E orElse()}) {
               title="Permalink to Nil&lt;E&gt;.map">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns a lazy <code>Iterable</code> where each element <code>e</code> of <code>this</code> is replaced
+<p>Returns a lazy <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> where each element <code>e</code> of <code>this</code> is replaced
 by the result of <code>f(e)</code>.</p>
 <p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function 
+returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is not iterated over, the supplied function 
 <span class="param">f</span> will
 not be invoked. The transformed elements will not be cached. Iterating
-multiple times over the the returned <code>Iterable</code> will invoke the supplied
+multiple times over the the returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> will invoke the supplied
 function 
 <span class="param">f</span> multiple times on the same element.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
@@ -532,12 +544,12 @@ E reduce(E combine(E value, E element)) {
               title="Permalink to Nil&lt;E&gt;.singleWhere">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns the single element that satisfies <code>f</code>. If no or more than one
-element match then a <code>StateError</code> is thrown.</p>
+<p>Returns the single element that satisfies 
+<span class="param">test</span>. If no or more than one
+element match then a <a class="crossref" href="../dart_core/StateError.html">StateError</a> is thrown.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 E singleWhere(bool test(E value)) {
- // TODO(floitsch): check that argument is of correct type?
  E result = null;
  bool foundMatching = false;
  for (E element in this) {
@@ -561,11 +573,13 @@ E singleWhere(bool test(E value)) {
               title="Permalink to Nil&lt;E&gt;.skip">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns an <code>Iterable</code> that skips the first 
+<p>Returns an Iterable that skips the first 
 <span class="param">n</span> elements.</p>
 <p>If <code>this</code> has fewer than 
-<span class="param">n</span> elements, then the resulting <code>Iterable</code> will
-be empty.</p>
+<span class="param">n</span> elements, then the resulting Iterable is 
+empty.</p>
+<p>It is an error if 
+<span class="param">n</span> is negative.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterable&lt;E&gt; skip(int n) {
@@ -580,15 +594,18 @@ Iterable&lt;E&gt; skip(int n) {
               title="Permalink to Nil&lt;E&gt;.skipWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns an <code>Iterable</code> that skips elements while 
+<p>Returns an Iterable that skips elements while 
 <span class="param">test</span> is satisfied.</p>
-<p>The filtering happens lazily. Every new <code>Iterator</code> of the returned
-<code>Iterable</code> will iterate over all elements of <code>this</code>.
-As long as the iterator's elements do not satisfy 
+<p>The filtering happens lazily. Every new Iterator of the returned
+Iterable iterates over all elements of <code>this</code>.</p>
+<p>As long as the iterator's elements satisfy 
 <span class="param">test</span> they are
-discarded. Once an element satisfies the 
-<span class="param">test</span> the iterator stops testing
-and uses every element unconditionally.</p>
+discarded. Once an element does not satisfy the 
+<span class="param">test</span> the iterator stops
+testing and uses every later element unconditionally. That is, the elements
+of the returned Iterable are the elements of <code>this</code> starting from the
+first element that does not satisfy 
+<span class="param">test</span>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterable&lt;E&gt; skipWhile(bool test(E value)) {
@@ -649,12 +666,14 @@ LinkedList&lt;E&gt; strictWhere(bool f(A)) {
               title="Permalink to Nil&lt;E&gt;.take">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns an <code>Iterable</code> with at most 
+<p>Returns an <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> with at most 
 <span class="param">n</span> elements.</p>
-<p>The returned <code>Iterable</code> may contain fewer than 
+<p>The returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> may contain fewer than 
 <span class="param">n</span> elements, if <code>this</code>
 contains fewer than 
 <span class="param">n</span> elements.</p>
+<p>It is an error if 
+<span class="param">n</span> is negative.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterable&lt;E&gt; take(int n) {
@@ -669,14 +688,14 @@ Iterable&lt;E&gt; take(int n) {
               title="Permalink to Nil&lt;E&gt;.takeWhile">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns an <code>Iterable</code> that stops once 
+<p>Returns an Iterable that stops once 
 <span class="param">test</span> is not satisfied anymore.</p>
-<p>The filtering happens lazily. Every new <code>Iterator</code> of the returned
-<code>Iterable</code> will start iterating over the elements of <code>this</code>.
-When the iterator encounters an element <code>e</code> that does not satisfy 
+<p>The filtering happens lazily. Every new Iterator of the returned
+Iterable starts iterating over the elements of <code>this</code>.</p>
+<p>When the iterator encounters an element <code>e</code> that does not satisfy 
 <span class="param">test</span>,
-it discards <code>e</code> and moves into the finished state. That is, it will not
-ask or provide any more elements.</p>
+it discards <code>e</code> and moves into the finished state. That is, it does not
+get or provide any more elements.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterable&lt;E&gt; takeWhile(bool test(E value)) {
@@ -691,8 +710,8 @@ Iterable&lt;E&gt; takeWhile(bool test(E value)) {
               title="Permalink to Nil&lt;E&gt;.toList">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Creates a <code>List</code> containing the elements of this <code>Iterable</code>.</p>
-<p>The elements will be in iteration order. The list is fixed-length
+<p>Creates a <a class="crossref" href="../dart_core/List.html">List</a> containing the elements of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a>.</p>
+<p>The elements are in iteration order. The list is fixed-length
 if 
 <span class="param">growable</span> is false.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
@@ -708,7 +727,7 @@ List&lt;E&gt; toList({ bool growable: true }) =&gt;
               title="Permalink to Nil&lt;E&gt;.toSet">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Creates a <code>Set</code> containing the elements of this <code>Iterable</code>.</p>
+<p>Creates a <a class="crossref" href="../dart_core/Set.html">Set</a> containing the elements of this <a class="crossref" href="../dart_core/Iterable.html">Iterable</a>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Set&lt;E&gt; toSet() =&gt; new Set&lt;E&gt;.from(this);
@@ -734,16 +753,13 @@ toString() =&gt; "nil()";
               title="Permalink to Nil&lt;E&gt;.where">#</a></h4>
 <div class="inherited-from">inherited from <a href="http://api.dartlang.org/dart_collection/IterableBase.html">IterableBase</a> </div><div class="doc">
 <div class="inherited">
-<p>Returns a lazy <code>Iterable</code> with all elements that satisfy the
-predicate 
-<span class="param">f</span>.</p>
+<p>Returns a lazy <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> with all elements that satisfy the
+predicate <code>test</code>.</p>
 <p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function 
-<span class="param">f</span> will
+returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> is not iterated over, the supplied function <code>test</code> will
 not be invoked. Iterating will not cache results, and thus iterating
-multiple times over the the returned <code>Iterable</code> will invoke the supplied
-function 
-<span class="param">f</span> multiple times on the same element.</p>
+multiple times over the returned <a class="crossref" href="../dart_core/Iterable.html">Iterable</a> will invoke the supplied
+function <code>test</code> multiple times on the same element.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../persistent/Nil.html">E</a>&gt; </div></div>
 <pre class="source">
 Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this, f);
@@ -755,7 +771,7 @@ Iterable&lt;E&gt; where(bool f(E element)) =&gt; new WhereIterable&lt;E&gt;(this
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-05-01 01:23:52.347</div>
+          <div>This page was generated at 2013-10-03 01:19:27.167</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

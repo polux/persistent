@@ -5,8 +5,8 @@ OUTDIR=$ROOTDIR/continuous
 TMPDIR=`mktemp -d`
 
 cd $TMPDIR
-git clone https://code.google.com/p/dart-immutable/
-cd dart-immutable
+git clone https://github.com/polux/persistent
+cd persistent
 pub install
 rm -rf $OUTDIR
 dartdoc -v --link-api --pkg=packages/ --out $OUTDIR lib/persistent.dart

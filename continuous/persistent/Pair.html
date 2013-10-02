@@ -48,11 +48,17 @@ class Pair&lt;A, B&gt; {
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="Pair">
+<div class="method"><h4 id="">
 <button class="show-code">Code</button>
-new <strong>Pair</strong>(<a href="../persistent/Pair.html">A</a> fst, <a href="../persistent/Pair.html">B</a> snd) <a class="anchor-link" href="#Pair"
+new <strong>Pair</strong>(<a href="../persistent/Pair.html">A</a> fst, <a href="../persistent/Pair.html">B</a> snd) <a class="anchor-link" href="#"
               title="Permalink to Pair&lt;A, B&gt;.Pair">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Creates a new <a class="crossref" href="../dart_core/Object.html">Object</a> instance.</p>
+<p><a class="crossref" href="../dart_core/Object.html">Object</a> instances have no meaningful state, and are only useful
+through their identity. An <a class="crossref" href="../dart_core/Object.html">Object</a> instance is equal to itself
+only.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 Pair(this.fst, this.snd);
 </pre>
@@ -117,9 +123,22 @@ final B snd
 <div class="doc">
 <div class="inherited">
 <p>The equality operator.</p>
-<p>The default behavior for all <code>Object</code>s is to return true if and
+<p>The default behavior for all <a class="crossref" href="../dart_core/Object.html">Object</a>s is to return true if and
 only if <code>this</code> and 
 <span class="param">other</span> are the same object.</p>
+<p>Override this method to specify a different equality relation on
+a class. The overriding method must still be an equivalence relation.
+That is, it must be:</p><ul><li>
+<p>Total: It must return a boolean for all arguments. It should never throw
+   or return <code>null</code>.</p></li><li>
+<p>Reflexive: For all objects <code>o</code>, <code>o == o</code> must be true.</p></li><li>
+<p>Symmetric: For all objects <code>o1</code> and <code>o2</code>, <code>o1 == o2</code> and <code>o2 == o1</code> must
+   either both be true, or both be false.</p></li><li>
+<p>Transitive: For all objects <code>o1</code>, <code>o2</code>, and <code>o3</code>, if <code>o1 == o2</code> and
+   <code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
+<p>The method should also be consistent over time, so equality of two objects
+should not change over time, or at least only change if one of the objects
+was modified.</p>
 <p>If a subclass overrides the equality operator it should override
 the <a class="crossref" href="../persistent/Pair.html#hashCode">hashCode</a> method as well to maintain consistency.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
@@ -152,7 +171,7 @@ String toString() =&gt; "Pair($fst, $snd)";
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-05-01 01:23:52.255</div>
+          <div>This page was generated at 2013-10-03 01:19:27.038</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
