@@ -3,7 +3,7 @@ version: 0.7.5
 author: Paul Brauner <polux@google.com>
 description: Efficient persistent data structures for Dart
 homepage: https://github.com/polux/persistent
-documentation: http://goo.gl/IWWDn
+documentation: http://goo.gl/NTNxHk
 environment:
   sdk: '>=0.4.7'
 dev_dependencies:
