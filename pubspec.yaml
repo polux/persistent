@@ -1,8 +1,8 @@
 name: persistent
-version: 0.7.4
+version: 0.7.5
 author: Paul Brauner <polux@google.com>
 description: Efficient persistent data structures for Dart
-homepage: https://code.google.com/p/dart-immutable/
+homepage: https://github.com/polux/persistent
 documentation: http://goo.gl/IWWDn
 environment:
   sdk: '>=0.4.7'
