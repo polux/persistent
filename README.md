@@ -45,4 +45,4 @@ dart test/map_bench.dart
 
 ## More
 
-See [ImplementationDetails](http://code.google.com/p/dart-immutable/wiki/ImplementationDetails) and the [generated API documentation](http://doc.dart-immutable.googlecode.com/git/continuous/persistent/PersistentMap.html) for more information.
+See [ImplementationDetails](https://github.com/polux/persistent/wiki/ImplementationDetails) and the [generated API documentation](http://doc.dart-immutable.googlecode.com/git/continuous/persistent/PersistentMap.html) for more information.
