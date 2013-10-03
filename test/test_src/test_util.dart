@@ -179,7 +179,7 @@ void testMain(Map<String, Property> properties) {
   final parser = new args.ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
-  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
+  parser.addOption('quickCheckMaxSize', defaultsTo: '500');
   parser.addOption('smallCheckDepth', defaultsTo: '15');
   parser.addOption('property',
                    help: 'property to test or "all"',
