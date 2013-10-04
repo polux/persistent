@@ -19,7 +19,7 @@ part 'map_model.dart';
 part 'set_model.dart';
 
 /**
- / A datatype with an imperfect hash function to use as a key for testing maps.
+ * A datatype with an imperfect hash function to use as a key for testing maps.
  */
 class Key {
   // a list of of 6 integers in [0..31] and 1 integer in [0..3]
@@ -179,7 +179,7 @@ void testMain(Map<String, Property> properties) {
   final parser = new args.ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
-  parser.addOption('quickCheckMaxSize', defaultsTo: '500');
+  parser.addOption('quickCheckMaxSize', defaultsTo: '700');
   parser.addOption('smallCheckDepth', defaultsTo: '15');
   parser.addOption('property',
                    help: 'property to test or "all"',
