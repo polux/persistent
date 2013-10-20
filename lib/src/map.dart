@@ -76,6 +76,11 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   Option<V> lookup(K key);
 
   /**
+   * Syntactic sugar for [lookup]
+   */
+  Option<V> operator [](K key) => this.lookup(key);
+
+  /**
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
   void forEachKeyValue(f(K key, V value));
@@ -162,7 +167,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
  */
 abstract class PersistentMapBase<K, V>
     extends IterableBase<Pair<K, V>>
-    implements PersistentMap<K, V> {
+    with PersistentMap<K, V> {
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
