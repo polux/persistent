@@ -158,10 +158,10 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   /// Randomly picks an entry of `this`.
   Pair<K, V> pickRandomEntry([Random random]);
 
-  /// A strict (non-lazy) version of [:map:].
+  /// A strict (non-lazy) version of [map].
   PersistentMap strictMap(Pair f(Pair<K, V> pair));
 
-  /// A strict (non-lazy) version of [:where:].
+  /// A strict (non-lazy) version of [where].
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
 
@@ -206,8 +206,8 @@ abstract class PersistentMapBase<K, V>
   V operator [](K key) => this.lookup(key).asNullable;
 
   PersistentMap strictMap(Pair f(Pair<K, V> pair)) =>
-    new PersistentMap.fromPairs(this.map(f));
+      new PersistentMap.fromPairs(this.map(f));
 
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-    new PersistentMap<K, V>.fromPairs(this.where(f));
+      new PersistentMap<K, V>.fromPairs(this.where(f));
 }
