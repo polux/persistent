@@ -30,7 +30,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   }
 
   /**
-   * Creates a [PersistentMap] from an Iterable of Pairs using the default
+   * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
    * implementation of [PersistentMap].
    */
   factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
@@ -76,9 +76,10 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
   Option<V> lookup(K key);
 
   /**
-   * Syntactic sugar for [lookup]
+   * Returns the value for the given [key] or [:null:] if [key]
+   * is not in the map.
    */
-  Option<V> operator [](K key) => this.lookup(key);
+  V operator [](K key);
 
   /**
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
@@ -167,7 +168,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
  */
 abstract class PersistentMapBase<K, V>
     extends IterableBase<Pair<K, V>>
-    with PersistentMap<K, V> {
+    implements PersistentMap<K, V> {
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
@@ -199,6 +200,8 @@ abstract class PersistentMapBase<K, V>
 
   Pair<K, V> pickRandomEntry([Random random]) =>
       elementAt((random != null ? random : _random).nextInt(this.length));
+
+  V operator [](K key) => this.lookup(key).asNullable;
 
   PersistentMap strictMap(Pair f(Pair<K, V> pair)) =>
     new PersistentMap.fromPairs(this.map(f));
