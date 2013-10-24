@@ -45,6 +45,12 @@ abstract class PersistentSet<E> implements Iterable<E> {
 
   /// Randomly picks an element of [this].
   E pickRandomElement([Random random]);
+
+  /// A strict (non-lazy) version of [map].
+  PersistentSet strictMap(f(E element));
+
+  /// A strict (non-lazy) version of [where].
+  PersistentSet<E> strictWhere(bool f(E element));
 }
 
 /**
@@ -62,6 +68,12 @@ abstract class PersistentSetBase<E>
 
   PersistentSet<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
+
+  PersistentSet strictMap(f(E element)) =>
+      new PersistentSet.from(this.map(f));
+
+  PersistentSet<E> strictWhere(bool f(E element)) =>
+      new PersistentSet<E>.from(this.where(f));
 
   String toString() {
     StringBuffer buffer = new StringBuffer('{');
