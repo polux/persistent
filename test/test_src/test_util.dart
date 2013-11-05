@@ -6,7 +6,6 @@
 library test_util;
 
 import 'dart:math';
-import 'dart:io';
 
 import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';
@@ -175,7 +174,7 @@ bool sameIterator(Iterator it1, Iterator it2) {
   return !it2.moveNext();
 }
 
-void testMain(Map<String, Property> properties) {
+void testMain(List<String> arguments, Map<String, Property> properties) {
   final parser = new args.ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
@@ -186,7 +185,7 @@ void testMain(Map<String, Property> properties) {
                    allowed: new List.from(properties.keys)..add('all'),
                    allowMultiple: true,
                    defaultsTo: 'all');
-  final flags = parser.parse(new Options().arguments);
+  final flags = parser.parse(arguments);
 
   if (flags['help']) {
     print(parser.getUsage());

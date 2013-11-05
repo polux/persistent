@@ -73,7 +73,7 @@ testLast(Map<Key, int> map) {
   return implem.last == naiveLast(implem);
 }
 
-main() {
+main(List<String> arguments) {
   final e = new Enumerations();
   final properties = {
     'isEmpty'     : forall(e.maps, testIsEmpty),
@@ -90,5 +90,5 @@ main() {
     'elementAt'   : forall(e.maps, testElementAt),
     'last'        : forall(e.maps, testLast)
   };
-  testMain(properties);
+  testMain(arguments, properties);
 }

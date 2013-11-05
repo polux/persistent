@@ -72,7 +72,7 @@ testLast(Set<Element> s) {
   return implem.last == naiveLast(implem);
 }
 
-main() {
+main(List<String> arguments) {
   final e = new Enumerations();
   final properties = {
     'isEmpty'      : forall(e.sets, testIsEmpty),
@@ -89,5 +89,5 @@ main() {
     'elementAt'    : forall(e.sets, testElementAt),
     'last'         : forall(e.sets, testLast)
   };
-  testMain(properties);
+  testMain(arguments, properties);
 }
