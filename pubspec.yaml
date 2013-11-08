@@ -1,15 +1,15 @@
 name: persistent
-version: 0.7.7
+version: 0.8.0
 author: Paul Brauner <polux@google.com>
 description: Efficient persistent data structures for Dart
 homepage: https://github.com/polux/persistent
 documentation: http://goo.gl/NTNxHk
 environment:
-  sdk: '>=0.4.7'
+  sdk: '>=0.8.10+6 <2.0.0'
 dev_dependencies:
-  unittest: any
-  enumerators: '>=0.4.0 <0.5.0'
-  http: any
-  args: any
-  propcheck: '>=0.3.5 <0.4.0'
-  crypto: any
+  unittest: '>=0.9.0 < 0.10.0'
+  enumerators: '>=0.5.0 <0.6.0'
+  http: '>=0.9.0 < 0.10.0'
+  args: '>=0.9.0 < 0.10.0'
+  propcheck: '>=0.4.0 <0.5.0'
+  crypto: '>=0.9.0 < 0.10.0'
