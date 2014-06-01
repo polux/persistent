@@ -7,9 +7,8 @@ documentation: http://goo.gl/NTNxHk
 environment:
   sdk: '>=0.8.10+6 <2.0.0'
 dev_dependencies:
-  unittest: '>=0.9.0 < 0.10.0'
+  unittest: '>=0.9.0 <0.10.0'
   enumerators: '>=0.5.0 <0.6.0'
-  http: '>=0.9.0 < 0.10.0'
-  args: '>=0.9.0 < 0.10.0'
+  http: '>=0.9.0 <0.10.0'
+  args: '>=0.9.0 <0.10.0'
   propcheck: '>=0.4.0 <0.5.0'
-  crypto: '>=0.9.0 < 0.10.0'
