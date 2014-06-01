@@ -12,8 +12,10 @@ abstract class LinkedList<E> implements Iterable<E> {
   Cons<E> get asCons;
 
   void foreach(f(A));
+
   /// A strict (non-lazy) version of [:map:].
   LinkedList strictMap(f(A));
+
   /// A strict (non-lazy) version of [:where:].
   LinkedList<E> strictWhere(bool f(A));
 }

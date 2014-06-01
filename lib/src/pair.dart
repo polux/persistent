@@ -8,11 +8,16 @@ part of persistent;
 class Pair<A, B> {
   final A fst;
   final B snd;
+
   Pair(this.fst, this.snd);
-  bool operator ==(Pair<A, B> other) =>
-      (other is Pair<A, B>)
-      && fst == other.fst
-      && snd == other.snd;
+
+  bool operator ==(Pair<A, B> other) {
+    return (other is Pair<A, B>)
+        && fst == other.fst
+        && snd == other.snd;
+  }
+
   int get hashCode => fst.hashCode + 31 * snd.hashCode;
+
   String toString() => "Pair($fst, $snd)";
 }
