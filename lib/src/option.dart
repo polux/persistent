@@ -41,8 +41,9 @@ class Option<T> {
 
   /// Precondition: [:this is Option<Option>:]
   Option get flattened {
-    assert(isDefined ? _value is Option : true);
-    return orElse(_none);
+    // enforces the precondition in checked mode
+    final self = this as Option<Option>;
+    return self.orElse(_none);
   }
 
   bool operator ==(Option<T> other) =>

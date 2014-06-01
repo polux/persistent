@@ -7,7 +7,7 @@ library map_test;
 
 import 'package:propcheck/propcheck.dart';
 import 'package:persistent/persistent.dart';
-import 'test_src/test_util.dart';
+import 'src/test_util.dart';
 
 // a deliberately non-commutative operation on nullable integers
 int minus(int x, int y) => (x == null ? 0 : x) - (y == null ? 0 : y);

@@ -9,9 +9,9 @@ import 'package:persistent/persistent.dart';
 
 import 'dart:math';
 
-part 'bench_src/benchmark.dart';
-part 'bench_src/simple_map_1.dart';
-part 'bench_src/simple_map_2.dart';
+part 'src/benchmark.dart';
+part 'src/simple_map_1.dart';
+part 'src/simple_map_2.dart';
 
 void main() {
   Benchmark.warmup();

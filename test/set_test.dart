@@ -7,7 +7,7 @@ library set_test;
 
 import 'package:propcheck/propcheck.dart';
 import 'package:persistent/persistent.dart';
-import 'test_src/test_util.dart';
+import 'src/test_util.dart';
 
 // a unary function on Elements
 Element times42(Element e) => new Element(e.i * 42, e.b);

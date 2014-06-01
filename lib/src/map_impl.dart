@@ -698,6 +698,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       }
       newIndex -= subLength;
     }
+    throw new StateError("never happens");
   }
 
   toDebugString() => "_SubMap($_array)";
