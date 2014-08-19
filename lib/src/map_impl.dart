@@ -468,10 +468,20 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     int index = _popcount(_bitmap & (mask - 1));
 
     if ((_bitmap & mask) != 0) {
-      List<_ANodeBase<K, V>> newarray = _array.sublist(0);
       _ANodeBase<K, V> m = _array[index];
+      int oldSize = m.length;
       _ANodeBase<K, V> newM =
-          m._insertWith(owner, keyValues, size, combine, hash, depth + 1);
+                m._insertWith(owner, keyValues, size, combine, hash, depth + 1);
+      if(identical(m, newM)) {
+        if(oldSize != newM.length) this._length += m.length - oldSize;
+        return this;
+      }
+
+      List<_ANodeBase<K, V>> newarray;
+      if(!ownerEquals(this._owner, owner))
+          newarray = _array.sublist(0);
+      else
+        newarray = _array;
       newarray[index] = newM;
       int delta = newM.length - m.length;
       return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap, newarray, length + delta);
@@ -496,7 +506,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _ANodeBase<K, V> m = _array[index];
+      _ANodeBase<K, V> m = c[index];
       return m._intersectWith(owner, keyValues, size, combine, hash, depth + 1);
     } else {
       return new _EmptyMap(owner);
@@ -510,9 +520,11 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
       _ANodeBase<K, V> m = _array[index];
+      int oldSize = m.length;
       _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1);
-      int delta = newm.length - m.length;
+      int delta = newm.length - oldSize;
       if (identical(m, newm)) {
+        this._length += delta;
         return this;
       }
       if (newm.isEmpty) {
@@ -564,8 +576,12 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       if (identical(newm, m)) {
         return this;
       }
-      List<_ANodeBase<K, V>> newarray =
-          new List<_ANodeBase<K, V>>.from(_array, growable: false);
+      List<_ANodeBase<K, V>> newarray;
+
+      if(!ownerEquals(this._owner, owner))
+          newarray = new List<_ANodeBase<K, V>>.from(_array, growable: false);
+      else
+        newarray = _array;
       newarray[index] = newm;
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
@@ -722,4 +738,8 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   }
 
   toDebugString() => "_SubMap($_array)";
+}
+
+ownerEquals(Owner a, Owner b) {
+  return a != null && a == b;
 }
