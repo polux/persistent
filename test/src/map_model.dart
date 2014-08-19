@@ -10,7 +10,7 @@ final _random = new Random();
 /**
  * Naive implementation of PersistentMap using dart:core [Map]s.
  */
-class ModelMap<K, V> extends PersistentMapBase<K, V> {
+class ModelMap<K, V> extends PersistentMap<K, V> {
   final Map<K, V> _map;
 
   ModelMap(this._map);

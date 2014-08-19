@@ -14,34 +14,39 @@ part of persistent;
  * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
  * `PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
-abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
+class PersistentMap<K, V>
+        extends IterableBase<Pair<K, V>>
+        implements Iterable<Pair<K, V>> {
+  NodeBase _root;
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new _EmptyMap<K, V>();
+  PersistentMap() {
+    this._root = new _EmptyMap<K, V>(null);
+  }
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
    * [PersistentMap].
    */
-  factory PersistentMap.fromMap(Map<K, V> map) {
-    PersistentMap<K, V> result = new _EmptyMap<K, V>();
+  PersistentMap.fromMap(Map<K, V> map) {
+    _root = new _EmptyMap<K, V>(null);
     map.forEach((K key, V value) {
-      result = result.insert(key, value);
+      _root = _root.insert(null, key, value);
     });
-    return result;
   }
 
   /**
    * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
    * implementation of [PersistentMap].
    */
-  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
-    PersistentMap<K, V> result = new _EmptyMap<K, V>();
+  PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
+    _root = new _EmptyMap<K, V>();
     pairs.forEach((pair) {
-      result = result.insert(pair.fst, pair.snd);
+      _root = _root.insert(null, pair.fst, pair.snd);
     });
-    return result;
   }
+
+  PersistentMap._new(NodeBase this._root);
 
   /**
    * Returns a new map identical to `this` except that it binds [key] to
@@ -57,7 +62,9 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
   PersistentMap<K, V>
-      insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+      insert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
+        return new PersistentMap._new(_root.insert(null, key, value, combine));
+      }
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
@@ -66,7 +73,9 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
-  PersistentMap<K, V> delete(K key);
+  PersistentMap<K, V> delete(K key) {
+    return new PersistentMap._new(_root.delete(null, key));
+  }
 
   /**
    * Looks up the value possibly bound to [key] in `this`. Returns
@@ -75,18 +84,22 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1}.lookup('b') == Option.none()
    *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
    */
-  Option<V> lookup(K key);
+  Option<V> lookup(K key) {
+    return _root.lookup(key);
+  }
 
   /**
    * Returns the value for the given [key] or [:null:] if [key]
    * is not in the map.
    */
-  V operator [](K key);
+  V operator [](K key) {
+    return _root.lookup(key).asNullable;
+  }
 
   /**
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
-  void forEachKeyValue(f(K key, V value));
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
 
   /**
    * Returns a new map identical to `this` except that the value it possibly
@@ -95,7 +108,9 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a', 1, 'b', 3}
    *     {'a': 1}.adjust('b', (x) => x + 1) == {'a', 1}
    */
-  PersistentMap<K, V> adjust(K key, V update(V value));
+  PersistentMap<K, V> adjust(K key, V update(V value)) {
+    return  new PersistentMap._new(_root.adjust(null, key, update));
+  }
 
   /**
    * Returns a new map identical to `this` where each value has been updated by
@@ -104,7 +119,9 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a', 2, 'b', 3}
    *     {}.mapValues((x) => x + 1) == {}
    */
-  PersistentMap mapValues(f(V value));
+  PersistentMap mapValues(f(V value)) {
+    return new PersistentMap._new(_root.mapValues(null, f));
+  }
 
   /**
    * Returns a new map whose (key, value) pairs are the union of those of `this`
@@ -124,7 +141,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    * if it is commutative.
    */
   PersistentMap<K, V>
-      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
+        new PersistentMap._new(_root.union(null, other._root, combine));
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -144,33 +162,46 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    * provided and if it is commutative.
    */
   PersistentMap<K, V>
-      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
+        new PersistentMap._new(_root.intersection(null, other._root, combine));
 
   /// Returns a mutable copy of `this`.
-  Map<K, V> toMap();
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
 
   /// The keys of `this`.
-  Iterable<K> get keys;
+  Iterable<K> get keys => _root.keys;
 
   /// The values of `this`.
-  Iterable<V> get values;
+  Iterable<V> get values => _root.values;
 
   /// Randomly picks an entry of `this`.
-  Pair<K, V> pickRandomEntry([Random random]);
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
 
   /// A strict (non-lazy) version of [map].
-  PersistentMap strictMap(Pair f(Pair<K, V> pair));
+  PersistentMap strictMap(Pair f(Pair<K, V> pair)) =>
+      new PersistentMap.fromPairs(this.map(f));
 
   /// A strict (non-lazy) version of [where].
-  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
+  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+      new PersistentMap<K, V>.fromPairs(this.where(f));
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
 }
 
 /**
  * A base class for implementations of [PersistentMap].
  */
-abstract class PersistentMapBase<K, V>
-    extends IterableBase<Pair<K, V>>
-    implements PersistentMap<K, V> {
+abstract class NodeBase<K, V>
+    extends IterableBase<Pair<K, V>> {
+
+  int _length;
+  get length => _length;
+
+  NodeBase(this._length);
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
@@ -205,9 +236,23 @@ abstract class PersistentMapBase<K, V>
 
   V operator [](K key) => this.lookup(key).asNullable;
 
-  PersistentMap strictMap(Pair f(Pair<K, V> pair)) =>
-      new PersistentMap.fromPairs(this.map(f));
+  NodeBase<K, V>
+    insert(Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
 
-  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-      new PersistentMap<K, V>.fromPairs(this.where(f));
+  NodeBase<K, V> delete(Owner owner, K key);
+
+  Option<V> lookup(K key);
+
+  void forEachKeyValue(f(K key, V value));
+
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V value));
+
+  NodeBase mapValues(Owner owner, f(V value));
+
+  NodeBase<K, V>
+      union(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
+  NodeBase<K, V>
+      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
 }
