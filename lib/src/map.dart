@@ -232,7 +232,7 @@ class PersistentMap<K, V>
     return new TransientMap.fromPersistent(this);
   }
 
-  PersistentMap doAsTransient(dynamic f(TransientMap)) {
+  PersistentMap withTransient(dynamic f(TransientMap)) {
     TransientMap transient = this.asTransient();
     f(transient);
     return transient.asPersistent();

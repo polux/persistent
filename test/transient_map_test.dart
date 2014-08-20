@@ -3,7 +3,8 @@ import 'package:unittest/unittest.dart';
 import 'dart:math';
 import 'dart:core';
 
-final NUM_OPERATIONS = 50000;
+final NUM_OPERATIONS = 10000;
+
 main() {
   test('random_test', () {
     Random r = new Random(47);
@@ -12,6 +13,7 @@ main() {
 
     List<TransientMap> transientMaps = [];
     List<PersistentMap> persistentMaps = [new PersistentMap()];
+    List<PersistentMap> persistentWithTransient = [new PersistentMap()];
     Map map = {};
     List keys = [];
 
@@ -21,28 +23,32 @@ main() {
       'call': callInsert,
       'map': insertMap,
       'per': insertPer,
-      'tra': insertTra
+      'tra': insertTra,
+      'withTra': insertWithTra
     }, {
       'times': 8,
       'prep': prepDelete,
       'call': callDelete,
       'map': deleteMap,
       'per': deletePer,
-      'tra': deleteTra
+      'tra': deleteTra,
+      'withTra': deleteWithTra
     }, {
       'times': 7,
       'prep': prepAdjust,
       'call': callAdjust,
       'map': adjustMap,
       'per': adjustPer,
-      'tra': adjustTra
+      'tra': adjustTra,
+      'withTra': adjustWithTra
     }, {
       'times': 1,
       'prep': prepMap,
       'call': callMap,
       'map': mapMap,
       'per': mapPer,
-      'tra': mapTra
+      'tra': mapTra,
+      'withTra': mapWithTra
     }];
 
     List actions = [];
@@ -63,18 +69,21 @@ main() {
       persistentMaps =
           persistentMaps.map((map) => action['call'](map, action['per'], prep)).toList();
 
+      persistentWithTransient =
+             persistentWithTransient.map((map) => action['call'](map, action['withTra'], prep)).toList();
+
       if(next == i) {
         next *= 2;
         transientMaps.add(persistentMaps.last.asTransient());
         persistentMaps.add(persistentMaps.last);
-        checkAll(map, transientMaps, persistentMaps);
+        checkAll(map, transientMaps, persistentMaps, persistentWithTransient);
       }
     }
-    checkAll(map, transientMaps, persistentMaps);
+    checkAll(map, transientMaps, persistentMaps, persistentWithTransient);
   });
 }
 
-checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per) {
+checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per, List<PersistentMap> withTran) {
   /*print(map.length);
   print(map);
   tran.forEach((e) => print(e));
@@ -91,6 +100,12 @@ checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per) {
 
   tran.forEach((TransientMap mt) {
     PersistentMap m = mt.asPersistent();
+    expect(m.length, equals(toCompare.length));
+    expect(m.hashCode, equals(toCompare.hashCode));
+    expect(m == toCompare, isTrue);
+  });
+
+  withTran.forEach((PersistentMap m) {
     expect(m.length, equals(toCompare.length));
     expect(m.hashCode, equals(toCompare.hashCode));
     expect(m == toCompare, isTrue);
@@ -124,6 +139,10 @@ insertTra(map, key, value) {
   return map.doInsert(key, value);
 }
 
+insertWithTra(PersistentMap map, key, value) {
+  return map.withTransient((TransientMap map) => map.doInsert(key, value));
+}
+
 prepDelete(Random r, List keys) {
   if(keys.length == 0) return null;
 
@@ -147,6 +166,10 @@ deletePer(map, key) {
 
 deleteTra(map, key) {
   return map.doDelete(key);
+}
+
+deleteWithTra(map, key) {
+  return map.withTransient((TransientMap map) => map.doDelete(key));
 }
 
 prepAdjust(Random r, List keys) {
@@ -176,6 +199,9 @@ adjustPer(map, key, adjust) {
 adjustTra(map, key, adjust) {
   return map.doAdjust(key, adjust);
 }
+adjustWithTra(map, key, adjust) {
+  return map.withTransient((TransientMap map) => map.doAdjust(key, adjust));
+}
 
 prepMap(Random r, List keys) {
   return (a) => a - 1;
@@ -195,4 +221,8 @@ mapPer(PersistentMap map, f) {
 
 mapTra(TransientMap map, f) {
   return map.doMapValues(f);
+}
+
+mapWithTra(PersistentMap map, f) {
+  return map.withTransient((TransientMap map) => map.doMapValues(f));
 }
