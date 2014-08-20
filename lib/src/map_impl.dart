@@ -506,7 +506,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _ANodeBase<K, V> m = c[index];
+      _ANodeBase<K, V> m = _array[index];
       return m._intersectWith(owner, keyValues, size, combine, hash, depth + 1);
     } else {
       return new _EmptyMap(owner);

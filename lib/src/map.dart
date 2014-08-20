@@ -52,8 +52,9 @@ class PersistentMap<K, V>
    */
   PersistentMap.fromMap(Map<K, V> map) {
     _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
     map.forEach((K key, V value) {
-      _root = _root.insert(null, key, value);
+      _root = _root.insert(owner, key, value);
     });
   }
 
@@ -63,8 +64,9 @@ class PersistentMap<K, V>
    */
   PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
     _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
     pairs.forEach((pair) {
-      _root = _root.insert(null, pair.fst, pair.snd);
+      _root = _root.insert(owner, pair.fst, pair.snd);
     });
   }
 
@@ -146,7 +148,8 @@ class PersistentMap<K, V>
    *     {}.mapValues((x) => x + 1) == {}
    */
   PersistentMap mapValues(f(V value)) {
-    return new PersistentMap._new(_root.mapValues(null, f));
+    Owner owner = new Owner();
+    return new PersistentMap._new(_root.mapValues(owner, f));
   }
 
   /**
@@ -167,8 +170,10 @@ class PersistentMap<K, V>
    * if it is commutative.
    */
   PersistentMap<K, V>
-      union(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
-        new PersistentMap._new(_root.union(null, other._root, combine));
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]) {
+        Owner owner = new Owner();
+        return new PersistentMap._new(_root.union(owner, other._root, combine));
+      }
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -227,6 +232,11 @@ class PersistentMap<K, V>
     return new TransientMap.fromPersistent(this);
   }
 
+  PersistentMap doAsTransient(dynamic f(TransientMap)) {
+    TransientMap transient = this.asTransient();
+    f(transient);
+    return transient.asPersistent();
+  }
   toString() => 'PersistentMap$_root';
 }
 

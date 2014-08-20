@@ -71,11 +71,6 @@ main() {
 }
 
 checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per) {
-  //print(map.length);
-  /*print(map);
-  tran.forEach((m) => print('Tran: $m'));
-  per.forEach((m) => print('Per: $m'));*/
-
   PersistentMap toCompare = new PersistentMap.fromMap(map);
   map.forEach((k,v) {
     expect(v, equals(toCompare[k]));
