@@ -7,12 +7,353 @@ part of persistent;
 
 final _random = new Random();
 
+class PersistentMapImpl<K, V>
+        extends IterableBase<Pair<K, V>>
+        implements PersistentMap {
+  NodeBase _root;
+
+  int _hash;
+
+  int get hashCode {
+    if(_hash != null) return _hash;
+    _hash = 0;
+    this.forEachKeyValue((key, value) {
+      _hash += key.hashCode ^ value.hashCode;
+    });
+    return _hash;
+  }
+
+  bool operator==(other) {
+    if (other is! PersistentMapImpl) return false;
+    if(other.hashCode != this.hashCode || this.length != other.length)
+      return false;
+    bool equals = true;
+    this.forEachKeyValue((key, value) {
+      equals = equals && other.contains(key) && other[key] == value;
+    });
+    return equals;
+  }
+
+  PersistentMapImpl() {
+    this._root = new _EmptyMap<K, V>(null);
+  }
+
+  PersistentMapImpl.fromMap(Map<K, V> map) {
+    _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
+    map.forEach((K key, V value) {
+      _root = _root.insert(owner, key, value);
+    });
+  }
+
+  PersistentMapImpl.fromPairs(Iterable<Pair<K, V>> pairs) {
+    _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
+    pairs.forEach((pair) {
+      _root = _root.insert(owner, pair.fst, pair.snd);
+    });
+  }
+
+  PersistentMapImpl.fromTransient(TransientMapImpl map) {
+    this._root = map._root;
+  }
+
+  PersistentMapImpl._new(NodeBase this._root);
+
+  PersistentMapImpl<K, V>
+      insert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
+        return new PersistentMapImpl._new(_root.insert(null, key, value, combine));
+      }
+
+  PersistentMapImpl<K, V>
+        insertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
+      if(offset +1 == path.length)
+        return new PersistentMapImpl._new(_root.insert(null, path.last, value));
+
+      return new PersistentMapImpl._new(
+          _root.adjust(null, path[offset],
+          (e) => e.insertIn(path, value, combine, offset+1)));
+    }
+
+  PersistentMapImpl<K, V> delete(K key) {
+    return new PersistentMapImpl._new(_root.delete(null, key));
+  }
+
+  PersistentMapImpl<K, V> deleteIn(List<K> path, [offset = 0]) {
+    if(offset +1 == path.length)
+      return new PersistentMapImpl._new(_root.delete(null, path.last));
+
+    return new PersistentMapImpl._new(
+        _root.adjust(null, path[offset],
+        (e) => e.deleteIn(path, offset+1)));
+  }
+
+  Option lookup(K key) {
+    return _root.lookup(key);
+  }
+
+  Option lookupIn(List<K> path, [offset = 0]) {
+    Option e = lookup(path[offset]);
+    offset++;
+
+    if(path.length == offset) return e;
+    else return e.isDefined ? e.value.lookupIn(path, offset) : null;
+  }
+
+  V operator [](K key) {
+    return _root.lookup(key).asNullable;
+  }
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  PersistentMapImpl<K, V> adjust(K key, V update(V value)) {
+    return  new PersistentMapImpl._new(_root.adjust(null, key, update));
+  }
+
+  PersistentMapImpl adjustIn(List<K> path, V update(V value), [offset = 0]) {
+    if(path.length == offset +1) return adjust(path[offset], update);
+
+    return new PersistentMapImpl._new(
+           _root.adjust(null, path[offset],
+           (e) => e.adjustIn(path, update, offset+1)));
+  }
+
+  PersistentMapImpl mapValues(f(V value)) {
+    Owner owner = new Owner();
+    return new PersistentMapImpl._new(_root.mapValues(owner, f));
+  }
+
+  PersistentMapImpl<K, V>
+      union(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) {
+        Owner owner = new Owner();
+        return new PersistentMapImpl._new(_root.union(owner, other._root, combine));
+      }
+
+  PersistentMapImpl<K, V>
+    intersection(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) =>
+      new PersistentMapImpl._new(_root.intersection(null, other._root, combine));
+
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
+
+  Iterable<K> get keys => _root.keys;
+
+  Iterable<V> get values => _root.values;
+
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+
+  PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
+      new PersistentMapImpl.fromPairs(this.map(f));
+
+  PersistentMapImpl<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+      new PersistentMapImpl<K, V>.fromPairs(this.where(f));
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
+
+  // Optimized version of Iterable's contains
+  bool contains(key) {
+    final value = this.lookup(key);
+    return value.isDefined;
+  }
+
+  TransientMap asTransient() {
+    return new TransientMapImpl.fromPersistent(this);
+  }
+
+  PersistentMapImpl withTransient(dynamic f(TransientMap map)) {
+    TransientMap transient = this.asTransient();
+    f(transient);
+    return transient.asPersistent();
+  }
+  toString() => 'PersistentMap$_root';
+}
+
+class TransientMapImpl<K, V>
+        extends IterableBase<Pair<K, V>>
+        implements Iterable<Pair<K, V>>, TransientMap {
+  NodeBase _root;
+  Owner owner;
+
+  factory TransientMapImpl() => new TransientMapImpl.fromPersistent(new PersistentMap());
+
+  /**
+   * Creates an immutable copy of [map] using the default implementation of
+   * [TransientMap].
+   */
+  TransientMapImpl.fromPersistent(PersistentMapImpl<K, V> map) {
+    owner = new Owner();
+    _root = map._root;
+  }
+
+  TransientMap _adjustRootAndReturn(newRoot) {
+    _root = newRoot;
+    return this;
+  }
+
+  TransientMap<K, V>
+      doInsert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
+        return _adjustRootAndReturn(_root.insert(owner, key, value, combine));
+      }
+
+  TransientMap<K, V>
+     doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
+       if(offset +1 == path.length)
+         return _adjustRootAndReturn(_root.insert(null, path.last, value));
+
+       return _adjustRootAndReturn(
+           _root.adjust(null, path[offset],
+           (e) => e.insertIn(path, offset+1)));
+     }
+
+  TransientMap<K, V> doDelete(K key) {
+    return _adjustRootAndReturn(_root.delete(owner, key));
+  }
+
+  TransientMap<K, V> doDeleteIn(List<K> path, [offset = 0]) {
+    if(offset +1 == path.length)
+      return doDelete(path.last);
+
+    return _adjustRootAndReturn(
+        _root.adjust(null, path[offset],
+        (e) => e.deleteIn(path, offset+1)));
+  }
+
+  Option<V> doLookup(K key) {
+    return _root.lookup(key);
+  }
+
+  Option doLookupIn(List<K> path, [offset = 0]) {
+    Option e = doLookup(path[offset]);
+    offset++;
+
+    if(path.length == offset) return e;
+    else return e.isDefined ? e.value.lookupIn(path, offset) : null;
+  }
+
+  V operator [](K key) {
+    return _root.lookup(key).asNullable;
+  }
+
+  void doForEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  TransientMap<K, V> doAdjust(K key, V update(V value)) {
+    return _adjustRootAndReturn(_root.adjust(owner, key, update));
+  }
+
+  TransientMap doAdjustIn(List<K> path, V update(V value), [offset = 0]) {
+    if(path.length == offset +1) return doAdjust(path[offset], update);
+
+    return _adjustRootAndReturn(
+             _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1)));
+  }
+
+  TransientMap doMapValues(f(V value)) {
+    return _adjustRootAndReturn(_root.mapValues(owner, f));
+  }
+
+  TransientMap<K, V>
+      doUnion(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+          _adjustRootAndReturn(_root.union(owner, other._root, combine));
+
+  TransientMap<K, V>
+    doIntersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+        _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
+
+  /// Returns a mutable copy of `this`.
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
+
+  /// The keys of `this`.
+  Iterable<K> get keys => _root.keys;
+
+  /// The values of `this`.
+  Iterable<V> get values => _root.values;
+
+  /// Randomly picks an entry of `this`.
+  Pair<K, V> doPickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
+
+  // Optimized version of Iterable's contains
+  bool contains(key) {
+    final value = this.doLookup(key);
+    return value.isDefined;
+  }
+
+  PersistentMap asPersistent() =>
+      new PersistentMapImpl.fromTransient(this);
+
+  toString() => 'TransientMap(${owner.hashCode}, $_root)';
+}
+
 /**
  * Exception used for aborting forEach loops.
  */
 class _Stop implements Exception {}
 
 class Owner {}
+
+abstract class NodeBase<K, V>
+    extends IterableBase<Pair<K, V>> {
+
+  int _length;
+  get length => _length;
+
+  NodeBase(this._length);
+
+  Map<K, V> toMap() {
+    Map<K, V> result = new Map<K, V>();
+    this.forEachKeyValue((K k, V v) { result[k] = v; });
+    return result;
+  }
+
+  String toString() {
+    StringBuffer buffer = new StringBuffer('{');
+    bool comma = false;
+    this.forEachKeyValue((K k, V v) {
+      if (comma) buffer.write(', ');
+      buffer.write('$k: $v');
+      comma = true;
+    });
+    buffer.write('}');
+    return buffer.toString();
+  }
+
+  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
+
+  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
+
+  Pair<K, V> pickRandomEntry([Random random]) =>
+      elementAt((random != null ? random : _random).nextInt(this.length));
+
+  V operator [](K key) => this.lookup(key).asNullable;
+
+  NodeBase<K, V>
+    insert(Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
+
+  NodeBase<K, V> delete(Owner owner, K key);
+
+  Option<V> lookup(K key);
+
+  void forEachKeyValue(f(K key, V value));
+
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V value));
+
+  NodeBase mapValues(Owner owner, f(V value));
+
+  NodeBase<K, V>
+      union(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
+  NodeBase<K, V>
+      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
+}
 
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
