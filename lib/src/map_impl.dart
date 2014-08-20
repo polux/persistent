@@ -176,7 +176,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
   }
 
   factory _Leaf.ensureOwner(_Leaf old, Owner owner, hash, pairs, int size) {
-    if(owner != null && owner == old._owner) {
+    if(ownerEquals(owner, old._owner)) {
       old._pairs = pairs;
       old._hash = hash;
       old._length = size;
@@ -237,7 +237,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         return new _Leaf<K, V>.ensureOwner(this, owner, hash, newPairs, newsize);
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        List<_ANodeBase<K, V>> array = <_ANodeBase<K, V>>[this];
+        List<_ANodeBase<K, V>> array = new List.filled(1, this);
         return new _SubMap<K, V>.abc(owner, 1 << branch, array, length)
             ._insertWith(owner, keyValues, size, combine, hash, depth);
       }
@@ -430,7 +430,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   _SubMap.abc(Owner owner, this._bitmap, this._array, int size) : super(owner, size, false, false);
 
   factory _SubMap.ensureOwner(_SubMap old, Owner owner, bitmap, array, int size) {
-    if(owner != null && owner == old._owner) {
+    if(ownerEquals(owner, old._owner)) {
       old._bitmap = bitmap;
       old._array = array;
       old._length = size;
@@ -476,14 +476,9 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         if(oldSize != newM.length) this._length += m.length - oldSize;
         return this;
       }
-
-      List<_ANodeBase<K, V>> newarray;
-      if(!ownerEquals(this._owner, owner))
-          newarray = _array.sublist(0);
-      else
-        newarray = _array;
+      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newM;
-      int delta = newM.length - m.length;
+      int delta = newM.length - oldSize;
       return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap, newarray, length + delta);
     } else {
       int newlength = _array.length + 1;
@@ -550,15 +545,14 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         if (_array.length == 1) {
           return newm;
         } else {
-          List<_ANodeBase<K, V>> newarray =
-              new List<_ANodeBase<K, V>>.from(_array, growable: false);
+          List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
           newarray[index] = newm;
           return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
         }
       } else {
-        List<_ANodeBase<K, V>> newarray =
-            new List<_ANodeBase<K, V>>.from(_array, growable: false);
+        List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
         newarray[index] = newm;
+
         return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
@@ -576,13 +570,9 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       if (identical(newm, m)) {
         return this;
       }
-      List<_ANodeBase<K, V>> newarray;
-
-      if(!ownerEquals(this._owner, owner))
-          newarray = new List<_ANodeBase<K, V>>.from(_array, growable: false);
-      else
-        newarray = _array;
+      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newm;
+
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
       return this;
@@ -691,8 +681,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   }
 
   NodeBase mapValues(Owner owner, f(V)) {
-    List<_ANodeBase<K, V>> newarray =
-        new List<_ANodeBase<K, V>>.from(_array, growable: false);
+    List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
     for (int i = 0; i < _array.length; i++) {
       _ANodeBase<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(owner, f);
@@ -742,4 +731,10 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
 ownerEquals(Owner a, Owner b) {
   return a != null && a == b;
+}
+
+makeCopyIfNeeded(Owner a, Owner b, List c) {
+  if(ownerEquals(a, b))
+    return c;
+  else return c.sublist(0);
 }

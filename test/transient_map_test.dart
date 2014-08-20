@@ -3,13 +3,13 @@ import 'package:unittest/unittest.dart';
 import 'dart:math';
 import 'dart:core';
 
-final NUM_OPERATIONS = 5000;
+final NUM_OPERATIONS = 50000;
 main() {
   test('random_test', () {
     Random r = new Random(47);
 
-    int nextTransient = 1;
-    int nextPersistent = 1;
+    int next = 1;
+
     List<TransientMap> transientMaps = [];
     List<PersistentMap> persistentMaps = [new PersistentMap()];
     Map map = {};
@@ -22,22 +22,27 @@ main() {
       'map': insertMap,
       'per': insertPer,
       'tra': insertTra
-    },
-    {
+    }, {
       'times': 8,
       'prep': prepDelete,
       'call': callDelete,
       'map': deleteMap,
       'per': deletePer,
       'tra': deleteTra
-    },
-    {
+    }, {
       'times': 7,
       'prep': prepAdjust,
       'call': callAdjust,
       'map': adjustMap,
       'per': adjustPer,
       'tra': adjustTra
+    }, {
+      'times': 1,
+      'prep': prepMap,
+      'call': callMap,
+      'map': mapMap,
+      'per': mapPer,
+      'tra': mapTra
     }];
 
     List actions = [];
@@ -45,14 +50,7 @@ main() {
 
     for(int i = 0; i < NUM_OPERATIONS; i++) {
       //print(i);
-      if(nextTransient == i) {
-        nextTransient *= 2;
-        transientMaps.add(persistentMaps.last.asTransient());
-      }
-      if(nextPersistent == i) {
-        nextPersistent *= 2;
-        persistentMaps.add(persistentMaps.last);
-      }
+
       int nextRand = r.nextInt(actions.length);
       Map action = actions[nextRand];
       var prep = action['prep'](r, keys);
@@ -65,12 +63,22 @@ main() {
       persistentMaps =
           persistentMaps.map((map) => action['call'](map, action['per'], prep)).toList();
 
-      checkAll(map, transientMaps, persistentMaps);
+      if(next == i) {
+        next *= 2;
+        transientMaps.add(persistentMaps.last.asTransient());
+        persistentMaps.add(persistentMaps.last);
+        checkAll(map, transientMaps, persistentMaps);
+      }
     }
+    checkAll(map, transientMaps, persistentMaps);
   });
 }
 
 checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per) {
+  /*print(map.length);
+  print(map);
+  tran.forEach((e) => print(e));
+  per.forEach((e) => print(e));*/
   PersistentMap toCompare = new PersistentMap.fromMap(map);
   map.forEach((k,v) {
     expect(v, equals(toCompare[k]));
@@ -167,4 +175,24 @@ adjustPer(map, key, adjust) {
 
 adjustTra(map, key, adjust) {
   return map.doAdjust(key, adjust);
+}
+
+prepMap(Random r, List keys) {
+  return (a) => a - 1;
+}
+callMap(map, fun, prep) {
+  return fun(map, prep);
+}
+mapMap(Map map, f) {
+  var newMap = {};
+  map.forEach((k,v) => newMap[k] = f(v));
+  return  newMap;
+}
+
+mapPer(PersistentMap map, f) {
+  return map.mapValues(f);
+}
+
+mapTra(TransientMap map, f) {
+  return map.doMapValues(f);
 }
