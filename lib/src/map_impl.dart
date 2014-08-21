@@ -9,7 +9,7 @@ final _random = new Random();
 
 class PersistentMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements PersistentMap {
+        implements PersistentMap<K, V> {
   NodeBase _root;
 
   int _hash;
@@ -173,7 +173,7 @@ class PersistentMapImpl<K, V>
 
 class TransientMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements Iterable<Pair<K, V>>, TransientMap {
+        implements Iterable<Pair<K, V>>, TransientMap<K, V> {
   NodeBase _root;
   Owner owner;
 
