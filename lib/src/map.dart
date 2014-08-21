@@ -223,5 +223,5 @@ abstract class TransientMap<K, V>
   Pair<K, V> doPickRandomEntry([Random random]);
   Iterator get iterator;
 
-  PersistentMap asPersistent() => null;
+  PersistentMap asPersistent();
 }
