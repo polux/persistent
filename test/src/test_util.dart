@@ -6,6 +6,7 @@
 library test_util;
 
 import 'dart:math';
+import 'dart:collection';
 
 import 'package:args/args.dart' as args;
 import 'package:propcheck/propcheck.dart';

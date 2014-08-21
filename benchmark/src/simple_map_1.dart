@@ -8,7 +8,7 @@ part of map_bench;
 /**
  * Naive implementation of PersistentMap using a [LinkedList] of [Pair]s.
  */
-class SimplePersistentMap<K, V> extends PersistentMap<K, V> {
+class SimplePersistentMap<K, V> extends IterableBase implements PersistentMap<K, V> {
   final LinkedList<Pair<K, V>> _list;
 
   bool get isEmpty => _list.isNil;
