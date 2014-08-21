@@ -1,7 +1,5 @@
 library cache_example;
 
-import 'dart:async';
-
 import 'package:persistent/cache.dart';
 
 main() {

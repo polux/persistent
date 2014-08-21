@@ -6,13 +6,22 @@ import 'dart:async';
 import 'package:persistent/persistent.dart';
 
 Cache get cache => Zone.current[#cache] == null ? defaultCache : Zone.current[#cache];
-Cache defaultCache = new EmptyCache();
+Cache defaultCache = new DummyCache();
 
-class Cache implements Function {
+abstract class Cache implements Function {
+  factory Cache(int size) =>
+      size == 0 ? new DummyCache() : new _CacheImpl(size);
+
+  call(List<dynamic> args, Map<Symbol, dynamic> kvargs, {id, fn});
+  get free;
+  get size;
+}
+
+class _CacheImpl implements Cache {
   // Must be greater than 0
   final int size;
 
-  Cache(this.size);
+  _CacheImpl(this.size);
 
   Queue _cacheQueue = new Queue();
   Map _cacheMap = {};
@@ -38,8 +47,8 @@ class Cache implements Function {
   }
 }
 
-class EmptyCache implements Cache {
-  EmptyCache();
+class DummyCache implements Cache {
+  DummyCache();
 
   call(List<dynamic> args, Map<Symbol, dynamic> kvargs, {id, fn}) {
     return Function.apply(fn, args, kvargs);
