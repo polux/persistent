@@ -6,7 +6,7 @@ main() {
   Cache cache1 = new Cache(2);
   Cache cache2 = new Cache(5);
 
-  var bar = (bar, {foo}) => cache([bar], {#foo: foo}, id: 'fn', fn: f);
+  var bar = (bar, {foo}) => cache(args: [bar], kvargs: {#foo: foo}, id: 'fn', fn: f);
 
   //Calling with defaultCache
   print(bar('bar', foo: 'foo'));

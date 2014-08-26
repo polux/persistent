@@ -12,7 +12,7 @@ abstract class Cache implements Function {
   factory Cache(int size) =>
       size == 0 ? new DummyCache() : new _CacheImpl(size);
 
-  call(List<dynamic> args, Map<Symbol, dynamic> kvargs, {id, fn});
+  call({List<dynamic> args, Map<Symbol, dynamic> kvargs, id, fn});
   get free;
   get size;
 }
@@ -29,7 +29,7 @@ class _CacheImpl implements Cache {
 
   int get free => size - _cacheQueue.length;
 
-  call(List<dynamic> args, Map<Symbol, dynamic> kvargs, {id, fn}) {
+  call({List<dynamic> args: const [], Map<Symbol, dynamic> kvargs: const {}, id, fn}) {
     Function function = fn;
     PersistentSet argsImmutable = new PersistentSet.from(args);
     PersistentMap map = new PersistentMap.fromMap(kvargs);
@@ -50,7 +50,7 @@ class _CacheImpl implements Cache {
 class DummyCache implements Cache {
   DummyCache();
 
-  call(List<dynamic> args, Map<Symbol, dynamic> kvargs, {id, fn}) {
+  call({List<dynamic> args, Map<Symbol, dynamic> kvargs, id, fn}) {
     return Function.apply(fn, args, kvargs);
   }
 
