@@ -98,11 +98,12 @@ checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per, List<Persist
     expect(m == toCompare, isTrue);
   });
 
-  tran.forEach((TransientMap mt) {
+  tran.map((TransientMap mt) {
     PersistentMap m = mt.asPersistent();
     expect(m.length, equals(toCompare.length));
     expect(m.hashCode, equals(toCompare.hashCode));
     expect(m == toCompare, isTrue);
+    return m.asTransient();
   });
 
   withTran.forEach((PersistentMap m) {

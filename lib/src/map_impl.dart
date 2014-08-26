@@ -175,7 +175,11 @@ class TransientMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
         implements Iterable<Pair<K, V>>, TransientMap<K, V> {
   NodeBase _root;
-  Owner owner;
+  Owner _owner;
+  get owner => _owner != null ?
+      _owner
+    :
+      throw new Exception('Cannot modify TransientMap after calling asPersistent.');
 
   factory TransientMapImpl() => new TransientMapImpl.fromPersistent(new PersistentMap());
 
@@ -184,7 +188,7 @@ class TransientMapImpl<K, V>
    * [TransientMap].
    */
   TransientMapImpl.fromPersistent(PersistentMapImpl<K, V> map) {
-    owner = new Owner();
+    _owner = new Owner();
     _root = map._root;
   }
 
@@ -286,8 +290,10 @@ class TransientMapImpl<K, V>
     return value.isDefined;
   }
 
-  PersistentMap asPersistent() =>
-      new PersistentMapImpl.fromTransient(this);
+  PersistentMap asPersistent() {
+    _owner = null;
+    return new PersistentMapImpl.fromTransient(this);
+  }
 
   toString() => 'TransientMap(${owner.hashCode}, $_root)';
 }
