@@ -6,18 +6,26 @@
 library map_bench;
 
 import 'package:persistent/persistent.dart';
-
-import 'dart:math';
-import 'dart:collection';
+import 'package:benchmark_harness/benchmark_harness.dart';
 
 part 'src/benchmark.dart';
-part 'src/simple_map_1.dart';
-part 'src/simple_map_2.dart';
+part 'src/interface.dart';
+part 'src/interface_impl.dart';
+
+var interfaces = {
+  "LinkedList": () => new LinkedListInterface(),
+  "PersistentMap": () => new PersistentMapInterface(),
+  "TransientMap": () => new TransientMapInterface(),
+  "StandartMap": () => new StandardMapInterface(),
+  "CopyMap": () => new CopyMapInterface(),
+};
 
 void main() {
-  Benchmark.warmup();
+  
   for (int n = 0; n < 20000; n += 100) {
-    Benchmark benchmark = new Benchmark(n);
-    print("$n: ${benchmark.bench()}");
-  }
+    for (String name in interfaces.keys){
+      new OverallBenchmark(n, interfaces[name](), name).report();
+    }
+  }    
+
 }
