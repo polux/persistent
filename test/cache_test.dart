@@ -54,6 +54,57 @@ main() {
       expect(do_with_cache(oneCache, cacheFoo), equals('val'));
     });
 
+    skip_test('function throws - non testable because of weird error catching', () {
+      var foo = expectAsync2((hello, [world = 'world']) {
+        expect(hello, equals('hello'));
+        if(world != 'world') throw new Exception('$world is not world');
+        return 'hello world';
+      }, count: 2);
+
+      var cacheFoo = (hello, [world]) =>
+          cache(args: [hello, world], id: 'foo', fn: foo);
+
+      Cache cacheError = new Cache(2);
+
+      expect(do_with_cache(cacheError, () => cacheFoo('hello', 'world')),
+          equals('hello world'));
+
+      try {
+        do_with_cache(cacheError, () => cacheFoo('hello'));
+      }
+      catch(e,s) {}
+    });
+
+    test('function called with positional arguments', () {
+      var foo = expectAsync2((hello, [world = 'world']) {
+        return '$hello $world';
+      }, count: 2);
+
+      var cacheFoo = (hello, [world]) =>
+          cache(args: [hello, world], id: 'foo', fn: foo);
+
+      expect(do_with_cache(twoCache, () => cacheFoo('hello', 'world')),
+          equals('hello world'));
+
+      expect(do_with_cache(twoCache, () => cacheFoo('hello')),
+          equals('hello null'));
+    });
+
+    test('function called with named arguments', () {
+      var foo = ({hello, world}) {
+        return '$hello $world';
+      };
+
+      var cacheFoo = ({hello, world}) =>
+          cache(kvargs: {#hello: hello, #world: world}, id: 'foo', fn: foo);
+
+      expect(do_with_cache(twoCache, () => cacheFoo(hello: 'hello', world: 'world')),
+          equals('hello world'));
+
+      expect(do_with_cache(twoCache, () => cacheFoo(hello: 'hello')),
+          equals('hello null'));
+    });
+
     test('calling cache during cache call is called with same cache.', () {
       var foo = expectAsync0(() => 'val', count: 1);
       var cacheFoo = () => cache(id: 'foo', fn: foo);

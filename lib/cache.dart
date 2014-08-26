@@ -59,7 +59,6 @@ class DummyCache implements Cache {
 }
 
 do_with_cache(Cache cache, Function f) {
-  var a = new ZoneSpecification();
   return runZoned(() {
     return f();
   }, zoneValues: {#cache: cache});

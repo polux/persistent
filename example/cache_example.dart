@@ -1,6 +1,7 @@
 library cache_example;
 
 import 'package:persistent/cache.dart';
+import 'dart:async';
 
 main() {
   Cache cache1 = new Cache(2);
@@ -28,6 +29,16 @@ main() {
 
   //Calling with cache cache1, old was already removed
   print(do_with_cache(cache1, () => bar('bar', foo: 'foo')));
+
+  try {
+    var a = do_with_cache(cache1, () => cache(id: '', fn: () => throw new Exception()));
+  }
+  catch(e,s) {
+    print('Catched error');
+  }
+
+  Future a = do_with_cache(cache1, () => cache(id: '', fn: () => new Future.microtask(() => throw 5)));
+  a.catchError((e) => print('Catched Future error'));
 }
 
 int counter = 0;
