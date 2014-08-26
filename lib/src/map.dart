@@ -38,6 +38,22 @@ abstract class PersistentMap<K, V>
       new PersistentMapImpl.fromPairs(pairs);
 
   /**
+   * The equality operator.
+   * 
+   * Two persistent maps are equal if and only if their sets of keys are equal,
+   * and the equal keys are bound to the equal values.
+   * 
+   * Two sets of keys are equal if and only if for each key exists
+   * an equal key in the other set.
+   */
+  bool operator== (PersistentMap other);
+  
+  /*
+   * The documentation is inherited from the Object
+   */
+  int get hashCode;
+  
+  /**
    * Returns a new map identical to `this` except that it binds [key] to
    * [value].
    *
@@ -220,9 +236,6 @@ abstract class PersistentMap<K, V>
  * a persistent structure to apply some changes and obtain a new persistent
  * structure. The less changes are done, the more efficient the conversion
  * is.
- *
- * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
- * `new PersistentMap.fromMap({k1: v1, k2: v2, ...}).asTransient()`.
  */
 abstract class TransientMap<K, V>
         implements Iterable<Pair<K, V>> {
