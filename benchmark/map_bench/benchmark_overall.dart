@@ -23,7 +23,7 @@ class OverallBenchmark extends BenchmarkBase{
     
     for (int i = 0; i < size; i++) {
       object.insert("key$i", "foo", (String x, String y) => x + y);
-      object.insert("key$i", "bar", (String x, String y) => x + y);
+      //object.insert("key$i", "bar", (String x, String y) => x + y);
     }
 
     for (int i = size * 2; i >= 0; i--) {
