@@ -66,6 +66,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
   int _level;
   // cached hashCode.
   int _hashCode = null;
+  bool __altered = false;
 
   factory PersistentVector.from(Iterable<E> values) {
     if (values.length == 0) {
@@ -92,7 +93,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     this._size = 0;
   }
 
-  factory PersistentVector._make(int origin, int size, int level, VNode root, VNode tail, Owner ownerID) {
+  factory PersistentVector._make(int origin, int size, int level, VNode root, VNode tail, [Owner ownerID = null, int hashCode = null]) {
     var x = new PersistentVector._prototype();
     x._origin = origin;
     x._size = size;
@@ -118,8 +119,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     if (index >= this.length) {
       if (value == getNotSet())
         return this;
-      // TODO: withMutations when ready
-      return this._resize(index+1).set(index, value);
+      return this.withMutations((vect) => vect._resize(index+1).set(index,value));
     }
 
     var vector = this;
@@ -140,12 +140,12 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
       vector.__altered = true;
       return vector;
     }
-    return new PersistentVector._make(vector._origin, vector._size, vector._level, newRoot, newTail, null);
+    return new PersistentVector._make(vector._origin, vector._size, vector._level, newRoot, newTail);
   }
 
   PersistentVector<E> push(E value) {
-    // TODO: withMutations
-    return this._resize(this.length+1).set(this.length, value);
+    var len = this.length;
+    return this.withMutations((vect) => vect._resize(len+1).set(len, value));
   }
 
   PersistentVector<E> pushAll(List<E> values) {
@@ -228,18 +228,20 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
       newTail = newTail._removeAfter(owner, 0, newSize);
     }
 
-    if (__ownerID) {
+    if (__ownerID != null) {
       _size = newSize;
       _origin = 0;
       _level = newLevel;
       _root = newRoot;
       _tail = newTail;
+      __altered = true;
       return this;
     }
     return new PersistentVector._make(0, newSize, newLevel, newRoot, newTail, null);
 
   }
 
+  // TODO: debug funkcia, umazat
   void printInfo() {
     print("Size: $_size");
     print("Origin: $_origin");
@@ -268,6 +270,51 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
       if (this.get(i) != otherVector.get(i)) return false;
     }
     return true;
+  }
+
+  PersistentVector clear() {
+    if (this.length == 0) {
+      return this;
+    }
+    if (this.__ownerID != null) {
+      this._size = 0;
+      this._origin = 0;
+      this._level = _SHIFT;
+      this._root = this._tail = null;
+      this._hashCode = null;
+      this.__altered = true;
+      return this;
+    }
+    return new PersistentVector.empty();
+  }
+
+  PersistentVector _ensureOwner(Owner ownerID) {
+    if (ownerID == this.__ownerID) {
+      return this;
+    }
+    if (ownerID == null) {
+      this.__ownerID = ownerID;
+      return this;
+    }
+    return new PersistentVector._make(this._origin, this._size, this._level, this._root, this._tail, ownerID, this._hashCode);
+  }
+
+  PersistentVector asMutable() {
+    return this.__ownerID != null ? this : this._ensureOwner(new Owner());
+  }
+
+  PersistentVector asImmutable() {
+    return this._ensureOwner(null);
+  }
+
+  bool wasAltered() {
+    return this.__altered;
+  }
+
+  PersistentVector withMutations(fn) {
+    var mutable = this.asMutable();
+    fn(mutable);
+    return mutable.wasAltered() ? mutable._ensureOwner(this.__ownerID) : this;
   }
 
 }
