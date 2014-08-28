@@ -18,24 +18,36 @@ class Bool {
 
 class Owner {}
 
-abstract class PersistentVectorInterface<E> {
-  E get(int index, [E notSetValue = null]);
-  PersistentVectorInterface<E> set(int index, E value);
+abstract class FirstLastInterface<E> {
   E get first;
   E get last;
+}
 
-  PersistentVectorInterface<E> delete(int index);
-  String toString();
+abstract class PersistentVectorInterface<E> extends FirstLastInterface<E> {
+  E get(int index, [E notSetValue = null]);
+  PersistentVectorInterface<E> set(int index, E value);
+
   PersistentVectorInterface<E> push(E value);
   PersistentVectorInterface<E> pop();
   PersistentVectorInterface<E> from(Iterable<E> values);
+  TransientVectorInterface<E> asImmutable();
 }
 
-abstract class PersistentVectorBase<E> extends IterableBase<E> implements PersistentVectorInterface<E> {
+abstract class TransientVectorInterface<E> extends FirstLastInterface<E> {
+  E doGet(int index, [E notSetValue = null]);
+  TransientVectorInterface<E> doSet(int index, E value);
+  TransientVectorInterface<E> doPush(E value);
+  TransientVectorInterface<E> doPop();
+  PersistentVectorInterface<E> asMutable();
+}
+
+abstract class PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
-  E get first => get(0);
-  E get last => get(this.length ? this.length - 1 : 0);
+  E _get(int index, [E notSetValue = null]);
+
+  E get first => _get(0);
+  E get last => _get(this.length ? this.length - 1 : 0);
   int get length => _size;
   Iterator<E> get iterator => new PersistentVectorIterator<E>(this);
 }
@@ -55,10 +67,10 @@ class PersistentVectorIterator<E> extends Iterator<E> {
     return true;
   }
 
-  E get current => _parentVector.get(_position);
+  E get current => _parentVector._get(_position);
 }
 
-class PersistentVector<E> extends PersistentVectorBase<E> {
+abstract class PersistentVectorImpl<E> extends PersistentVectorBase<E> {
   int _origin;
   Owner __ownerID;
   VNode _root;
@@ -68,23 +80,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
   int _hashCode = null;
   bool __altered = false;
 
-  factory PersistentVector.from(Iterable<E> values) {
-    if (values.length == 0) {
-      return new PersistentVector.empty();
-    }
-    PersistentVector<E> result = new PersistentVector.empty();
-    values.forEach((E value) {
-      result = result.push(value);
-    });
-    return result;
-  }
-
-  factory PersistentVector.empty() {
-    var x = new PersistentVector._prototype();
-    return x;
-  }
-
-  PersistentVector._prototype() {
+  PersistentVectorImpl._prototype() {
     this._origin = 0;
     this.__ownerID = null;
     this._root = new VNode([], __ownerID);
@@ -93,18 +89,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     this._size = 0;
   }
 
-  factory PersistentVector._make(int origin, int size, int level, VNode root, VNode tail, [Owner ownerID = null, int hashCode = null]) {
-    var x = new PersistentVector._prototype();
-    x._origin = origin;
-    x._size = size;
-    x._level = level;
-    x._root = root;
-    x._tail = tail;
-    x.__ownerID = ownerID;
-    return x;
-  }
-
-  E get(int index, [E notSetValue = null]) {
+  E _get(int index, [E notSetValue = null]) {
     index = _checkIndex(index);
     if (index >= this._size) {
       return notSetValue;
@@ -115,11 +100,11 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
       node._array[maskedIndex] : notSetValue;
   }
 
-  PersistentVector<E> set(int index, E value) {
+  PersistentVectorImpl<E> _set(int index, E value) {
     if (index >= this.length) {
       if (value == getNotSet())
         return this;
-      return this.withMutations((vect) => vect._resize(index+1).set(index,value));
+      return this._withMutations((vect) => vect._resize(index+1)._set(index,value));
     }
 
     var vector = this;
@@ -143,12 +128,12 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     return new PersistentVector._make(vector._origin, vector._size, vector._level, newRoot, newTail);
   }
 
-  PersistentVector<E> push(E value) {
+  PersistentVectorImpl<E> _push(E value) {
     var len = this.length;
-    return this.withMutations((vect) => vect._resize(len+1).set(len, value));
+    return this._withMutations((vect) => vect._resize(len+1)._set(len, value));
   }
 
-  PersistentVector<E> pushAll(List<E> values) {
+  PersistentVectorImpl<E> _pushAll(List<E> values) {
     var t = this._resize(this.length + values.length);
     for (int i = 0; i < values.length; i++) {
       t = t.set(this.length+i, values[i]);
@@ -156,7 +141,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     return t;
   }
 
-  PersistentVector<E> pop() {
+  PersistentVectorImpl<E> _pop() {
     return this._resize(this.length-1);
   }
 
@@ -186,7 +171,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     }
   }
 
-  PersistentVector<E> _resize(int end) {
+  PersistentVectorImpl<E> _resize(int end) {
     var owner;
     if (__ownerID == null) {
       owner = __ownerID;
@@ -237,7 +222,7 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
       __altered = true;
       return this;
     }
-    return new PersistentVector._make(0, newSize, newLevel, newRoot, newTail, null);
+    return new PersistentVector._make(0, newSize, newLevel, newRoot, newTail);
 
   }
 
@@ -250,69 +235,39 @@ class PersistentVector<E> extends PersistentVectorBase<E> {
     print("Tail: $_tail");
   }
 
-  int get hashCode {
-    if (this._hashCode == null) {
-      int result = 17;
-      for (E value in this) {
-        result = 37 * result + value.hashCode % 1000000009;
-      }
-      this._hashCode = result;
-    }
-    return this._hashCode;
-  }
-
   bool operator==(other) {
     if (other is! PersistentVector) return false;
     PersistentVector otherVector = other;
     if (this.hashCode != otherVector.hashCode) return false;
     if (this.length != otherVector.length) return false;
     for (int i = 0; i < this.length; i++) {
-      if (this.get(i) != otherVector.get(i)) return false;
+      if (this._get(i) != otherVector.get(i)) return false;
     }
     return true;
   }
 
-  PersistentVector clear() {
-    if (this.length == 0) {
-      return this;
-    }
-    if (this.__ownerID != null) {
-      this._size = 0;
-      this._origin = 0;
-      this._level = _SHIFT;
-      this._root = this._tail = null;
-      this._hashCode = null;
-      this.__altered = true;
-      return this;
-    }
-    return new PersistentVector.empty();
-  }
-
-  PersistentVector _ensureOwner(Owner ownerID) {
+  PersistentVectorImpl _ensureOwner(Owner ownerID) {
     if (ownerID == this.__ownerID) {
       return this;
     }
     if (ownerID == null) {
       this.__ownerID = ownerID;
+      return new PersistentVector._make(this._origin, this._size, this._level, this._root, this._tail);
       return this;
     }
-    return new PersistentVector._make(this._origin, this._size, this._level, this._root, this._tail, ownerID, this._hashCode);
+    return new TransientVector._make(this._origin, this._size, this._level, this._root, this._tail, ownerID);
   }
 
-  PersistentVector asMutable() {
+  TransientVector _asMutable() {
     return this.__ownerID != null ? this : this._ensureOwner(new Owner());
   }
 
-  PersistentVector asImmutable() {
+  PersistentVector _asImmutable() {
     return this._ensureOwner(null);
   }
 
-  bool wasAltered() {
-    return this.__altered;
-  }
-
-  PersistentVector withMutations(fn) {
-    var mutable = this.asMutable();
+  PersistentVector _withMutations(fn) {
+    var mutable = this._asMutable();
     fn(mutable);
     return mutable.wasAltered() ? mutable._ensureOwner(this.__ownerID) : this;
   }
@@ -436,4 +391,94 @@ VNode _mutableVNode(VNode node, Owner ownerID) {
     return node;
   }
   return new VNode(node != null ? node._array.sublist(0) : [], ownerID);
+}
+
+class PersistentVector<E> extends PersistentVectorImpl<E> implements PersistentVectorInterface<E> {
+  factory PersistentVector.from(Iterable<E> values) {
+    if (values.length == 0) {
+      return new PersistentVector.empty();
+    }
+    PersistentVector<E> result = new PersistentVector.empty();
+    result = result.withMutations((vector) {
+      values.forEach((E value) {
+        vector = vector.doPush(value);
+      });
+      return vector;
+    });
+    return result;
+  }
+
+  factory PersistentVector.empty() => new PersistentVector._prototype();
+  PersistentVector._prototype() : super._prototype();
+
+  factory PersistentVector._make(int origin, int size, int level, VNode root, VNode tail) {
+    var x = new PersistentVector._prototype();
+    x._origin = origin;
+    x._size = size;
+    x._level = level;
+    x._root = root;
+    x._tail = tail;
+    x.__ownerID = null;
+    return x;
+  }
+
+  int get hashCode {
+    if (this._hashCode == null) {
+      int result = 17;
+      for (E value in this) {
+        result = 37 * result + value.hashCode % 1000000009;
+      }
+      this._hashCode = result;
+    }
+    return this._hashCode;
+  }
+
+  PersistentVector _clear() {
+    if (this.length == 0) {
+      return this;
+    }
+    return new PersistentVector.empty();
+  }
+
+  TransientVector asMutable() => _asMutable();
+  PersistentVector withMutations(fn) => _withMutations(fn);
+  PersistentVector push(E value) => _push(value);
+  PersistentVector pop() => _pop();
+  PersistentVector set(int index, E value) => _set(index, value);
+  PersistentVector get(int index) => _get(index);
+}
+
+class TransientVector<E> extends PersistentVectorImpl<E> implements TransientVectorInterface<E> {
+  TransientVector._prototype() : super._prototype();
+
+  factory TransientVector._make(int origin, int size, int level, VNode root, VNode tail, Owner ownerID) {
+    var x = new TransientVector._prototype();
+    x._origin = origin;
+    x._size = size;
+    x._level = level;
+    x._root = root;
+    x._tail = tail;
+    x.__ownerID = ownerID;
+    return x;
+  }
+
+  bool wasAltered() {
+    return this.__altered;
+  }
+
+  TransientVector _clear() {
+    this._size = 0;
+    this._origin = 0;
+    this._level = _SHIFT;
+    this._root = this._tail = null;
+    this._hashCode = null;
+    this.__altered = true;
+    return this;
+  }
+
+  PersistentVector asImmutable() => _asImmutable();
+  TransientVector doPush(E value) => _push(value);
+  TransientVector doPop() => _pop();
+  TransientVector doGet(int index) => _get(index);
+  TransientVector doSet(int index, E value) => _set(index, value);
 }
