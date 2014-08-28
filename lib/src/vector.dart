@@ -29,8 +29,7 @@ abstract class PersistentVectorInterface<E> extends FirstLastInterface<E> {
 
   PersistentVectorInterface<E> push(E value);
   PersistentVectorInterface<E> pop();
-  PersistentVectorInterface<E> from(Iterable<E> values);
-  TransientVectorInterface<E> asImmutable();
+  TransientVectorInterface<E> asMutable();
 }
 
 abstract class TransientVectorInterface<E> extends FirstLastInterface<E> {
@@ -38,7 +37,7 @@ abstract class TransientVectorInterface<E> extends FirstLastInterface<E> {
   TransientVectorInterface<E> doSet(int index, E value);
   TransientVectorInterface<E> doPush(E value);
   TransientVectorInterface<E> doPop();
-  PersistentVectorInterface<E> asMutable();
+  PersistentVectorInterface<E> asImmutable();
 }
 
 abstract class PersistentVectorBase<E> extends IterableBase<E> {
@@ -47,7 +46,7 @@ abstract class PersistentVectorBase<E> extends IterableBase<E> {
   E _get(int index, [E notSetValue = null]);
 
   E get first => _get(0);
-  E get last => _get(this.length ? this.length - 1 : 0);
+  E get last => _get(this.length > 0 ? this.length - 1 : 0);
   int get length => _size;
   Iterator<E> get iterator => new PersistentVectorIterator<E>(this);
 }
@@ -169,6 +168,7 @@ abstract class PersistentVectorImpl<E> extends PersistentVectorBase<E> {
       }
       return node;
     }
+    return null;
   }
 
   PersistentVectorImpl<E> _resize(int end) {
@@ -253,7 +253,6 @@ abstract class PersistentVectorImpl<E> extends PersistentVectorBase<E> {
     if (ownerID == null) {
       this.__ownerID = ownerID;
       return new PersistentVector._make(this._origin, this._size, this._level, this._root, this._tail);
-      return this;
     }
     return new TransientVector._make(this._origin, this._size, this._level, this._root, this._tail, ownerID);
   }
@@ -276,7 +275,7 @@ abstract class PersistentVectorImpl<E> extends PersistentVectorBase<E> {
 
 class VNode {
   List _array;
-  int _ownerID;
+  Owner _ownerID;
 
   int get length => _array.length;
 
@@ -298,7 +297,7 @@ class VNode {
   }
 
   VNode _removeAfter(Owner ownerID, int level, int index) {
-    if (index == level ? 1 << level : 0 || this.length == 0) {
+    if ((index == (level > 0 ? 1 << level : 0 ))|| this.length == 0) {
       return this;
     }
     var sizeIndex = ((index - 1) >> level) & _MASK;
@@ -311,7 +310,7 @@ class VNode {
       var oldChild = this._array[sizeIndex];
       if (oldChild == null) newChild = null;
       else {
-        newChild = oldChild.removeAfter(ownerID, level - SHIFT, index);
+        newChild = oldChild.removeAfter(ownerID, level - _SHIFT, index);
       }
       if (newChild == oldChild && removingLast) {
         return this;
@@ -445,7 +444,7 @@ class PersistentVector<E> extends PersistentVectorImpl<E> implements PersistentV
   PersistentVector push(E value) => _push(value);
   PersistentVector pop() => _pop();
   PersistentVector set(int index, E value) => _set(index, value);
-  PersistentVector get(int index) => _get(index);
+  E get(int index, [E notSetValue]) => _get(index);
 }
 
 class TransientVector<E> extends PersistentVectorImpl<E> implements TransientVectorInterface<E> {
@@ -479,6 +478,6 @@ class TransientVector<E> extends PersistentVectorImpl<E> implements TransientVec
   PersistentVector asImmutable() => _asImmutable();
   TransientVector doPush(E value) => _push(value);
   TransientVector doPop() => _pop();
-  TransientVector doGet(int index) => _get(index);
+  E doGet(int index, [E notSetValue]) => _get(index);
   TransientVector doSet(int index, E value) => _set(index, value);
 }
