@@ -12,8 +12,8 @@ main() {
   test('random_test', () {
     Random r = new Random(47);
     int next = 1;
-    PersistentVector mut = new PersistentVector.empty();
-    PersistentVector vector = new PersistentVector.empty();
+    PersistentVector mut = new PersistentVector();
+    PersistentVector vector = new PersistentVector();
     ModelVector model = new ModelVector.empty();
     List actions = [];
 
@@ -81,9 +81,9 @@ prepDelete(Random r, PersistentVector vector) {
   return vector.length != 0;
 }
 
-callInsert(PersistentVectorInterface vector, prep) => vector.push(prep);
-callSet(PersistentVectorInterface vector, prep) => vector.set(prep['key'], prep['value']);
-callDelete(PersistentVectorInterface vector, prep) => prep ? vector.pop() : vector;
+callInsert(PersistentVector vector, prep) => vector.push(prep);
+callSet(PersistentVector vector, prep) => vector.set(prep['key'], prep['value']);
+callDelete(PersistentVector vector, prep) => prep ? vector.pop() : vector;
 
 mutInsert(PersistentVector vector, prep) => vector.withMutations((vect) => vect.doPush(prep));
 mutSet(PersistentVector vector, prep) => vector.withMutations((vect) => vect.doSet(prep['key'], prep['value']));

@@ -1,6 +1,6 @@
 part of test_util;
 
-class ModelVector<E> extends IterableBase implements PersistentVectorInterface<V> {
+class ModelVector<E> extends IterableBase implements PersistentVector<E> {
   final List<E> _vector;
   int get length => _vector.length;
 
