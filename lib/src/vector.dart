@@ -19,7 +19,7 @@ class Bool {
 class Owner {}
 
 abstract class PersistentVector<E> implements Iterable<E> {
-  Option<E> get(int index);
+  E get(int index, {Function orElse: null});
   E operator[](int index);
   PersistentVector<E> set(int index, E value);
 
@@ -39,7 +39,7 @@ abstract class PersistentVector<E> implements Iterable<E> {
 }
 
 abstract class TransientVector<E> implements Iterable<E> {
-  Option<E> get(int index);
+  E get(int index, {Function orElse: null});
   E operator[](int index);
   void operator []=(int index, E value);
   void doSet(int index, E value);
@@ -54,7 +54,7 @@ abstract class TransientVector<E> implements Iterable<E> {
 abstract class PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
-  E _get(int index);
+  E _get(int index, {Function orElse: null});
   Option<E> _getOption(int index);
 
   E get first => _get(0);
@@ -100,21 +100,27 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     this._size = 0;
   }
 
-  E _get(int index) {
+  E _get(int index, {Function orElse: null}) {
     try {
       index = _checkIndex(index);
     } catch(e) {
-      return null;
+      if (orElse == null) {
+        throw(e);
+      } else {
+        return orElse();
+      }
     }
 
     var node = _vectorNodeFor(index);
     var maskedIndex = index & _MASK;
-    return (node != null && node.length > maskedIndex) ? node._get(maskedIndex) : null;
+    // if resize ever gets publicly exposed, we need to check if node != null
+    return node._get(maskedIndex);
   }
 
   Option<E> _getOption(int index) => new Option.fromNullable(_get(index));
 
   BaseVectorImpl<E> _set(int index, E value) {
+    index = _checkIndex(index);
     if (index >= this.length) {
       if (value == getNotSet())
         return this;
@@ -461,7 +467,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
   PersistentVectorImpl push(E value) => _push(value);
   PersistentVectorImpl pop() => _pop();
   PersistentVectorImpl set(int index, E value) => _set(index, value);
-  Option<E> get(int index) => _getOption(index);
+  E get(int index, {Function orElse: null}) => _get(index, orElse: orElse);
   E operator[](int index) => _get(index);
 }
 
@@ -500,7 +506,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
   void doPop() {
     _pop();
   }
-  Option<E> get(int index) => _getOption(index);
+  E get(int index, {Function orElse: null}) => _get(index, orElse: orElse);
   E operator[](int index) => _get(index);
   void doSet(int index, E value) {
     _set(index, value);
