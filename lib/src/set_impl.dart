@@ -69,7 +69,6 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
     return result;
   }
 
-  bool operator ==(_PersistentSetImpl<E> other) => _map == other._map;
 
   Iterator<E> get iterator =>
       _map.map((Pair<E, Object> pair) => pair.fst).iterator;
@@ -81,4 +80,11 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   // PersistentMap's "elementAt" is optimized
   E elementAt(int index) => _map.elementAt(index).fst;
+
+  int get hashCode => _map.hashCode;
+
+  bool operator==(other) {
+      if (other is! _PersistentSetImpl) return false;
+      return this._map == other._map;
+    }
 }
