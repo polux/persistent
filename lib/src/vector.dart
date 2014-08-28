@@ -19,7 +19,8 @@ class Bool {
 class Owner {}
 
 abstract class PersistentVector<E> implements Iterable<E> {
-  E get(int index, [E notSetValue = null]);
+  Option<E> get(int index);
+  E operator[](int index);
   PersistentVector<E> set(int index, E value);
 
   PersistentVector<E> push(E value);
@@ -32,13 +33,18 @@ abstract class PersistentVector<E> implements Iterable<E> {
   factory PersistentVector() => new PersistentVectorImpl.empty();
   factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
   PersistentVector<E> withMutations(TransientVector<E> fn(TransientVector<E> vect));
+
+  bool operator==(other);
+  int get hashCode;
 }
 
 abstract class TransientVector<E> implements Iterable<E> {
-  E get(int index, [E notSetValue = null]);
-  TransientVector<E> doSet(int index, E value);
-  TransientVector<E> doPush(E value);
-  TransientVector<E> doPop();
+  Option<E> get(int index);
+  E operator[](int index);
+  void operator []=(int index, E value);
+  void doSet(int index, E value);
+  void doPush(E value);
+  void doPop();
   PersistentVector<E> asImmutable();
 
   E get first;
@@ -48,7 +54,8 @@ abstract class TransientVector<E> implements Iterable<E> {
 abstract class PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
-  E _get(int index, [E notSetValue = null]);
+  E _get(int index);
+  Option<E> _getOption(int index);
 
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
@@ -93,16 +100,19 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     this._size = 0;
   }
 
-  E _get(int index, [E notSetValue = null]) {
-    index = _checkIndex(index);
-    if (index >= this._size) {
-      return notSetValue;
+  E _get(int index) {
+    try {
+      index = _checkIndex(index);
+    } catch(e) {
+      return null;
     }
+
     var node = _vectorNodeFor(index);
     var maskedIndex = index & _MASK;
-    return (node != null && (notSetValue == null || node._array.length > maskedIndex)) ?
-      node._array[maskedIndex] : notSetValue;
+    return (node != null && node.length > maskedIndex) ? node._get(maskedIndex) : null;
   }
+
+  Option<E> _getOption(int index) => new Option.fromNullable(_get(index));
 
   BaseVectorImpl<E> _set(int index, E value) {
     if (index >= this.length) {
@@ -168,7 +178,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       var node = this._root;
       var level = this._level;
       while (node != null && level > 0) {
-        node = node._array[(index >> level) & _MASK];
+        node = node._get((index >> level) & _MASK);
         level -= _SHIFT;
       }
       return node;
@@ -194,7 +204,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     var oldTailOffset = _getTailOffset(oldSize);
     var newTailOffset = _getTailOffset(newSize);
     while (newTailOffset >= 1 << (newLevel + _SHIFT)) {
-      newRoot = new VNode(newRoot != null && newRoot._array.length > 0 ? [newRoot] : [], owner);
+      newRoot = new VNode(newRoot != null && newRoot.length > 0 ? [newRoot] : [], owner);
       newLevel += _SHIFT;
     }
 
@@ -208,8 +218,8 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       var node = newRoot;
       for (var level = newLevel; level > _SHIFT; level -= _SHIFT) {
         var idx = (oldTailOffset >> level) & _MASK;
-        node._array[idx] = node._array[idx] == null ? node._array[idx]._ensureOwner(owner) : new VNode([], owner);
-        node = node._array[idx];
+        node._set(idx , node._get(idx) == null ? node._get(idx)._ensureOwner(owner) : new VNode([], owner));
+        node = node._get(idx);
       }
       node._set((oldTailOffset >> _SHIFT) & _MASK, oldTail);
     }
@@ -238,17 +248,6 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     print("Level: $_level");
     print("Root: $_root");
     print("Tail: $_tail");
-  }
-
-  bool operator==(other) {
-    if (other is! PersistentVectorImpl) return false;
-    PersistentVectorImpl otherVector = other;
-    if (this.hashCode != otherVector.hashCode) return false;
-    if (this.length != otherVector.length) return false;
-    for (int i = 0; i < this.length; i++) {
-      if (this._get(i) != otherVector.get(i)) return false;
-    }
-    return true;
   }
 
   BaseVectorImpl _ensureOwner(Owner ownerID) {
@@ -300,6 +299,8 @@ class VNode {
       _array.add(value);
     }
   }
+
+  _get(int index) => (index >= 0 && index < this.length) ? this._array[index] : null;
 
   VNode _removeAfter(Owner ownerID, int level, int index) {
     if ((index == (level > 0 ? 1 << level : 0 ))|| this.length == 0) {
@@ -405,7 +406,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     PersistentVectorImpl<E> result = new PersistentVectorImpl.empty();
     result = result.withMutations((vector) {
       values.forEach((E value) {
-        vector = vector.doPush(value);
+        vector.doPush(value);
       });
       return vector;
     });
@@ -437,6 +438,17 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     return this._hashCode;
   }
 
+  bool operator==(other) {
+    if (other is! PersistentVectorImpl) return false;
+    PersistentVectorImpl otherVector = other;
+    if (this.hashCode != otherVector.hashCode) return false;
+    if (this.length != otherVector.length) return false;
+    for (int i = 0; i < this.length; i++) {
+      if (this._get(i) != otherVector.get(i)) return false;
+    }
+    return true;
+  }
+
   PersistentVectorImpl _clear() {
     if (this.length == 0) {
       return this;
@@ -449,7 +461,8 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
   PersistentVectorImpl push(E value) => _push(value);
   PersistentVectorImpl pop() => _pop();
   PersistentVectorImpl set(int index, E value) => _set(index, value);
-  E get(int index, [E notSetValue]) => _get(index);
+  Option<E> get(int index) => _getOption(index);
+  E operator[](int index) => _get(index);
 }
 
 class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVector<E> {
@@ -481,8 +494,18 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
   }
 
   PersistentVectorImpl asImmutable() => _asImmutable();
-  TransientVectorImpl doPush(E value) => _push(value);
-  TransientVectorImpl doPop() => _pop();
-  E get(int index, [E notSetValue]) => _get(index);
-  TransientVectorImpl doSet(int index, E value) => _set(index, value);
+  void doPush(E value) {
+    _push(value);
+  }
+  void doPop() {
+    _pop();
+  }
+  Option<E> get(int index) => _getOption(index);
+  E operator[](int index) => _get(index);
+  void doSet(int index, E value) {
+    _set(index, value);
+  }
+  void operator []=(int index, E value) {
+    _set(index, value);
+  }
 }
