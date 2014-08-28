@@ -1,4 +1,6 @@
-all: map_memory.js
+all: run clean view
+
+compile: map_memory.js
 
 map_memory.js: map_memory.dart
 	dart2js -o map_memory.js map_memory.dart
@@ -9,9 +11,9 @@ map_memory.js: map_memory.dart
 clean:
 	rm -f map_memory.js map_memory.js.* map_memory.precompiled.js
 
-run:
+run: map_memory.js
 	python2 map_memory.py > results.csv.part
 	mv results.csv.part results.csv
 
 view:
-	column -t -s, < results.csv | less
+	awk -f postproces.awk results.csv | column -s, -t | less
