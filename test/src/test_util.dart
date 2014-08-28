@@ -14,9 +14,11 @@ import 'package:enumerators/combinators.dart' as c;
 import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
+import 'dart:collection';
 
 part 'map_model.dart';
 part 'set_model.dart';
+part 'vector_model.dart';
 
 /**
  * A datatype with an imperfect hash function to use as a key for testing maps.
@@ -160,6 +162,14 @@ bool setEquals(Set s1, Set s2) {
     });
   } on _Stop catch(e) {
     return false;
+  }
+  return true;
+}
+
+bool vectorEquals(List l1, List l2) {
+  if (l1.length != l2.length) return false;
+  for (int i = 0; i < l1.length; i++) {
+    if (l1[i] != l2[i]) return false;
   }
   return true;
 }
