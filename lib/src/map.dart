@@ -189,46 +189,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   PersistentMap<K, V> deleteIn(List path, {bool safe: false});
 
   /**
-   * Looks up the value possibly bound to [key] in `this`. Returns
-   * [new Option.some(value)] if it exists, [new Option.none()] otherwise.
-   *
-   *     {'a': 1}.lookup('b') == Option.none()
-   *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
-   */
-
-  V lookup(K key, [dynamic orElse()]);
-
-  /**
-   * Calls [lookup] recursively using [path] elemenets as keys.
-   */
-  lookupIn(List path, [dynamic orElse()]);
-
-  /**
-   * Returns the value for the given [key] or throws if [key]
-   * is not in the map.
-   */
-  V operator [](K key);
-
-  /**
-   * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
-   */
-  void forEachKeyValue(f(K key, V value));
-
-  /**
-   * Returns a new map identical to `this` except that the value it possibly
-   * binds to [key] has been adjusted by [update].
-   *
-   *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
-   *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
-   */
-  PersistentMap<K, V> adjust(K key, V update(V value));
-
-  /**
-   * Calls [adjust] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> adjustIn(List path, V update(V value));
-
-  /**
    * Returns a transient copy of `this`.
    *
    * This is ussualy called to do some changes and
