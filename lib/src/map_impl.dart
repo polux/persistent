@@ -11,7 +11,7 @@ final keyNotDefined = () => throw new Exception('Key is not defined');
 
 class PersistentMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements PersistentMap<K, V> {
+        implements PersistentMap<K, V>, Persistent {
   NodeBase _root;
 
   int _hash;
@@ -183,7 +183,7 @@ class PersistentMapImpl<K, V>
 
 class TransientMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements Iterable<Pair<K, V>>, TransientMap<K, V> {
+        implements TransientMap<K, V> {
   NodeBase _root;
   Owner _owner;
   get owner => _owner != null ?
@@ -235,16 +235,16 @@ class TransientMapImpl<K, V>
         (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
   }
 
-  V doLookup(K key, [dynamic orElse()]) {
+  V lookup(K key, [dynamic orElse()]) {
     var val = _root.lookup(key);
     if(isNone(val)) return (orElse == null ? null : orElse());
     return val;
   }
 
-  doLookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
+  lookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
     if(orElse == null) orElse = keyNotDefined;
 
-    dynamic e = doLookup(path[offset], orElse);
+    dynamic e = lookup(path[offset], orElse);
     offset++;
 
     if(path.length == offset) return e;
@@ -255,9 +255,10 @@ class TransientMapImpl<K, V>
   }
 
   V operator [](K key) =>
-      doLookup(key);
+    lookup(key);
 
-  void doForEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
 
   TransientMap<K, V> doAdjust(K key, V update(V value)) {
     return _adjustRootAndReturn(_root.adjust(owner, key, update));
@@ -270,16 +271,16 @@ class TransientMapImpl<K, V>
              _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1)));
   }
 
-  TransientMap doMapValues(f(V value)) {
+  TransientMap mapValues(f(V value)) {
     return _adjustRootAndReturn(_root.mapValues(owner, f));
   }
 
   TransientMap<K, V>
-      doUnion(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+      union(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
           _adjustRootAndReturn(_root.union(owner, other._root, combine));
 
   TransientMap<K, V>
-    doIntersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+    intersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
         _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
 
   /// Returns a mutable copy of `this`.
@@ -294,15 +295,21 @@ class TransientMapImpl<K, V>
   Iterable<V> get values => _root.values;
 
   /// Randomly picks an entry of `this`.
-  Pair<K, V> doPickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
 
   Iterator get iterator => _root.iterator;
 
   int get length => _root.length;
 
+  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
+     new PersistentMap.fromPairs(this.map(f)).asTransient();
+
+  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
+
   // Optimized version of Iterable's contains
   bool contains(key) {
-    final value = this.doLookup(key);
+    final value = this.lookup(key);
     return !isNone(value);
   }
 
