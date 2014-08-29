@@ -221,9 +221,9 @@ mapPer(PersistentMap map, f) {
 }
 
 mapTra(TransientMap map, f) {
-  return map.doMapValues(f);
+  return map.mapValues(f);
 }
 
 mapWithTra(PersistentMap map, f) {
-  return map.withTransient((TransientMap map) => map.doMapValues(f));
+  return map.withTransient((TransientMap map) => map.mapValues(f));
 }
