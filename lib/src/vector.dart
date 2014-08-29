@@ -79,7 +79,7 @@ class VectorIterator<E> extends Iterator<E> {
 
 abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   int _origin;
-  Owner __ownerID;
+  Owner _owner;
   _VNode _root;
   _VNode _tail;
   int _level;
@@ -89,8 +89,8 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
 
   BaseVectorImpl._prototype() {
     this._origin = 0;
-    this.__ownerID = null;
-    this._root = new _VNode([], __ownerID);
+    this._owner = null;
+    this._root = new _VNode([], _owner);
     this._tail = _root;
     this._level = _SHIFT;
     this._size = 0;
@@ -128,14 +128,14 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     var newRoot = vector._root;
     var didAlter = new Bool();
     if (index >= _getTailOffset(vector._size)) {
-      newTail = _updateVNode(newTail, vector.__ownerID, 0, index, value, didAlter);
+      newTail = _updateVNode(newTail, vector._owner, 0, index, value, didAlter);
     } else {
-      newRoot = _updateVNode(newRoot, vector.__ownerID, vector._level, index, value, didAlter);
+      newRoot = _updateVNode(newRoot, vector._owner, vector._level, index, value, didAlter);
     }
     if (!didAlter.value) {
       return vector;
     }
-    if (vector.__ownerID != null) {
+    if (vector._owner != null) {
       vector._root = newRoot;
       vector._tail = newTail;
       vector.__altered = true;
@@ -193,12 +193,11 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       throw new RangeError.value(end);
     }
     var owner;
-    if (__ownerID == null) {
-      owner = __ownerID;
+    if (_owner == null) {
+      owner = _owner;
     } else {
       owner = new Owner();
     }
-    //var owner = __ownerID || new Owner();
     var oldSize = _size;
     var newSize = end;
 
@@ -233,7 +232,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       newTail = newTail._removeAfter(owner, 0, newSize);
     }
 
-    if (__ownerID != null) {
+    if (_owner != null) {
       _size = newSize;
       _origin = 0;
       _level = newLevel;
@@ -256,18 +255,18 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   }
 
   BaseVectorImpl _ensureOwner(Owner ownerID) {
-    if (ownerID == this.__ownerID) {
+    if (ownerID == this._owner) {
       return this;
     }
     if (ownerID == null) {
-      this.__ownerID = ownerID;
+      this._owner = ownerID;
       return new PersistentVectorImpl._make(this._origin, this._size, this._level, this._root, this._tail);
     }
     return new TransientVectorImpl._make(this._origin, this._size, this._level, this._root, this._tail, ownerID);
   }
 
   TransientVectorImpl _asMutable() {
-    return this.__ownerID != null ? this : this._ensureOwner(new Owner());
+    return this._owner != null ? this : this._ensureOwner(new Owner());
   }
 
   PersistentVectorImpl _asImmutable() {
@@ -277,7 +276,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   BaseVectorImpl _withMutations(fn) {
     var mutable = this._asMutable();
     fn(mutable);
-    return mutable.wasAltered() ? mutable._ensureOwner(this.__ownerID) : this;
+    return mutable.wasAltered() ? mutable._ensureOwner(this._owner) : this;
   }
 
 }
@@ -428,7 +427,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     x._level = level;
     x._root = root;
     x._tail = tail;
-    x.__ownerID = null;
+    x._owner = null;
     return x;
   }
 
@@ -480,7 +479,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
     x._level = level;
     x._root = root;
     x._tail = tail;
-    x.__ownerID = ownerID;
+    x._owner = ownerID;
     return x;
   }
 
