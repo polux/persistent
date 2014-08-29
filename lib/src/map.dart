@@ -189,6 +189,20 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   PersistentMap<K, V> deleteIn(List path, {bool safe: false});
 
   /**
+   * Returns a new map identical to `this` except that the value it possibly
+   * binds to [key] has been adjusted by [update].
+   *
+   *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
+   *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
+   */
+  PersistentMap<K, V> adjust(K key, V update(V value));
+
+  /**
+   * Calls [adjust] recursively using [path] elemenets as keys.
+   */
+  PersistentMap<K, V> adjustIn(List path, V update(V value));
+
+  /**
    * Returns a transient copy of `this`.
    *
    * This is ussualy called to do some changes and
