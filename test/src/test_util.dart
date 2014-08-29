@@ -14,7 +14,6 @@ import 'package:enumerators/combinators.dart' as c;
 import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
-import 'dart:collection';
 
 part 'map_model.dart';
 part 'set_model.dart';

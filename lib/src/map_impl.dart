@@ -319,8 +319,6 @@ class TransientMapImpl<K, V>
  */
 class _Stop implements Exception {}
 
-class Owner {}
-
 abstract class NodeBase<K, V>
     extends IterableBase<Pair<K, V>> {
 

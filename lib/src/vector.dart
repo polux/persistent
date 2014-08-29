@@ -16,8 +16,6 @@ class Bool {
   bool value = false;
 }
 
-class Owner {}
-
 abstract class ReadVector<E> implements Iterable<E> {
   E get(int index, {Function orElse: null});
   E operator[](int index);
@@ -51,7 +49,6 @@ abstract class PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
   E _get(int index, {Function orElse: null});
-  Option<E> _getOption(int index);
 
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
@@ -112,8 +109,6 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     // if resize ever gets publicly exposed, we need to check if node != null
     return node._get(maskedIndex);
   }
-
-  Option<E> _getOption(int index) => new Option.fromNullable(_get(index));
 
   BaseVectorImpl<E> _set(int index, E value) {
     index = _checkIndex(index);
