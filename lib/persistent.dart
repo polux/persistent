@@ -8,6 +8,7 @@ library persistent;
 import 'dart:collection';
 import 'dart:math';
 
+part 'src/persistent.dart';
 part 'src/map.dart';
 part 'src/map_impl.dart';
 part 'src/set.dart';

@@ -28,8 +28,8 @@ class PersistentMapImpl<K, V>
     if(other.hashCode != this.hashCode || this.length != other.length)
       return false;
     bool equals = true;
-    this.forEachKeyValue((key, value) {
-      equals = equals && other.contains(key) && other[key] == value;
+    this.forEachKeyValue((key, dynamic value) {
+      equals = equals && other.containsKey(key) && other[key] == value;
     });
     return equals;
   }
@@ -153,8 +153,7 @@ class PersistentMapImpl<K, V>
 
   int get length => _root.length;
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
+  bool containsKey(key) {
     final value = this.lookup(key);
     return value.isDefined;
   }
@@ -284,8 +283,7 @@ class TransientMapImpl<K, V>
 
   int get length => _root.length;
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
+  bool containsKey(key) {
     final value = this.doLookup(key);
     return value.isDefined;
   }
