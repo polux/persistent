@@ -7,7 +7,7 @@ final NUM_OPERATIONS = 10000;
 
 main() {
   test('random_test', () {
-    Random r = new Random(47);
+    Random r = new Random(4944);
 
     int next = 1;
 
@@ -26,7 +26,7 @@ main() {
       'tra': insertTra,
       'withTra': insertWithTra
     }, {
-      'times': 8,
+      'times': 2,
       'prep': prepDelete,
       'call': callDelete,
       'map': deleteMap,
@@ -145,7 +145,7 @@ insertWithTra(PersistentMap map, key, value) {
 }
 
 prepDelete(Random r, List keys) {
-  if(keys.length == 0) return null;
+  if(keys.length == 0) throw 'OCH';
 
   var del =  keys.removeAt(r.nextInt(keys.length));
   return del;

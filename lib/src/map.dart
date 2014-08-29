@@ -81,12 +81,12 @@ abstract class PersistentMap<K, V>
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
-  PersistentMap<K, V> delete(K key);
+  PersistentMap<K, V> delete(K key, {bool safe: false});
 
   /**
    * Calls [delete] recursively using [path] elemenets as keys.
    */
-  PersistentMap<K, V> deleteIn(List path);
+  PersistentMap<K, V> deleteIn(List path, {bool safe: false});
 
   /**
    * Looks up the value possibly bound to [key] in `this`. Returns
@@ -277,12 +277,12 @@ abstract class TransientMap<K, V>
    *     map.doDelete('b', 2); // map is now {'a': 1}
    *     map.doDelete('b', 2); // map is still {'a': 1}
    */
-  TransientMap<K, V> doDelete(K key) ;
+  TransientMap<K, V> doDelete(K key, {bool safe: false}) ;
 
   /**
    * Calls [doDelete] recursively using [path] elemenets as keys.
    */
-  TransientMap<K, V> doDeleteIn(List<K> path);
+  TransientMap<K, V> doDeleteIn(List<K> path, {bool safe: false});
 
   /**
    * Looks up the value possibly bound to [key] in `this`. Returns
