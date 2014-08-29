@@ -86,6 +86,9 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   /// The keys of `this`.
   Iterable<K> get keys;
 
+  /// Returns true if contains [key]
+  bool containsKey(K key);
+
   /// The values of `this`.
   Iterable<V> get values;
 
