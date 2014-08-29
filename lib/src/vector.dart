@@ -32,7 +32,7 @@ abstract class PersistentVector<E> implements Iterable<E> {
 
   factory PersistentVector() => new PersistentVectorImpl.empty();
   factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
-  PersistentVector<E> withMutations(TransientVector<E> fn(TransientVector<E> vect));
+  PersistentVector<E> withMutations(void fn(TransientVector<E> vect));
 
   bool operator==(other);
   int get hashCode;
@@ -193,6 +193,9 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   }
 
   BaseVectorImpl<E> _resize(int end) {
+    if (end < 0) {
+      throw new RangeError.value(end);
+    }
     var owner;
     if (__ownerID == null) {
       owner = __ownerID;
