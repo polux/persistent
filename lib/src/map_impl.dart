@@ -447,8 +447,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     int index = _popcount(_bitmap & (mask - 1));
 
     if ((_bitmap & mask) != 0) {
-      List<_APersistentMap<K, V>> newarray =
-          new List<_APersistentMap<K, V>>.from(_array, growable: false);
+      List<_APersistentMap<K, V>> newarray = _array.sublist(0);
       _APersistentMap<K, V> m = _array[index];
       _APersistentMap<K, V> newM =
           m._insertWith(keyValues, size, combine, hash, depth + 1);
