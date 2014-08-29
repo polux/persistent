@@ -121,9 +121,9 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     var newRoot = vector._root;
     var didAlter = new Bool();
     if (index >= _getTailOffset(vector._size)) {
-      newTail = _updateVNode(newTail, vector._owner, 0, index, value, didAlter);
+      newTail = newTail._update(vector._owner, 0, index, value, didAlter);
     } else {
-      newRoot = _updateVNode(newRoot, vector._owner, vector._level, index, value, didAlter);
+      newRoot = newRoot._update(vector._owner, vector._level, index, value, didAlter);
     }
     if (!didAlter.value) {
       return vector;
@@ -352,7 +352,7 @@ class _VNode {
       } else {
         lowerNode = null;
       }
-      var newLowerNode = _updateVNode(lowerNode, ownerID, level - _SHIFT, index, value, didAlter);
+      var newLowerNode = lowerNode._update(ownerID, level - _SHIFT, index, value, didAlter);
       if (newLowerNode == lowerNode) {
         return node;
       }
@@ -375,14 +375,6 @@ class _VNode {
     }
     return newNode;
   }
-}
-
-_updateVNode(_VNode node, Owner ownerID, int level, int index, value, Bool didAlter) {
-  if (node == null) {
-    var t = new _VNode([], new Owner());
-    return t._update(ownerID, level, index, value, didAlter);
-  }
-  return node._update(ownerID, level, index, value, didAlter);
 }
 
 _VNode _transientVNode(_VNode node, Owner ownerID) {
@@ -476,7 +468,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
   }
 
   TransientVectorImpl _clear() {
-    this._size = 0;F_
+    this._size = 0;
     this._level = _SHIFT;
     this._root = this._tail = null;
     this._hashCode = null;
