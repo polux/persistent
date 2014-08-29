@@ -18,17 +18,18 @@ class Bool {
 
 class Owner {}
 
-abstract class PersistentVector<E> implements Iterable<E> {
+abstract class ReadVector<E> implements Iterable<E> {
   E get(int index, {Function orElse: null});
   E operator[](int index);
-  PersistentVector<E> set(int index, E value);
+  E get first;
+  E get last;
+}
 
+abstract class PersistentVector<E> implements ReadVector<E> {
+  PersistentVector<E> set(int index, E value);
   PersistentVector<E> push(E value);
   PersistentVector<E> pop();
   TransientVector<E> asMutable();
-
-  E get first;
-  E get last;
 
   factory PersistentVector() => new PersistentVectorImpl.empty();
   factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
@@ -38,17 +39,12 @@ abstract class PersistentVector<E> implements Iterable<E> {
   int get hashCode;
 }
 
-abstract class TransientVector<E> implements Iterable<E> {
-  E get(int index, {Function orElse: null});
-  E operator[](int index);
+abstract class TransientVector<E> implements ReadVector<E> {
   void operator []=(int index, E value);
   void doSet(int index, E value);
   void doPush(E value);
   void doPop();
   PersistentVector<E> asImmutable();
-
-  E get first;
-  E get last;
 }
 
 abstract class PersistentVectorBase<E> extends IterableBase<E> {
