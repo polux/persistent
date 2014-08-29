@@ -80,8 +80,8 @@ class VectorIterator<E> extends Iterator<E> {
 abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   int _origin;
   Owner __ownerID;
-  VNode _root;
-  VNode _tail;
+  _VNode _root;
+  _VNode _tail;
   int _level;
   // cached hashCode.
   int _hashCode = null;
@@ -90,7 +90,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   BaseVectorImpl._prototype() {
     this._origin = 0;
     this.__ownerID = null;
-    this._root = new VNode([], __ownerID);
+    this._root = new _VNode([], __ownerID);
     this._tail = _root;
     this._level = _SHIFT;
     this._size = 0;
@@ -172,7 +172,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     return index;
   }
 
-  VNode _vectorNodeFor(int index) {
+  _VNode _vectorNodeFor(int index) {
     if (index >= _getTailOffset(this._size)) {
       return this._tail;
     }
@@ -209,21 +209,21 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     var oldTailOffset = _getTailOffset(oldSize);
     var newTailOffset = _getTailOffset(newSize);
     while (newTailOffset >= 1 << (newLevel + _SHIFT)) {
-      newRoot = new VNode(newRoot != null && newRoot.length > 0 ? [newRoot] : [], owner);
+      newRoot = new _VNode(newRoot != null && newRoot.length > 0 ? [newRoot] : [], owner);
       newLevel += _SHIFT;
     }
 
     var oldTail = _tail;
     var newTail = newTailOffset < oldTailOffset ?
       _vectorNodeFor(newSize - 1) :
-        newTailOffset > oldTailOffset ? new VNode([], owner) : oldTail;
+        newTailOffset > oldTailOffset ? new _VNode([], owner) : oldTail;
 
     if (newTailOffset > oldTailOffset && oldSize > 0 && oldTail.length > 0) {
       newRoot = newRoot._ensureOwner(owner);
       var node = newRoot;
       for (var level = newLevel; level > _SHIFT; level -= _SHIFT) {
         var idx = (oldTailOffset >> level) & _MASK;
-        node._set(idx , node._get(idx) == null ? node._get(idx)._ensureOwner(owner) : new VNode([], owner));
+        node._set(idx , node._get(idx) == null ? node._get(idx)._ensureOwner(owner) : new _VNode([], owner));
         node = node._get(idx);
       }
       node._set((oldTailOffset >> _SHIFT) & _MASK, oldTail);
@@ -282,7 +282,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
 
 }
 
-class VNode {
+class _VNode {
   List _array;
   Owner _ownerID;
 
@@ -292,7 +292,7 @@ class VNode {
     return "VNode: " + _array.toString();
   }
 
-  VNode(this._array, this._ownerID);
+  _VNode(this._array, this._ownerID);
 
   void _set(int index, value) {
     if (_array.length > index) {
@@ -307,7 +307,7 @@ class VNode {
 
   _get(int index) => (index >= 0 && index < this.length) ? this._array[index] : null;
 
-  VNode _removeAfter(Owner ownerID, int level, int index) {
+  _VNode _removeAfter(Owner ownerID, int level, int index) {
     if ((index == (level > 0 ? 1 << level : 0 ))|| this.length == 0) {
       return this;
     }
@@ -344,10 +344,10 @@ class VNode {
   _ensureOwner(ownerID) {
     if (ownerID != null && ownerID == _ownerID)
       return this;
-    return new VNode(_array.sublist(0), ownerID);
+    return new _VNode(_array.sublist(0), ownerID);
   }
 
-  VNode _update(ownerID, level, index, value, Bool didAlter) {
+  _VNode _update(ownerID, level, index, value, Bool didAlter) {
     var deleted = value == _NOT_SET;
     var node = this;
     var newNode;
@@ -388,19 +388,19 @@ class VNode {
   }
 }
 
-_updateVNode(VNode node, Owner ownerID, int level, int index, value, Bool didAlter) {
+_updateVNode(_VNode node, Owner ownerID, int level, int index, value, Bool didAlter) {
   if (node == null) {
-    var t = new VNode([], new Owner());
+    var t = new _VNode([], new Owner());
     return t._update(ownerID, level, index, value, didAlter);
   }
   return node._update(ownerID, level, index, value, didAlter);
 }
 
-VNode _mutableVNode(VNode node, Owner ownerID) {
+_VNode _mutableVNode(_VNode node, Owner ownerID) {
   if (ownerID != null && node != null && ownerID == node._ownerID) {
     return node;
   }
-  return new VNode(node != null ? node._array.sublist(0) : [], ownerID);
+  return new _VNode(node != null ? node._array.sublist(0) : [], ownerID);
 }
 
 class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVector<E> {
@@ -421,7 +421,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
   factory PersistentVectorImpl.empty() => new PersistentVectorImpl._prototype();
   PersistentVectorImpl._prototype() : super._prototype();
 
-  factory PersistentVectorImpl._make(int origin, int size, int level, VNode root, VNode tail) {
+  factory PersistentVectorImpl._make(int origin, int size, int level, _VNode root, _VNode tail) {
     var x = new PersistentVectorImpl._prototype();
     x._origin = origin;
     x._size = size;
@@ -473,7 +473,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
 class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVector<E> {
   TransientVectorImpl._prototype() : super._prototype();
 
-  factory TransientVectorImpl._make(int origin, int size, int level, VNode root, VNode tail, Owner ownerID) {
+  factory TransientVectorImpl._make(int origin, int size, int level, _VNode root, _VNode tail, Owner ownerID) {
     var x = new TransientVectorImpl._prototype();
     x._origin = origin;
     x._size = size;
