@@ -21,7 +21,7 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
   _PersistentSetImpl<E> delete(E element) =>
       new _PersistentSetImpl._internal(_map.delete(element));
 
-  bool contains(E element) => _map.lookup(element).isDefined;
+  bool contains(E element) => !isNone(_map.lookup(element, none));
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 

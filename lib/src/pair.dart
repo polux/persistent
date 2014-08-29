@@ -5,12 +5,31 @@
 
 part of persistent;
 
-class Pair<A, B> {
-  final A fst;
-  final B snd;
 
+/**
+ * A pair of two values encapsulated to the single object.
+ * 
+ * Mostly used to represent key-value pairs in dictionaries.
+ */
+class Pair<A, B> {
+  
+  /// First value
+  final A fst;
+  
+  /// Second value
+  final B snd;
+  
+  /**
+   * Creates a new pair of given values
+   */
   Pair(this.fst, this.snd);
 
+  /**
+   * The equality operator.
+   * 
+   * Two pairs are equal if and only if both their first and second
+   * values are equal.
+   */
   bool operator ==(Pair<A, B> other) {
     return (other is Pair<A, B>)
         && fst == other.fst

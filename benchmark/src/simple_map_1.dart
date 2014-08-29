@@ -8,7 +8,7 @@ part of map_bench;
 /**
  * Naive implementation of PersistentMap using a [LinkedList] of [Pair]s.
  */
-class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
+class SimplePersistentMap<K, V> extends IterableBase implements PersistentMap<K, V> {
   final LinkedList<Pair<K, V>> _list;
 
   bool get isEmpty => _list.isNil;
@@ -42,15 +42,15 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> delete(K key) =>
       new SimplePersistentMap._internal(_list.strictWhere((p) => p.fst != key));
 
-  Option<V> lookup(K key) {
+  V lookup(K key, [orElse()]) {
     LinkedList<Pair<K, V>> it = _list;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return new Option<V>.some(elem.snd);
+      if (elem.fst == key) return elem.snd;
       it = cons.tail;
     }
-    return new Option<V>.none();
+    return orElse == null ? null : orElse();
   }
 
   PersistentMap mapValues(f(V)) =>
