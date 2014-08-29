@@ -81,12 +81,12 @@ abstract class PersistentMap<K, V>
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
-  PersistentMap<K, V> delete(K key);
+  PersistentMap<K, V> delete(K key, {safe: false});
 
   /**
    * Calls [delete] recursively using [path] elemenets as keys.
    */
-  PersistentMap<K, V> deleteIn(List path);
+  PersistentMap<K, V> deleteIn(List path, {safe: false});
 
   /**
    * Looks up the value possibly bound to [key] in `this`. Returns
@@ -95,15 +95,16 @@ abstract class PersistentMap<K, V>
    *     {'a': 1}.lookup('b') == Option.none()
    *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
    */
-  Option<V> lookup(K key);
+
+  V lookup(K key, [dynamic orElse()]);
 
   /**
    * Calls [lookup] recursively using [path] elemenets as keys.
    */
-  Option<V> lookupIn(List path);
+  lookupIn(List path, [dynamic orElse()]);
 
   /**
-   * Returns the value for the given [key] or [:null:] if [key]
+   * Returns the value for the given [key] or throws if [key]
    * is not in the map.
    */
   V operator [](K key);
@@ -298,12 +299,12 @@ abstract class TransientMap<K, V>
    *     map.doInsert('b', 2);
    *     map.doLookup('b') == Option.some(2);
    */
-  Option<V> doLookup(K key);
+  V doLookup(K key, [dynamic orElse()]);
 
   /**
    * Calls [doLookup] recursively using [path] elemenets as keys.
    */
-  Option doLookupIn(List<K> path);
+  doLookupIn(List<K> path, [dynamic orElse()]);
 
   /**
    * Returns the value for the given [key] or [:null:] if [key]

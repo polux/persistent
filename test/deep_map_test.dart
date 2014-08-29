@@ -46,7 +46,7 @@ main() {
       map = map.insert('a', new PersistentMap());
       map = map.insertIn(['a', 'b'], 'c');
 
-      expect(map.lookupIn(['a', 'b']).asNullable, equals('c'));
+      expect(map.lookupIn(['a', 'b']), equals('c'));
     });
   });
 }
