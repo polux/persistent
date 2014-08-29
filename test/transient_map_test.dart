@@ -6,224 +6,152 @@ import 'dart:core';
 final NUM_OPERATIONS = 10000;
 
 main() {
-  test('random_test', () {
-    Random r = new Random(4944);
+  print('Running test with $NUM_OPERATIONS');
+  doTest(NUM_OPERATIONS);
+  print('Test successfully finished');
 
-    int next = 1;
+}
 
-    List<TransientMap> transientMaps = [];
-    List<PersistentMap> persistentMaps = [new PersistentMap()];
-    List<PersistentMap> persistentWithTransient = [new PersistentMap()];
-    Map map = {};
-    List keys = [];
+List toCheck = ['persistent', 'persistentWithTransient'];
+List toCheckWithTransient = ['persistent', 'transient', 'persistentWithTransient'];
 
-    List actionsPrep = [{
-      'times': 10,
-      'prep': prepInsert,
-      'call': callInsert,
-      'map': insertMap,
-      'per': insertPer,
-      'tra': insertTra,
-      'withTra': insertWithTra
-    }, {
-      'times': 2,
-      'prep': prepDelete,
-      'call': callDelete,
-      'map': deleteMap,
-      'per': deletePer,
-      'tra': deleteTra,
-      'withTra': deleteWithTra
-    }, {
-      'times': 7,
-      'prep': prepAdjust,
-      'call': callAdjust,
-      'map': adjustMap,
-      'per': adjustPer,
-      'tra': adjustTra,
-      'withTra': adjustWithTra
-    }, {
-      'times': 1,
-      'prep': prepMap,
-      'call': callMap,
-      'map': mapMap,
-      'per': mapPer,
-      'tra': mapTra,
-      'withTra': mapWithTra
-    }];
-
-    List actions = [];
-    actionsPrep.forEach((val) => actions.addAll(new List.filled(val['times'], val)));
-
-    for(int i = 0; i < NUM_OPERATIONS; i++) {
-      //print(i);
-
-      int nextRand = r.nextInt(actions.length);
-      Map action = actions[nextRand];
-      var prep = action['prep'](r, keys);
-
-      map = action['call'](map, action['map'], prep);
-
-      transientMaps =
-          transientMaps.map((map) => action['call'](map, action['tra'], prep)).toList();
-
-      persistentMaps =
-          persistentMaps.map((map) => action['call'](map, action['per'], prep)).toList();
-
-      persistentWithTransient =
-             persistentWithTransient.map((map) => action['call'](map, action['withTra'], prep)).toList();
-
-      if(next == i) {
-        next *= 2;
-        transientMaps.add(persistentMaps.last.asTransient());
-        persistentMaps.add(persistentMaps.last);
-        checkAll(map, transientMaps, persistentMaps, persistentWithTransient);
-      }
+assertEqualsPersistent(Map impls, List toCheck) {
+  var last;
+  toCheck.forEach((name) {
+    if(last != null) {
+      assert(true);
+      assert(last == impls[name]['instance']);
     }
-    checkAll(map, transientMaps, persistentMaps, persistentWithTransient);
+    last = impls[name]['instance'];
   });
 }
 
-checkAll(Map map, List<TransientMap> tran, List<PersistentMap> per, List<PersistentMap> withTran) {
-  /*print(map.length);
-  print(map);
-  tran.forEach((e) => print(e));
-  per.forEach((e) => print(e));*/
-  PersistentMap toCompare = new PersistentMap.fromMap(map);
-  map.forEach((k,v) {
-    expect(v, equals(toCompare[k]));
-  });
-  per.forEach((PersistentMap m) {
-    expect(m.length, equals(toCompare.length));
-    expect(m.hashCode, equals(toCompare.hashCode));
-    expect(m == toCompare, isTrue);
-  });
+doTest(operations){
+  Random r = new Random(47);
 
-  tran.map((TransientMap mt) {
-    PersistentMap m = mt.asPersistent();
-    expect(m.length, equals(toCompare.length));
-    expect(m.hashCode, equals(toCompare.hashCode));
-    expect(m == toCompare, isTrue);
-    return m.asTransient();
-  });
+  assertInstancesAreSame(Map impls){
+    Map prevInst;
+    for(String name in impls.keys){
+      Map inst = impls[name];
+      if(prevInst != null) {
+        assertDeeplyEquals(prevInst['instance'], inst['instance']);
+      }
+      prevInst = inst;
+    }
+  }
 
-  withTran.forEach((PersistentMap m) {
-    expect(m.length, equals(toCompare.length));
-    expect(m.hashCode, equals(toCompare.hashCode));
-    expect(m == toCompare, isTrue);
-  });
-}
-
-
-prepInsert(r, List keys) {
-  var a = r.nextInt(47474);
-  while(keys.contains(a)) a =  r.nextInt(47474);
-  keys.add(a);
-  return {
-    'key': keys.last,
-    'val': r.nextInt(4747)
+  Map deepCopyMap(Map map) => new Map.from(map);
+  Map impls = {
+      'map': {
+        'create': () => {},
+        'bulkInsert': (Map me, Map updateWith) {
+            updateWith.keys.fold(me, (_, k) => me[k] = updateWith[k]);
+            return me;
+        },
+        'bulkDelete': (Map me, List keys) {
+            keys.fold(me, (_, k) =>  me.remove(k));
+            return me;
+        },
+        'deepCopy': (Map me) => deepCopyMap(me)
+      },
+      'persistent': {
+        'create': () => new PersistentMap(),
+        'bulkInsert': (PersistentMap me, Map updateWith) =>
+            updateWith.keys.fold(me, (me, k) => me.insert(k, updateWith[k])),
+        'bulkDelete': (PersistentMap me, List keys) =>
+            keys.fold(me, (me, k) =>  me.delete(k, safe: true)),
+        'deepCopy': (PersistentMap me) => me
+      },
+      'transient': {
+        'create': () => new PersistentMap().asTransient(),
+        'bulkInsert': (TransientMap me, Map updateWith) =>
+            updateWith.keys.fold(me, (me, k) => me.doInsert(k, updateWith[k])),
+        'bulkDelete': (TransientMap me, List keys) =>
+            keys.fold(me, (me, k) =>  me.doDelete(k, safe: true)),
+        'deepCopy': (TransientMap me) => me.asPersistent()
+      },
+      'persistentWithTransient': {
+        'create': () => new PersistentMap(),
+        'bulkInsert': (PersistentMap me, Map updateWith) =>
+            me.withTransient((TransientMap me) =>
+              updateWith.keys.fold(me, (me, k) => me.doInsert(k, updateWith[k]))),
+        'bulkDelete': (PersistentMap me, List keys) =>
+            me.withTransient((TransientMap me) =>
+              keys.fold(me, (me, k) =>  me.doDelete(k, safe: true))),
+        'deepCopy': (PersistentMap me) => me
+      }
   };
+
+  Map oldImpls = {};
+
+  //list of all implementations we are going to use
+  impls.forEach((name, impl){
+    oldImpls[name] = {};
+    impl['instance'] = impl['create']();
+  });
+
+
+  for(int i=0;i< operations;i++){
+    // flip a coin, whether you want to perform bulk insert, or bulk delete
+    // generate a random collection of keys(&values) which you want to insert/delete
+    // if inserting, insert cca random(0, allValues.length) elements
+    // if deleting, delete random(0, keys.length) elements
+    // do perform operation on all instances
+
+    if(r.nextBool()) {
+      //bulkInsert
+      int num = r.nextInt(impls[impls.keys.first]['instance'].length + 47);
+
+      Map  map = {};
+
+      for(int i=0; i < num; i++) {
+        int a = r.nextInt(1000);
+        map['$a hello $a'] = '$a world $a';
+      }
+
+      impls.forEach((name, impl){
+        impls[name]['instance'] = impls[name]['bulkInsert'](impl['instance'], map);
+      });
+    }
+    else {
+      //bulkDelete
+      int num = r.nextInt(impls[impls.keys.first]['instance'].length);
+
+      List keys = [];
+      List values = [];
+      for(int i=0; i < num; i++) {
+        int a = r.nextInt(1000);
+        keys.add('$a hello $a');
+      }
+
+      impls.forEach((name, impl){
+        impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
+      });
+    }
+
+
+    assertInstancesAreSame(impls);
+    assertInstancesAreSame(oldImpls);
+
+    assertEqualsPersistent(impls, toCheck);
+    assertEqualsPersistent(oldImpls, toCheckWithTransient);
+
+    if(r.nextDouble() > 0.5){
+      impls.forEach((name, impl){
+        oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
+        if(name == 'transient')
+          impl['instance'] = impl['deepCopy'](impl['instance']).asTransient();
+      });
+    }
+  }
 }
 
-callInsert(map, fun, prep) {
-  return fun(map, prep['key'], prep['val']);
-}
-insertMap(map, key, value) {
-  map[key] = value;
-  return map;
-}
+assertDeeplyEquals(a, b) {
+  if(a == b) return;
 
-insertPer(map, key, value) {
-  return map.insert(key, value);
-}
+  expect(a.length, equals(b.length));
+  if(!((a is Map || a is TransientMap || a is PersistentMap) &&
+        b is Map || b is TransientMap || b is PersistentMap)) assert(false);
 
-insertTra(map, key, value) {
-  return map.doInsert(key, value);
-}
-
-insertWithTra(PersistentMap map, key, value) {
-  return map.withTransient((TransientMap map) => map.doInsert(key, value));
-}
-
-prepDelete(Random r, List keys) {
-  if(keys.length == 0) throw 'OCH';
-
-  var del =  keys.removeAt(r.nextInt(keys.length));
-  return del;
-}
-callDelete(map, fun, prep) {
-  if(prep != null)
-    return fun(map, prep);
-  else
-    return map;
-}
-deleteMap(Map map, key) {
-  map.remove(key);
-  return map;
-}
-
-deletePer(map, key) {
-  return map.delete(key);
-}
-
-deleteTra(map, key) {
-  return map.doDelete(key);
-}
-
-deleteWithTra(map, key) {
-  return map.withTransient((TransientMap map) => map.doDelete(key));
-}
-
-prepAdjust(Random r, List keys) {
-  if(keys.length == 0) return null;
-  int toAdj = keys[r.nextInt(keys.length)];
-
-  return {
-    'key': toAdj,
-    'adj': (int a) => a + 47
-  };
-}
-callAdjust(map, fun, prep) {
-  if(prep != null)
-    return fun(map, prep['key'], prep['adj']);
-  else
-    return map;
-}
-adjustMap(Map map, key, adjust) {
-  map[key] = adjust(map[key]);
-  return map;
-}
-
-adjustPer(map, key, adjust) {
-  return map.adjust(key, adjust);
-}
-
-adjustTra(map, key, adjust) {
-  return map.doAdjust(key, adjust);
-}
-adjustWithTra(map, key, adjust) {
-  return map.withTransient((TransientMap map) => map.doAdjust(key, adjust));
-}
-
-prepMap(Random r, List keys) {
-  return (a) => a - 1;
-}
-callMap(map, fun, prep) {
-  return fun(map, prep);
-}
-mapMap(Map map, f) {
-  var newMap = {};
-  map.forEach((k,v) => newMap[k] = f(v));
-  return  newMap;
-}
-
-mapPer(PersistentMap map, f) {
-  return map.mapValues(f);
-}
-
-mapTra(TransientMap map, f) {
-  return map.mapValues(f);
-}
-
-mapWithTra(PersistentMap map, f) {
-  return map.withTransient((TransientMap map) => map.mapValues(f));
+  a.keys.forEach((key) => assertDeeplyEquals(a[key], b[key]));
 }
