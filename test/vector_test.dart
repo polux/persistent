@@ -85,6 +85,6 @@ callInsert(PersistentVector vector, prep) => vector.push(prep);
 callSet(PersistentVector vector, prep) => vector.set(prep['key'], prep['value']);
 callDelete(PersistentVector vector, prep) => prep ? vector.pop() : vector;
 
-mutInsert(PersistentVector vector, prep) => vector.withMutations((vect) => vect.doPush(prep));
-mutSet(PersistentVector vector, prep) => vector.withMutations((vect) => vect.doSet(prep['key'], prep['value']));
-mutDelete(PersistentVector vector, prep) => prep ? vector.withMutations((vect) => vect.doPop()) : vector;
+mutInsert(PersistentVector vector, prep) => vector.withTransient((vect) => vect.doPush(prep));
+mutSet(PersistentVector vector, prep) => vector.withTransient((vect) => vect.doSet(prep['key'], prep['value']));
+mutDelete(PersistentVector vector, prep) => prep ? vector.withTransient((vect) => vect.doPop()) : vector;
