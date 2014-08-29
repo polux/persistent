@@ -79,8 +79,6 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   _VNode _root;
   _VNode _tail;
   int _level;
-  // cached hashCode.
-  int _hashCode = null;
   bool __altered = false;
 
   BaseVectorImpl._prototype() {
@@ -110,11 +108,6 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
 
   BaseVectorImpl<E> _set(int index, E value) {
     index = _checkIndex(index);
-    if (index >= this.length) {
-      if (value == getNotSet())
-        return this;
-      return this._withTransient((vect) => vect._resize(index+1)._set(index,value));
-    }
 
     var vector = this;
     var newTail = vector._tail;
@@ -140,14 +133,6 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
   BaseVectorImpl<E> _push(E value) {
     var len = this.length;
     return this._withTransient((vect) => vect._resize(len+1)._set(len, value));
-  }
-
-  BaseVectorImpl<E> _pushAll(List<E> values) {
-    var t = this._resize(this.length + values.length);
-    for (int i = 0; i < values.length; i++) {
-      t = t.set(this.length+i, values[i]);
-    }
-    return t;
   }
 
   BaseVectorImpl<E> _pop() {
@@ -222,7 +207,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     }
 
     if (newSize < oldSize) {
-      newTail = newTail._removeAfter(owner, 0, newSize);
+      newTail = newTail._removeAfter(owner, newSize);
     }
 
     if (_owner != null) {
@@ -296,36 +281,13 @@ class _VNode {
 
   _get(int index) => (index >= 0 && index < this.length) ? this._array[index] : null;
 
-  _VNode _removeAfter(Owner ownerID, int level, int index) {
-    if ((index == (level > 0 ? 1 << level : 0 ))|| this.length == 0) {
-      return this;
-    }
-    var sizeIndex = ((index - 1) >> level) & _MASK;
-    if (sizeIndex >= this.length) {
-      return this;
-    }
-    var removingLast = sizeIndex == this.length - 1;
-    var newChild;
-    if (level > 0) {
-      var oldChild = this._array[sizeIndex];
-      if (oldChild == null) newChild = null;
-      else {
-        newChild = oldChild.removeAfter(ownerID, level - _SHIFT, index);
-      }
-      if (newChild == oldChild && removingLast) {
-        return this;
-      }
-    }
-    if (removingLast && newChild == null) {
+  _VNode _removeAfter(Owner ownerID, int newSize) {
+    var sizeIndex = (newSize - 1) & _MASK;
+    if (sizeIndex >= this.length - 1) {
       return this;
     }
     var editable = _transientVNode(this, ownerID);
-    if (!removingLast) {
-      editable._array.removeRange(sizeIndex + 1, editable._array.length);
-    }
-    if (newChild != null) {
-      editable._array[sizeIndex] = newChild;
-    }
+    editable._array.removeRange(sizeIndex + 1, editable.length);
     return editable;
 
   }
@@ -385,6 +347,10 @@ _VNode _transientVNode(_VNode node, Owner ownerID) {
 }
 
 class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVector<E> {
+  // cached hashCode.
+  int _hashCode = null;
+
+
   factory PersistentVectorImpl.from(Iterable<E> values) {
     if (values.length == 0) {
       return new PersistentVectorImpl.empty();
@@ -471,7 +437,6 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
     this._size = 0;
     this._level = _SHIFT;
     this._root = this._tail = null;
-    this._hashCode = null;
     this.__altered = true;
     return this;
   }
