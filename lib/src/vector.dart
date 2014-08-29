@@ -16,38 +16,230 @@ class Bool {
   bool value = false;
 }
 
-class Owner {}
 
+/**
+ * A persistent vector, resizable ordered collection of elements of type [K].
+ *
+ * Persistent data structure is an immutable structure, that provides effective
+ * creation of slightly mutated copies.
+ */
 abstract class PersistentVector<E> implements Iterable<E> {
+  
+  /**
+   * Returns element at given [index].
+   * 
+   * If the [index] is outside the array, [orElse] is called
+   * to obtain the return value. Default [orElse] throws
+   * [RangeError] 
+   * 
+   *     var v = new PersistentVector.from(["Hello","world"]);
+   *     v.get(0); // returns "Hello"
+   *     v.get(2, ()=>null); // returns null
+   *     v.get(2); // throws RangeError
+   */
   E get(int index, {Function orElse: null});
+  
+  /**
+   * Returns element at given [index].
+   * 
+   * Throws [RangeError] if the [index] is outside the array.
+   * 
+   *     var v = new PersistentVector.from(["Hello","world"]);
+   *     print(v[0]); // prints "Hello"
+   *     print(v[2]); // throws RangeError
+   */
   E operator[](int index);
+  
+  /**
+   * Returns a new vector identical to `this` except that
+   * element at [index] is [value].
+   * 
+   * Throws [RangeError] if the [index] is outside the array.
+   * 
+   *     var v = new PersistentVector.from(["A","B"]);
+   *     v.set(1,":)"); // returns ["A",":)"]
+   *     v.set(0,":("); // returns [":(","B"]
+   *     v.set(2,":D"); // throws RangeError
+   */
   PersistentVector<E> set(int index, E value);
 
+  /**
+   * Returns a new vector identical to `this` except that
+   * the [value] is appended to its end.
+   * 
+   *     var v = new PersistentVector.from(["one","two"]);
+   *     v.push("three"); // returns ["one","two","three"]
+   *     v.push("four"); // returns ["one","two","four"]
+   */
   PersistentVector<E> push(E value);
+  
+  /**
+   * Returns a new vector identical to `this` except that
+   * the last element is removed.
+   * 
+   * Throws [RangeError] if  `this` is empty 
+   * 
+   *     var v = new PersistentVector.from(["one","two"]);
+   *     v.pop(); // returns ["one"]
+   *     v.pop(); // still returns ["one"]
+   *     new PersistentVector.from([]).pop(); // throws RangeError
+   */
   PersistentVector<E> pop();
+  
+  /**
+   * Returns a transient copy of `this`.
+   * 
+   * This is ussualy called to do some changes and
+   * then create a new [PersistentVector].
+   * 
+   *     var persistent1 = new PersistentVector.from([1]);
+   *     var transient = persistent1.asTransient();
+   *     transient.doPush(2);
+   *     var persistent2 = new transient.asPersistent();
+   */
   TransientVector<E> asMutable();
 
+  /// The first element of `this`
   E get first;
+  
+  /// The last element of `this`
   E get last;
 
+  /**
+   * Creates an empty [PersistentVector] using its default implementation.
+   */
   factory PersistentVector() => new PersistentVectorImpl.empty();
+  
+  /**
+   * Creates an [PersistentVector] filled by [values]
+   * using its default implementation.
+   */
   factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
+  
+  /**
+   * Creates transient copy of `this`, lets it to be modified by [change]
+   * and returns persistent result.
+   * 
+   *     var persistent1 = new PersistentVector.from([1,2]);
+   *     var persistent2 = persistent1.withTransient((v){
+   *       v.doPush(3);
+   *     });
+   */
   PersistentVector<E> withMutations(TransientVector<E> fn(TransientVector<E> vect));
 
+  /**
+   * The equality operator.
+   * 
+   * Two persistent vectors are equal if and only if they have same lengths,
+   * and for each index, the values at it are equal.
+   */
   bool operator==(other);
+  
+  /*
+   * The documentation is inherited from the Object
+   */
   int get hashCode;
 }
 
+
+/**
+ * A transient vector, resizable ordered collection of elements of type [K].
+ *
+ * Transient data structure is a mutable structure, that can be effectively
+ * converted to the persistent data structure. It is ussualy created from
+ * a persistent structure to apply some changes and obtain a new persistent
+ * structure.
+ */
 abstract class TransientVector<E> implements Iterable<E> {
+  
+  /**
+   * Returns element at given [index].
+   * 
+   * If the [index] is outside the array, [orElse] is called
+   * to obtain the return value. Default [orElse] throws
+   * [RangeError].
+   * 
+   *     var v = new PersistentVector.from(["Hello","world"]).asTransient();
+   *     v.get(0); // returns "Hello"
+   *     v.get(2, ()=>null); // returns null
+   *     v.get(2); // throws RangeError
+   */
   E get(int index, {Function orElse: null});
+  
+  /**
+   * Returns element at given [index].
+   * 
+   * Throws [RangeError] if the [index] is outside the array.
+   * 
+   *     var v = new PersistentVector.from(["Hello","world"]).asTransient();
+   *     print(v[0]); // prints "Hello"
+   *     print(v[2]); // throws RangeError
+   */
   E operator[](int index);
+  
+  /**
+   * Sets the element at [index] to be [value].
+   * 
+   * Throws [RangeError] if the [index] is outside the array
+   * 
+   *     var v = new PersistentVector.from(["A","B"]).asTransient();
+   *     v.set[1] = ":)"; // v is now ["A",":)"]
+   *     v.set[0] = ":("; // v is now [":(",":)"]
+   *     v.set[2] = ":D"; // throws RangeError
+   *     
+   */
   void operator []=(int index, E value);
+  
+  /**
+   * Sets the element at [index] to be [value].
+   * 
+   * Throws [RangeError] if the [index] is outside the array
+   * 
+   *     var v = new PersistentVector.from(["A","B"]).asTransient();
+   *     v.doSet(1,":)"); // v is now ["A",":)"]
+   *     v.doSet(0,":("); // v is now [":(",":)"]
+   *     v.doSet(2,":D"); // throws RangeError
+   */
   void doSet(int index, E value);
+  
+  /**
+   * Appends [value] to the end of `this`.
+   * 
+   *     var v = new PersistentVector.from(["one","two"]).asTransient();
+   *     v.doPush("three"); // v is now ["one","two","three"]
+   *     v.doPush("four"); // v is now ["one","two","three","four"]
+   */
   void doPush(E value);
+  
+  /**
+   * Removes the last element of `this`.
+   * 
+   * Throws [RangeError] if  `this` is empty 
+   * 
+   *     var v = new PersistentVector.from(["one","two"]).asTransient();
+   *     v.doPop(); // v is now ["one"]
+   *     v.doPop(); // v is now []
+   *     v.doPop(); // throws RangeError
+   */
   void doPop();
+  
+  /**
+   * Returns a persistent copy of `this`.
+   * 
+   * This is ussualy called when changes to `this`
+   * are finished
+   * 
+   *     var persistent1 = new PersistentVector.from([1]);
+   *     var transient = persistent1.asTransient();
+   *     transient.doPush(2);
+   *     var persistent2 = new transient.asPersistent();
+   */
   PersistentVector<E> asImmutable();
 
+  /// The first element of `this`
   E get first;
+  
+  /// The last element of `this`
   E get last;
 }
 
