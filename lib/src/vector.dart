@@ -29,7 +29,7 @@ abstract class PersistentVector<E> implements ReadVector<E> {
   PersistentVector<E> set(int index, E value);
   PersistentVector<E> push(E value);
   PersistentVector<E> pop();
-  TransientVector<E> asMutable();
+  TransientVector<E> asTransient();
 
   factory PersistentVector() => new PersistentVectorImpl.empty();
   factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
@@ -44,7 +44,7 @@ abstract class TransientVector<E> implements ReadVector<E> {
   void doSet(int index, E value);
   void doPush(E value);
   void doPop();
-  PersistentVector<E> asImmutable();
+  PersistentVector<E> asPersistent();
 }
 
 abstract class PersistentVectorBase<E> extends IterableBase<E> {
@@ -461,7 +461,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     return new PersistentVectorImpl.empty();
   }
 
-  TransientVectorImpl asMutable() => _asMutable();
+  TransientVectorImpl asTransient() => _asMutable();
   PersistentVectorImpl withMutations(fn) => _withMutations(fn);
   PersistentVectorImpl push(E value) => _push(value);
   PersistentVectorImpl pop() => _pop();
@@ -498,7 +498,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
     return this;
   }
 
-  PersistentVectorImpl asImmutable() => _asImmutable();
+  PersistentVectorImpl asPersistent() => _asImmutable();
   void doPush(E value) {
     _push(value);
   }
