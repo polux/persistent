@@ -180,7 +180,7 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '700');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
+  parser.addOption('smallCheckDepth', defaultsTo: '12');
   parser.addOption('property',
                    help: 'property to test or "all"',
                    allowed: new List.from(properties.keys)..add('all'),

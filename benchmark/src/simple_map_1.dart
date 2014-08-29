@@ -42,15 +42,15 @@ class SimplePersistentMap<K, V> extends IterableBase implements PersistentMap<K,
   PersistentMap<K, V> delete(K key) =>
       new SimplePersistentMap._internal(_list.strictWhere((p) => p.fst != key));
 
-  Option<V> lookup(K key) {
+  V lookup(K key, [orElse()]) {
     LinkedList<Pair<K, V>> it = _list;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return new Option<V>.some(elem.snd);
+      if (elem.fst == key) return elem.snd;
       it = cons.tail;
     }
-    return new Option<V>.none();
+    return orElse == null ? null : orElse();
   }
 
   PersistentMap mapValues(f(V)) =>

@@ -70,8 +70,10 @@ class Benchmark {
     for (int i = 0; i <= size * 2; i++) {
       map.doLookup("key$i");
     }
+    PersistentMap mapP = map.asPersistent();
+    TransientMap saved = mapP.asTransient();
+    map = mapP.asTransient();
 
-    TransientMap saved = map.asPersistent().asTransient();
     for (int i = size * 2; i >= 0; i--) {
       map = map.doDelete("key$i");
     }

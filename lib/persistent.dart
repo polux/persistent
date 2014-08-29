@@ -8,10 +8,10 @@ library persistent;
 import 'dart:collection';
 import 'dart:math';
 
+part 'src/persistent.dart';
 part 'src/map.dart';
 part 'src/map_impl.dart';
 part 'src/set.dart';
 part 'src/set_impl.dart';
 part 'src/linked_list.dart';
-part 'src/option.dart';
 part 'src/pair.dart';

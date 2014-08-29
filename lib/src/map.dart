@@ -12,8 +12,8 @@ part of persistent;
  * values are supported but null keys are not.
  *
  * Persistent data structure is an immutable structure, that provides effective
- * creation of slightly mutated copies. 
- * 
+ * creation of slightly mutated copies.
+ *
  * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
@@ -39,20 +39,20 @@ abstract class PersistentMap<K, V>
 
   /**
    * The equality operator.
-   * 
+   *
    * Two persistent maps are equal if and only if their sets of keys are equal,
    * and the equal keys are bound to the equal values.
-   * 
+   *
    * Two sets of keys are equal if and only if for each key exists
    * an equal key in the other set.
    */
   bool operator== (PersistentMap other);
-  
+
   /*
    * The documentation is inherited from the Object
    */
   int get hashCode;
-  
+
   /**
    * Returns a new map identical to `this` except that it binds [key] to
    * [value].
@@ -68,7 +68,7 @@ abstract class PersistentMap<K, V>
    */
   PersistentMap<K, V>
       insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
-  
+
   /**
    * Calls [insert] recursively using [path] elemenets as keys.
    */
@@ -82,7 +82,7 @@ abstract class PersistentMap<K, V>
    *     {'a': 1}.delete('b') == {'a': 1}
    */
   PersistentMap<K, V> delete(K key);
-  
+
   /**
    * Calls [delete] recursively using [path] elemenets as keys.
    */
@@ -95,15 +95,15 @@ abstract class PersistentMap<K, V>
    *     {'a': 1}.lookup('b') == Option.none()
    *     {'a': 1, 'b': 2}.lookup('b') == Option.some(2)
    */
-  Option<V> lookup(K key);
-  
+  V lookup(K key, [dynamic orElse()]);
+
   /**
    * Calls [lookup] recursively using [path] elemenets as keys.
    */
-  Option<V> lookupIn(List path);
+  lookupIn(List path, [dynamic orElse()]);
 
   /**
-   * Returns the value for the given [key] or [:null:] if [key]
+   * Returns the value for the given [key] or throws if [key]
    * is not in the map.
    */
   V operator [](K key);
@@ -121,7 +121,7 @@ abstract class PersistentMap<K, V>
    *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
    */
   PersistentMap<K, V> adjust(K key, V update(V value));
-  
+
   /**
    * Calls [adjust] recursively using [path] elemenets as keys.
    */
@@ -204,10 +204,10 @@ abstract class PersistentMap<K, V>
 
   /**
    * Returns a transient copy of `this`.
-   * 
+   *
    * This is ussualy called to do some changes and
    * then create a new [PersistentMap].
-   * 
+   *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var transient = persistent1.asTransient();
    *     transient.doInsert({'b':2});
@@ -218,7 +218,7 @@ abstract class PersistentMap<K, V>
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
    * and returns persistent result.
-   * 
+   *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var persistent2 = persistent1.withTransient((m){
    *       m.doInsert({'b':2});
@@ -230,7 +230,7 @@ abstract class PersistentMap<K, V>
 /**
  * A transient map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
- * 
+ *
  * Transient data structure is a mutable structure, that can be effectively
  * converted to the persistent data structure. It is ussualy created from
  * a persistent structure to apply some changes and obtain a new persistent
@@ -253,7 +253,7 @@ abstract class TransientMap<K, V>
    * to [value]. If [key] was bound to some `oldvalue`
    * and if [combine] is provided then [key] is bound to
    * `combine(oldvalue, value)`.
-   * 
+   *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
    *     map.doInsert('b', 2); // map is now {'a': 1, 'b': 2}
    *     map.doInsert('b', 3); // map is now {'a': 1, 'b': 3}
@@ -267,12 +267,12 @@ abstract class TransientMap<K, V>
    */
   TransientMap<K, V>
       doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue)]);
-  
+
   /**
    * Unbinds [key].
-   * 
+   *
    * If [key] isn't bound this function has no effect.
-   * 
+   *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.doDelete('b', 2); // map is now {'a': 1}
    *     map.doDelete('b', 2); // map is still {'a': 1}
@@ -293,17 +293,17 @@ abstract class TransientMap<K, V>
    *     map.doInsert('b', 2);
    *     map.doLookup('b') == Option.some(2);
    */
-  Option<V> doLookup(K key);
+  V doLookup(K key, [dynamic orElse()]);
 
   /**
    * Calls [doLookup] recursively using [path] elemenets as keys.
    */
-  Option doLookupIn(List<K> path);
+  doLookupIn(List<K> path, [dynamic orElse()]);
 
   /**
    * Returns the value for the given [key] or [:null:] if [key]
    * is not in the map.
-   * 
+   *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map['b'] == null;
    *     map.doInsert('b', 2);
@@ -315,7 +315,7 @@ abstract class TransientMap<K, V>
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
   void doForEachKeyValue(f(K key, V value));
-  
+
   /**
    * Adjusts the value that is possibly bound to [key] by [update].
    *
@@ -333,7 +333,7 @@ abstract class TransientMap<K, V>
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.
-   *     
+   *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
    */
@@ -348,7 +348,7 @@ abstract class TransientMap<K, V>
    * value for a `key` present in both `this` and [other] is then
    * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
    * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
-   *     
+   *
    *     var mapA = PersistentMap.fromMap({'a': 1}).asTransient();
    *     var mapB = PersistentMap.fromMap({'b': 2}).asTransient();
    *     var mapAB = PersistentMap.fromMap({'a': 3, 'b': 2}).asTransient();
@@ -358,7 +358,7 @@ abstract class TransientMap<K, V>
    */
   TransientMap<K, V>
       doUnion(TransientMap<K, V> other, [V combine(V left, V right)]);
-  
+
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
    * `this` and [other].
@@ -384,22 +384,22 @@ abstract class TransientMap<K, V>
 
   /// The keys of `this`.
   Iterable<K> get keys;
-  
+
   /// The values of `this`.
   Iterable<V> get values;
-  
+
   /// Randomly picks an entry of `this`.
   Pair<K, V> doPickRandomEntry([Random random]);
-  
+
   /// An iterator through the entries of `this`.
   Iterator<Pair<K,V>> get iterator;
 
   /**
    * Returns a persistent copy of `this`.
-   * 
+   *
    * This is ussualy called when changes to `this`
    * are finished
-   * 
+   *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var transient = persistent1.asTransient();
    *     transient.doInsert({'b':2});
