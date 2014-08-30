@@ -8,7 +8,7 @@
 part of persistent;
 
 abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
-  
+
   /**
    * Looks up the value possibly bound to [key] in `this`. Returns
    * [new Option.some(value)] if it exists, [new Option.none()] otherwise.
@@ -19,7 +19,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Calls [lookup] recursively using [path] elemenets as keys.
    */
   lookupIn(List path, [dynamic orElse()]);
-  
+
   /**
    * Returns the value for the given [key] or throws if [key]
    * is not in the map.
@@ -30,7 +30,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
   void forEachKeyValue(f(K key, V value));
-  
+
   /**
    * Returns a new map identical to `this` where each value has been updated by
    * [f].
@@ -86,6 +86,9 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   /// The keys of `this`.
   Iterable<K> get keys;
 
+  /// Returns true if contains [key]
+  bool containsKey(K key);
+
   /// The values of `this`.
   Iterable<V> get values;
 
@@ -103,7 +106,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// The number of entries of `this`.
   int get length;
-  
+
 }
 
 /**
@@ -116,7 +119,8 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
  * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
-abstract class PersistentMap<K, V> implements ReadMap<K, V> {
+
+abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
   factory PersistentMap() => new PersistentMapImpl();
@@ -179,6 +183,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V> {
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
+
   PersistentMap<K, V> delete(K key, {bool safe: false});
 
   /**
@@ -223,22 +228,22 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V> {
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
-  
-  // Just adjusts signature from ReadMap 
+
+  // Just adjusts signature from ReadMap
   PersistentMap mapValues(f(V value));
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   PersistentMap<K, V>
       union(ReadMap<K, V> other, [V combine(V left, V right)]);
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   PersistentMap<K, V>
       intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   PersistentMap strictMap(Pair f(Pair<K, V> pair));
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
 
@@ -325,22 +330,22 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     var persistent2 = new transient.asPersistent();
    */
   PersistentMap asPersistent();
-  
 
-  // Just adjusts signature from ReadMap 
+
+  // Just adjusts signature from ReadMap
   TransientMap mapValues(f(V value));
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   TransientMap<K, V>
       union(ReadMap<K, V> other, [V combine(V left, V right)]);
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   TransientMap<K, V>
       intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   TransientMap strictMap(Pair f(Pair<K, V> pair));
 
-  // Just adjusts signature from ReadMap 
+  // Just adjusts signature from ReadMap
   TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
