@@ -6,6 +6,9 @@ add(n, m) => n + m;
 insertWord(map, word) => map.insert(word, 1, add);
 count(words) => words.fold(new PersistentMap(), insertWord);
 
+insertWordT(map, word) => map.doInsert(word, 1, add);
+countT(words) => words.fold(new PersistentMap().asTransient(), insertWordT);
+
 final AUSTEEN = 'http://www.gutenberg.org/files/1342/1342.txt';
 final DOYLE = 'http://www.gutenberg.org/files/1661/1661.txt';
 
@@ -22,6 +25,15 @@ void run(List<String> doyle, List<String> austeen) {
   }
 }
 
+void runT(List<String> doyle, List<String> austeen) {
+  final map1 = countT(austeen);
+  final map2 = countT(doyle);
+  final result = map1.doUnion(map2, add);
+  if (result.length != 36028) {
+    throw new StateError("something's wrong");
+  }
+}
+
 void bench(List<String> doyle, List<String> austeen) {
   // warmup
   run(doyle, austeen);
@@ -32,7 +44,16 @@ void bench(List<String> doyle, List<String> austeen) {
     run(doyle, austeen);
   }
   watch.stop();
-  print(watch.elapsedMilliseconds / 10);
+  print('Persistent ${watch.elapsedMilliseconds / 10}');
+
+  runT(doyle, austeen);
+  watch.reset();
+  watch.start();
+  for (int i = 0; i < 10; i++) {
+    runT(doyle, austeen);
+  }
+  watch.stop();
+  print('Transient ${watch.elapsedMilliseconds / 10}');
 }
 
 main() {

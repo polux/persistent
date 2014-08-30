@@ -7,76 +7,445 @@ part of persistent;
 
 final _random = new Random();
 
+final keyNotDefined = () => throw new Exception('Key is not defined');
+
+class PersistentMapImpl<K, V>
+        extends IterableBase<Pair<K, V>>
+        implements PersistentMap<K, V>, Persistent {
+  NodeBase _root;
+
+  int _hash;
+
+  int get hashCode {
+    if(_hash != null) return _hash;
+    _hash = 0;
+    this.forEachKeyValue((key, value) {
+      _hash += key.hashCode ^ value.hashCode;
+    });
+    return _hash;
+  }
+
+  bool operator==(other) {
+    if (other is! PersistentMapImpl) return false;
+    if(other.hashCode != this.hashCode || this.length != other.length)
+      return false;
+    bool equals = true;
+    this.forEachKeyValue((key, value) {
+      equals = equals && other.contains(key) && other[key] == value;
+    });
+    return equals;
+  }
+
+  PersistentMapImpl() {
+    this._root = new _EmptyMap<K, V>(null);
+  }
+
+  PersistentMapImpl.fromMap(Map<K, V> map) {
+    _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
+    map.forEach((K key, V value) {
+      _root = _root.insert(owner, key, value);
+    });
+  }
+
+  PersistentMapImpl.fromPairs(Iterable<Pair<K, V>> pairs) {
+    _root = new _EmptyMap<K, V>(null);
+    Owner owner = new Owner();
+    pairs.forEach((pair) {
+      _root = _root.insert(owner, pair.fst, pair.snd);
+    });
+  }
+
+  PersistentMapImpl.fromTransient(TransientMapImpl map) {
+    this._root = map._root;
+  }
+
+  PersistentMapImpl._new(NodeBase this._root);
+
+  PersistentMapImpl<K, V>
+      insert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
+        return new PersistentMapImpl._new(_root.insert(null, key, value, combine));
+      }
+
+  PersistentMapImpl<K, V>
+        insertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
+      if(offset +1 == path.length)
+        return new PersistentMapImpl._new(_root.insert(null, path.last, value));
+
+      return new PersistentMapImpl._new(
+          _root.adjust(null, path[offset],
+          (e) => e.insertIn(path, value, combine, offset+1)));
+    }
+
+  PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
+    return new PersistentMapImpl._new(_root.delete(null, key, safe));
+  }
+
+  PersistentMapImpl<K, V> deleteIn(List<K> path, {offset: 0, bool safe: false}) {
+    if(offset +1 == path.length)
+      return new PersistentMapImpl._new(_root.delete(null, path.last, safe));
+
+    return new PersistentMapImpl._new(
+        _root.adjust(null, path[offset],
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
+  }
+
+  V lookup(K key, [dynamic orElse()]) {
+    if(orElse == null) orElse = keyNotDefined;
+    var val = _root.lookup(key);
+    if(isNone(val)) return (orElse == null ? null : orElse());
+    return val;
+  }
+
+  lookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
+    if(orElse == null) orElse = keyNotDefined;
+
+    dynamic e = lookup(path[offset], orElse);
+    offset++;
+
+    if(path.length == offset) return e;
+    else return !isNone(e) ?
+        e.lookupIn(path, orElse, offset)
+      :
+        orElse();
+  }
+
+  V operator [](K key) =>
+      lookup(key);
+
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  PersistentMapImpl<K, V> adjust(K key, V update(V value)) {
+    return  new PersistentMapImpl._new(_root.adjust(null, key, update));
+  }
+
+  PersistentMapImpl adjustIn(List<K> path, V update(V value), [offset = 0]) {
+    if(path.length == offset +1) return adjust(path[offset], update);
+
+    return new PersistentMapImpl._new(
+           _root.adjust(null, path[offset],
+           (e) => e.adjustIn(path, update, offset+1)));
+  }
+
+  PersistentMapImpl mapValues(f(V value)) {
+    Owner owner = new Owner();
+    return new PersistentMapImpl._new(_root.mapValues(owner, f));
+  }
+
+  PersistentMapImpl<K, V>
+      union(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) {
+        Owner owner = new Owner();
+        return new PersistentMapImpl._new(_root.union(owner, other._root, combine));
+      }
+
+  PersistentMapImpl<K, V>
+    intersection(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) =>
+      new PersistentMapImpl._new(_root.intersection(null, other._root, combine));
+
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
+
+  Iterable<K> get keys => _root.keys;
+
+  Iterable<V> get values => _root.values;
+
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+
+  PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
+      new PersistentMapImpl.fromPairs(this.map(f));
+
+  PersistentMapImpl<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+      new PersistentMapImpl<K, V>.fromPairs(this.where(f));
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
+
+  // Optimized version of Iterable's contains
+  bool contains(key) {
+    final value = this.lookup(key);
+    return !isNone(value);
+  }
+
+  TransientMap asTransient() {
+    return new TransientMapImpl.fromPersistent(this);
+  }
+
+  PersistentMapImpl withTransient(dynamic f(TransientMap map)) {
+    TransientMap transient = this.asTransient();
+    f(transient);
+    return transient.asPersistent();
+  }
+  toString() => 'PersistentMap$_root';
+}
+
+class TransientMapImpl<K, V>
+        extends IterableBase<Pair<K, V>>
+        implements TransientMap<K, V> {
+  NodeBase _root;
+  Owner _owner;
+  get owner => _owner != null ?
+      _owner
+    :
+      throw new Exception('Cannot modify TransientMap after calling asPersistent.');
+
+  factory TransientMapImpl() => new TransientMapImpl.fromPersistent(new PersistentMap());
+
+  /**
+   * Creates an immutable copy of [map] using the default implementation of
+   * [TransientMap].
+   */
+  TransientMapImpl.fromPersistent(PersistentMapImpl<K, V> map) {
+    _owner = new Owner();
+    _root = map._root;
+  }
+
+  TransientMap _adjustRootAndReturn(newRoot) {
+    _root = newRoot;
+    return this;
+  }
+
+  TransientMap<K, V>
+      doInsert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
+        return _adjustRootAndReturn(_root.insert(owner, key, value, combine));
+      }
+
+  TransientMap<K, V>
+     doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
+       if(offset +1 == path.length)
+         return _adjustRootAndReturn(_root.insert(null, path.last, value));
+
+       return _adjustRootAndReturn(
+           _root.adjust(null, path[offset],
+           (e) => e.insertIn(path, offset+1)));
+     }
+
+  TransientMap<K, V> doDelete(K key, {bool safe: false}) {
+    return _adjustRootAndReturn(_root.delete(owner, key, safe));
+  }
+
+  TransientMap<K, V> doDeleteIn(List<K> path, {offset: 0, safe: false}) {
+    if(offset +1 == path.length)
+      return doDelete(path.last, safe: safe);
+
+    return _adjustRootAndReturn(
+        _root.adjust(null, path[offset],
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
+  }
+
+  V lookup(K key, [dynamic orElse()]) {
+    var val = _root.lookup(key);
+    if(isNone(val)) return (orElse == null ? null : orElse());
+    return val;
+  }
+
+  lookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
+    if(orElse == null) orElse = keyNotDefined;
+
+    dynamic e = lookup(path[offset], orElse);
+    offset++;
+
+    if(path.length == offset) return e;
+    else return !isNone(e) ?
+        e.lookupIn(path, orElse, offset)
+      :
+        (orElse == null ? null : orElse());
+  }
+
+  V operator [](K key) =>
+    lookup(key);
+
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  TransientMap<K, V> doAdjust(K key, V update(V value)) {
+    return _adjustRootAndReturn(_root.adjust(owner, key, update));
+  }
+
+  TransientMap doAdjustIn(List<K> path, V update(V value), [offset = 0]) {
+    if(path.length == offset +1) return doAdjust(path[offset], update);
+
+    return _adjustRootAndReturn(
+             _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1)));
+  }
+
+  TransientMap mapValues(f(V value)) {
+    return _adjustRootAndReturn(_root.mapValues(owner, f));
+  }
+
+  TransientMap<K, V>
+      union(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+          _adjustRootAndReturn(_root.union(owner, other._root, combine));
+
+  TransientMap<K, V>
+    intersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+        _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
+
+  /// Returns a mutable copy of `this`.
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
+
+  /// The keys of `this`.
+  Iterable<K> get keys => _root.keys;
+
+  /// The values of `this`.
+  Iterable<V> get values => _root.values;
+
+  /// Randomly picks an entry of `this`.
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
+
+  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
+     new PersistentMap.fromPairs(this.map(f)).asTransient();
+
+  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
+
+  // Optimized version of Iterable's contains
+  bool contains(key) {
+    final value = this.lookup(key);
+    return !isNone(value);
+  }
+
+  PersistentMap asPersistent() {
+    _owner = null;
+    return new PersistentMapImpl.fromTransient(this);
+  }
+
+  toString() => 'TransientMap(${owner.hashCode}, $_root)';
+}
+
 /**
  * Exception used for aborting forEach loops.
  */
 class _Stop implements Exception {}
 
+class Owner {}
+
+abstract class NodeBase<K, V>
+    extends IterableBase<Pair<K, V>> {
+
+  int _length;
+  get length => _length;
+
+  NodeBase(this._length);
+
+  Map<K, V> toMap() {
+    Map<K, V> result = new Map<K, V>();
+    this.forEachKeyValue((K k, V v) { result[k] = v; });
+    return result;
+  }
+
+  String toString() {
+    StringBuffer buffer = new StringBuffer('{');
+    bool comma = false;
+    this.forEachKeyValue((K k, V v) {
+      if (comma) buffer.write(', ');
+      buffer.write('$k: $v');
+      comma = true;
+    });
+    buffer.write('}');
+    return buffer.toString();
+  }
+
+  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
+
+  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
+
+  Pair<K, V> pickRandomEntry([Random random]) =>
+      elementAt((random != null ? random : _random).nextInt(this.length));
+
+  NodeBase<K, V>
+    insert(Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
+
+  NodeBase<K, V> delete(Owner owner, K key, bool safe);
+
+  V lookup(K key);
+
+  void forEachKeyValue(f(K key, V value));
+
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V value));
+
+  NodeBase mapValues(Owner owner, f(V value));
+
+  NodeBase<K, V>
+      union(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
+  NodeBase<K, V>
+      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+
+}
+
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
-  final int length;
+abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
+  Owner _owner;
 
-  _APersistentMap(this.length, this.isEmpty, this._isLeaf);
+  _ANodeBase(this._owner, length, this._isLeaf) : super(length);
 
-  final bool isEmpty;
   final bool _isLeaf;
 
-  Option<V> _lookup(K key, int hash, int depth);
-  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
+  V _lookup(K key, int hash, int depth);
+  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
+  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  PersistentMap<K, V> _delete(K key, int hash, int depth);
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth);
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe);
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth);
 
-  _APersistentMap<K, V>
-      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth);
-  _APersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth);
-  _APersistentMap<K, V>
-      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
-  _APersistentMap<K, V>
-      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
 
-  _APersistentMap<K, V>
-      _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
+  _ANodeBase<K, V>
+      _intersectionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
                         int depth);
-  _APersistentMap<K, V>
-      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
+  _ANodeBase<K, V>
+      _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
                                 int depth);
-  _APersistentMap<K, V>
-      _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
-  _APersistentMap<K, V>
-      _intersectionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
+  _ANodeBase<K, V>
+      _intersectionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
 
   Pair<K, V> _elementAt(int index);
 
   LinkedList<Pair<K, V>> _onePair(K key, V value) =>
       new Cons<Pair<K, V>>(new Pair<K, V>(key, value), new Nil<Pair<K, V>>());
 
-  Option<V> lookup(K key) =>
+  V lookup(K key) =>
       _lookup(key, key.hashCode & 0x3fffffff, 0);
 
-  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) =>
-      _insertWith(_onePair(key, value),
+  NodeBase<K, V> insert(Owner owner, K key, V value, [V combine(V x, V y)]) =>
+      _insertWith(owner, _onePair(key, value),
           1,
           (combine != null) ? combine : (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
-  PersistentMap<K, V> delete(K key) =>
-      _delete(key, key.hashCode & 0x3fffffff, 0);
+  NodeBase<K, V> delete(Owner owner, K key, bool safe) =>
+      _delete(owner ,key, key.hashCode & 0x3fffffff, 0, safe);
 
-  PersistentMap<K, V> adjust(K key, V update(V)) =>
-      _adjust(key, update, key.hashCode & 0x3fffffff, 0);
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V)) =>
+      _adjust(owner, key, update, key.hashCode & 0x3fffffff, 0);
 
-  PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
-    this._unionWith(other, (combine != null) ? combine : (V x, V y) => y, 0);
+  NodeBase<K, V> union(Owner owner, NodeBase<K, V> other, [V combine(V x, V y)]) =>
+    this._unionWith(owner, other, (combine != null) ? combine : (V x, V y) => y, 0);
 
-  PersistentMap<K, V>
-      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]) =>
-    this._intersectionWith(other,
+  NodeBase<K, V>
+      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]) =>
+    this._intersectionWith(owner, other,
         (combine != null) ? combine : (V x, V y) => y, 0);
 
   Pair<K, V> elementAt(int index) {
@@ -93,63 +462,63 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
   bool moveNext() => false;
 }
 
-class _EmptyMap<K, V> extends _APersistentMap<K, V> {
-  _EmptyMap() : super(0, true, false);
+class _EmptyMap<K, V> extends _ANodeBase<K, V> {
+  _EmptyMap(Owner owner) : super(owner, 0, false);
 
-  Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
+  V _lookup(K key, int hash, int depth) => none();
 
-  PersistentMap<K, V> _insertWith(
+  NodeBase<K, V> _insertWith(Owner owner,
       LinkedList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
       int depth) {
     assert(size == keyValues.length);
-    return new _Leaf<K, V>(hash, keyValues, size);
+    return new _Leaf<K, V>.abc(owner, hash, keyValues, size);
   }
 
-  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
+  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     return this;
   }
 
-  PersistentMap<K, V> _delete(K key, int hash, int depth) => this;
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) => this;
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) => this;
 
-  PersistentMap<K, V>
-      _unionWith(PersistentMap<K, V> m, V combine(V x, V y), int depth) => m;
+  NodeBase<K, V>
+      _unionWith(Owner owner, NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) {
+  NodeBase<K, V>
+      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) {
     throw "should never be called";
   }
 
-  PersistentMap<K, V>
-      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) => m;
+  NodeBase<K, V>
+      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
-      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) => m;
+  NodeBase<K, V>
+      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
-      _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
+  NodeBase<K, V>
+      _intersectionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
                         int depth) => this;
 
-  PersistentMap<K, V>
-      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
+  NodeBase<K, V>
+      _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
                                 int depth) {
         throw "should never be called";
   }
 
-  PersistentMap<K, V> _intersectionWithLeaf(
+  NodeBase<K, V> _intersectionWithLeaf(Owner owner,
       _Leaf<K, V> m, V combine(V x, V y), int depth) => this;
 
-  PersistentMap<K, V> _intersectionWithSubMap(
+  NodeBase<K, V> _intersectionWithSubMap(Owner owner,
       _SubMap<K, V> m, V combine(V x, V y), int depth) => this;
 
-  PersistentMap mapValues(f(V)) => this;
+  NodeBase mapValues(Owner owner, f(V)) => this;
 
   void forEachKeyValue(f(K, V)) {}
 
-  bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
+  bool operator ==(NodeBase<K, V> other) => other is _EmptyMap;
 
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
@@ -164,16 +533,26 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   toDebugString() => "_EmptyMap()";
 }
 
-class _Leaf<K, V> extends _APersistentMap<K, V> {
+class _Leaf<K, V> extends _ANodeBase<K, V> {
   int _hash;
   LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf(this._hash, pairs, int size) : super(size, false, true) {
+  _Leaf.abc(Owner owner, this._hash, pairs, int size) : super(owner, size, true) {
     this._pairs = pairs;
     assert(size == pairs.length);
   }
 
-  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
+  factory _Leaf.ensureOwner(_Leaf old, Owner owner, hash, pairs, int size) {
+    if(ownerEquals(owner, old._owner)) {
+      old._pairs = pairs;
+      old._hash = hash;
+      old._length = size;
+      return old;
+    }
+    return new _Leaf.abc(owner, hash, pairs, size);
+  }
+
+  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // newsize is incremented as a side effect of insertPair
@@ -218,21 +597,21 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     if (depth > 5) {
       assert(_hash == hash);
       final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
-      return new _Leaf<K, V>(hash, newPairs, newsize);
+      return new _Leaf<K, V>.ensureOwner(this, owner, hash, newPairs, newsize);
     } else {
       if (hash == _hash) {
         final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
-        return new _Leaf<K, V>(hash, newPairs, newsize);
+        return new _Leaf<K, V>.ensureOwner(this, owner, hash, newPairs, newsize);
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
-        List<_APersistentMap<K, V>> array = <_APersistentMap<K, V>>[this];
-        return new _SubMap<K, V>(1 << branch, array, length)
-            ._insertWith(keyValues, size, combine, hash, depth);
+        List<_ANodeBase<K, V>> array = new List.filled(1, this);
+        return new _SubMap<K, V>.abc(owner, 1 << branch, array, length)
+            ._insertWith(owner, keyValues, size, combine, hash, depth);
       }
     }
   }
 
-  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
+  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // TODO(polux): possibly faster implementation
@@ -245,12 +624,14 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
         newsize++;
       }
     });
-    return new _Leaf(_hash, builder.build(), newsize);
+    return new _Leaf.ensureOwner(this, owner, _hash, builder.build(), newsize);
   }
 
-  PersistentMap<K, V> _delete(K key, int hash, int depth) {
-    if (hash != _hash)
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) {
+    if (hash != _hash) {
+      if(!safe) keyNotDefined();
       return this;
+    }
     bool found = false;
     LinkedList<Pair<K, V>> newPairs = _pairs.strictWhere((p) {
       if (p.fst == key) {
@@ -259,12 +640,14 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
       }
       return true;
     });
+
+    if(!found && !safe) keyNotDefined();
     return newPairs.isNil
-        ? new _EmptyMap<K, V>()
-        : new _Leaf<K, V>(_hash, newPairs, found ? length - 1 : length);
+        ? new _EmptyMap<K, V>(owner)
+        : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
   }
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) {
     LinkedList<Pair<K, V>> adjustPairs() {
       LinkedListBuilder<Pair<K, V>> builder =
           new LinkedListBuilder<Pair<K, V>>();
@@ -284,64 +667,64 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 
     return (hash != _hash)
         ? this
-        : new _Leaf<K, V>(_hash, adjustPairs(), length);
+        : new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
   }
 
-  PersistentMap<K, V>
-      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
-          m._unionWithLeaf(this, combine, depth);
+  NodeBase<K, V>
+      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
+          m._unionWithLeaf(owner, this, combine, depth);
 
-  PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
+  NodeBase<K, V>
+      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  PersistentMap<K, V>
-      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
-          m._insertWith(_pairs, length, combine, _hash, depth);
+  NodeBase<K, V>
+      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
+          m._insertWith(owner, _pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V>
-      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
-          m._insertWith(_pairs, length, combine, _hash, depth);
+  NodeBase<K, V>
+      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) =>
+          m._insertWith(owner, _pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+  NodeBase<K, V> _intersectionWith(Owner owner, _ANodeBase<K, V> m,
                                         V combine(V x, V y), int depth) =>
-      m._intersectionWithLeaf(this, combine, depth);
+      m._intersectionWithLeaf(owner, this, combine, depth);
 
-  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
+  NodeBase<K, V> _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m,
                                                 V combine(V x, V y),
                                                 int depth) =>
       m;
 
-  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+  NodeBase<K, V> _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
-      m._intersectWith(_pairs, length, combine, _hash, depth);
+      m._intersectWith(owner, _pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V> _intersectionWithSubMap(_SubMap<K, V> m,
+  NodeBase<K, V> _intersectionWithSubMap(Owner owner, _SubMap<K, V> m,
                                               V combine(V x, V y), int depth) =>
-      m._intersectWith(_pairs, length, combine, _hash, depth);
+      m._intersectWith(owner, _pairs, length, combine, _hash, depth);
 
-  Option<V> _lookup(K key, int hash, int depth) {
+  V _lookup(K key, int hash, int depth) {
     if (hash != _hash)
-      return new Option<V>.none();
+      return none();
     LinkedList<Pair<K, V>> it = _pairs;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return new Option<V>.some(elem.snd);
+      if (elem.fst == key) return elem.snd;
       it = cons.tail;
     }
-    return new Option<V>.none();
+    return none();
   }
 
-  PersistentMap mapValues(f(V)) =>
-      new _Leaf(_hash,
+  NodeBase mapValues(Owner owner, f(V)) =>
+      new _Leaf.ensureOwner(this, owner, _hash,
                 _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
 
   void forEachKeyValue(f(K, V)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
-  bool operator ==(PersistentMap<K, V> other) {
+  bool operator ==(NodeBase<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
     _Leaf otherLeaf = other;
@@ -385,7 +768,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
 }
 
 class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
-  List<_APersistentMap<K, V>> _array;
+  List<_ANodeBase<K, V>> _array;
   int _index = 0;
   // invariant: _currentIterator != null => _currentIterator.current != null
   Iterator<Pair<K, V>> _currentIterator = null;
@@ -411,11 +794,20 @@ class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
   }
 }
 
-class _SubMap<K, V> extends _APersistentMap<K, V> {
+class _SubMap<K, V> extends _ANodeBase<K, V> {
   int _bitmap;
-  List<_APersistentMap<K, V>> _array;
+  List<_ANodeBase<K, V>> _array;
 
-  _SubMap(this._bitmap, this._array, int size) : super(size, false, false);
+  _SubMap.abc(Owner owner, this._bitmap, this._array, int size) : super(owner, size, false);
+
+  factory _SubMap.ensureOwner(_SubMap old, Owner owner, bitmap, array, int size) {
+    if(ownerEquals(owner, old._owner)) {
+      old._bitmap = bitmap;
+      old._array = array;
+      old._length = size;
+    }
+    return new _SubMap.abc(owner , bitmap, array, size);
+  }
 
   static _popcount(int n) {
     n = n - ((n >> 1) & 0x55555555);
@@ -426,19 +818,19 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     return n & 0x0000003F;
   }
 
-  Option<V> _lookup(K key, int hash, int depth) {
+  V _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _APersistentMap<K, V> map = _array[index];
+      _ANodeBase<K, V> map = _array[index];
       return map._lookup(key, hash, depth + 1);
     } else {
-      return new Option<V>.none();
+      return none();
     }
   }
 
-  PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
+  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 
@@ -447,26 +839,31 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     int index = _popcount(_bitmap & (mask - 1));
 
     if ((_bitmap & mask) != 0) {
-      List<_APersistentMap<K, V>> newarray = _array.sublist(0);
-      _APersistentMap<K, V> m = _array[index];
-      _APersistentMap<K, V> newM =
-          m._insertWith(keyValues, size, combine, hash, depth + 1);
+      _ANodeBase<K, V> m = _array[index];
+      int oldSize = m.length;
+      _ANodeBase<K, V> newM =
+                m._insertWith(owner, keyValues, size, combine, hash, depth + 1);
+      if(identical(m, newM)) {
+        if(oldSize != m.length) this._length += m.length - oldSize;
+        return this;
+      }
+      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newM;
-      int delta = newM.length - m.length;
-      return new _SubMap<K, V>(_bitmap, newarray, length + delta);
+      int delta = newM.length - oldSize;
+      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap, newarray, length + delta);
     } else {
       int newlength = _array.length + 1;
-      List<_APersistentMap<K, V>> newarray =
-          new List<_APersistentMap<K, V>>(newlength);
+      List<_ANodeBase<K, V>> newarray =
+          new List<_ANodeBase<K, V>>(newlength);
       // TODO: find out if there's a "copy array" native function somewhere
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      newarray[index] = new _Leaf<K, V>(hash, keyValues, size);
-      return new _SubMap<K, V>(_bitmap | mask, newarray, length + size);
+      newarray[index] = new _Leaf<K, V>.abc(owner, hash, keyValues, size);
+      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + size);
     }
   }
 
-  PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
+  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 
@@ -475,123 +872,125 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _APersistentMap<K, V> m = _array[index];
-      return m._intersectWith(keyValues, size, combine, hash, depth + 1);
+      _ANodeBase<K, V> m = _array[index];
+      return m._intersectWith(owner, keyValues, size, combine, hash, depth + 1);
     } else {
-      return new _EmptyMap();
+      return new _EmptyMap(owner);
     }
   }
 
-  PersistentMap<K, V> _delete(K key, int hash, int depth) {
+  NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool safe) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _APersistentMap<K, V> m = _array[index];
-      _APersistentMap<K, V> newm = m._delete(key, hash, depth + 1);
-      int delta = newm.length - m.length;
+      _ANodeBase<K, V> m = _array[index];
+      int oldSize = m.length;
+      _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1, safe);
+      int delta = newm.length - oldSize;
       if (identical(m, newm)) {
+        this._length += delta;
         return this;
       }
-      if (newm.isEmpty) {
+      if (newm is _EmptyMap) {
         if (_array.length > 2) {
           int newsize = _array.length - 1;
-          List<_APersistentMap<K, V>> newarray =
-              new List<_APersistentMap<K, V>>(newsize);
+          List<_ANodeBase<K, V>> newarray =
+              new List<_ANodeBase<K, V>>(newsize);
           for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
           for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
           assert(newarray.length >= 2);
-          return new _SubMap(_bitmap ^ mask, newarray, length + delta);
+          return new _SubMap.ensureOwner(this, owner, _bitmap ^ mask, newarray, length + delta);
         } else {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
-          _APersistentMap<K, V> onlyValueLeft = _array[1 - index];
+          _ANodeBase<K, V> onlyValueLeft = _array[1 - index];
           return onlyValueLeft._isLeaf
               ? onlyValueLeft
-              : new _SubMap(_bitmap ^ mask,
-                            <_APersistentMap<K, V>>[onlyValueLeft],
+              : new _SubMap.ensureOwner(this, owner, _bitmap ^ mask,
+                            <_ANodeBase<K, V>>[onlyValueLeft],
                             length + delta);
         }
       } else if (newm._isLeaf){
         if (_array.length == 1) {
           return newm;
         } else {
-          List<_APersistentMap<K, V>> newarray =
-              new List<_APersistentMap<K, V>>.from(_array, growable: false);
+          List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
           newarray[index] = newm;
-          return new _SubMap(_bitmap, newarray, length + delta);
+          return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
         }
       } else {
-        List<_APersistentMap<K, V>> newarray =
-            new List<_APersistentMap<K, V>>.from(_array, growable: false);
+        List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
         newarray[index] = newm;
-        return new _SubMap(_bitmap, newarray, length + delta);
+
+        return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
+      if(!safe) keyNotDefined();
       return this;
     }
   }
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
-      _APersistentMap<K, V> m = _array[index];
-      _APersistentMap<K, V> newm = m._adjust(key, update, hash, depth + 1);
+      _ANodeBase<K, V> m = _array[index];
+      _ANodeBase<K, V> newm = m._adjust(owner, key, update, hash, depth + 1);
       if (identical(newm, m)) {
         return this;
       }
-      List<_APersistentMap<K, V>> newarray =
-          new List<_APersistentMap<K, V>>.from(_array, growable: false);
+      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newm;
-      return new _SubMap(_bitmap, newarray, length);
+
+      return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
       return this;
     }
   }
 
-  PersistentMap<K, V>
-      _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
-          m._unionWithSubMap(this, combine, depth);
+  NodeBase<K, V>
+      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
+          m._unionWithSubMap(owner, this, combine, depth);
 
-  PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
+  NodeBase<K, V>
+      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  PersistentMap<K, V>
-      _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
-          this._insertWith(m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
+  NodeBase<K, V>
+      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
+          this._insertWith(owner, m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
-  PersistentMap<K, V>
-      _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) {
+  NodeBase<K, V>
+      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) {
     int ormap = _bitmap | m._bitmap;
     int andmap = _bitmap & m._bitmap;
-    List<_APersistentMap<K, V>> newarray =
-        new List<_APersistentMap<K, V>>(_popcount(ormap));
+    List<_ANodeBase<K, V>> newarray =
+        new List<_ANodeBase<K, V>>(_popcount(ormap));
     int mask = 1, i = 0, i1 = 0, i2 = 0;
     int newSize = 0;
     while (mask <= ormap) {
       if ((andmap & mask) != 0) {
         _array[i1];
         m._array[i2];
-        _APersistentMap<K, V> newMap =
-            m._array[i2]._unionWith(_array[i1], combine, depth + 1);
+        _ANodeBase<K, V> newMap =
+            m._array[i2]._unionWith(owner, _array[i1], combine, depth + 1);
         newarray[i] = newMap;
         newSize += newMap.length;
         i1++;
         i2++;
         i++;
       } else if ((_bitmap & mask) != 0) {
-        _APersistentMap<K, V> newMap = _array[i1];
+        _ANodeBase<K, V> newMap = _array[i1];
         newarray[i] = newMap;
         newSize += newMap.length;
         i1++;
         i++;
       } else if ((m._bitmap & mask) != 0) {
-        _APersistentMap<K, V> newMap = m._array[i2];
+        _ANodeBase<K, V> newMap = m._array[i2];
         newarray[i] = newMap;
         newSize += newMap.length;
         i2++;
@@ -599,27 +998,27 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       }
       mask <<= 1;
     }
-    return new _SubMap<K, V>(ormap, newarray, newSize);
+    return new _SubMap<K, V>.ensureOwner(this, owner, ormap, newarray, newSize);
   }
 
-  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+  NodeBase<K, V> _intersectionWith(Owner owner, _ANodeBase<K, V> m,
                                         V combine(V x, V y), int depth) =>
-      m._intersectionWithSubMap(this, combine, depth);
+      m._intersectionWithSubMap(owner, this, combine, depth);
 
-  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
+  NodeBase<K, V> _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m,
                                                 V combine(V x, V y),
                                                 int depth) =>
       m;
 
-  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+  NodeBase<K, V> _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
-      _intersectWith(m._pairs,  m.length, (V v1, V v2) => combine(v2, v1),
+      _intersectWith(owner, m._pairs,  m.length, (V v1, V v2) => combine(v2, v1),
                      m._hash, depth);
 
-  PersistentMap<K, V> _intersectionWithSubMap(
+  NodeBase<K, V> _intersectionWithSubMap(Owner owner,
       _SubMap<K, V> m, V combine(V x, V y), int depth) {
     int andmap = _bitmap & m._bitmap;
-    List<_APersistentMap<K, V>> newarray = new List<_APersistentMap<K, V>>();
+    List<_ANodeBase<K, V>> newarray = new List<_ANodeBase<K, V>>();
     int mask = 1, i1 = 0, i2 = 0;
     int newSize = 0;
     int newMask = 0;
@@ -627,8 +1026,8 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       if ((andmap & mask) != 0) {
         _array[i1];
         m._array[i2];
-        _APersistentMap<K, V> newMap =
-            m._array[i2]._intersectionWith(_array[i1], combine, depth + 1);
+        _ANodeBase<K, V> newMap =
+            m._array[i2]._intersectionWith(owner, _array[i1], combine, depth + 1);
         newarray.add(newMap);
         newSize += newMap.length;
         newMask |= mask;
@@ -642,32 +1041,31 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       mask <<= 1;
     }
     if (newarray.length > 1) {
-      return new _SubMap<K, V>(newMask, newarray, newSize);
+      return new _SubMap<K, V>.ensureOwner(this, owner, newMask, newarray, newSize);
     } else if (newarray.length == 1) {
-      _APersistentMap<K, V> onlyValueLeft = newarray[0];
+      _ANodeBase<K, V> onlyValueLeft = newarray[0];
       return onlyValueLeft._isLeaf
           ? onlyValueLeft
-          : new _SubMap<K, V>(newMask, newarray, newSize);
+          : new _SubMap<K, V>.ensureOwner(this, owner, newMask, newarray, newSize);
     } else {
-      return new _EmptyMap();
+      return new _EmptyMap(owner);
     }
   }
 
-  PersistentMap mapValues(f(V)) {
-    List<_APersistentMap<K, V>> newarray =
-        new List<_APersistentMap<K, V>>.from(_array, growable: false);
+  NodeBase mapValues(Owner owner, f(V)) {
+    List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
     for (int i = 0; i < _array.length; i++) {
-      _APersistentMap<K, V> mi = _array[i];
-        newarray[i] = mi.mapValues(f);
+      _ANodeBase<K, V> mi = _array[i];
+        newarray[i] = mi.mapValues(owner, f);
     }
-    return new _SubMap(_bitmap, newarray, length);
+    return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
   }
 
   forEachKeyValue(f(K, V)) {
     _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 
-  bool operator ==(PersistentMap<K, V> other) {
+  bool operator ==(NodeBase<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
     _SubMap otherSubMap = other;
@@ -675,8 +1073,8 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     if (length != otherSubMap.length) return false;
     assert(_array.length == otherSubMap._array.length);
     for (int i = 0; i < _array.length; i++) {
-      _APersistentMap<K, V> mi = _array[i];
-      _APersistentMap<K, V> omi = otherSubMap._array[i];
+      _ANodeBase<K, V> mi = _array[i];
+      _ANodeBase<K, V> omi = otherSubMap._array[i];
       if (mi != omi) {
         return false;
       }
@@ -701,4 +1099,14 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   }
 
   toDebugString() => "_SubMap($_array)";
+}
+
+ownerEquals(Owner a, Owner b) {
+  return a != null && a == b;
+}
+
+makeCopyIfNeeded(Owner a, Owner b, List c) {
+  if(ownerEquals(a, b))
+    return c;
+  else return c.sublist(0);
 }

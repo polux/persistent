@@ -8,6 +8,7 @@ library map_bench;
 import 'package:persistent/persistent.dart';
 
 import 'dart:math';
+import 'dart:collection';
 
 part 'src/benchmark.dart';
 part 'src/simple_map_1.dart';

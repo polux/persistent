@@ -8,7 +8,7 @@ part of map_bench;
 /**
  * Naive implementation of PersistentMap dart:core [Map]s.
  */
-class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
+class SimplePersistentMap2<K, V> extends IterableBase implements PersistentMap<K, V> {
   final Map<K, V> _map;
 
   bool get isEmpty => _map.isEmpty;
@@ -30,11 +30,11 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
     return new SimplePersistentMap2._internal(newmap);
   }
 
-  Option<V> lookup(K key) {
+  V lookup(K key, [orElse]) {
     if (_map.containsKey(key)) {
-      return new Option<V>.some(_map[key]);
+      return _map[key];
     } else {
-      return new Option<V>.none();
+      return orElse == null ? null : orElse();
     }
   }
 
