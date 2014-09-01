@@ -13,12 +13,12 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Looks up the value possibly bound to [key] in `this`. Returns
    * [new Option.some(value)] if it exists, [new Option.none()] otherwise.
    */
-  V lookup(K key, [dynamic orElse()]);
+  V lookup(K key, {orElse()});
 
   /**
    * Calls [lookup] recursively using [path] elemenets as keys.
    */
-  lookupIn(List path, [dynamic orElse()]);
+  lookupIn(List path, {orElse()});
 
   /**
    * Returns the value for the given [key] or throws if [key]
@@ -331,6 +331,8 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    */
   PersistentMap asPersistent();
 
+
+  operator []=(key, value);
 
   // Just adjusts signature from ReadMap
   TransientMap mapValues(f(V value));
