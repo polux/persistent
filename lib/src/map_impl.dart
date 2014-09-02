@@ -123,7 +123,7 @@ class PersistentMapImpl<K, V>
 
       return new PersistentMapImpl._new(
           _root.adjust(null, path[offset],
-          (e) => e.insertIn(path, value, combine, offset+1)));
+          (e) => e.insertIn(path, value, combine, offset+1), false));
     }
 
   PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
@@ -136,11 +136,11 @@ class PersistentMapImpl<K, V>
 
     return new PersistentMapImpl._new(
         _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe), safe));
   }
 
-  PersistentMapImpl<K, V> adjust(K key, V update(V value)) {
-    return  new PersistentMapImpl._new(_root.adjust(null, key, update));
+  PersistentMapImpl<K, V> adjust(K key, V update(V value), {safe: false}) {
+    return  new PersistentMapImpl._new(_root.adjust(null, key, update, safe));
   }
 
   PersistentMapImpl adjustIn(List<K> path, V update(V value), [offset = 0]) {
@@ -148,7 +148,7 @@ class PersistentMapImpl<K, V>
 
     return new PersistentMapImpl._new(
            _root.adjust(null, path[offset],
-           (e) => e.adjustIn(path, update, offset+1)));
+           (e) => e.adjustIn(path, update, offset+1), false));
   }
 
   PersistentMapImpl mapValues(f(V value)) {
@@ -224,7 +224,7 @@ class TransientMapImpl<K, V>
 
        return _adjustRootAndReturn(
            _root.adjust(null, path[offset],
-           (e) => e.insertIn(path, offset+1)));
+           (e) => e.insertIn(path, offset+1), false));
      }
 
   TransientMap<K, V> doDelete(K key, {bool safe: false}) {
@@ -237,18 +237,18 @@ class TransientMapImpl<K, V>
 
     return _adjustRootAndReturn(
         _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe), safe));
   }
 
-  TransientMap<K, V> doAdjust(K key, V update(V value)) {
-    return _adjustRootAndReturn(_root.adjust(owner, key, update));
+  TransientMap<K, V> doAdjust(K key, V update(V value), {safe: false}) {
+    return _adjustRootAndReturn(_root.adjust(owner, key, update, safe));
   }
 
   TransientMap doAdjustIn(List<K> path, V update(V value), [offset = 0]) {
     if(path.length == offset +1) return doAdjust(path[offset], update);
 
     return _adjustRootAndReturn(
-             _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1)));
+             _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1), false));
   }
 
   TransientMap mapValues(f(V value)) {
@@ -324,7 +324,7 @@ abstract class NodeBase<K, V>
 
   void forEachKeyValue(f(K key, V value));
 
-  NodeBase<K, V> adjust(Owner owner, K key, V update(V value));
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V value), bool safe);
 
   NodeBase mapValues(Owner owner, f(V value));
 
@@ -352,7 +352,7 @@ abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
   NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
   NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe);
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth);
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe);
 
   _ANodeBase<K, V>
       _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth);
@@ -391,8 +391,8 @@ abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
   NodeBase<K, V> delete(Owner owner, K key, bool safe) =>
       _delete(owner ,key, key.hashCode & 0x3fffffff, 0, safe);
 
-  NodeBase<K, V> adjust(Owner owner, K key, V update(V)) =>
-      _adjust(owner, key, update, key.hashCode & 0x3fffffff, 0);
+  NodeBase<K, V> adjust(Owner owner, K key, V update(V), bool safe) =>
+      _adjust(owner, key, update, key.hashCode & 0x3fffffff, 0, safe);
 
   NodeBase<K, V> union(Owner owner, NodeBase<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(owner, other, (combine != null) ? combine : (V x, V y) => y, 0);
@@ -434,9 +434,11 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
     return this;
   }
 
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) => this;
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) =>
+    safe ? this : ThrowKeyError(key);
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) => this;
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) =>
+    safe ? this : ThrowKeyError(key);
 
   NodeBase<K, V>
       _unionWith(Owner owner, NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
@@ -601,7 +603,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
   }
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) {
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) {
     LinkedList<Pair<K, V>> adjustPairs() {
       LinkedListBuilder<Pair<K, V>> builder =
           new LinkedListBuilder<Pair<K, V>>();
@@ -616,11 +618,12 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         builder.add(elem);
         it = cons.tail;
       }
+      if(!safe) ThrowKeyError(key);
       return builder.build();
     }
 
     return (hash != _hash)
-        ? this
+        ? (safe ? this : ThrowKeyError(key))
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
   }
 
@@ -784,7 +787,6 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-
   NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
@@ -887,13 +889,13 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) {
+  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
       _ANodeBase<K, V> m = _array[index];
-      _ANodeBase<K, V> newm = m._adjust(owner, key, update, hash, depth + 1);
+      _ANodeBase<K, V> newm = m._adjust(owner, key, update, hash, depth + 1, safe);
       if (identical(newm, m)) {
         return this;
       }
@@ -902,7 +904,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
-      return this;
+      return (safe ? this : ThrowKeyError(key));
     }
   }
 
