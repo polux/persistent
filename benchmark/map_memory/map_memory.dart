@@ -30,11 +30,11 @@ void run(int template_size, String mode) {
   int allocated = 0;
   for(bool go = true; go; allocated++){
     try{
-      print(allocated);
       go = false;
       var a = creators[mode]();
       data[allocated] = a;
       go = true;
+      print(1024000000.0 / allocated / template_size);
     } catch(e) {
       data = null;
     }

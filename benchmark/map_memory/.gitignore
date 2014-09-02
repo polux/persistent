@@ -1,4 +1,2 @@
 *.js
 *.js.*
-*.csv
-!map_memory.pure.js
