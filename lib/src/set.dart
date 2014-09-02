@@ -57,16 +57,20 @@ abstract class PersistentSet<E> implements ReadSet<E> {
 
   PersistentSet<E> insert(E element);
 
-  PersistentSet<E> delete(E element);
+  PersistentSet<E> delete(E element, {bool safe:false});
   
   PersistentSet<E> withTransient(void change(TransientSet<E> set));
+  
+  bool operator==(PersistentSet<E> other);
+  
+  int get hashCode;
 }
 
 abstract class TransientSet<E> implements ReadSet<E> {
 
   void doInsert(E element);
 
-  void doDelete(E element);
+  void doDelete(E element, {bool safe:false});
   
 }
 

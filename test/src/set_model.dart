@@ -8,7 +8,7 @@ part of test_util;
 /**
  * Naive implementation of PersistentSet using dart:core [Set]s.
  */
-class ModelSet<E> extends ReadSetBase<E> {
+class ModelSet<E> extends ReadSetBase<E> implements PersistentSet<E> {
   Set<E> zet;
 
   ModelSet(this.zet);
