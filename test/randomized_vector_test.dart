@@ -6,8 +6,6 @@ import 'src/test_util.dart';
 import 'dart:core';
 import 'utils.dart';
 
-const int OPERATION_COUNT = 10000;
-
 main() {
   doTest(10000, (message) => print(message));
 }
@@ -86,33 +84,60 @@ doTest(operationsCnt, print_fn){
     },
   };
 
+  randomlyChangeImpl(m) {
+    if (probability(0.1)) {
+      if (m is PersistentVector) {
+        return m.asTransient();
+      } else {
+        return m.asPersistent();
+      }
+    } else {
+      return m;
+    }
+  }
+
+  impl_for(ve) {
+    if (ve is TransientVector) {
+      return impls['transient'];
+    } else {
+      return impls['persistent'];
+    }
+  }
+
+  impls.addAll({
+    'randomlyChangingPersistentTransient': {
+      'create': () => new PersistentVector(),
+      'bulkInsert': (ve, List updateWith) =>
+        randomlyChangeImpl(impl_for(ve)['bulkInsert'](ve, updateWith)),
+      'bulkPop': (ve, int count) =>
+        randomlyChangeImpl(impl_for(ve)['bulkPop'](ve, count)),
+      'bulkChange': (ve, Map changes) =>
+        randomlyChangeImpl(impl_for(ve)['bulkChange'](ve, changes)),
+      'deepCopy': (ve) => impl_for(ve)['deepCopy'](ve),
+    },
+  });
 
   test('random_test', () {
-
-
     Map oldImpls = {};
 
-
     impls.forEach((name, impl) {
+      oldImpls[name] = {};
       impl['instance'] = impl['create']();
     });
 
-    for (int i = 0; i < OPERATION_COUNT; i++) {
+    for (int i = 0; i < operationsCnt; i++) {
       PersistentVector vec = impls['persistent']['instance'];
 
-      assertInstancesAreSame(impls);
-      assertInstancesAreSame(oldImpls);
-
-      if (probability(0.05)) {
-        print_fn('deep copying instances');
+      if (probability(0.01) || oldImpls['persistent'].isEmpty) {
+        print_fn('saving old instances');
         impls.forEach((name, impl) {
-          if (!oldImpls.containsKey(name)) {
-            oldImpls[name] = {};
-          }
           oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
         });
       }
       print_fn('length: ${vec.length}');
+
+      assertInstancesAreSame(impls);
+      assertInstancesAreSame(oldImpls);
 
       if (probability(1/3)) {
         // 33% Insert
