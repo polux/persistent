@@ -7,7 +7,7 @@ import 'dart:core';
 import 'utils.dart';
 
 main() {
-  doTest(10000, (message) => print(message));
+  doTest(1000, (message) => print(message));
 }
 
 doTest(operationsCnt, print_fn){
@@ -134,14 +134,14 @@ doTest(operationsCnt, print_fn){
           oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
         });
       }
-      print_fn('length: ${vec.length}');
+      print_fn('$i/$operationsCnt: current length: ${vec.length}');
 
       assertInstancesAreSame(impls);
       assertInstancesAreSame(oldImpls);
 
       if (probability(1/3)) {
         // 33% Insert
-        int bulkCount = r.nextInt(100);
+        int bulkCount = r.nextInt(1000);
         List updateWith = [];
         for (int i = 0; i < bulkCount; i++) {
           updateWith.add(r.nextInt(47474747));
@@ -153,7 +153,13 @@ doTest(operationsCnt, print_fn){
         // 33% Delete
         int maxIndex = impls['persistent']['instance'].length;
         if (maxIndex == 0) continue;
-        int bulkCount = r.nextInt(impls['persistent']['instance'].length);
+        int bulkCount;
+        // sometimes, delete the whole list
+        if(probability(0.05)){
+          bulkCount = vec.length;
+        } else {
+          bulkCount = r.nextInt(vec.length);
+        }
         impls.forEach((name, impl) {
           impls[name]['instance'] = impl['bulkPop'](impl['instance'], bulkCount);
         });
@@ -182,6 +188,15 @@ doTest(operationsCnt, print_fn){
       PersistentVector not_copy = copy.push('something completely different');
       expect(pv == not_copy, isFalse);
       expect(pv.hashCode == not_copy.hashCode, isFalse);
+
+      // test 'empty'
+      num sum = 0;
+      for (var impl in impls.keys){
+        sum += impls[impl]['instance'].isEmpty?0:1;
+      }
+      // all impementations must add the same 0 or 1 value to the sum
+      expect(sum % impls.length, equals(0));
+
     }
   });
 }
