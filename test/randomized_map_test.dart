@@ -6,7 +6,7 @@ import 'utils.dart';
 
 
 main() {
-  doTest(10000, (message) => print(message));
+  doTest(1000, (message) => print(message));
   print('Test successfully finished');
 }
 
