@@ -14,12 +14,8 @@ doTest(operationsCnt, print_fn){
   Random r = new Random(47);
 
   assertDeeplyEquals(a, b) {
-    if(a is! Map && a is! TransientMap && a is! PersistentMap){
-      return a==b;
-    } else {
       expect(a.length, equals(b.length));
-      a.keys.forEach((key) => assertDeeplyEquals(a[key], b[key]));
-    }
+      a.keys.forEach((key) => expect(a[key], equals(b[key])));
   }
 
   // test deepEquality and keys and values iterators
