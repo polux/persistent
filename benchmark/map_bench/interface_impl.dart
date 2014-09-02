@@ -103,10 +103,9 @@ class LinkedListInterface<K, V>
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return new Option<V>.some(elem.snd);
+      if (elem.fst == key) return;
       it = cons.tail;
     }
-    return new Option<V>.none();
   }
   
   delete(K key){
