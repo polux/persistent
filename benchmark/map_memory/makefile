@@ -1,3 +1,5 @@
+template_size = 1000
+
 all: run
 
 
@@ -14,29 +16,31 @@ clean:
 
 run: map_memory.js
 
-	@echo "OUTPUT IN BYTES PER <char[8],char[8]> ENTRY:"
+	@echo "Using flat map of size ${template_size};"
+	@echo "keys and values are Strings of length 8. Output is in bytes per one (key, value) pair;" 
+	@echo "benchmark internally counts number of objects that fit into 1GB heap space, \"aborted\" messages shown are therefore expected"
 
-	@echo -n "DartVM transient: "
-	@dart --old_gen_heap_size=1024 map_memory.dart 1000 transient > temp.out 2>/dev/null
+	@echo -n "DartVM persistent: "
+	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} persistent > temp.out 2>/dev/null
 	@tail -1 temp.out
 
 	@echo -n "DartVM map: "
-	@dart --old_gen_heap_size=1024 map_memory.dart 1000 map > temp.out 2>/dev/null
+	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} map > temp.out 2>/dev/null
 	@tail -1 temp.out
 
 	@echo -n "DartVM json: "
-	@dart --old_gen_heap_size=1024 map_memory.dart 1000 json > temp.out 2>/dev/null
+	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} json > temp.out 2>/dev/null
 	@tail -1 temp.out
 
-	@echo -n "NodeJS transient: "
-	@ ! node --max-old-space-size=1024 map_memory.js 1000 transient > temp.out 2>/dev/null
+	@echo -n "NodeJS persistent: "
+	@ ! node --max-old-space-size=1024 map_memory.js ${template_size} persistent > temp.out 2>/dev/null
 	@tail -1 temp.out
 
 	@echo -n "NodeJS map: "
-	@ ! node --max-old-space-size=1024 map_memory.js 1000 map > temp.out 2>/dev/null
+	@ ! node --max-old-space-size=1024 map_memory.js ${template_size} map > temp.out 2>/dev/null
 	@tail -1 temp.out
 
 	@echo -n "NodeJS json: "
-	@ ! node --max-old-space-size=1024 map_memory.js 1000 json > temp.out 2>/dev/null
+	@ ! node --max-old-space-size=1024 map_memory.js ${template_size} json > temp.out 2>/dev/null
 	@tail -1 temp.out
 
