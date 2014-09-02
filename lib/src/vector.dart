@@ -374,11 +374,7 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
 
   int get hashCode {
     if (this._hashCode == null) {
-      int result = 17;
-      for (E value in this) {
-        result = 37 * result + value.hashCode % 1000000009;
-      }
-      this._hashCode = result;
+      return hashObjects(this);
     }
     return this._hashCode;
   }
