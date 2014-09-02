@@ -8,7 +8,7 @@ part of persistent;
 abstract class _SetImplBase<E> extends ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !isNone(_map.lookup(element, none));
+  bool contains(E element) => !isNone(_map.lookup(element, orElse: getNone));
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 

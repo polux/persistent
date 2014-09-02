@@ -11,10 +11,13 @@ deepPersistent(from) {
       from.forEach((key,value) => map.doInsert(key, deepPersistent(value)));
     });
   }
+  else if(from is List) {
+    throw '??? List ???';
+  }
   else {
     return from;
   }
 }
 final _none = new Object();
-final none = () => _none;
+final getNone = () => _none;
 bool isNone(val) => val == _none;
