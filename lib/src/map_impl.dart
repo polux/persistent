@@ -9,10 +9,59 @@ final _random = new Random();
 
 ThrowKeyError (key) => throw new Exception('Key Error: ${key} is not defined');
 
-class PersistentMapImpl<K, V>
-        extends IterableBase<Pair<K, V>>
-        implements PersistentMap<K, V>, Persistent {
+abstract class ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
   NodeBase _root;
+
+  V lookup(K key, {orElse()}) {
+    var val = _root.lookup(key);
+    if(isNone(val)){
+      if (orElse == null) {
+        ThrowKeyError(key);
+      } else {
+        return orElse();
+      }
+    } else {
+      return val;
+    }
+  }
+
+  lookupIn(List<K> path, {orElse(), offset: 0}) {
+    var key = path[offset];
+    var e = lookup(key, orElse: orElse);
+    offset++;
+
+    if(path.length == offset) return e;
+    else return e.lookupIn(path, orElse: orElse, offset: offset);
+  }
+
+  V operator [](K key) =>
+      lookup(key);
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  Map<K, V> toMap() {
+    return _root.toMap();
+  }
+
+  Iterable<K> get keys => _root.keys;
+
+  Iterable<V> get values => _root.values;
+
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+
+  Iterator get iterator => _root.iterator;
+
+  int get length => _root.length;
+
+  bool containsKey(key) {
+    final value = this.lookup(key, orElse: getNone);
+    return !isNone(value);
+  }
+}
+
+class PersistentMapImpl<K, V>
+        extends ReadMapImpl<K, V>
+        implements PersistentMap<K, V>, Persistent {
 
   int _hash;
 
@@ -60,7 +109,7 @@ class PersistentMapImpl<K, V>
     this._root = map._root;
   }
 
-  PersistentMapImpl._new(NodeBase this._root);
+  PersistentMapImpl._new(NodeBase __root) { _root = __root; }
 
   PersistentMapImpl<K, V>
       insert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
@@ -90,34 +139,6 @@ class PersistentMapImpl<K, V>
         (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
   }
 
-  V lookup(K key, {orElse()}) {
-    var val = _root.lookup(key);
-    if(isNone(val)){
-      if (orElse == null) {
-        ThrowKeyError(key);
-      } else {
-        return orElse();
-      }
-    } else {
-      return val;
-    }
-  }
-
-  lookupIn(List<K> path, {orElse(), offset: 0}) {
-    var key = path[offset];
-    var e = lookup(key, orElse: orElse);
-    offset++;
-
-    if(path.length == offset) return e;
-    else return e.lookupIn(path, orElse: orElse, offset: offset);
-  }
-
-  V operator [](K key) =>
-      lookup(key);
-
-
-  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
-
   PersistentMapImpl<K, V> adjust(K key, V update(V value)) {
     return  new PersistentMapImpl._new(_root.adjust(null, key, update));
   }
@@ -145,30 +166,11 @@ class PersistentMapImpl<K, V>
     intersection(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) =>
       new PersistentMapImpl._new(_root.intersection(null, other._root, combine));
 
-  Map<K, V> toMap() {
-    return _root.toMap();
-  }
-
-  Iterable<K> get keys => _root.keys;
-
-  Iterable<V> get values => _root.values;
-
-  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
-
   PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
       new PersistentMapImpl.fromPairs(this.map(f));
 
   PersistentMapImpl<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
       new PersistentMapImpl<K, V>.fromPairs(this.where(f));
-
-  Iterator get iterator => _root.iterator;
-
-  int get length => _root.length;
-
-  bool containsKey(key) {
-    final value = this.lookup(key, orElse: getNone);
-    return !isNone(value);
-  }
 
   TransientMap asTransient() {
     return new TransientMapImpl.fromPersistent(this);
@@ -183,7 +185,7 @@ class PersistentMapImpl<K, V>
 }
 
 class TransientMapImpl<K, V>
-        extends IterableBase<Pair<K, V>>
+        extends ReadMapImpl<K, V>
         implements TransientMap<K, V> {
   NodeBase _root;
   Owner _owner;
@@ -238,38 +240,6 @@ class TransientMapImpl<K, V>
         (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
   }
 
-  V lookup(K key, {orElse()}) {
-    var val = _root.lookup(key);
-    if(isNone(val)){
-      if (orElse == null) {
-        ThrowKeyError(key);
-      } else {
-        return orElse();
-      }
-    } else {
-      return val;
-    }
-  }
-
-  lookupIn(List<K> path, {orElse(), offset: 0}) {
-    if(orElse == null) orElse = ThrowKeyError;
-
-    dynamic e = lookup(path[offset], orElse: orElse);
-    offset++;
-
-    if(path.length == offset) return e;
-    else return !isNone(e) ?
-        e.lookupIn(path, orElse: orElse, offset: offset)
-      :
-        (orElse == null ? null : orElse());
-  }
-
-  V operator [](K key) =>
-    lookup(key);
-
-
-  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
-
   TransientMap<K, V> doAdjust(K key, V update(V value)) {
     return _adjustRootAndReturn(_root.adjust(owner, key, update));
   }
@@ -292,29 +262,6 @@ class TransientMapImpl<K, V>
   TransientMap<K, V>
     intersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
         _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
-
-  /// Returns a mutable copy of `this`.
-  Map<K, V> toMap() {
-    return _root.toMap();
-  }
-
-  /// The keys of `this`.
-  Iterable<K> get keys => _root.keys;
-
-  /// The values of `this`.
-  Iterable<V> get values => _root.values;
-
-  /// Randomly picks an entry of `this`.
-  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
-
-  Iterator get iterator => _root.iterator;
-
-  int get length => _root.length;
-
-  bool containsKey(key) {
-    final value = this.lookup(key, orElse: getNone);
-    return !isNone(value);
-  }
 
   TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
      new PersistentMap.fromPairs(this.map(f)).asTransient();
@@ -636,7 +583,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
 
   NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) {
     if (hash != _hash) {
-      if(!safe) ThrowKeyError();
+      if(!safe) ThrowKeyError(key);
       return this;
     }
     bool found = false;
@@ -648,7 +595,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       return true;
     });
 
-    if(!found && !safe) ThrowKeyError();
+    if(!found && !safe) ThrowKeyError(key);
     return newPairs.isNil
         ? new _EmptyMap<K, V>(owner)
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
@@ -934,7 +881,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
-      if(!safe) ThrowKeyError();
+      if(!safe) ThrowKeyError(key);
       return this;
     }
   }

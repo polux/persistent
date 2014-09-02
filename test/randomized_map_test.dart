@@ -152,7 +152,7 @@ doTest(operationsCnt, print_fn){
     // do perform operation on all instances
 
     PersistentMap pm = impls['persistent']['instance'];
-    print_fn('current length: ${pm.length}');
+    print_fn('$i/$operationsCnt: current length: ${pm.length}');
 
     if(probability(0.7)) {
       // bulkInsert
