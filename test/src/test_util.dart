@@ -17,6 +17,7 @@ import 'package:unittest/unittest.dart';
 
 part 'map_model.dart';
 part 'set_model.dart';
+part 'vector_model.dart';
 
 /**
  * A datatype with an imperfect hash function to use as a key for testing maps.
@@ -164,6 +165,14 @@ bool setEquals(Set s1, Set s2) {
   return true;
 }
 
+bool vectorEquals(List l1, List l2) {
+  if (l1.length != l2.length) return false;
+  for (int i = 0; i < l1.length; i++) {
+    if (l1[i] != l2[i]) return false;
+  }
+  return true;
+}
+
 bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm._map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
 
@@ -180,7 +189,7 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '700');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
+  parser.addOption('smallCheckDepth', defaultsTo: '12');
   parser.addOption('property',
                    help: 'property to test or "all"',
                    allowed: new List.from(properties.keys)..add('all'),

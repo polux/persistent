@@ -8,9 +8,9 @@ class PersistentMapInterface<K, V>
   insert(K key, V value, V combine(V left, V right)) =>
     object = object.insert(key, value, combine);
   
-  lookup(K key) => object.lookup(key);
+  lookup(K key) => object.lookup(key, ()=>null);
   
-  delete(K key) => object = object.delete(key);
+  delete(K key) => object = object.delete(key, safe: true);
   
   _copy() => object;
 }
@@ -24,11 +24,15 @@ class TransientMapInterface<K, V>
   insert(K key, V value, V combine(V left, V right)) =>
     object.doInsert(key, value, combine);
   
-  lookup(K key) => object.doLookup(key);
+  lookup(K key) => object.lookup(key, ()=>null);
   
-  delete(K key) => object.doDelete(key);
+  delete(K key) => object.doDelete(key, safe: true);
   
-  _copy() => object.asPersistent().asTransient();
+  _copy(){
+    var copy = object.asPersistent();
+    object = copy.asTransient();
+    return copy.asTransient();
+  }
 }
 
     
