@@ -16,5 +16,5 @@ deepPersistent(from) {
   }
 }
 final _none = new Object();
-final none = () => _none;
+final getNone = () => _none;
 bool isNone(val) => val == _none;

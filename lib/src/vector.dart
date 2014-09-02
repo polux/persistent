@@ -275,7 +275,7 @@ class _VNode {
     } else if (_array.length == index) {
       _array.add(value);
     } else {
-      throw new Exception("Should not happen");
+      throw new Exception("Should not happen; ${_array.length} ${index}");
     }
   }
 
