@@ -7,9 +7,11 @@ part of persistent;
 
 final _random = new Random();
 
+final keyNotDefined = () => throw new Exception('Key is not defined');
+
 class PersistentMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements PersistentMap<K, V> {
+        implements PersistentMap<K, V>, Persistent {
   NodeBase _root;
 
   int _hash;
@@ -28,8 +30,8 @@ class PersistentMapImpl<K, V>
     if(other.hashCode != this.hashCode || this.length != other.length)
       return false;
     bool equals = true;
-    this.forEachKeyValue((key, value) {
-      equals = equals && other.contains(key) && other[key] == value;
+    this.forEachKeyValue((key, dynamic value) {
+      equals = equals && other.containsKey(key) && other[key] == value;
     });
     return equals;
   }
@@ -75,34 +77,42 @@ class PersistentMapImpl<K, V>
           (e) => e.insertIn(path, value, combine, offset+1)));
     }
 
-  PersistentMapImpl<K, V> delete(K key) {
-    return new PersistentMapImpl._new(_root.delete(null, key));
+  PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
+    return new PersistentMapImpl._new(_root.delete(null, key, safe));
   }
 
-  PersistentMapImpl<K, V> deleteIn(List<K> path, [offset = 0]) {
+  PersistentMapImpl<K, V> deleteIn(List<K> path, {offset: 0, bool safe: false}) {
     if(offset +1 == path.length)
-      return new PersistentMapImpl._new(_root.delete(null, path.last));
+      return new PersistentMapImpl._new(_root.delete(null, path.last, safe));
 
     return new PersistentMapImpl._new(
         _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset+1)));
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
   }
 
-  Option lookup(K key) {
-    return _root.lookup(key);
+  V lookup(K key, [dynamic orElse()]) {
+    if(orElse == null) orElse = keyNotDefined;
+    var val = _root.lookup(key);
+    if(isNone(val)) return (orElse == null ? null : orElse());
+    return val;
   }
 
-  Option lookupIn(List<K> path, [offset = 0]) {
-    Option e = lookup(path[offset]);
+  lookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
+    if(orElse == null) orElse = keyNotDefined;
+
+    dynamic e = lookup(path[offset], orElse);
     offset++;
 
     if(path.length == offset) return e;
-    else return e.isDefined ? e.value.lookupIn(path, offset) : null;
+    else return !isNone(e) ?
+        e.lookupIn(path, orElse, offset)
+      :
+        orElse();
   }
 
-  V operator [](K key) {
-    return _root.lookup(key).asNullable;
-  }
+  V operator [](K key) =>
+      lookup(key);
+
 
   void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
 
@@ -153,10 +163,9 @@ class PersistentMapImpl<K, V>
 
   int get length => _root.length;
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
+  bool containsKey(key) {
     final value = this.lookup(key);
-    return value.isDefined;
+    return !isNone(value);
   }
 
   TransientMap asTransient() {
@@ -173,7 +182,7 @@ class PersistentMapImpl<K, V>
 
 class TransientMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements Iterable<Pair<K, V>>, TransientMap<K, V> {
+        implements TransientMap<K, V> {
   NodeBase _root;
   Owner _owner;
   get owner => _owner != null ?
@@ -212,36 +221,43 @@ class TransientMapImpl<K, V>
            (e) => e.insertIn(path, offset+1)));
      }
 
-  TransientMap<K, V> doDelete(K key) {
-    return _adjustRootAndReturn(_root.delete(owner, key));
+  TransientMap<K, V> doDelete(K key, {bool safe: false}) {
+    return _adjustRootAndReturn(_root.delete(owner, key, safe));
   }
 
-  TransientMap<K, V> doDeleteIn(List<K> path, [offset = 0]) {
+  TransientMap<K, V> doDeleteIn(List<K> path, {offset: 0, safe: false}) {
     if(offset +1 == path.length)
-      return doDelete(path.last);
+      return doDelete(path.last, safe: safe);
 
     return _adjustRootAndReturn(
         _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset+1)));
+        (e) => e.deleteIn(path, offset: offset+1, safe: safe)));
   }
 
-  Option<V> doLookup(K key) {
-    return _root.lookup(key);
+  V lookup(K key, [dynamic orElse()]) {
+    var val = _root.lookup(key);
+    if(isNone(val)) return (orElse == null ? null : orElse());
+    return val;
   }
 
-  Option doLookupIn(List<K> path, [offset = 0]) {
-    Option e = doLookup(path[offset]);
+  lookupIn(List<K> path, [dynamic orElse(), offset = 0]) {
+    if(orElse == null) orElse = keyNotDefined;
+
+    dynamic e = lookup(path[offset], orElse);
     offset++;
 
     if(path.length == offset) return e;
-    else return e.isDefined ? e.value.lookupIn(path, offset) : null;
+    else return !isNone(e) ?
+        e.lookupIn(path, orElse, offset)
+      :
+        (orElse == null ? null : orElse());
   }
 
-  V operator [](K key) {
-    return _root.lookup(key).asNullable;
-  }
+  V operator [](K key) =>
+    lookup(key);
 
-  void doForEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
+
+  void forEachKeyValue(f(K key, V value)) => _root.forEachKeyValue(f);
 
   TransientMap<K, V> doAdjust(K key, V update(V value)) {
     return _adjustRootAndReturn(_root.adjust(owner, key, update));
@@ -254,16 +270,16 @@ class TransientMapImpl<K, V>
              _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1)));
   }
 
-  TransientMap doMapValues(f(V value)) {
+  TransientMap mapValues(f(V value)) {
     return _adjustRootAndReturn(_root.mapValues(owner, f));
   }
 
   TransientMap<K, V>
-      doUnion(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+      union(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
           _adjustRootAndReturn(_root.union(owner, other._root, combine));
 
   TransientMap<K, V>
-    doIntersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
+    intersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
         _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
 
   /// Returns a mutable copy of `this`.
@@ -278,17 +294,22 @@ class TransientMapImpl<K, V>
   Iterable<V> get values => _root.values;
 
   /// Randomly picks an entry of `this`.
-  Pair<K, V> doPickRandomEntry([Random random]) => _root.pickRandomEntry(random);
+  Pair<K, V> pickRandomEntry([Random random]) => _root.pickRandomEntry(random);
 
   Iterator get iterator => _root.iterator;
 
   int get length => _root.length;
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
-    final value = this.doLookup(key);
-    return value.isDefined;
+  bool containsKey(key) {
+    final value = this.lookup(key);
+    return !isNone(value);
   }
+
+  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
+     new PersistentMap.fromPairs(this.map(f)).asTransient();
+
+  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
 
   PersistentMap asPersistent() {
     _owner = null;
@@ -302,8 +323,6 @@ class TransientMapImpl<K, V>
  * Exception used for aborting forEach loops.
  */
 class _Stop implements Exception {}
-
-class Owner {}
 
 abstract class NodeBase<K, V>
     extends IterableBase<Pair<K, V>> {
@@ -338,14 +357,12 @@ abstract class NodeBase<K, V>
   Pair<K, V> pickRandomEntry([Random random]) =>
       elementAt((random != null ? random : _random).nextInt(this.length));
 
-  V operator [](K key) => this.lookup(key).asNullable;
-
   NodeBase<K, V>
     insert(Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
 
-  NodeBase<K, V> delete(Owner owner, K key);
+  NodeBase<K, V> delete(Owner owner, K key, bool safe);
 
-  Option<V> lookup(K key);
+  V lookup(K key);
 
   void forEachKeyValue(f(K key, V value));
 
@@ -367,17 +384,16 @@ abstract class NodeBase<K, V>
 abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
   Owner _owner;
 
-  _ANodeBase(this._owner, length, this.isEmpty, this._isLeaf) : super(length);
+  _ANodeBase(this._owner, length, this._isLeaf) : super(length);
 
-  final bool isEmpty;
   final bool _isLeaf;
 
-  Option<V> _lookup(K key, int hash, int depth);
+  V _lookup(K key, int hash, int depth);
   NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
   NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth);
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe);
   NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth);
 
   _ANodeBase<K, V>
@@ -405,7 +421,7 @@ abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
   LinkedList<Pair<K, V>> _onePair(K key, V value) =>
       new Cons<Pair<K, V>>(new Pair<K, V>(key, value), new Nil<Pair<K, V>>());
 
-  Option<V> lookup(K key) =>
+  V lookup(K key) =>
       _lookup(key, key.hashCode & 0x3fffffff, 0);
 
   NodeBase<K, V> insert(Owner owner, K key, V value, [V combine(V x, V y)]) =>
@@ -414,8 +430,8 @@ abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
           (combine != null) ? combine : (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
-  NodeBase<K, V> delete(Owner owner, K key) =>
-      _delete(owner ,key, key.hashCode & 0x3fffffff, 0);
+  NodeBase<K, V> delete(Owner owner, K key, bool safe) =>
+      _delete(owner ,key, key.hashCode & 0x3fffffff, 0, safe);
 
   NodeBase<K, V> adjust(Owner owner, K key, V update(V)) =>
       _adjust(owner, key, update, key.hashCode & 0x3fffffff, 0);
@@ -443,9 +459,9 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _EmptyMap<K, V> extends _ANodeBase<K, V> {
-  _EmptyMap(Owner owner) : super(owner, 0, true, false);
+  _EmptyMap(Owner owner) : super(owner, 0, false);
 
-  Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
+  V _lookup(K key, int hash, int depth) => none();
 
   NodeBase<K, V> _insertWith(Owner owner,
       LinkedList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
@@ -460,7 +476,7 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
     return this;
   }
 
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth) => this;
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) => this;
 
   NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth) => this;
 
@@ -517,7 +533,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
   int _hash;
   LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf.abc(Owner owner, this._hash, pairs, int size) : super(owner, size, false, true) {
+  _Leaf.abc(Owner owner, this._hash, pairs, int size) : super(owner, size, true) {
     this._pairs = pairs;
     assert(size == pairs.length);
   }
@@ -607,9 +623,11 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     return new _Leaf.ensureOwner(this, owner, _hash, builder.build(), newsize);
   }
 
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth) {
-    if (hash != _hash)
+  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) {
+    if (hash != _hash) {
+      if(!safe) keyNotDefined();
       return this;
+    }
     bool found = false;
     LinkedList<Pair<K, V>> newPairs = _pairs.strictWhere((p) {
       if (p.fst == key) {
@@ -618,6 +636,8 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       }
       return true;
     });
+
+    if(!found && !safe) keyNotDefined();
     return newPairs.isNil
         ? new _EmptyMap<K, V>(owner)
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
@@ -679,17 +699,17 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
                                               V combine(V x, V y), int depth) =>
       m._intersectWith(owner, _pairs, length, combine, _hash, depth);
 
-  Option<V> _lookup(K key, int hash, int depth) {
+  V _lookup(K key, int hash, int depth) {
     if (hash != _hash)
-      return new Option<V>.none();
+      return none();
     LinkedList<Pair<K, V>> it = _pairs;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return new Option<V>.some(elem.snd);
+      if (elem.fst == key) return elem.snd;
       it = cons.tail;
     }
-    return new Option<V>.none();
+    return none();
   }
 
   NodeBase mapValues(Owner owner, f(V)) =>
@@ -774,7 +794,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   int _bitmap;
   List<_ANodeBase<K, V>> _array;
 
-  _SubMap.abc(Owner owner, this._bitmap, this._array, int size) : super(owner, size, false, false);
+  _SubMap.abc(Owner owner, this._bitmap, this._array, int size) : super(owner, size, false);
 
   factory _SubMap.ensureOwner(_SubMap old, Owner owner, bitmap, array, int size) {
     if(ownerEquals(owner, old._owner)) {
@@ -794,7 +814,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     return n & 0x0000003F;
   }
 
-  Option<V> _lookup(K key, int hash, int depth) {
+  V _lookup(K key, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
@@ -802,7 +822,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       _ANodeBase<K, V> map = _array[index];
       return map._lookup(key, hash, depth + 1);
     } else {
-      return new Option<V>.none();
+      return none();
     }
   }
 
@@ -820,7 +840,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       _ANodeBase<K, V> newM =
                 m._insertWith(owner, keyValues, size, combine, hash, depth + 1);
       if(identical(m, newM)) {
-        if(oldSize != newM.length) this._length += m.length - oldSize;
+        if(oldSize != m.length) this._length += m.length - oldSize;
         return this;
       }
       List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
@@ -855,7 +875,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _delete(owner, K key, int hash, int depth) {
+  NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool safe) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
@@ -863,13 +883,13 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       int index = _popcount(_bitmap & (mask - 1));
       _ANodeBase<K, V> m = _array[index];
       int oldSize = m.length;
-      _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1);
+      _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1, safe);
       int delta = newm.length - oldSize;
       if (identical(m, newm)) {
         this._length += delta;
         return this;
       }
-      if (newm.isEmpty) {
+      if (newm is _EmptyMap) {
         if (_array.length > 2) {
           int newsize = _array.length - 1;
           List<_ANodeBase<K, V>> newarray =
@@ -903,6 +923,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
+      if(!safe) keyNotDefined();
       return this;
     }
   }

@@ -15,9 +15,9 @@ main() {
       map = map.insert('a', new PersistentMap());
       PersistentMap map2 = map.insertIn(['a', 'b'], 'c');
 
-      expect(map2['a'], equals(new PersistentMap.fromMap({'b': 'c'})));
+      expect(map2 == deepPersistent({'a': {'b': 'c'}}), isTrue);
       expect(map == map2, isFalse);
-      expect(map, equals(new PersistentMap.fromMap({'a': new PersistentMap()})));
+      expect(map, equals(deepPersistent({'a': {}})));
     });
 
     test('adjustIn', () {
@@ -46,7 +46,7 @@ main() {
       map = map.insert('a', new PersistentMap());
       map = map.insertIn(['a', 'b'], 'c');
 
-      expect(map.lookupIn(['a', 'b']).asNullable, equals('c'));
+      expect(map.lookupIn(['a', 'b']), equals('c'));
     });
   });
 }

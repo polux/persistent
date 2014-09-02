@@ -30,11 +30,11 @@ class ModelMap<K, V> extends IterableBase implements PersistentMap<K, V> {
     return new ModelMap(newmap);
   }
 
-  Option<V> lookup(K key) {
+  V lookup(K key) {
     if (_map.containsKey(key)) {
-      return new Option<V>.some(_map[key]);
+      return _map[key];
     } else {
-      return new Option<V>.none();
+      return none();
     }
   }
 

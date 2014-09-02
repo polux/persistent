@@ -30,11 +30,11 @@ class SimplePersistentMap2<K, V> extends IterableBase implements PersistentMap<K
     return new SimplePersistentMap2._internal(newmap);
   }
 
-  Option<V> lookup(K key) {
+  V lookup(K key, [orElse]) {
     if (_map.containsKey(key)) {
-      return new Option<V>.some(_map[key]);
+      return _map[key];
     } else {
-      return new Option<V>.none();
+      return orElse == null ? null : orElse();
     }
   }
 

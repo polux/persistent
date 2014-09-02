@@ -14,7 +14,6 @@ import 'package:enumerators/combinators.dart' as c;
 import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
-import 'dart:collection';
 
 part 'map_model.dart';
 part 'set_model.dart';
@@ -190,7 +189,7 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
   parser.addOption('quickCheckMaxSize', defaultsTo: '700');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
+  parser.addOption('smallCheckDepth', defaultsTo: '12');
   parser.addOption('property',
                    help: 'property to test or "all"',
                    allowed: new List.from(properties.keys)..add('all'),

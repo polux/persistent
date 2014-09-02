@@ -46,6 +46,7 @@ void bench(List<String> doyle, List<String> austeen) {
   watch.stop();
   print('Persistent ${watch.elapsedMilliseconds / 10}');
 
+  runT(doyle, austeen);
   watch.reset();
   watch.start();
   for (int i = 0; i < 10; i++) {
