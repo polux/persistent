@@ -19,7 +19,7 @@ class ModelSet<E> extends ReadSetBase<E> implements PersistentSet<E> {
     return new ModelSet(newset);
   }
 
-  PersistentSet<E> delete(E element) {
+  PersistentSet<E> delete(E element, {safe:false}) {
     Set<E> newset = new Set<E>.from(zet);
     newset.remove(element);
     return new ModelSet(newset);

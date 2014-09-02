@@ -25,8 +25,8 @@ testInsert(Set<Element> s, Element elem) =>
     sameSet(implemSetFrom(s).insert(elem), modelSetFrom(s).insert(elem));
 
 testDelete(Set<Element> s, Element elem) {
-  PersistentSet ps = implemSetFrom(s).delete(elem);
-  return sameSet(ps, modelSetFrom(s).delete(elem))
+  PersistentSet ps = implemSetFrom(s).delete(elem, safe:true);
+  return sameSet(ps, modelSetFrom(s).delete(elem, safe:true))
     // checks that delete's normalizes the set so that == is well defined
     && implemSetFrom(ps.toSet()) == ps;
 }
