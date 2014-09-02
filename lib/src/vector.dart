@@ -196,11 +196,11 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
         newTailOffset > oldTailOffset ? new _VNode([], owner) : oldTail;
 
     if (newTailOffset > oldTailOffset && oldSize > 0 && oldTail.length > 0) {
-      newRoot = newRoot._ensureOwner(owner);
+      newRoot = _transientVNode(newRoot, owner);
       var node = newRoot;
       for (var level = newLevel; level > _SHIFT; level -= _SHIFT) {
         var idx = (oldTailOffset >> level) & _MASK;
-        node._set(idx , node._get(idx) == null ? node._get(idx)._ensureOwner(owner) : new _VNode([], owner));
+        node._set(idx , _transientVNode(node._get(idx), owner));
         node = node._get(idx);
       }
       node._set((oldTailOffset >> _SHIFT) & _MASK, oldTail);
@@ -290,12 +290,6 @@ class _VNode {
     editable._array.removeRange(sizeIndex + 1, editable.length);
     return editable;
 
-  }
-
-  _ensureOwner(ownerID) {
-    if (ownerID != null && ownerID == _ownerID)
-      return this;
-    return new _VNode(_array.sublist(0), ownerID);
   }
 
   _VNode _update(ownerID, level, index, value, Bool didAlter) {
