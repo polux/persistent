@@ -49,6 +49,8 @@ doTest(operationsCnt, print_fn){
     return res;
   }
 
+  fn_adjust(String a) => '${a}j';
+
   Map impls = {
       'map': {
         'create': () => {},
@@ -60,6 +62,10 @@ doTest(operationsCnt, print_fn){
             keys.forEach((k) =>  me.remove(k));
             return me;
         },
+        'bulkAdjust': (Map me, List keys) {
+          keys.forEach((k) => me[k] = fn_adjust(me[k]));
+          return me;
+        },
         'deepCopy': (Map me) => deepCopyMap(me)
       },
       'persistent': {
@@ -68,6 +74,8 @@ doTest(operationsCnt, print_fn){
             updateWith.keys.fold(me, (me, k) => me.insert(k, updateWith[k])),
         'bulkDelete': (PersistentMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.delete(k, safe: true)),
+        'bulkAdjust': (PersistentMap me, List keys) =>
+            keys.fold(me, (me, k) => me.adjust(k, fn_adjust)),
         'deepCopy': (PersistentMap me) => me
       },
       // always transient
@@ -77,6 +85,8 @@ doTest(operationsCnt, print_fn){
             updateWith.keys.fold(me, (me, k) => me.doInsert(k, updateWith[k])),
         'bulkDelete': (TransientMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.doDelete(k, safe: true)),
+        'bulkAdjust': (PersistentMap me, List keys) =>
+            keys.fold(me, (me, k) => me.doAdjust(k, fn_adjust)),
         'deepCopy': (TransientMap me) {
           TransientMap res = new TransientMap();
           me.forEachKeyValue((k, v) => res.doInsert(k, v));
@@ -92,6 +102,9 @@ doTest(operationsCnt, print_fn){
         'bulkDelete': (PersistentMap me, List keys) =>
             me.withTransient((TransientMap me) =>
               keys.fold(me, (me, k) =>  me.doDelete(k, safe: true))),
+        'bulkAdjust': (PersistentMap me, List keys) =>
+            me.withTransient((TransientMap me) =>
+              keys.fold(me, (me, k) => me.doAdjust(k, fn_adjust))),
         'deepCopy': (PersistentMap me) => me
       },
   };
@@ -154,7 +167,7 @@ doTest(operationsCnt, print_fn){
     PersistentMap pm = impls['persistent']['instance'];
     print_fn('$i/$operationsCnt: current length: ${pm.length}');
 
-    if(probability(0.7)) {
+    if(probability(0.5)) {
       // bulkInsert
       // let's add some fixed percentage of all keys to the map
       int num = r.nextInt((range/10).floor());
@@ -168,7 +181,7 @@ doTest(operationsCnt, print_fn){
         impls[name]['instance'] = impls[name]['bulkInsert'](impl['instance'], map);
       });
     }
-    else {
+    else if(probability(0.5)){
       //bulkDelete
       List keys;
       if (probability(0.05)){
@@ -186,6 +199,21 @@ doTest(operationsCnt, print_fn){
       impls.forEach((name, impl){
         impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
       });
+    }
+    else {
+      List keys = [];
+      int num = r.nextInt(range);
+      List activeKeys = impls['map']['instance'].keys.toList();
+      if(activeKeys.length != 0) {
+        for(int i=0; i < num; i++) {
+          // sometimes try to delete key which is not there
+          keys.add(random_elem(activeKeys));
+        }
+        // perform deletion on each instance
+        impls.forEach((name, impl){
+          impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
+        });
+      }
     }
 
     // from time to time, deep-copy all the instances to test immutability
