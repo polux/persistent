@@ -1,3 +1,4 @@
+import numpy
 from subprocess import Popen, PIPE
 from sys import stderr, stdout
 import os
@@ -25,12 +26,16 @@ def run_inst(mode, name, size, limit):
 
 
 def run_test(mode, name, size):
-    res = run_inst(mode, name, size, 1024)
+    limits = list(range(100, 251, 30))
+    allocations = []
 
-    if(res == 0):
+    for limit in limits:
+        allocations.append(run_inst(mode, name, size, limit))
+
+    if(allocations[0] == 0):
         return float("inf")
 
-    return (1024.0/res)*(10**6)
+    return (numpy.polyfit(allocations, limits, 1)[0])*(10**6)
 
 
 stdout.write("mode,size,persistent,transient,json,map,\n")
