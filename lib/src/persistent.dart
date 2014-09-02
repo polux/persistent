@@ -11,6 +11,9 @@ deepPersistent(from) {
       from.forEach((key,value) => map.doInsert(key, deepPersistent(value)));
     });
   }
+  else if(from is List) {
+    throw '??? List ???';
+  }
   else {
     return from;
   }
