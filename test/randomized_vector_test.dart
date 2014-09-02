@@ -170,6 +170,18 @@ doTest(operationsCnt, print_fn){
           impls[name]['instance'] = impl['bulkChange'](impl['instance'], updateWith);
         });
       }
+
+      // test iterating, equality and hashCode
+      PersistentVector copy = new PersistentVector();
+      PersistentVector pv = impls['persistent']['instance'];
+      for(var item in pv) {
+        copy = copy.push(item);
+      }
+      expect(pv == copy, isTrue);
+      expect(pv.hashCode == copy.hashCode, isTrue);
+      PersistentVector not_copy = copy.push('something completely different');
+      expect(pv == not_copy, isFalse);
+      expect(pv.hashCode == not_copy.hashCode, isFalse);
     }
   });
 }
