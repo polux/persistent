@@ -11,7 +11,7 @@ final keyNotDefined = () => throw new Exception('Key is not defined');
 
 class PersistentMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements PersistentMap<K, V> {
+        implements PersistentMap<K, V>, Persistent {
   NodeBase _root;
 
   int _hash;
@@ -30,8 +30,8 @@ class PersistentMapImpl<K, V>
     if(other.hashCode != this.hashCode || this.length != other.length)
       return false;
     bool equals = true;
-    this.forEachKeyValue((key, value) {
-      equals = equals && other.contains(key) && other[key] == value;
+    this.forEachKeyValue((key, dynamic value) {
+      equals = equals && other.containsKey(key) && other[key] == value;
     });
     return equals;
   }
@@ -163,8 +163,7 @@ class PersistentMapImpl<K, V>
 
   int get length => _root.length;
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
+  bool containsKey(key) {
     final value = this.lookup(key);
     return !isNone(value);
   }
@@ -300,18 +299,17 @@ class TransientMapImpl<K, V>
   Iterator get iterator => _root.iterator;
 
   int get length => _root.length;
-  
-  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
-     new PersistentMap.fromPairs(this.map(f)).asTransient();
-  
-  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
 
-  // Optimized version of Iterable's contains
-  bool contains(key) {
+  bool containsKey(key) {
     final value = this.lookup(key);
     return !isNone(value);
   }
+
+  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
+     new PersistentMap.fromPairs(this.map(f)).asTransient();
+
+  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
 
   PersistentMap asPersistent() {
     _owner = null;
@@ -325,8 +323,6 @@ class TransientMapImpl<K, V>
  * Exception used for aborting forEach loops.
  */
 class _Stop implements Exception {}
-
-class Owner {}
 
 abstract class NodeBase<K, V>
     extends IterableBase<Pair<K, V>> {
