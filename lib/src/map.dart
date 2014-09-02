@@ -13,12 +13,12 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Looks up the value possibly bound to [key] in `this`. Returns
    * [new Option.some(value)] if it exists, [new Option.none()] otherwise.
    */
-  V lookup(K key, [dynamic orElse()]);
+  V lookup(K key, {orElse()});
 
   /**
    * Calls [lookup] recursively using [path] elemenets as keys.
    */
-  lookupIn(List path, [dynamic orElse()]);
+  lookupIn(List path, {orElse()});
 
   /**
    * Returns the value for the given [key] or throws if [key]
@@ -106,7 +106,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// The number of entries of `this`.
   int get length;
-
 }
 
 /**
@@ -198,7 +197,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
    *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
    */
-  PersistentMap<K, V> adjust(K key, V update(V value));
+  PersistentMap<K, V> adjust(K key, V update(V value), {bool safe: false});
 
   /**
    * Calls [adjust] recursively using [path] elemenets as keys.
@@ -311,7 +310,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doUpdate('b', 2);
    *     map.doAdjust('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
    */
-  TransientMap<K, V> doAdjust(K key, V update(V value));
+  TransientMap<K, V> doAdjust(K key, V update(V value), {bool safe: false});
 
   /**
    * Calls [doAdjust] recursively using [path] elemenets as keys.
@@ -331,6 +330,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    */
   PersistentMap asPersistent();
 
+  operator []=(key, value);
 
   // Just adjusts signature from ReadMap
   TransientMap mapValues(f(V value));

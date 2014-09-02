@@ -1,94 +1,178 @@
-// Copyright (c) 2012, Google Inc. All rights reserved. Use of this source code
+// Copyright (c) 2013, Google Inc. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 // Author: Paul Brauner (polux@google.com)
 
-library map_test;
+library option_test;
 
-import 'package:propcheck/propcheck.dart';
 import 'package:persistent/persistent.dart';
-import 'src/test_util.dart';
+import 'package:unittest/unittest.dart';
 
-// a deliberately non-commutative operation on nullable integers
-int minus(int x, int y) => (x == null ? 0 : x) - (y == null ? 0 : y);
+main() {
+  group('Persistent map', () {
+    test('insert', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
+      expect(pm.toMap(), equals({'a': 'b'}));
 
-// a unary function on nullable integers
-int times42(x) => (x == null ? 0 : x) * 42;
+      pm = pm.insert('a', 'c');
+      expect(pm.toMap(), equals({'a': 'c'}));
 
-testIsEmpty(Map<Key, int> map) =>
-    implemMapFrom(map).isEmpty == modelMapFrom(map).isEmpty;
+      pm = pm.insert('a', 'b', (a, b) => '$a$b');
+      expect(pm.toMap(), equals({'a': 'cb'}));
+    });
 
-testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
-    (implemMapFrom(map1) == implemMapFrom(map2)) == mapEquals(map1, map2);
+    test('lookup', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
+      pm = pm.insert('b', 'c');
 
-testInsert(Map<Key, int> map, Key key, int value) =>
-    sameMap(implemMapFrom(map).insert(key, value, minus),
-            modelMapFrom(map).insert(key, value, minus));
+      expect(pm.lookup('a'), equals('b'));
+      expect(() => pm.lookup('c'), throws);
+      expect(pm.lookup('c', orElse: () => 'none'), equals('none'));
+    });
 
-testDelete(Map<Key, int> map, Key key) {
-  PersistentMap m = implemMapFrom(map).delete(key);
-  return sameMap(m, modelMapFrom(map).delete(key))
-    // checks that delete's normalizes the map so that == is well defined
-    && implemMapFrom(m.toMap()) == m;
-}
+    test('adjust', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
 
-testLookup(Map<Key, int> map, Key key) =>
-    implemMapFrom(map).lookup(key) == modelMapFrom(map).lookup(key);
+      expect(pm.adjust('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+      expect(() => pm.adjust('c', (a) => '$a b'), throws);
+    });
 
-testAdjust(Map<Key, int> map, Key key) =>
-    sameMap(implemMapFrom(map).adjust(key, times42),
-            modelMapFrom(map).adjust(key, times42));
+    test('delete', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
 
-testMapValues(Map<Key, int> map) =>
-    sameMap(implemMapFrom(map).mapValues(times42),
-            modelMapFrom(map).mapValues(times42));
+      expect(pm.delete('a').toMap(), equals({}));
+      expect(() => pm.delete('b'), throws);
+      expect(pm.delete('b', safe: true).toMap(), equals({'a': 'b'}));
+    });
 
-testLength(Map<Key, int> map) =>
-    implemMapFrom(map).length == modelMapFrom(map).length;
+    test('forEachKeyValue', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
+      pm = pm.insert('c', 'b');
 
-testUnion(Map<Key, int> map1, Map<Key, int> map2) =>
-    sameMap(implemMapFrom(map1).union(implemMapFrom(map2), minus),
-            modelMapFrom(map1).union(modelMapFrom(map2), minus));
+      String res = '';
+      pm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
 
-testIntersection(Map<Key, int> map1, Map<Key, int> map2) =>
-    sameMap(implemMapFrom(map1).intersection(implemMapFrom(map2), minus),
-            modelMapFrom(map1).intersection(modelMapFrom(map2), minus));
+      expect(res, equals('ab,cb,'));
+    });
 
-testIterator(Map<Key, int> map) =>
-    setEquals(implemMapFrom(map).toSet(), modelMapFrom(map).toSet());
+    test('mapValues', () {
+      PersistentMap pm = new PersistentMap();
+      pm = pm.insert('a', 'b');
+      pm = pm.insert('c', 'b');
 
-testElementAt(Map<Key, int> map) {
-  final expected = implemMapFrom(map);
-  int i = 0;
-  for (final entry in expected) {
-    if (entry != expected.elementAt(i)) return false;
-    i++;
-  }
-  return true;
-}
+      String res = '';
+      pm = pm.mapValues((v) => '$v a');
 
-testLast(Map<Key, int> map) {
-  if (map.isEmpty) return true;
-  final implem = implemMapFrom(map);
-  return implem.last == naiveLast(implem);
-}
+      expect(pm.toMap(), equals({'a': 'b a', 'c': 'b a'}));
+    });
+  });
 
-main(List<String> arguments) {
-  final e = new Enumerations();
-  final properties = {
-    'isEmpty'     : forall(e.maps, testIsEmpty),
-    'equals'      : forall2(e.maps, e.maps, testEquals),
-    'insert'      : forall3(e.maps, e.keys, e.values, testInsert),
-    'delete'      : forall2(e.maps, e.keys, testDelete),
-    'lookup'      : forall2(e.maps, e.keys, testLookup),
-    'adjust'      : forall2(e.maps, e.keys, testAdjust),
-    'mapValues'   : forall(e.maps, testMapValues),
-    'length'      : forall(e.maps, testLength),
-    'union'       : forall2(e.maps, e.maps, testUnion),
-    'intersection': forall2(e.maps, e.maps, testIntersection),
-    'iterator'    : forall(e.maps, testIterator),
-    'elementAt'   : forall(e.maps, testElementAt),
-    'last'        : forall(e.maps, testLast)
-  };
-  testMain(arguments, properties);
+  group('Transient map', () {
+    test('insert', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+      expect(tm.toMap(), equals({'a': 'b'}));
+
+      tm.doInsert('a', 'c');
+      expect(tm.toMap(), equals({'a': 'c'}));
+
+      tm.doInsert('a', 'b', (a, b) => '$a$b');
+      expect(tm.toMap(), equals({'a': 'cb'}));
+    });
+
+    test('lookup', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+      tm.doInsert('b', 'c');
+
+      expect(tm.lookup('a'), equals('b'));
+      expect(() => tm.lookup('c'), throws);
+      expect(tm.lookup('c', orElse: () => 'none'), equals('none'));
+    });
+
+    test('adjust', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+
+      expect(tm.doAdjust('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+      expect(() => tm.doAdjust('c', (a) => '$a b'), throws);
+    });
+
+    test('delete', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+      tm.doInsert('b', 'b');
+
+      expect(tm.doDelete('a').toMap(), equals({'b': 'b'}));
+      expect(() => tm.doDelete('c'), throws);
+      expect(tm.doDelete('c', safe: true).toMap(), equals({'b': 'b'}));
+    });
+
+    test('forEachKeyValue', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+      tm.doInsert('c', 'b');
+
+      String res = '';
+      tm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
+
+      expect(res, equals('ab,cb,'));
+    });
+
+    test('mapValues', () {
+      TransientMap tm = new TransientMap();
+      tm.doInsert('a', 'b');
+      tm.doInsert('c', 'b');
+
+      String res = '';
+      tm.mapValues((v) => '$v a');
+
+      expect(tm.toMap(), equals({'a': 'b a', 'c': 'b a'}));
+    });
+  });
+  group('deep persistent data', () {
+    test('insertIn', () {
+      PersistentMap map = new PersistentMap();
+      map = map.insert('a', new PersistentMap());
+      PersistentMap map2 = map.insertIn(['a', 'b'], 'c');
+
+      expect(map2 == deepPersistent({'a': {'b': 'c'}}), isTrue);
+      expect(map == map2, isFalse);
+      expect(map, equals(deepPersistent({'a': {}})));
+    });
+
+    test('adjustIn', () {
+      PersistentMap map = new PersistentMap();
+      map = map.insert('a', new PersistentMap());
+      map = map.insertIn(['a', 'b'], 'c');
+      PersistentMap map2 = map.adjustIn(['a', 'b'], (a) => a+'c');
+      expect(map2['a'], equals(new PersistentMap.fromMap({'b': 'cc'})));
+      expect(map == map2, isFalse);
+      expect(map['a'], equals(new PersistentMap.fromMap({'b': 'c'})));
+    });
+
+    test('deleteIn', () {
+      PersistentMap map = new PersistentMap();
+      map = map.insert('a', new PersistentMap());
+      map = map.insertIn(['a', 'b'], 'c');
+      PersistentMap map2 = map.deleteIn(['a', 'b']);
+
+      expect(map2['a'], equals(new PersistentMap.fromMap({})));
+      expect(map == map2, isFalse);
+      expect(map, equals(new PersistentMap.fromMap({'a': new PersistentMap.fromMap({'b': 'c'})})));
+    });
+
+    test('lookupIn', () {
+      PersistentMap map = new PersistentMap();
+      map = map.insert('a', new PersistentMap());
+      map = map.insertIn(['a', 'b'], 'c');
+
+      expect(map.lookupIn(['a', 'b']), equals('c'));
+    });
+  });
 }
