@@ -32,10 +32,6 @@ abstract class ReadSet<E> implements Iterable<E> {
 
   /// A strict (non-lazy) version of [where].
   ReadSet<E> strictWhere(bool f(E element));
-  
-  PersistentSet<E> asPersistent();
-  
-  TransientSet<E> asTransient();
 }
 
 abstract class PersistentSet<E> implements ReadSet<E> {
@@ -64,6 +60,8 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   bool operator==(PersistentSet<E> other);
   
   int get hashCode;
+  
+  TransientSet<E> asTransient();
 }
 
 abstract class TransientSet<E> implements ReadSet<E> {
@@ -72,6 +70,7 @@ abstract class TransientSet<E> implements ReadSet<E> {
 
   void doDelete(E element, {bool safe:false});
   
+  PersistentSet<E> asPersistent();
 }
 
 /**

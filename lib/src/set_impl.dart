@@ -89,10 +89,6 @@ class _PersistentSetImpl<E> extends _SetImplBase<E> implements PersistentSet {
   TransientSet asTransient() {
     return new _TransientSetImpl._internal(_map.asTransient());
   }
-  
-  PersistentSet asPersistent() {
-    return this;
-  }
 
   PersistentSet withTransient(void change(TransientSet set)) {
     TransientSet result = this.asTransient();
@@ -129,11 +125,6 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet {
   PersistentSet asPersistent() {
     return new _PersistentSetImpl._internal(_map.asPersistent());
   }
-  
-  TransientSet asTransient() {
-    return this;
-  }
-  
   
 }
 
