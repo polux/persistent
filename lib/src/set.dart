@@ -5,7 +5,40 @@
 
 part of persistent;
 
-abstract class PersistentSet<E> implements Iterable<E> {
+abstract class ReadSet<E> implements Iterable<E> {
+  
+  ReadSet<E> union(ReadSet<E> persistentSet);
+
+  /// Alias for [union].
+  ReadSet<E> operator +(ReadSet<E> persistentSet);
+
+  ReadSet<E> difference(ReadSet<E> persistentSet);
+
+  /// Alias for [difference].
+  ReadSet<E> operator -(ReadSet<E> persistentSet);
+
+  ReadSet<Pair<E,dynamic>> cartesianProduct(ReadSet persistentSet);
+
+  /// Alias for [cartesianProduct].
+  ReadSet<Pair<E,dynamic>> operator *(ReadSet persistentSet);
+
+  ReadSet<E> intersection(ReadSet<E> persistentSet);
+
+  /// Randomly picks an element of [this].
+  E pickRandomElement([Random random]);
+
+  /// A strict (non-lazy) version of [map].
+  ReadSet strictMap(f(E element));
+
+  /// A strict (non-lazy) version of [where].
+  ReadSet<E> strictWhere(bool f(E element));
+  
+  PersistentSet<E> asPersistent();
+  
+  TransientSet<E> asTransient();
+}
+
+abstract class PersistentSet<E> implements ReadSet<E> {
 
   /// Creates an empty [PersistentSet] using its default implementation.
   factory PersistentSet() => new _PersistentSetImpl<E>();
@@ -24,55 +57,43 @@ abstract class PersistentSet<E> implements Iterable<E> {
 
   PersistentSet<E> insert(E element);
 
-  PersistentSet<E> delete(E element);
+  PersistentSet<E> delete(E element, {bool safe:false});
+  
+  PersistentSet<E> withTransient(void change(TransientSet<E> set));
+  
+  bool operator==(PersistentSet<E> other);
+  
+  int get hashCode;
+}
 
-  PersistentSet<E> union(PersistentSet<E> persistentSet);
+abstract class TransientSet<E> implements ReadSet<E> {
 
-  /// Alias for [union].
-  PersistentSet<E> operator +(PersistentSet<E> persistentSet);
+  void doInsert(E element);
 
-  PersistentSet<E> difference(PersistentSet<E> persistentSet);
-
-  /// Alias for [difference].
-  PersistentSet<E> operator -(PersistentSet<E> persistentSet);
-
-  PersistentSet<Pair> cartesianProduct(PersistentSet persistentSet);
-
-  /// Alias for [cartesianProduct].
-  PersistentSet<Pair> operator *(PersistentSet persistentSet);
-
-  PersistentSet<E> intersection(PersistentSet<E> persistentSet);
-
-  /// Randomly picks an element of [this].
-  E pickRandomElement([Random random]);
-
-  /// A strict (non-lazy) version of [map].
-  PersistentSet strictMap(f(E element));
-
-  /// A strict (non-lazy) version of [where].
-  PersistentSet<E> strictWhere(bool f(E element));
+  void doDelete(E element, {bool safe:false});
+  
 }
 
 /**
  * A base class for implementations of [PersistentSet].
  */
-abstract class PersistentSetBase<E>
+abstract class ReadSetBase<E>
     extends IterableBase<E>
-    implements PersistentSet<E> {
+    implements ReadSet<E> {
 
-  PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
+  ReadSet<E> operator +(ReadSet<E> persistentSet) =>
       union(persistentSet);
 
-  PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
+  ReadSet<E> operator -(ReadSet<E> persistentSet) =>
       difference(persistentSet);
 
-  PersistentSet<Pair> operator *(PersistentSet persistentSet) =>
+  ReadSet<Pair> operator *(ReadSet persistentSet) =>
       cartesianProduct(persistentSet);
 
-  PersistentSet strictMap(f(E element)) =>
+  ReadSet strictMap(f(E element)) =>
       new PersistentSet.from(this.map(f));
 
-  PersistentSet<E> strictWhere(bool f(E element)) =>
+  ReadSet<E> strictWhere(bool f(E element)) =>
       new PersistentSet<E>.from(this.where(f));
 
   String toString() {
