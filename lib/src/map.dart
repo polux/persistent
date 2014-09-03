@@ -16,11 +16,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   V lookup(K key, {orElse()});
 
   /**
-   * Calls [lookup] recursively using [path] elemenets as keys.
-   */
-  lookupIn(List path, {orElse()});
-
-  /**
    * Returns the value for the given [key] or throws if [key]
    * is not in the map.
    */
@@ -171,11 +166,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
       insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
-   * Calls [insert] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> insertIn(List path, V value, [V combine(V oldvalue, V newvalue)]);
-
-  /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
    *
@@ -186,11 +176,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   PersistentMap<K, V> delete(K key, {bool safe: false});
 
   /**
-   * Calls [delete] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> deleteIn(List path, {bool safe: false});
-
-  /**
    * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
    *
@@ -198,11 +183,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
    */
   PersistentMap<K, V> adjust(K key, V update(V value), {bool safe: false});
-
-  /**
-   * Calls [adjust] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> adjustIn(List path, V update(V value));
 
   /**
    * Returns a transient copy of `this`.
@@ -281,12 +261,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
       doInsert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
-   * Calls [doInsert] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V>
-      doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue)]);
-
-  /**
    * Unbinds [key].
    *
    * If [key] isn't bound this function has no effect.
@@ -298,11 +272,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   TransientMap<K, V> doDelete(K key, {bool safe: false}) ;
 
   /**
-   * Calls [doDelete] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V> doDeleteIn(List<K> path, {bool safe: false});
-
-  /**
    * Adjusts the value that is possibly bound to [key] by [update].
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
@@ -311,11 +280,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doAdjust('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
    */
   TransientMap<K, V> doAdjust(K key, V update(V value), {bool safe: false});
-
-  /**
-   * Calls [doAdjust] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V> doAdjustIn(List path, V update(V value));
 
   /**
    * Returns a persistent copy of `this`.

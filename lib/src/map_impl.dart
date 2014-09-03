@@ -25,15 +25,6 @@ abstract class ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
     }
   }
 
-  lookupIn(List<K> path, {orElse(), offset: 0}) {
-    var key = path[offset];
-    var e = lookup(key, orElse: orElse);
-    offset++;
-
-    if(path.length == offset) return e;
-    else return e.lookupIn(path, orElse: orElse, offset: offset);
-  }
-
   V operator [](K key) =>
       lookup(key);
 
@@ -116,39 +107,12 @@ class PersistentMapImpl<K, V>
         return new PersistentMapImpl._new(_root.insert(null, key, value, combine));
       }
 
-  PersistentMapImpl<K, V>
-        insertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
-      if(offset +1 == path.length)
-        return new PersistentMapImpl._new(_root.insert(null, path.last, value));
-
-      return new PersistentMapImpl._new(
-          _root.adjust(null, path[offset],
-          (e) => e.insertIn(path, value, combine, offset+1), false));
-    }
-
   PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
     return new PersistentMapImpl._new(_root.delete(null, key, safe));
   }
 
-  PersistentMapImpl<K, V> deleteIn(List<K> path, {offset: 0, bool safe: false}) {
-    if(offset +1 == path.length)
-      return new PersistentMapImpl._new(_root.delete(null, path.last, safe));
-
-    return new PersistentMapImpl._new(
-        _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset: offset+1, safe: safe), safe));
-  }
-
   PersistentMapImpl<K, V> adjust(K key, V update(V value), {safe: false}) {
     return  new PersistentMapImpl._new(_root.adjust(null, key, update, safe));
-  }
-
-  PersistentMapImpl adjustIn(List<K> path, V update(V value), [offset = 0]) {
-    if(path.length == offset +1) return adjust(path[offset], update);
-
-    return new PersistentMapImpl._new(
-           _root.adjust(null, path[offset],
-           (e) => e.adjustIn(path, update, offset+1), false));
   }
 
   PersistentMapImpl mapValues(f(V value)) {
@@ -217,38 +181,12 @@ class TransientMapImpl<K, V>
     this.doInsert(key, value);
   }
 
-  TransientMap<K, V>
-     doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue), offset = 0]) {
-       if(offset +1 == path.length)
-         return _adjustRootAndReturn(_root.insert(null, path.last, value));
-
-       return _adjustRootAndReturn(
-           _root.adjust(null, path[offset],
-           (e) => e.insertIn(path, offset+1), false));
-     }
-
   TransientMap<K, V> doDelete(K key, {bool safe: false}) {
     return _adjustRootAndReturn(_root.delete(owner, key, safe));
   }
 
-  TransientMap<K, V> doDeleteIn(List<K> path, {offset: 0, safe: false}) {
-    if(offset +1 == path.length)
-      return doDelete(path.last, safe: safe);
-
-    return _adjustRootAndReturn(
-        _root.adjust(null, path[offset],
-        (e) => e.deleteIn(path, offset: offset+1, safe: safe), safe));
-  }
-
   TransientMap<K, V> doAdjust(K key, V update(V value), {safe: false}) {
     return _adjustRootAndReturn(_root.adjust(owner, key, update, safe));
-  }
-
-  TransientMap doAdjustIn(List<K> path, V update(V value), [offset = 0]) {
-    if(path.length == offset +1) return doAdjust(path[offset], update);
-
-    return _adjustRootAndReturn(
-             _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1), false));
   }
 
   TransientMap mapValues(f(V value)) {
