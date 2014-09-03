@@ -1,4 +1,4 @@
-all: run
+all: clean run
 
 
 map_speed.js: map_speed.dart

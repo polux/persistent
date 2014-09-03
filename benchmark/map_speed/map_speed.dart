@@ -21,11 +21,11 @@ var interfaces = {
 };
 
 void main() {
-  
+
   for (int n in [1,10,100,1000,10000]) {
     for (String name in interfaces.keys){
       new OverallBenchmark(n, interfaces[name](), name).report();
     }
-  }    
+  }
 
 }
