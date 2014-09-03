@@ -12,12 +12,14 @@ deepPersistent(from) {
     });
   }
   else if(from is List) {
-    throw '??? List ???';
+    from = from.map((e) => deepPersistent(e));
+    return new PersistentVector.from(from);
   }
   else {
     return from;
   }
 }
+
 final _none = new Object();
 final getNone = () => _none;
 bool isNone(val) => val == _none;
@@ -77,12 +79,18 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
       return s.insert(current, value);
     }
     else if(s is PersistentVector) {
+      if(current == s.length) {
+        return s.push(value);
+      }
       return s.set(current, value);
     }
     else if(s is TransientMap) {
       return s.doInsert(current, value);
     }
     else if(s is TransientVector) {
+      if(current == s.length) {
+        return s.doPush(value);
+      }
       return s.doSet(current, value);
     }
     else {
@@ -124,14 +132,14 @@ Persistent _deleteIn(s, Iterator path, {bool safe: false}) {
       return s.delete(current);
     }
     else if(s is PersistentVector) {
-      if(s.length + 1 == current) s.pop();
+      if(s.length - 1 == current) return s.pop();
       else throw new Exception('Cannot delete non last element in PersistentVector');
     }
     else if(s is TransientMap) {
       return s.doDelete(current);
     }
     else if(s is TransientVector) {
-      if(s.length + 1 == current) s.doPop();
+      if(s.length - 1 == current) return s.doPop();
       else throw new Exception('Cannot delete non last element in TransientVector');
     }
     else {
