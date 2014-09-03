@@ -110,12 +110,12 @@ main() {
     test('doInsert', () {
       var set = new PersistentSet.from(["a","b","c"]).asTransient();
       set.doInsert("c");
-      expect(set.asTransient(),
+      expect(set.asPersistent(),
           equals(new PersistentSet.from(["a","b","c"])));
       expect(set.contains("c"), isTrue);
-      
+      set = set.asPersistent().asTransient();
       set.doInsert("d");
-      expect(set.asTransient(),
+      expect(set.asPersistent(),
           equals(new PersistentSet.from(["a","b","c","d"])));
       expect(set.contains("d"), isTrue);
     });
@@ -123,10 +123,11 @@ main() {
     test('doDelete', () {
       var set = new PersistentSet.from(["a","b","c"]).asTransient();
       set.doDelete("c");
-      expect(set.asTransient(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
+      set = set.asPersistent().asTransient();
       set.doDelete("d", safe:true);
-      expect(set.asTransient(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
   });
