@@ -23,7 +23,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Returns the value bound to [key].
    * 
    * If [key] is not bound, [orElse] is called to obtain the
-   * return value. Default [orElse] throws [RangeError].
+   * return value. Default [orElse] throws exception.
    */
   V lookup(K key, {orElse()});
 
@@ -35,7 +35,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   /**
    * Returns the value bound to [key].
    * 
-   * Throws [RangeError] if [key] is not bound.
+   * Throws exception if [key] is not bound.
    */
   V operator [](K key);
 
@@ -191,6 +191,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
+   * 
+   * If [key] is not bound and [safe] is not `true`, exception is thrown.
+   * If [key] is not bound and [safe] is specified as `true`,
+   * the same map is returned. 
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
@@ -206,6 +210,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   /**
    * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
+   * 
+   * If [key] is not bound and [safe] is not `true`, exception is thrown.
+   * If [key] is not bound and [safe] is specified as `true`,
+   * the same map is returned.
    *
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
    *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
@@ -302,7 +310,8 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   /**
    * Unbinds [key].
    *
-   * If [key] isn't bound this function has no effect.
+   * If [key] is not bound and [safe] is not `true`, exception is thrown.
+   * If [key] is not bound and [safe] is specified as `true`, nothing happens.
    *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.doDelete('b', 2); // map is now {'a': 1}
@@ -317,6 +326,9 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
 
   /**
    * Adjusts the value that is possibly bound to [key] by [update].
+   * 
+   * If [key] is not bound and [safe] is not `true`, exception is thrown.
+   * If [key] is not bound and [safe] is specified as `true`, nothing happens.
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
    *     map.doAdjust('b', (x) => x + 1); // map is still {'a': 1}
