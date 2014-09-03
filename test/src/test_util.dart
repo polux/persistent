@@ -15,7 +15,6 @@ import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
-part 'map_model.dart';
 part 'set_model.dart';
 part 'vector_model.dart';
 
@@ -133,7 +132,6 @@ naiveLast(Iterable iterable) {
 }
 
 PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);
-ModelMap modelMapFrom(Map m) => new ModelMap(m);
 
 PersistentSet implemSetFrom(Set s) => new PersistentSet.from(s);
 ModelSet modelSetFrom(Set s) => new ModelSet(s);
@@ -173,7 +171,6 @@ bool vectorEquals(List l1, List l2) {
   return true;
 }
 
-bool sameMap(PersistentMap pm, ModelMap mm) => mapEquals(pm.toMap(), mm._map);
 bool sameSet(PersistentSet ps, ModelSet ms) => setEquals(ps.toSet(), ms.zet);
 
 bool sameIterator(Iterator it1, Iterator it2) {
