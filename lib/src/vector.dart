@@ -16,7 +16,12 @@ class Bool {
   bool value = false;
 }
 
-
+/**
+ * A read-only vector, ordered collection of elements of type [K].
+ *
+ * There is no default implementation of [ReadVector], since it just
+ * specifies the common interface of [PersistentVector] and [TransientVector].
+ */
 abstract class ReadVector<E> implements Iterable<E> {
   
   /**
@@ -31,7 +36,6 @@ abstract class ReadVector<E> implements Iterable<E> {
    *     v.get(2, ()=>null); // returns null
    *     v.get(2); // throws RangeError
    */
-
   E get(int index, {Function orElse: null});
   
   /**
