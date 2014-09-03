@@ -30,33 +30,6 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 
   int get length => _map.length;
 
-  _SetImplBase<E> union(_SetImplBase<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
-
-  _SetImplBase<E> difference(_SetImplBase<E> persistentSet) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (!persistentSet.contains(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
-  }
-
-  _SetImplBase<E> intersection(_SetImplBase<E> persistentSet) =>
-      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
-
-  PersistentSet<Pair> cartesianProduct(_SetImplBase<E> persistentSet) {
-    _PersistentSetImpl<Pair<E,dynamic>> result =
-        new _PersistentSetImpl<Pair<E,dynamic>>();
-    _map.forEachKeyValue((E e1, _) {
-      persistentSet._map.forEachKeyValue((e2, _) {
-        result = result.insert(new Pair<E,dynamic>(e1, e2));
-      });
-    });
-    return result;
-  }
-
   bool operator ==(_SetImplBase<E> other) => _map == other._map;
 
   Iterator<E> get iterator =>
@@ -72,7 +45,10 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 }
 
 
-class _PersistentSetImpl<E> extends _SetImplBase<E> implements PersistentSet {
+class _PersistentSetImpl<E>
+    extends _SetImplBase<E>
+    with PersistentSetMixim<E> {
+      
   final PersistentMap<E, Null> _map;
 
   _PersistentSetImpl._internal(this._map);
@@ -88,6 +64,33 @@ class _PersistentSetImpl<E> extends _SetImplBase<E> implements PersistentSet {
   
   TransientSet asTransient() {
     return new _TransientSetImpl._internal(_map.asTransient());
+  }
+  
+  PersistentSet<E> union(_PersistentSetImpl<E> persistentSet) =>
+      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
+
+  PersistentSet<E> difference(_PersistentSetImpl<E> persistentSet) {
+    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
+    _map.forEachKeyValue((E k, v) {
+      if (!persistentSet.contains(k)) {
+        result = result.insert(k);
+      }
+    });
+    return result;
+  }
+
+  PersistentSet<E> intersection(_PersistentSetImpl<E> persistentSet) =>
+      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
+
+  PersistentSet<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
+    _PersistentSetImpl<Pair<E,dynamic>> result =
+        new _PersistentSetImpl<Pair<E,dynamic>>();
+    _map.forEachKeyValue((E e1, _) {
+      persistentSet._map.forEachKeyValue((e2, _) {
+        result = result.insert(new Pair<E,dynamic>(e1, e2));
+      });
+    });
+    return result;
   }
 
   PersistentSet withTransient(void change(TransientSet set)) {
