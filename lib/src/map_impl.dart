@@ -158,9 +158,9 @@ class PersistentMapImpl<K, V>
 
   PersistentMapImpl<K, V>
       union(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) {
-        Owner owner = new Owner();
-        return new PersistentMapImpl._new(_root.union(owner, other._root, combine));
-      }
+    Owner owner = new Owner();
+    return new PersistentMapImpl._new(_root.union(owner, other._root, combine));
+  }
 
   PersistentMapImpl<K, V>
     intersection(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) =>
@@ -254,20 +254,6 @@ class TransientMapImpl<K, V>
   TransientMap doMapValues(f(V value)) {
     return _adjustRootAndReturn(_root.mapValues(owner, f));
   }
-
-  TransientMap<K, V>
-      union(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
-          _adjustRootAndReturn(_root.union(owner, other._root, combine));
-
-  TransientMap<K, V>
-    intersection(TransientMapImpl<K, V> other, [V combine(V left, V right)]) =>
-        _adjustRootAndReturn(_root.intersection(owner, other._root, combine));
-
-  TransientMap strictMap(Pair f(Pair<K, V> pair)) =>
-     new PersistentMap.fromPairs(this.map(f)).asTransient();
-
-  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-     new PersistentMap<K, V>.fromPairs(this.where(f)).asTransient();
 
   PersistentMap asPersistent() {
     _owner = null;

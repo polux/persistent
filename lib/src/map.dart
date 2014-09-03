@@ -31,46 +31,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    */
   void forEachKeyValue(f(K key, V value));
 
-  /**
-   * Returns a new map whose (key, value) pairs are the union of those of `this`
-   * and [other].
-   *
-   * The union is right-biased: if a key is present in both `this` and [other],
-   * the value from [other] is retained. If [combine] is provided, the retained
-   * value for a `key` present in both `this` and [other] is then
-   * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
-   * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
-   *
-   *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
-   *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
-   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}
-   *
-   * Note that [union] is commutative if and only if [combine] is provided and
-   * if it is commutative.
-   */
-  ReadMap<K, V>
-      union(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  /**
-   * Returns a new map whose (key, value) pairs are the intersection of those of
-   * `this` and [other].
-   *
-   * The intersection is right-biased: values from [other] are retained. If
-   * [combine] is provided, the retained value for a `key` present in both
-   * `this` and [other] is then `combine(leftvalue, rightvalue)` where
-   * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
-   * one bound to `key` in [other].
-   *
-   *     {'a': 1}.intersection({'b': 2}) == {}
-   *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
-   *     {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}
-   *
-   * Note that [intersection] is commutative if and only if [combine] is
-   * provided and if it is commutative.
-   */
-  ReadMap<K, V>
-      intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
-
   /// Returns a mutable copy of `this`.
   Map<K, V> toMap();
 
@@ -85,12 +45,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// Randomly picks an entry of `this`.
   Pair<K, V> pickRandomEntry([Random random]);
-
-  /// A strict (non-lazy) version of [map].
-  ReadMap strictMap(Pair f(Pair<K, V> pair));
-
-  /// A strict (non-lazy) version of [where].
-  ReadMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 
   /// An iterator through the entries of `this`.
   Iterator<Pair<K, V>> get iterator;
@@ -227,6 +181,52 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
+  
+  /**
+   * Returns a new map whose (key, value) pairs are the union of those of `this`
+   * and [other].
+   *
+   * The union is right-biased: if a key is present in both `this` and [other],
+   * the value from [other] is retained. If [combine] is provided, the retained
+   * value for a `key` present in both `this` and [other] is then
+   * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
+   * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
+   *
+   *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}
+   *
+   * Note that [union] is commutative if and only if [combine] is provided and
+   * if it is commutative.
+   */
+  PersistentMap<K, V>
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+
+  /**
+   * Returns a new map whose (key, value) pairs are the intersection of those of
+   * `this` and [other].
+   *
+   * The intersection is right-biased: values from [other] are retained. If
+   * [combine] is provided, the retained value for a `key` present in both
+   * `this` and [other] is then `combine(leftvalue, rightvalue)` where
+   * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
+   * one bound to `key` in [other].
+   *
+   *     {'a': 1}.intersection({'b': 2}) == {}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}
+   *
+   * Note that [intersection] is commutative if and only if [combine] is
+   * provided and if it is commutative.
+   */
+  PersistentMap<K, V>
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+      
+  /// A strict (non-lazy) version of [map].
+  PersistentMap strictMap(Pair f(Pair<K, V> pair));
+  
+  /// A strict (non-lazy) version of [where].
+  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
 
 /**
