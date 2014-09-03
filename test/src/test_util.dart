@@ -15,7 +15,6 @@ import 'package:enumerators/enumerators.dart' as en;
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
-part 'set_model.dart';
 part 'vector_model.dart';
 
 /**
