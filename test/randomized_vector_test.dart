@@ -6,10 +6,8 @@ import 'src/test_util.dart';
 import 'dart:core';
 import 'utils.dart';
 
-const int OPERATION_COUNT = 10000;
-
 main() {
-  doTest(10000, (message) => print(message));
+  doTest(1000, (message) => print(message));
 }
 
 doTest(operationsCnt, print_fn){
@@ -86,37 +84,64 @@ doTest(operationsCnt, print_fn){
     },
   };
 
+  randomlyChangeImpl(m) {
+    if (probability(0.1)) {
+      if (m is PersistentVector) {
+        return m.asTransient();
+      } else {
+        return m.asPersistent();
+      }
+    } else {
+      return m;
+    }
+  }
+
+  impl_for(ve) {
+    if (ve is TransientVector) {
+      return impls['transient'];
+    } else {
+      return impls['persistent'];
+    }
+  }
+
+  impls.addAll({
+    'randomlyChangingPersistentTransient': {
+      'create': () => new PersistentVector(),
+      'bulkInsert': (ve, List updateWith) =>
+        randomlyChangeImpl(impl_for(ve)['bulkInsert'](ve, updateWith)),
+      'bulkPop': (ve, int count) =>
+        randomlyChangeImpl(impl_for(ve)['bulkPop'](ve, count)),
+      'bulkChange': (ve, Map changes) =>
+        randomlyChangeImpl(impl_for(ve)['bulkChange'](ve, changes)),
+      'deepCopy': (ve) => impl_for(ve)['deepCopy'](ve),
+    },
+  });
 
   test('random_test', () {
-
-
     Map oldImpls = {};
 
-
     impls.forEach((name, impl) {
+      oldImpls[name] = {};
       impl['instance'] = impl['create']();
     });
 
-    for (int i = 0; i < OPERATION_COUNT; i++) {
+    for (int i = 0; i < operationsCnt; i++) {
       PersistentVector vec = impls['persistent']['instance'];
+
+      if (probability(0.01) || oldImpls['persistent'].isEmpty) {
+        print_fn('saving old instances');
+        impls.forEach((name, impl) {
+          oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
+        });
+      }
+      print_fn('$i/$operationsCnt: current length: ${vec.length}');
 
       assertInstancesAreSame(impls);
       assertInstancesAreSame(oldImpls);
 
-      if (probability(0.05)) {
-        print_fn('deep copying instances');
-        impls.forEach((name, impl) {
-          if (!oldImpls.containsKey(name)) {
-            oldImpls[name] = {};
-          }
-          oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
-        });
-      }
-      print_fn('length: ${vec.length}');
-
       if (probability(1/3)) {
         // 33% Insert
-        int bulkCount = r.nextInt(100);
+        int bulkCount = r.nextInt(1000);
         List updateWith = [];
         for (int i = 0; i < bulkCount; i++) {
           updateWith.add(r.nextInt(47474747));
@@ -128,7 +153,13 @@ doTest(operationsCnt, print_fn){
         // 33% Delete
         int maxIndex = impls['persistent']['instance'].length;
         if (maxIndex == 0) continue;
-        int bulkCount = r.nextInt(impls['persistent']['instance'].length);
+        int bulkCount;
+        // sometimes, delete the whole list
+        if(probability(0.05)){
+          bulkCount = vec.length;
+        } else {
+          bulkCount = r.nextInt(vec.length);
+        }
         impls.forEach((name, impl) {
           impls[name]['instance'] = impl['bulkPop'](impl['instance'], bulkCount);
         });
@@ -145,6 +176,27 @@ doTest(operationsCnt, print_fn){
           impls[name]['instance'] = impl['bulkChange'](impl['instance'], updateWith);
         });
       }
+
+      // test iterating, equality and hashCode
+      PersistentVector copy = new PersistentVector();
+      PersistentVector pv = impls['persistent']['instance'];
+      for(var item in pv) {
+        copy = copy.push(item);
+      }
+      expect(pv == copy, isTrue);
+      expect(pv.hashCode == copy.hashCode, isTrue);
+      PersistentVector not_copy = copy.push('something completely different');
+      expect(pv == not_copy, isFalse);
+      expect(pv.hashCode == not_copy.hashCode, isFalse);
+
+      // test 'empty'
+      num sum = 0;
+      for (var impl in impls.keys){
+        sum += impls[impl]['instance'].isEmpty?0:1;
+      }
+      // all impementations must add the same 0 or 1 value to the sum
+      expect(sum % impls.length, equals(0));
+
     }
   });
 }
