@@ -246,6 +246,14 @@ doTest(operationsCnt, print_fn){
       expect(sum % impls.length, equals(0));
     }
 
+    // test 'empty'
+    num sum = 0;
+    for (var impl in impls.keys){
+      sum += impls[impl]['instance'].isEmpty?0:1;
+    }
+    // all impementations must add the same 0 or 1 value to the sum
+    expect(sum % impls.length, equals(0));
+
     // test 'lookup'
     for(int j=0; j<100; j++){
       var last_val = getNone();
