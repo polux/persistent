@@ -16,7 +16,7 @@ class Bool {
   bool value = false;
 }
 
-abstract class ReadVector<E> implements Iterable<E> {
+abstract class ReadVector<E> implements Iterable<E>, Persistent {
   E get(int index, {Function orElse: null});
   E operator[](int index);
   E get first;
