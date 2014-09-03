@@ -144,7 +144,11 @@ doTest(operationsCnt, print_fn){
         int bulkCount = r.nextInt(1000);
         List updateWith = [];
         for (int i = 0; i < bulkCount; i++) {
-          updateWith.add(r.nextInt(47474747));
+          if (probability(1/2)) {
+            updateWith.add(null);
+          } else {
+            updateWith.add(r.nextInt(47474747));
+          }
         }
         impls.forEach((name, impl) {
           impls[name]['instance'] = impl['bulkInsert'](impl['instance'], updateWith);

@@ -293,7 +293,7 @@ class _VNode {
   }
 
   _VNode _update(ownerID, level, index, value, Bool didAlter) {
-    var deleted = value == _NOT_SET;
+    var deleted = value == getNotSet();
     var node = this;
     var newNode;
     var idx = (index >> level) & _MASK;
