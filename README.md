@@ -1,50 +1,36 @@
 # Efficient Persistent Data Structures
 
-[![Build Status](https://drone.io/github.com/polux/persistent/status.png)](https://drone.io/github.com/polux/persistent/latest)
+Transient and persistent sets, maps and vectors with utilities
 
-Mostly efficient persistent maps and sets for now. Also option types.
+## Terminology
 
-"Persistent" means immutable here, not "saved on disk".
+  - *Persistent* data structure is an immutable structure, that provides effective
+    creation of slightly mutated copies.
+  - *Transient* data structure is a mutable structure, that can be effectively
+    converted to the persistent data structure. It is ussualy created from
+    a persistent structure to apply some changes and then obtain a new persistent
+    structure.
 
-```dart
-import 'package:persistent/persistent.dart';
+## Desing
 
-main() {
-  final emptyMap = new PersistentMap<String,int>();
-  final m1 = emptyMap.insert('a', 1).insert('b', 2);
-  final m2 = new PersistentMap<String,int>.fromMap({'a': 3, 'c': 4});
+In the following part, `Structure` stands for any of `Map`, `Set`, `Vector`.
 
-  print(m1);  // {a: 1, b: 2}
-  print(m2);  // {c: 4, a: 3}
-  print(m1.lookup('a'));  // Option.some(1)
-  print(m1.lookup('c'));  // Option.none()
+### Classes
 
-  final m3 = m1.delete('a');
-  print(m1);  // {a: 1, b: 2}
-  print(m3);  // {b: 2}
+There are several interfaces for each `Structure`:
+`PersistentStructure` and `TransientStructure` that both
+implements `ReadStructure`.
 
-  final m4 = m1.union(m2, (n,m) => n + m);
-  print(m4);  // {c: 4, a: 4, b: 2}
+`ReadStructure` declares the common, read-only interface.
 
-  final m5 = m1.mapValues((n) => n + 1);
-  print(m5);  // {a: 2, b: 3}
+`PersistentStructure` declares interface for creating mutated copies that has form
+of `PersistentStructure someMethod(...)`. 
 
-  final m6 = m1.adjust('a', (n) => n + 1);
-  print(m6);  // {a: 2, b: 2}
-}
-```
+`TransientStructure` declares interface for mutating itself that has form
+of `void doSomeMethod(...)`. It's main purpose is to apply bigger amount of changes to
+the persistent structure effectively. Therefore, after obtaining modified persistent structure,
+it may be outdated - all mutating methods throw.
 
-## Try it!
+`TransientStructure.doSomeMethod(...)` has the same arguments and behavior
+as `PersistentStructure.someMethod(...)` except what they modify.
 
-```
-git clone https://github.com/polux/persistent.git
-cd persistent
-pub install
-dart example/map_example.dart
-dart example/set_example.dart
-dart test/map_bench.dart
-```
-
-## More
-
-See [ImplementationDetails](https://github.com/polux/persistent/wiki/ImplementationDetails) and the [generated API documentation](http://polux.github.io/persistent/continuous/persistent/PersistentMap.html) for more information.
