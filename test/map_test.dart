@@ -130,7 +130,7 @@ main() {
       tm.doInsert('c', 'b');
 
       String res = '';
-      tm.mapValues((v) => '$v a');
+      tm.doMapValues((v) => '$v a');
 
       expect(tm.toMap(), equals({'a': 'b a', 'c': 'b a'}));
     });

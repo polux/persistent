@@ -251,7 +251,7 @@ class TransientMapImpl<K, V>
              _root.adjust(null, path[offset], (e) => e.adjustIn(path, update, offset+1), false));
   }
 
-  TransientMap mapValues(f(V value)) {
+  TransientMap doMapValues(f(V value)) {
     return _adjustRootAndReturn(_root.mapValues(owner, f));
   }
 
