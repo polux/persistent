@@ -193,7 +193,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       var node = newRoot;
       var parent = null;
       var idx = null;
-      for (var level = newLevel; level > _SHIFT; level -= SHIFT) {
+      for (var level = newLevel; level > _SHIFT; level -= _SHIFT) {
         parent = node;
         idx = (newTailOffset >> level) & _MASK;
         node._set(idx, _transientVNode(node._get(idx), owner));

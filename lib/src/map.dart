@@ -27,15 +27,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   void forEachKeyValue(f(K key, V value));
 
   /**
-   * Returns a new map identical to `this` where each value has been updated by
-   * [f].
-   *
-   *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a': 2, 'b': 3}
-   *     {}.mapValues((x) => x + 1) == {}
-   */
-  ReadMap mapValues(f(V value));
-
-  /**
    * Returns a new map whose (key, value) pairs are the union of those of `this`
    * and [other].
    *
@@ -185,6 +176,15 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   PersistentMap<K, V> adjust(K key, V update(V value), {bool safe: false});
 
   /**
+   * Returns a new map identical to `this` where each value has been updated by
+   * [f].
+   *
+   *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a': 2, 'b': 3}
+   *     {}.mapValues((x) => x + 1) == {}
+   */
+  ReadMap mapValues(f(V value));
+
+  /**
    * Returns a transient copy of `this`.
    *
    * This is ussualy called to do some changes and
@@ -207,23 +207,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
-
-  // Just adjusts signature from ReadMap
-  PersistentMap mapValues(f(V value));
-
-  // Just adjusts signature from ReadMap
-  PersistentMap<K, V>
-      union(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  // Just adjusts signature from ReadMap
-  PersistentMap<K, V>
-      intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  // Just adjusts signature from ReadMap
-  PersistentMap strictMap(Pair f(Pair<K, V> pair));
-
-  // Just adjusts signature from ReadMap
-  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
 
 /**
@@ -282,6 +265,14 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   TransientMap<K, V> doAdjust(K key, V update(V value), {bool safe: false});
 
   /**
+   * Updates all values by passing them to [f] and replacing them by results.
+   *
+   *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
+   *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
+   */
+  TransientMap doMapValues(f(V value)) ;
+
+  /**
    * Returns a persistent copy of `this`.
    *
    * This is ussualy called when changes to `this`
@@ -295,21 +286,4 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   PersistentMap asPersistent();
 
   operator []=(key, value);
-
-  // Just adjusts signature from ReadMap
-  TransientMap mapValues(f(V value));
-
-  // Just adjusts signature from ReadMap
-  TransientMap<K, V>
-      union(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  // Just adjusts signature from ReadMap
-  TransientMap<K, V>
-      intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  // Just adjusts signature from ReadMap
-  TransientMap strictMap(Pair f(Pair<K, V> pair));
-
-  // Just adjusts signature from ReadMap
-  TransientMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }

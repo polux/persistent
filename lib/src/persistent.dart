@@ -12,6 +12,7 @@ deepPersistent(from) {
     });
   }
   else if(from is List) {
+    print(from);
     from = from.map((e) => deepPersistent(e));
     return new PersistentVector.from(from);
   }

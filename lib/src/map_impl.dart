@@ -189,7 +189,7 @@ class TransientMapImpl<K, V>
     return _adjustRootAndReturn(_root.adjust(owner, key, update, safe));
   }
 
-  TransientMap mapValues(f(V value)) {
+  TransientMap doMapValues(f(V value)) {
     return _adjustRootAndReturn(_root.mapValues(owner, f));
   }
 
