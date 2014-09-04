@@ -94,13 +94,15 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    */
   PersistentSet<E> insert(E element);
 
-  // TODO(syslo) Make delete safe
   /**
    * Returns a set identical to `this` except that it does not contain [element].
    * 
-   * If `this` does not contain [element], the same set is returned.
+   * If `this` does not contain [element] and [safe]
+   * is not specified, the error is thrown.
+   * If `this` does not contain [element] and [safe]
+   * is `true`, the same set is returned.
    */
-  PersistentSet<E> delete(E element);
+  PersistentSet<E> delete(E element, {safe: false});
   
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -139,13 +141,15 @@ abstract class TransientSet<E> implements ReadSet<E> {
    */
   void doInsert(E element);
 
-  // TODO(syslo) Make doDelete safe
   /**
    * Removes [element] from `this`.
    * 
-   * If `this` does not contain [element], nothing happens.
+   * If `this` does not contain [element] and [safe]
+   * is not specified, the error is thrown.
+   * If `this` does not contain [element] and [safe]
+   * is `true`, nothing happens.
    */
-  void doDelete(E element);
+  void doDelete(E element, {safe: false});
   
 }
 
