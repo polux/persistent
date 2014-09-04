@@ -12,50 +12,11 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
-  _SetImplBase<E> map(f(E element)) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, Null v) { result = result.insert(f(k)); });
-    return result;
-  }
-
-  _SetImplBase<E> filter(bool f(E element)) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (f(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
+  Iterable map(f(E element)) {
+    return _map.map((pair)=>f(pair.fst));
   }
 
   int get length => _map.length;
-
-  _SetImplBase<E> union(_SetImplBase<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
-
-  _SetImplBase<E> difference(_SetImplBase<E> persistentSet) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (!persistentSet.contains(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
-  }
-
-  _SetImplBase<E> intersection(_SetImplBase<E> persistentSet) =>
-      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
-
-  PersistentSet<Pair> cartesianProduct(_SetImplBase<E> persistentSet) {
-    _PersistentSetImpl<Pair<E,dynamic>> result =
-        new _PersistentSetImpl<Pair<E,dynamic>>();
-    _map.forEachKeyValue((E e1, _) {
-      persistentSet._map.forEachKeyValue((e2, _) {
-        result = result.insert(new Pair<E,dynamic>(e1, e2));
-      });
-    });
-    return result;
-  }
 
   bool operator ==(_SetImplBase<E> other) => _map == other._map;
 
@@ -72,7 +33,10 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 }
 
 
-class _PersistentSetImpl<E> extends _SetImplBase<E> implements PersistentSet {
+class _PersistentSetImpl<E>
+    extends _SetImplBase<E>
+    with PersistentSetMixim<E> {
+      
   final PersistentMap<E, Null> _map;
 
   _PersistentSetImpl._internal(this._map);
@@ -90,10 +54,26 @@ class _PersistentSetImpl<E> extends _SetImplBase<E> implements PersistentSet {
     return new _TransientSetImpl._internal(_map.asTransient());
   }
   
-  PersistentSet asPersistent() {
-    return this;
+  PersistentSet<E> union(_PersistentSetImpl<E> persistentSet) =>
+      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
+
+  PersistentSet<E> difference(_PersistentSetImpl<E> persistentSet) {
+    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
+    _map.forEachKeyValue((E k, v) {
+      if (!persistentSet.contains(k)) {
+        result = result.insert(k);
+      }
+    });
+    return result;
   }
 
+  PersistentSet<E> intersection(_PersistentSetImpl<E> persistentSet) =>
+      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
+
+  Iterable<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
+    return this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+  }
+  
   PersistentSet withTransient(void change(TransientSet set)) {
     TransientSet result = this.asTransient();
     change(result);
@@ -129,11 +109,6 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet {
   PersistentSet asPersistent() {
     return new _PersistentSetImpl._internal(_map.asPersistent());
   }
-  
-  TransientSet asTransient() {
-    return this;
-  }
-  
   
 }
 

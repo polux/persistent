@@ -63,9 +63,9 @@ main() {
       var set1 = new PersistentSet.from(["a","b","c"]);
       var set2 = new PersistentSet.from(["d","c"]);
       var set3 = new PersistentSet();
-      expect(set1.cartesianProduct(set3) == set3, isTrue);
-      expect(set3.cartesianProduct(set2) == set3, isTrue);
-      expect(set1.cartesianProduct(set2) == new PersistentSet.from([
+      expect(new PersistentSet.from(set1 * set3) == set3, isTrue);
+      expect(new PersistentSet.from(set3 * set2) == set3, isTrue);
+      expect(new PersistentSet.from(set1 * set2) == new PersistentSet.from([
         new Pair("a","d"), new Pair("b","d"), new Pair("c","d"),
         new Pair("a","c"), new Pair("b","c"), new Pair("c","c")
       ]), isTrue);
@@ -110,12 +110,12 @@ main() {
     test('doInsert', () {
       var set = new PersistentSet.from(["a","b","c"]).asTransient();
       set.doInsert("c");
-      expect(set.asTransient(),
+      expect(set.asPersistent(),
           equals(new PersistentSet.from(["a","b","c"])));
       expect(set.contains("c"), isTrue);
-      
+      set = set.asPersistent().asTransient();
       set.doInsert("d");
-      expect(set.asTransient(),
+      expect(set.asPersistent(),
           equals(new PersistentSet.from(["a","b","c","d"])));
       expect(set.contains("d"), isTrue);
     });
@@ -123,10 +123,11 @@ main() {
     test('doDelete', () {
       var set = new PersistentSet.from(["a","b","c"]).asTransient();
       set.doDelete("c");
-      expect(set.asTransient(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
+      set = set.asPersistent().asTransient();
       set.doDelete("d", safe:true);
-      expect(set.asTransient(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
   });
