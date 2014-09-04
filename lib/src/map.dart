@@ -28,11 +28,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   V lookup(K key, {orElse()});
 
   /**
-   * Calls [lookup] recursively using [path] elemenets as keys.
-   */
-  lookupIn(List path, {orElse()});
-
-  /**
    * Returns the value bound to [key].
    * 
    * Throws exception if [key] is not bound.
@@ -43,46 +38,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
    * Evaluates `f(key, value)` for each (`key`, `value`) pair in `this`.
    */
   void forEachKeyValue(f(K key, V value));
-
-  /**
-   * Returns a new map whose (key, value) pairs are the union of those of `this`
-   * and [other].
-   *
-   * The union is right-biased: if a key is present in both `this` and [other],
-   * the value from [other] is retained. If [combine] is provided, the retained
-   * value for a `key` present in both `this` and [other] is then
-   * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
-   * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
-   *
-   *     var mapA = PersistentMap.fromMap({'a': 1});
-   *     var mapB = PersistentMap.fromMap({'b': 2});
-   *     var mapAB = PersistentMap.fromMap({'a': 3, 'b': 2});
-   *     mapA.union(mapB) // returns {'a': 1, 'b': 2}
-   *     mapA.union(mapAB) // returns {'a': 3, 'b': 2}
-   *     mapA.union(mapAB, (x,y) => x + y) // returns {'a': 4, 'b': 2}
-   */
-  ReadMap<K, V>
-      union(ReadMap<K, V> other, [V combine(V left, V right)]);
-
-  /**
-   * Returns a new map whose (key, value) pairs are the intersection of those of
-   * `this` and [other].
-   *
-   * The intersection is right-biased: values from [other] are retained. If
-   * [combine] is provided, the retained value for a `key` present in both
-   * `this` and [other] is then `combine(leftvalue, rightvalue)` where
-   * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
-   * one bound to `key` in [other].
-   *
-   *     var mapA = PersistentMap.fromMap({'a': 1});
-   *     var mapB = PersistentMap.fromMap({'b': 2});
-   *     var mapAB = PersistentMap.fromMap({'a': 3, 'b': 2});
-   *     mapA.intersection(mapB) // returns {}
-   *     mapA.intersection(mapAB) // returns {'a': 1}
-   *     mapA.intersection(mapAB, (x,y) => x + y) // returns {'a': 4}
-   */
-  ReadMap<K, V>
-      intersection(ReadMap<K, V> other, [V combine(V left, V right)]);
 
   /// Returns a mutable copy of `this`.
   Map<K, V> toMap();
@@ -98,12 +53,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// Randomly picks an entry of `this`.
   Pair<K, V> pickRandomEntry([Random random]);
-
-  /// A strict (non-lazy) version of [map].
-  ReadMap strictMap(Pair f(Pair<K, V> pair));
-
-  /// A strict (non-lazy) version of [where].
-  ReadMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 
   /// An iterator through the entries of `this`.
   Iterator<Pair<K, V>> get iterator;
@@ -175,11 +124,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
       insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
-   * Calls [insert] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> insertIn(List path, V value, [V combine(V oldvalue, V newvalue)]);
-
-  /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
    * 
@@ -194,11 +138,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   PersistentMap<K, V> delete(K key, {bool safe: false});
 
   /**
-   * Calls [delete] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> deleteIn(List path, {bool safe: false});
-
-  /**
    * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
    * 
@@ -211,11 +150,6 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    */
   PersistentMap<K, V> adjust(K key, V update(V value), {bool safe: false});
 
-  /**
-   * Calls [adjust] recursively using [path] elemenets as keys.
-   */
-  PersistentMap<K, V> adjustIn(List path, V update(V value));
-  
   /**
    * Returns a new map identical to `this` where each value has been updated by
    * [f].
@@ -248,6 +182,52 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
+  
+  /**
+   * Returns a new map whose (key, value) pairs are the union of those of `this`
+   * and [other].
+   *
+   * The union is right-biased: if a key is present in both `this` and [other],
+   * the value from [other] is retained. If [combine] is provided, the retained
+   * value for a `key` present in both `this` and [other] is then
+   * `combine(leftvalue, rightvalue)` where `leftvalue` is the value bound to
+   * `key` in `this` and `rightvalue` is the one bound to `key` in [other].
+   *
+   *     {'a': 1}.union({'b': 2}) == {'a': 1, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}) == {'a': 3, 'b': 2}
+   *     {'a': 1}.union({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4, 'b': 2}
+   *
+   * Note that [union] is commutative if and only if [combine] is provided and
+   * if it is commutative.
+   */
+  PersistentMap<K, V>
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+
+  /**
+   * Returns a new map whose (key, value) pairs are the intersection of those of
+   * `this` and [other].
+   *
+   * The intersection is right-biased: values from [other] are retained. If
+   * [combine] is provided, the retained value for a `key` present in both
+   * `this` and [other] is then `combine(leftvalue, rightvalue)` where
+   * `leftvalue` is the value bound to `key` in `this` and `rightvalue` is the
+   * one bound to `key` in [other].
+   *
+   *     {'a': 1}.intersection({'b': 2}) == {}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}) == {'a': 3}
+   *     {'a': 1}.intersection({'a': 3, 'b': 2}, (x,y) => x + y) == {'a': 4}
+   *
+   * Note that [intersection] is commutative if and only if [combine] is
+   * provided and if it is commutative.
+   */
+  PersistentMap<K, V>
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+      
+  /// A strict (non-lazy) version of [map].
+  PersistentMap strictMap(Pair f(Pair<K, V> pair));
+  
+  /// A strict (non-lazy) version of [where].
+  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
 
 /**
@@ -285,12 +265,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
       doInsert(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
-   * Calls [doInsert] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V>
-      doInsertIn(List<K> path, V value, [V combine(V oldvalue, V newvalue)]);
-
-  /**
    * Unbinds [key].
    *
    * If [key] is not bound and [safe] is not `true`, exception is thrown.
@@ -301,11 +275,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doDelete('b', 2); // map is still {'a': 1}
    */
   TransientMap<K, V> doDelete(K key, {bool safe: false}) ;
-
-  /**
-   * Calls [doDelete] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V> doDeleteIn(List<K> path, {bool safe: false});
 
   /**
    * Adjusts the value that is possibly bound to [key] by [update].
@@ -321,13 +290,8 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   TransientMap<K, V> doAdjust(K key, V update(V value), {bool safe: false});
 
   /**
-   * Calls [doAdjust] recursively using [path] elemenets as keys.
-   */
-  TransientMap<K, V> doAdjustIn(List path, V update(V value));
-  
-  /**
    * Updates all values by passing them to [f] and replacing them by results.
-   *     
+   *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
    */

@@ -139,28 +139,18 @@ main() {
     test('insertIn', () {
       PersistentMap map = new PersistentMap();
       map = map.insert('a', new PersistentMap());
-      PersistentMap map2 = map.insertIn(['a', 'b'], 'c');
+      PersistentMap map2 = insertIn(map, ['a', 'b'], 'c');
 
       expect(map2 == deepPersistent({'a': {'b': 'c'}}), isTrue);
       expect(map == map2, isFalse);
       expect(map, equals(deepPersistent({'a': {}})));
     });
 
-    test('adjustIn', () {
-      PersistentMap map = new PersistentMap();
-      map = map.insert('a', new PersistentMap());
-      map = map.insertIn(['a', 'b'], 'c');
-      PersistentMap map2 = map.adjustIn(['a', 'b'], (a) => a+'c');
-      expect(map2['a'], equals(new PersistentMap.fromMap({'b': 'cc'})));
-      expect(map == map2, isFalse);
-      expect(map['a'], equals(new PersistentMap.fromMap({'b': 'c'})));
-    });
-
     test('deleteIn', () {
       PersistentMap map = new PersistentMap();
       map = map.insert('a', new PersistentMap());
-      map = map.insertIn(['a', 'b'], 'c');
-      PersistentMap map2 = map.deleteIn(['a', 'b']);
+      map = insertIn(map, ['a', 'b'], 'c');
+      PersistentMap map2 = deleteIn(map, ['a', 'b']);
 
       expect(map2['a'], equals(new PersistentMap.fromMap({})));
       expect(map == map2, isFalse);
@@ -170,9 +160,9 @@ main() {
     test('lookupIn', () {
       PersistentMap map = new PersistentMap();
       map = map.insert('a', new PersistentMap());
-      map = map.insertIn(['a', 'b'], 'c');
+      map = insertIn(map, ['a', 'b'], 'c');
 
-      expect(map.lookupIn(['a', 'b']), equals('c'));
+      expect(lookupIn(map, ['a', 'b']), equals('c'));
     });
   });
 }
