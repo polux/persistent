@@ -36,7 +36,7 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 class _PersistentSetImpl<E>
     extends _SetImplBase<E>
     with PersistentSetMixim<E> {
-      
+
   final PersistentMap<E, Null> _map;
 
   _PersistentSetImpl._internal(this._map);
@@ -49,44 +49,42 @@ class _PersistentSetImpl<E>
 
   _PersistentSetImpl<E> delete(E element, {bool safe:false}) =>
       new _PersistentSetImpl._internal(_map.delete(element, safe:safe));
-  
+
   TransientSet asTransient() {
     return new _TransientSetImpl._internal(_map.asTransient());
   }
-  
-  PersistentSet<E> union(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
 
-  PersistentSet<E> difference(_PersistentSetImpl<E> persistentSet) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (!persistentSet.contains(k)) {
-        result = result.insert(k);
+  PersistentSet<E> union(PersistentSet<E> persistentSet){
+      if(persistentSet is _PersistentSetImpl<E>){
+        return new _PersistentSetImpl._internal(
+            _map.union(persistentSet._map));
+      } else {
+        return super.union(persistentSet);
       }
-    });
-    return result;
   }
 
-  PersistentSet<E> intersection(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
-
-  Iterable<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
-    return this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+  PersistentSet<E> intersection(PersistentSet<E> persistentSet){
+    if(persistentSet is _PersistentSetImpl<E>){
+      return new _PersistentSetImpl._internal(
+          _map.intersection(persistentSet._map));
+    } else {
+      return super.intersection(persistentSet);
+    }
   }
-  
+
   PersistentSet withTransient(void change(TransientSet set)) {
     TransientSet result = this.asTransient();
     change(result);
     return result.asPersistent();
   }
-  
+
   bool operator==(ReadSet<E> other) =>
       other is TransientSet ?
         this.length == other.length &&
         this.fold(true, (test, v)=> test && other.contains(v))
       :
         super == other;
-    
+
   int get hashCode => this._map.hashCode;
 }
 
@@ -109,7 +107,7 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet {
   PersistentSet asPersistent() {
     return new _PersistentSetImpl._internal(_map.asPersistent());
   }
-  
+
 }
 
 

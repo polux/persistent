@@ -6,7 +6,7 @@
 part of persistent;
 
 abstract class ReadSet<E> implements Iterable<E> {
-  
+
 }
 
 abstract class PersistentSet<E> implements ReadSet<E> {
@@ -29,9 +29,9 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   PersistentSet<E> insert(E element);
 
   PersistentSet<E> delete(E element, {bool safe:false});
-  
+
   PersistentSet<E> withTransient(void change(TransientSet<E> set));
-  
+
   PersistentSet<E> union(PersistentSet<E> persistentSet);
 
   /// Alias for [union].
@@ -57,11 +57,11 @@ abstract class PersistentSet<E> implements ReadSet<E> {
 
   /// A strict (non-lazy) version of [where].
   PersistentSet<E> strictWhere(bool f(E element));
-  
+
   bool operator==(PersistentSet<E> other);
-  
+
   int get hashCode;
-  
+
   TransientSet<E> asTransient();
 }
 
@@ -70,7 +70,7 @@ abstract class TransientSet<E> implements ReadSet<E> {
   void doInsert(E element);
 
   void doDelete(E element, {bool safe:false});
-  
+
   PersistentSet<E> asPersistent();
 }
 
@@ -80,7 +80,7 @@ abstract class TransientSet<E> implements ReadSet<E> {
 abstract class ReadSetBase<E>
     extends IterableBase<E>
     implements ReadSet<E> {
-      
+
   String toString() {
     StringBuffer buffer = new StringBuffer('{');
     bool comma = false;
@@ -93,18 +93,34 @@ abstract class ReadSetBase<E>
     return buffer.toString();
   }
 }
-    
+
 abstract class PersistentSetMixim<E>
     implements PersistentSet<E> {
-      
+
+  PersistentSet<E> union(PersistentSet<E> persistentSet) =>
+      this.withTransient((set)=>
+        persistentSet.where((e) => !this.contains(e)).forEach((e)=>
+            set.doInsert(e)
+        )
+      );
+
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
       union(persistentSet);
+
+  PersistentSet<E> difference(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => !persistentSet.contains(e)));
 
   PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
       difference(persistentSet);
 
+  Iterable<Pair> cartesianProduct(PersistentSet<E> persistentSet) =>
+      this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+
   Iterable<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
+
+  PersistentSet<E> intersect(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => persistentSet.contains(e)));
 
   PersistentSet strictMap(f(E element)) =>
       new PersistentSet.from(this.map(f));
