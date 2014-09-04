@@ -58,6 +58,8 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   /// A strict (non-lazy) version of [where].
   PersistentSet<E> strictWhere(bool f(E element));
   
+  Iterable<E> filter(bool f(E element));
+  
   bool operator==(PersistentSet<E> other);
   
   int get hashCode;

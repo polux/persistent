@@ -16,16 +16,6 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
     return _map.map((pair)=>f(pair.fst));
   }
 
-  _SetImplBase<E> filter(bool f(E element)) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (f(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
-  }
-
   int get length => _map.length;
 
   bool operator ==(_SetImplBase<E> other) => _map == other._map;
@@ -83,7 +73,11 @@ class _PersistentSetImpl<E>
   Iterable<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
     return this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
   }
-
+  
+  Iterable<E> filter(bool f(E element)) {
+    return this.expand((E e) => f(e)?[e]:[]);
+  }
+    
   PersistentSet withTransient(void change(TransientSet set)) {
     TransientSet result = this.asTransient();
     change(result);
