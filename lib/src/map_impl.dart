@@ -70,6 +70,7 @@ class PersistentMapImpl<K, V>
     _hash = 0;
     this.forEachKeyValue((key, value) {
       _hash += key.hashCode ^ value.hashCode;
+      _hash = _hash & 0x1fffffff;
     });
     return _hash;
   }
