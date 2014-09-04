@@ -1,4 +1,4 @@
-part of map_bench;
+part of vector_speed;
 
 class PersistentVectorInterface<E>
   extends EncapsulatingInterface<E, PersistentVector<E>>{

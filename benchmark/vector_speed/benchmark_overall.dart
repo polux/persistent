@@ -3,7 +3,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-part of map_bench;
+part of vector_speed;
 
 class OverallBenchmark extends BenchmarkBase{
 

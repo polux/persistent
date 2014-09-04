@@ -3,7 +3,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-library map_bench;
+library vector_speed;
 
 import 'package:persistent/persistent.dart';
 import 'package:benchmark_harness/benchmark_harness.dart';
