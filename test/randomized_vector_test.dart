@@ -2,7 +2,6 @@ library vector_test;
 
 import 'package:unittest/unittest.dart';
 import 'package:persistent/persistent.dart';
-import 'src/test_util.dart';
 import 'dart:core';
 import 'utils.dart';
 
@@ -41,14 +40,14 @@ doTest(operationsCnt, print_fn){
       'deepCopy': (PersistentVector ve) => ve,
     },
     'model': {
-      'create': () => new ModelVector([]),
-      'bulkInsert': (ModelVector ve, List updateWith) =>
-        updateWith.fold(ve, (ve, e) => ve.push(e)),
-      'bulkPop': (ModelVector ve, int count) =>
-        new List.filled(count, null).fold(ve, (ve, e) => ve.pop()),
-      'bulkChange': (ModelVector ve, Map changes) =>
-        changes.keys.fold(ve, (ve, key) => ve.set(key, changes[key])),
-      'deepCopy': (ModelVector ve) => ve,
+      'create': () => [],
+      'bulkInsert': (List ve, List updateWith) =>
+        updateWith.fold(ve, (ve, e) => ve.sublist(0)..add(e)),
+      'bulkPop': (List ve, int count) =>
+        new List.filled(count, null).fold(ve, (ve, e) => ve.sublist(0, ve.length-1)),
+      'bulkChange': (List ve, Map changes) =>
+        changes.keys.fold(ve.sublist(0), (List ve, key) => ve..removeAt(key)..insert(key, changes[key])),
+      'deepCopy': (List ve) => ve.sublist(0),
     },
     'transient': {
       'create': () => new PersistentVector().asTransient(),
