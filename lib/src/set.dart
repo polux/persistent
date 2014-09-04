@@ -42,10 +42,10 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   /// Alias for [difference].
   PersistentSet<E> operator -(PersistentSet<E> persistentSet);
 
-  PersistentSet<Pair<E,dynamic>> cartesianProduct(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet persistentSet);
 
   /// Alias for [cartesianProduct].
-  PersistentSet<Pair<E,dynamic>> operator *(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> operator *(PersistentSet persistentSet);
 
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
 
@@ -103,7 +103,7 @@ abstract class PersistentSetMixim<E>
   PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
       difference(persistentSet);
 
-  PersistentSet<Pair> operator *(PersistentSet persistentSet) =>
+  Iterable<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
 
   PersistentSet strictMap(f(E element)) =>
