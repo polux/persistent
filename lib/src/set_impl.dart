@@ -74,10 +74,6 @@ class _PersistentSetImpl<E>
     return this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
   }
   
-  Iterable<E> filter(bool f(E element)) {
-    return this.expand((E e) => f(e)?[e]:[]);
-  }
-    
   PersistentSet withTransient(void change(TransientSet set)) {
     TransientSet result = this.asTransient();
     change(result);
