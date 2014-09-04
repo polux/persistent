@@ -16,7 +16,7 @@ class Bool {
   bool value = false;
 }
 
-abstract class ReadVector<E> implements Iterable<E> {
+abstract class ReadVector<E> implements Iterable<E>, Persistent {
   E get(int index, {Function orElse: null});
   E operator[](int index);
   E get first;
@@ -53,25 +53,7 @@ abstract class PersistentVectorBase<E> extends IterableBase<E> {
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
   int get length => _size;
-  Iterator<E> get iterator => new VectorIterator<E>(this);
-}
-
-class VectorIterator<E> extends Iterator<E> {
-  PersistentVectorBase<E> _parentVector;
-  int _position = -1;
-  int _length;
-
-  VectorIterator(this._parentVector) {
-    _length = _parentVector.length;
-  }
-
-  bool moveNext() {
-    if (_length == _position + 1) return false;
-    _position++;
-    return true;
-  }
-
-  E get current => _parentVector._get(_position);
+  Iterator<E> get iterator => new VectorIterator([this._root, this._tail]);
 }
 
 abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
@@ -206,6 +188,25 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       node._set((oldTailOffset >> _SHIFT) & _MASK, oldTail);
     }
 
+    if (newTailOffset < oldTailOffset) {
+      newRoot = _transientVNode(newRoot, owner);
+      var node = newRoot;
+      var parent = null;
+      var idx = null;
+      for (var level = newLevel; level > _SHIFT; level -= _SHIFT) {
+        parent = node;
+        idx = (newTailOffset >> level) & _MASK;
+        node._set(idx, _transientVNode(node._get(idx), owner));
+        node = node._get(idx);
+      }
+      var newNode = node._removeAfter(owner, node.length - 1);
+      if (parent == null) {
+        newRoot = newNode;
+      } else {
+        parent._set(idx, newNode);
+      }
+    }
+
     if (newSize < oldSize) {
       newTail = newTail._removeAfter(owner, newSize);
     }
@@ -257,11 +258,41 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
 
 }
 
+class VectorIterator<E> implements Iterator<E> {
+  List _array;
+  int _index = 0;
+  Iterator _current = null;
+
+  VectorIterator(this._array);
+  E get current => (_current != null) ? _current.current : null;
+
+  bool moveNext() {
+    while(_index < _array.length) {
+      if (_current == null) {
+        _current = _array[_index].iterator;
+      }
+      if (_current.moveNext()) {
+        return true;
+      } else {
+        _current = null;
+        _index++;
+      }
+    }
+    return false;
+  }
+}
+
 class _VNode {
   List _array;
   Owner _ownerID;
 
   int get length => _array.length;
+
+  Iterator get iterator {
+    if (_array.length == 0) return _array.iterator;
+    if (_array[0] is _VNode) return new VectorIterator(_array);
+    return _array.iterator;
+  }
 
   String toString() {
     return "VNode: " + _array.toString();
@@ -283,11 +314,15 @@ class _VNode {
 
   _VNode _removeAfter(Owner ownerID, int newSize) {
     var sizeIndex = (newSize - 1) & _MASK;
-    if (sizeIndex >= this.length - 1) {
+    if (newSize != 0 && sizeIndex >= this.length - 1) {
       return this;
     }
     var editable = _transientVNode(this, ownerID);
-    editable._array.removeRange(sizeIndex + 1, editable.length);
+    if (newSize == 0) {
+      editable._array = [];
+    } else {
+      editable._array.removeRange(sizeIndex + 1, editable.length);
+    }
     return editable;
 
   }
