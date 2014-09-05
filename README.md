@@ -2,6 +2,9 @@
 
 Transient and persistent sets, maps and vectors with utilities
 
+The project is forked from
+[polux/persistent](https://github.com/polux/persistent).
+
 ## Terminology
 
   * *Persistent* data structure is an immutable structure, that provides effective

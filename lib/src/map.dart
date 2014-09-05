@@ -1,9 +1,8 @@
+// Copyright (c) 2014, VacuumLabs.
 // Copyright (c) 2012, Google Inc. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-// Authors:
-//   Paul Brauner (polux@google.com)
-//   Rafael Brandão (rafa.bra@gmail.com)
+// Authors are listed in the AUTHORS file
 
 part of persistent;
 
@@ -13,7 +12,7 @@ part of persistent;
  *
  * There is no default implementation of [ReadMap], since it just
  * specifies common interface of [PersistentMap] and [TransientMap].
- * 
+ *
  * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
@@ -21,7 +20,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /**
    * Returns the value bound to [key].
-   * 
+   *
    * If [key] is not bound, [orElse] is called to obtain the
    * return value. Default [orElse] throws exception.
    */
@@ -29,7 +28,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /**
    * Returns the value bound to [key].
-   * 
+   *
    * Throws exception if [key] is not bound.
    */
   V operator [](K key);
@@ -126,10 +125,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
-   * 
+   *
    * If [key] is not bound and [safe] is not `true`, exception is thrown.
    * If [key] is not bound and [safe] is specified as `true`,
-   * the same map is returned. 
+   * the same map is returned.
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
@@ -140,7 +139,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   /**
    * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
-   * 
+   *
    * If [key] is not bound and [safe] is not `true`, exception is thrown.
    * If [key] is not bound and [safe] is specified as `true`,
    * the same map is returned.
@@ -182,7 +181,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
-  
+
   /**
    * Returns a new map whose (key, value) pairs are the union of those of `this`
    * and [other].
@@ -222,10 +221,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    */
   PersistentMap<K, V>
       intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
-      
+
   /// A strict (non-lazy) version of [map].
   PersistentMap strictMap(Pair f(Pair<K, V> pair));
-  
+
   /// A strict (non-lazy) version of [where].
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 }
@@ -278,7 +277,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
 
   /**
    * Adjusts the value that is possibly bound to [key] by [update].
-   * 
+   *
    * If [key] is not bound and [safe] is not `true`, exception is thrown.
    * If [key] is not bound and [safe] is specified as `true`, nothing happens.
    *

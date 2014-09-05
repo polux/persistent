@@ -1,7 +1,8 @@
+// Copyright (c) 2014, VacuumLabs.
 // Copyright (c) 2012, Google Inc. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-// Author: Paul Brauner (polux@google.com)
+// Authors are listed in the AUTHORS file
 
 part of persistent;
 
@@ -12,7 +13,7 @@ part of persistent;
  * specifies the common interface of [PersistentVector] and [TransientVector].
  */
 abstract class ReadSet<E> implements Iterable<E> {
-  
+
 }
 
 /**
@@ -40,27 +41,27 @@ abstract class PersistentSet<E> implements ReadSet<E> {
 
   /**
    * Returns a set identical to `this` except that it contains [element].
-   * 
+   *
    * If [element] is already in `this`, the same set is returned.
    */
   PersistentSet<E> insert(E element);
 
   /**
    * Returns a set identical to `this` except that it does not contain [element].
-   * 
+   *
    * If `this` does not contain [element] and [safe]
    * is not specified, the error is thrown.
    * If `this` does not contain [element] and [safe]
    * is `true`, the same set is returned.
    */
   PersistentSet<E> delete(E element, {safe: false});
-  
+
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
    * and returns persistent result.
    */
   PersistentSet<E> withTransient(void change(TransientSet<E> set));
-  
+
   /**
    * Returns a new set of all the elements that are included
    * in either `this` or [other]
@@ -107,16 +108,16 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   /**
    * The equality operator.
    *
-   * Two persistent sets are equal if and only if for each element 
+   * Two persistent sets are equal if and only if for each element
    * in any of them exists an equal element in the other one.
    */
   bool operator==(PersistentSet<E> other);
-  
+
   /*
    * The documentation is inherited from the Object
    */
   int get hashCode;
-  
+
   TransientSet<E> asTransient();
 }
 
@@ -132,21 +133,21 @@ abstract class TransientSet<E> implements ReadSet<E> {
 
   /**
    * Adds [element] to `this`.
-   * 
+   *
    * If `this` contains [element], nothing happens.
    */
   void doInsert(E element);
 
   /**
    * Removes [element] from `this`.
-   * 
+   *
    * If `this` does not contain [element] and [safe]
    * is not specified, the error is thrown.
    * If `this` does not contain [element] and [safe]
    * is `true`, nothing happens.
    */
   void doDelete(E element, {safe: false});
-  
+
   PersistentSet<E> asPersistent();
 }
 
@@ -169,10 +170,10 @@ abstract class ReadSetBase<E>
     return buffer.toString();
   }
 }
-    
+
 abstract class PersistentSetMixim<E>
     implements PersistentSet<E> {
-      
+
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
       union(persistentSet);
 
