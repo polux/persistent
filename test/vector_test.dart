@@ -10,6 +10,10 @@ import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
+  run();
+}
+
+run() {
 
   group('Persistent vector', () {
     test('pushing nulls', () {

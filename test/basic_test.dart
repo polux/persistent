@@ -4,12 +4,19 @@
 
 // Authors are listed in the AUTHORS file
 
+library basic_test;
+
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
+  run();
+}
 
-    test('lookup', (){
+run() {
+  group('Basics', () {
+
+    test('PersistentMap#lookup', (){
       PersistentMap map = new PersistentMap();
       map = map.insert('key1', 'val1');
       for (var _map in [map, map.asTransient()]) {
@@ -18,7 +25,7 @@ main() {
       }
     });
 
-    test('containsKey', () {
+    test('Maps#containsKey', () {
       PersistentMap map = new PersistentMap();
       map = map.insert('key1', 'val1');
       map = map.insert('key2', 'val2');
@@ -34,4 +41,6 @@ main() {
       expect(trans.containsKey('key22'), isFalse);
 
     });
+
+  });
 }

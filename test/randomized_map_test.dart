@@ -4,14 +4,19 @@
 
 // Authors are listed in the AUTHORS file
 
+library randomized_map_test;
+
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 import 'dart:math';
 import 'dart:core';
 import 'utils.dart';
 
-
 main() {
+  run();
+}
+
+run() {
   doTest(1000, (message) => print(message));
   print('Test successfully finished');
 }

@@ -4,7 +4,7 @@
 
 // Authors are listed in the AUTHORS file
 
-library vector_test;
+library randomized_vector_test;
 
 import 'package:unittest/unittest.dart';
 import 'package:persistent/persistent.dart';
@@ -12,6 +12,10 @@ import 'dart:core';
 import 'utils.dart';
 
 main() {
+  run();
+}
+
+run() {
   doTest(1000, (message) => print(message));
 }
 

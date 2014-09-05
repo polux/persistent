@@ -4,12 +4,16 @@
 
 // Authors are listed in the AUTHORS file
 
-library option_test;
+library map_test;
 
 import 'package:persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
+  run();
+}
+
+run() {
   group('Persistent map', () {
     test('insert', () {
       PersistentMap pm = new PersistentMap();
