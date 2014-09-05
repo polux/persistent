@@ -4,7 +4,7 @@
 
 // Authors are listed in the AUTHORS file
 
-library map_bench;
+library vector_speed;
 
 import 'package:persistent/persistent.dart';
 import 'package:benchmark_harness/benchmark_harness.dart';
@@ -14,11 +14,9 @@ part 'interface.dart';
 part 'interface_impl.dart';
 
 var interfaces = {
-  //"LinkedList": () => new LinkedListInterface(),
-  "PersistentMap": () => new PersistentMapInterface(),
-  "TransientMap": () => new TransientMapInterface(),
-  "StandartMap": () => new StandardMapInterface(),
-  //"CopyMap": () => new CopyMapInterface(),
+  "PersistentVector": () => new PersistentVectorInterface(),
+  "TransientVector": () => new TransientVectorInterface(),
+  "List": () => new ListInterface(),
 };
 
 void main() {

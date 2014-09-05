@@ -1,7 +1,8 @@
+// Copyright (c) 2014, VacuumLabs.
 // Copyright (c) 2012, Google Inc. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-// Author: Paul Brauner (polux@google.com)
+// Authors are listed in the AUTHORS file
 
 part of persistent;
 
@@ -54,13 +55,14 @@ class _PersistentSetImpl<E>
     return new _TransientSetImpl._internal(_map.asTransient());
   }
 
+
   PersistentSet<E> union(PersistentSet<E> persistentSet){
-      if(persistentSet is _PersistentSetImpl<E>){
-        return new _PersistentSetImpl._internal(
-            _map.union(persistentSet._map));
-      } else {
-        return super.union(persistentSet);
-      }
+    if(persistentSet is _PersistentSetImpl<E>){
+      return new _PersistentSetImpl._internal(
+          _map.union(persistentSet._map));
+    } else {
+      return super.union(persistentSet);
+    }
   }
 
   PersistentSet<E> intersection(PersistentSet<E> persistentSet){

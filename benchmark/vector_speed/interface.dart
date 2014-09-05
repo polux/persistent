@@ -4,22 +4,23 @@
 
 // Authors are listed in the AUTHORS file
 
-part of map_bench;
+part of vector_speed;
 
-abstract class BenchmarkInterface<K, V>{
+abstract class BenchmarkInterface<E>{
 
   void create();
-  void insert(K key, V value, V combine(V left, V right));
-  void lookup(K key);
-  void delete(K key);
+  void push(E value);
+  void set(int index, E value);
+  void get(int index);
+  void pop();
 
   void save();
   void restore();
 }
 
 
-abstract class EncapsulatingInterface<K, V, T>
-  extends BenchmarkInterface<K, V>{
+abstract class EncapsulatingInterface<E, T>
+  extends BenchmarkInterface<E>{
 
   T object = null;
   T object_copy = null;
@@ -31,6 +32,6 @@ abstract class EncapsulatingInterface<K, V, T>
   }
 
   restore(){
-    return object_copy;
+    object = object_copy;
   }
 }

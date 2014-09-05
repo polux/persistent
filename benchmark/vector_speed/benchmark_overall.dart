@@ -4,7 +4,7 @@
 
 // Authors are listed in the AUTHORS file
 
-part of map_bench;
+part of vector_speed;
 
 class OverallBenchmark extends BenchmarkBase{
 
@@ -23,26 +23,33 @@ class OverallBenchmark extends BenchmarkBase{
     object.create();
 
     for (int i = 0; i < size; i++) {
-      object.insert("key$i", "foo", (String x, String y) => x + y);
-      object.insert("key$i", "bar", (String x, String y) => x + y);
+      object.push("${i}".padLeft(8,"0"));
     }
 
-    for (int i = size * 2; i >= 0; i--) {
-      object.lookup("key$i");
+    for (int i = size-1; i >= 0; i--) {
+      object.get(i);
     }
 
-    for (int i = 0; i <= size * 2; i++) {
-      object.lookup("key$i");
+    for (int i = size-1; i >= 0; i--) {
+      object.set(i, "${i}".padLeft(8,"_"));
+    }
+
+    for (int i = 0; i < size; i++) {
+      object.get(i);
+    }
+
+    for (int i = 0; i < size; i++) {
+      object.set(i, "${i}".padLeft(8,"x"));
     }
 
     object.save();
-    for (int i = size * 2; i >= 0; i--) {
-      object.delete("key$i");
+    for (int i = size-1 ; i >= 0; i--) {
+      object.pop();
     }
 
     object.restore();
-    for (int i = 0; i < size * 2; i++) {
-      object.delete("key$i");
+    for (int i = 0; i < size; i++) {
+      object.pop();
     }
   }
 }
