@@ -11,7 +11,7 @@ clean:
 
 run: vector_speed.js
 
-	@echo "Performing several insert, lookup and delete operations on flat maps."
+	@echo "Performing several get, set, push and pop operations on flat vectors."
 	@echo "The number of operations depends on the map size."
 
 	@echo "--------"
