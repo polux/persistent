@@ -25,6 +25,11 @@ void main() {
   for (int n in [1,10,100,1000,10000]) {
     for (String name in interfaces.keys){
       new ReadBenchmark(n, interfaces[name](), name).report();
+    }
+  }
+
+  for (int n in [1,10,100,1000,10000]) {
+    for (String name in interfaces.keys){
       new WriteBenchmark(n, interfaces[name](), name).report();
     }
   }
