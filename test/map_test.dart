@@ -70,6 +70,24 @@ main() {
 
       expect(pm.toMap(), equals({'a': 'b a', 'c': 'b a'}));
     });
+
+    test('intersection', () {
+      var m1 = new PersistentMap.fromMap({'a':1, 'b':2});
+      var m2 = new PersistentMap.fromMap({'c':4, 'b':3});
+      var i1 = m1.intersection(m2).toMap();
+      var i2 = m1.intersection(m2, (x,y)=>x+y).toMap();
+      expect(i1, equals({'b':3}));
+      expect(i2, equals({'b':5}));
+    });
+
+    test('union', () {
+      var m1 = new PersistentMap.fromMap({'a':1, 'b':2});
+      var m2 = new PersistentMap.fromMap({'c':4, 'b':3});
+      var u1 = m1.union(m2).toMap();
+      var u2 = m1.union(m2, (x,y)=>x+y).toMap();
+      expect(u1, equals({'b':3, 'a':1, 'c':4}));
+      expect(u2, equals({'b':5, 'a':1, 'c':4}));
+    });
   });
 
   group('Transient map', () {
