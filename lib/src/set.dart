@@ -54,7 +54,7 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * If `this` does not contain [element] and [safe]
    * is `true`, the same set is returned.
    */
-  PersistentSet<E> delete(E element, {safe: false});
+  PersistentSet<E> delete(E element, {bool safe: false});
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -146,7 +146,7 @@ abstract class TransientSet<E> implements ReadSet<E> {
    * If `this` does not contain [element] and [safe]
    * is `true`, nothing happens.
    */
-  void doDelete(E element, {safe: false});
+  void doDelete(E element, {bool safe: false});
 
   PersistentSet<E> asPersistent();
 }
@@ -174,14 +174,30 @@ abstract class ReadSetBase<E>
 abstract class PersistentSetMixim<E>
     implements PersistentSet<E> {
 
+  PersistentSet<E> union(PersistentSet<E> persistentSet) =>
+      this.withTransient((set)=>
+        persistentSet.where((e) => !this.contains(e)).forEach((e)=>
+            set.doInsert(e)
+        )
+      );
+
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
       union(persistentSet);
+
+  PersistentSet<E> difference(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => !persistentSet.contains(e)));
 
   PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
       difference(persistentSet);
 
+  Iterable<Pair> cartesianProduct(PersistentSet<E> persistentSet) =>
+      this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+
   Iterable<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
+
+  PersistentSet<E> intersect(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => persistentSet.contains(e)));
 
   PersistentSet strictMap(f(E element)) =>
       new PersistentSet.from(this.map(f));

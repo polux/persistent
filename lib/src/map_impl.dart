@@ -123,14 +123,46 @@ class PersistentMapImpl<K, V>
   }
 
   PersistentMapImpl<K, V>
-      union(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) {
-    Owner owner = new Owner();
-    return new PersistentMapImpl._new(_root.union(owner, other._root, combine));
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]) {
+
+    if(other is PersistentMapImpl<K, V>){
+      Owner owner = new Owner();
+      return new PersistentMapImpl._new(
+          _root.union(owner, other._root, combine));
+
+    } else {
+      if(combine == null) combine = (_, x)=>x;
+      return this.withTransient((map){
+        other.forEach((pair){
+          if(this.containsKey(pair.fst)){
+            map[pair.fst] = combine(map[pair.fst], pair.snd);
+          } else {
+            map[pair.fst] = pair.snd;
+          }
+        });
+      });
+    }
   }
 
   PersistentMapImpl<K, V>
-    intersection(PersistentMapImpl<K, V> other, [V combine(V left, V right)]) =>
-      new PersistentMapImpl._new(_root.intersection(null, other._root, combine));
+    intersection(PersistentMap<K, V> other, [V combine(V left, V right)]){
+
+      if(other is PersistentMapImpl<K, V>){
+        return new PersistentMapImpl._new(
+            _root.intersection(null, other._root, combine));
+
+      } else {
+        if(combine == null) combine = (_, x)=>x;
+        return new PersistentMap.fromPairs(this.expand((pair){
+          if(other.containsKey(pair.fst)){
+            return [new Pair(pair.fst,combine(pair.snd,other[pair.fst]))];
+          } else {
+            return [];
+          }
+        }));
+      }
+    }
+
 
   PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
       new PersistentMapImpl.fromPairs(this.map(f));
