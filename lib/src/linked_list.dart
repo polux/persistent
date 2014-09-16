@@ -5,12 +5,26 @@
 
 part of persistent;
 
+/**
+ * Immutable list of elements of type E. All its predecessors must
+ * be accessed before accessing an element.
+ *
+ * Can be either [Cons] or [Nil].
+ * [Nil] is an empty list,
+ * while [Cons] contains the first element (`elem`)
+ * and the rest of the list (`tail`).
+ */
 abstract class LinkedList<E> implements Iterable<E> {
   bool get isNil;
   bool get isCons;
+
+  /// Converts this to [Nil] or returns `null`
   Nil<E> get asNil;
+
+  /// Converts this to [Cons] or returns `null`
   Cons<E> get asCons;
 
+  /// Passes all the elements of this to [f].
   void foreach(f(A));
 
   /// A strict (non-lazy) version of [:map:].
@@ -20,10 +34,16 @@ abstract class LinkedList<E> implements Iterable<E> {
   LinkedList<E> strictWhere(bool f(A));
 }
 
+/**
+ * [LinkedList] builder.
+ *
+ * Elements are added from the first.
+ */
 class LinkedListBuilder<E> {
   LinkedList<E> _first = null;
   Cons<E> _last = null;
 
+  /// Adds the next element to the list
   void add(E x) {
     Cons<E> cons = new Cons<E>(x, null);
     if (_first == null) {
@@ -34,6 +54,10 @@ class LinkedListBuilder<E> {
     _last = cons;
   }
 
+  /**
+   * Creates a new list prepending so far added elements to the
+   * optional [tail].
+   */
   LinkedList<E> build([tail = null]) {
     if (tail == null)
       tail = new Nil<E>();
@@ -89,6 +113,9 @@ class _NilIterator<E> implements Iterator<E> {
   bool moveNext() => false;
 }
 
+/**
+ * Empty [LinkedList]
+ */
 class Nil<E> extends _LinkedListBase<E> {
   bool get isNil => true;
   bool get isCons => false;
@@ -123,10 +150,16 @@ class _ConsIterator<E> implements Iterator<E> {
   }
 }
 
+/**
+ * Nonempty [LinkedList]
+ */
 class Cons<E> extends _LinkedListBase<E> {
   int _length = null;
 
+  /// The first element of this
   final E elem;
+
+  /// The rest of this - without the first element
   LinkedList<E> tail;
 
   Cons(this.elem, this.tail);
