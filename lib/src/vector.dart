@@ -237,7 +237,7 @@ abstract class PersistentVectorBase<E> extends IterableBase<E> {
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
   int get length => _size;
-  Iterator<E> get iterator => new VectorIterator([this._root, this._tail]);
+  Iterator<E> get iterator;
 }
 
 abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
@@ -254,6 +254,8 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     this._level = _SHIFT;
     this._size = 0;
   }
+
+  Iterator<E> get iterator => new VectorIterator([this._root, this._tail]);
 
   E _get(int index, {Function orElse: null}) {
     try {

@@ -6,16 +6,16 @@
 
 part of map_bench;
 
-class OverallBenchmark extends BenchmarkBase{
+class WriteBenchmark extends BenchmarkBase{
 
   final int size;
   final BenchmarkInterface object;
 
 
-  OverallBenchmark(size, object, name):
+  WriteBenchmark(size, object, name):
     size = size,
     object = object,
-    super("$name($size)");
+    super("Writing $name($size)");
 
 
   void run(){
@@ -25,14 +25,6 @@ class OverallBenchmark extends BenchmarkBase{
     for (int i = 0; i < size; i++) {
       object.insert("key$i", "foo", (String x, String y) => x + y);
       object.insert("key$i", "bar", (String x, String y) => x + y);
-    }
-
-    for (int i = size * 2; i >= 0; i--) {
-      object.lookup("key$i");
-    }
-
-    for (int i = 0; i <= size * 2; i++) {
-      object.lookup("key$i");
     }
 
     object.save();
@@ -46,3 +38,38 @@ class OverallBenchmark extends BenchmarkBase{
     }
   }
 }
+
+
+class ReadBenchmark extends BenchmarkBase{
+
+  final int size;
+  final BenchmarkInterface object;
+
+
+  ReadBenchmark(size, object, name):
+    size = size,
+    object = object,
+    super("Reading $name($size)");
+
+  void setup(){
+
+    object.create();
+
+    for (int i = 0; i < size; i++) {
+      object.insert("key$i", "foo", (String x, String y) => x + y);
+    }
+  }
+
+  void run(){
+
+    for (int i = size * 2; i >= 0; i--) {
+      object.lookup("key$i");
+    }
+
+    for (int i = 0; i <= size * 2; i++) {
+      object.lookup("key$i");
+    }
+  }
+}
+
+

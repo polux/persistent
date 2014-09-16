@@ -55,24 +55,23 @@ class _PersistentSetImpl<E>
     return new _TransientSetImpl._internal(_map.asTransient());
   }
 
-  PersistentSet<E> union(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
 
-  PersistentSet<E> difference(_PersistentSetImpl<E> persistentSet) {
-    _PersistentSetImpl<E> result = new _PersistentSetImpl<E>();
-    _map.forEachKeyValue((E k, v) {
-      if (!persistentSet.contains(k)) {
-        result = result.insert(k);
-      }
-    });
-    return result;
+  PersistentSet<E> union(PersistentSet<E> persistentSet){
+    if(persistentSet is _PersistentSetImpl<E>){
+      return new _PersistentSetImpl._internal(
+          _map.union(persistentSet._map));
+    } else {
+      return super.union(persistentSet);
+    }
   }
 
-  PersistentSet<E> intersection(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl<E>._internal(_map.intersection(persistentSet._map));
-
-  Iterable<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
-    return this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+  PersistentSet<E> intersection(PersistentSet<E> persistentSet){
+    if(persistentSet is _PersistentSetImpl<E>){
+      return new _PersistentSetImpl._internal(
+          _map.intersection(persistentSet._map));
+    } else {
+      return super.intersection(persistentSet);
+    }
   }
 
   PersistentSet withTransient(void change(TransientSet set)) {
