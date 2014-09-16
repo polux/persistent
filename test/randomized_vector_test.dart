@@ -12,11 +12,15 @@ import 'dart:core';
 import 'utils.dart';
 
 main() {
-  run();
+  run(print_fn: (message) => print(message));
+  print('Test successfully finished');
 }
 
-run() {
-  doTest(1000, (message) => print(message));
+run({print_fn}) {
+  if (print_fn == null){
+    print_fn = (msg) => null;
+  }
+  doTest(1000, print_fn);
 }
 
 doTest(operationsCnt, print_fn){
