@@ -130,7 +130,7 @@ doTest(operationsCnt, print_fn){
     },
   });
 
-  test('random_test', () {
+  test('Random Vector Test', () {
     Map oldImpls = {};
 
     impls.forEach((name, impl) {

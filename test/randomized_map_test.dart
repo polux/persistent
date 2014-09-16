@@ -159,134 +159,136 @@ doTest(operationsCnt, print_fn){
     all_keys.add('hello $i');
     all_values.add('world $i');
   }
+  test('Random Map Test', () {
 
-  Map oldImpls = {};
+    Map oldImpls = {};
 
-  //list of all implementations we are going to use
-  impls.forEach((name, impl){
-    oldImpls[name] = {};
-    impl['instance'] = impl['create']();
-  });
+    //list of all implementations we are going to use
+    impls.forEach((name, impl){
+      oldImpls[name] = {};
+      impl['instance'] = impl['create']();
+    });
 
 
-  for(int i=0;i<operationsCnt;i++){
-    // flip a coin, whether you want to perform bulk insert, or bulk delete
-    // generate a random collection of keys(&values) which you want to insert/delete
-    // do perform operation on all instances
+    for(int i=0;i<operationsCnt;i++){
+      // flip a coin, whether you want to perform bulk insert, or bulk delete
+      // generate a random collection of keys(&values) which you want to insert/delete
+      // do perform operation on all instances
 
-    PersistentMap pm = impls['persistent']['instance'];
-    print_fn('$i/$operationsCnt: current length: ${pm.length}');
+      PersistentMap pm = impls['persistent']['instance'];
+      print_fn('$i/$operationsCnt: current length: ${pm.length}');
 
-    if(probability(0.5)) {
-      // bulkInsert
-      // let's add some fixed percentage of all keys to the map
-      int num = r.nextInt((range/10).floor());
+      if(probability(0.5)) {
+        // bulkInsert
+        // let's add some fixed percentage of all keys to the map
+        int num = r.nextInt((range/10).floor());
 
-      Map  map = {};
-      for(int i=0; i < num; i++) {
-        map[random_elem(all_keys)] = random_elem(all_values);
-      }
-
-      impls.forEach((name, impl){
-        impls[name]['instance'] = impls[name]['bulkInsert'](impl['instance'], map);
-      });
-    }
-    else if(probability(0.5)){
-      //bulkDelete
-      List keys;
-      if (probability(0.05)){
-        // from time to time, delete the whole map
-        keys = new List.from(pm.keys);
-      } else {
-        int num = r.nextInt(range);
-        keys = [];
+        Map  map = {};
         for(int i=0; i < num; i++) {
-          // sometimes try to delete key which is not there
-          keys.add(random_elem(all_keys));
+          map[random_elem(all_keys)] = random_elem(all_values);
         }
+
+        impls.forEach((name, impl){
+          impls[name]['instance'] = impls[name]['bulkInsert'](impl['instance'], map);
+        });
       }
-      // perform deletion on each instance
-      impls.forEach((name, impl){
-        impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
-      });
-    }
-    else {
-      List keys = [];
-      int num = r.nextInt(range);
-      List activeKeys = impls['map']['instance'].keys.toList();
-      if(activeKeys.length != 0) {
-        for(int i=0; i < num; i++) {
-          // sometimes try to delete key which is not there
-          keys.add(random_elem(activeKeys));
+      else if(probability(0.5)){
+        //bulkDelete
+        List keys;
+        if (probability(0.05)){
+          // from time to time, delete the whole map
+          keys = new List.from(pm.keys);
+        } else {
+          int num = r.nextInt(range);
+          keys = [];
+          for(int i=0; i < num; i++) {
+            // sometimes try to delete key which is not there
+            keys.add(random_elem(all_keys));
+          }
         }
         // perform deletion on each instance
         impls.forEach((name, impl){
           impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
         });
       }
-    }
+      else {
+        List keys = [];
+        int num = r.nextInt(range);
+        List activeKeys = impls['map']['instance'].keys.toList();
+        if(activeKeys.length != 0) {
+          for(int i=0; i < num; i++) {
+            // sometimes try to delete key which is not there
+            keys.add(random_elem(activeKeys));
+          }
+          // perform deletion on each instance
+          impls.forEach((name, impl){
+            impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
+          });
+        }
+      }
 
-    // from time to time, deep-copy all the instances to test immutability
-    if(probability(0.01) || oldImpls['persistent'].isEmpty){
-      print_fn('saving old instances');
-      impls.forEach((name, impl){
-        oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
-      });
-    }
+      // from time to time, deep-copy all the instances to test immutability
+      if(probability(0.01) || oldImpls['persistent'].isEmpty){
+        print_fn('saving old instances');
+        impls.forEach((name, impl){
+          oldImpls[name]['instance'] = impl['deepCopy'](impl['instance']);
+        });
+      }
 
-    assertInstancesAreSame(impls);
-    assertInstancesAreSame(oldImpls);
+      assertInstancesAreSame(impls);
+      assertInstancesAreSame(oldImpls);
 
-    // test iterating, equality and hashCode
-    PersistentMap copy = new PersistentMap();
-    for(Pair p in pm){
-      copy = copy.insert(p.fst, p.snd);
-    }
-    expect(pm == copy, isTrue);
-    expect(pm.hashCode == copy.hashCode, isTrue);
-    PersistentMap not_copy = copy.insert('something', 'completely different');
-    expect(pm == not_copy, isFalse);
-    // this may very rarely not be true
-    expect(pm.hashCode == not_copy.hashCode, isFalse);
+      // test iterating, equality and hashCode
+      PersistentMap copy = new PersistentMap();
+      for(Pair p in pm){
+        copy = copy.insert(p.fst, p.snd);
+      }
+      expect(pm == copy, isTrue);
+      expect(pm.hashCode == copy.hashCode, isTrue);
+      PersistentMap not_copy = copy.insert('something', 'completely different');
+      expect(pm == not_copy, isFalse);
+      // this may very rarely not be true
+      expect(pm.hashCode == not_copy.hashCode, isFalse);
 
-    // test 'containsKey'
-    for(int j=0; j<100; j++){
+      // test 'containsKey'
+      for(int j=0; j<100; j++){
+        num sum = 0;
+        var elem = random_elem(all_keys);
+        for (var impl in impls.keys){
+          sum += impls[impl]['instance'].containsKey(elem)?1:0;
+        }
+        // all impementations must add the same 0 or 1 value to the sum
+        expect(sum % impls.length, equals(0));
+      }
+
+      // test 'empty'
       num sum = 0;
-      var elem = random_elem(all_keys);
       for (var impl in impls.keys){
-        sum += impls[impl]['instance'].containsKey(elem)?1:0;
+        sum += impls[impl]['instance'].isEmpty?0:1;
       }
       // all impementations must add the same 0 or 1 value to the sum
       expect(sum % impls.length, equals(0));
-    }
 
-    // test 'empty'
-    num sum = 0;
-    for (var impl in impls.keys){
-      sum += impls[impl]['instance'].isEmpty?0:1;
-    }
-    // all impementations must add the same 0 or 1 value to the sum
-    expect(sum % impls.length, equals(0));
-
-    // test 'lookup'
-    for(int j=0; j<100; j++){
-      var last_val = getNone();
-      var elem = random_elem(all_keys);
-      for (var impl in impls.keys){
-        var val;
-        try {
-          val = impls[impl]['instance'][elem];
-        } catch (_){
-          val = null;
+      // test 'lookup'
+      for(int j=0; j<100; j++){
+        var last_val = getNone();
+        var elem = random_elem(all_keys);
+        for (var impl in impls.keys){
+          var val;
+          try {
+            val = impls[impl]['instance'][elem];
+          } catch (_){
+            val = null;
+          }
+          if (!isNone(last_val)){
+            expect(last_val, equals(val));
+          }
+          last_val = val;
         }
-        if (!isNone(last_val)){
-          expect(last_val, equals(val));
-        }
-        last_val = val;
       }
-    }
 
-  }
+    }
+  });
 }
 
 
