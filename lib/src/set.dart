@@ -154,7 +154,7 @@ abstract class TransientSet<E> implements ReadSet<E> {
 /**
  * A base class for implementations of [ReadSet].
  */
-abstract class ReadSetBase<E>
+abstract class _ReadSetBase<E>
     extends IterableBase<E>
     implements ReadSet<E> {
 
@@ -171,7 +171,7 @@ abstract class ReadSetBase<E>
   }
 }
 
-abstract class PersistentSetMixim<E>
+abstract class _PersistentSetMixim<E>
     implements PersistentSet<E> {
 
   PersistentSet<E> union(PersistentSet<E> persistentSet) =>

@@ -6,10 +6,10 @@
 
 part of persistent;
 
-abstract class _SetImplBase<E> extends ReadSetBase<E> {
+abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !isNone(_map.lookup(element, orElse: getNone));
+  bool contains(E element) => !_isNone(_map.lookup(element, orElse: _getNone));
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
@@ -36,7 +36,7 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 
 class _PersistentSetImpl<E>
     extends _SetImplBase<E>
-    with PersistentSetMixim<E> {
+    with _PersistentSetMixim<E> {
 
   final PersistentMap<E, Null> _map;
 
@@ -90,7 +90,7 @@ class _PersistentSetImpl<E>
   int get hashCode => this._map.hashCode;
 }
 
-class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet {
+class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
   final TransientMap<E, Null> _map;
 
   _TransientSetImpl._internal(this._map);

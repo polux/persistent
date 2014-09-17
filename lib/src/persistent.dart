@@ -7,7 +7,7 @@
 part of persistent;
 
 class Persistent {}
-class Owner {}
+class _Owner {}
 
 deepPersistent(from) {
   if(from is Persistent) return from;
@@ -27,8 +27,8 @@ deepPersistent(from) {
 }
 
 final _none = new Object();
-final getNone = () => _none;
-bool isNone(val) => val == _none;
+final _getNone = () => _none;
+bool _isNone(val) => val == _none;
 
 /**
  * Calls [lookup] recursively using [path] elemenets as keys.

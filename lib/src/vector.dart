@@ -11,14 +11,14 @@ const int _SIZE = 1 << _SHIFT;
 const int _MASK = _SIZE - 1;
 var _NOT_SET;
 
-getNotSet() {
+_getNotSet() {
   if (_NOT_SET == null)
     _NOT_SET = {};
   return _NOT_SET;
 }
 
 // Wrapper for referencing bool values
-class Bool {
+class _Bool {
   bool value = false;
 }
 
@@ -124,13 +124,13 @@ abstract class PersistentVector<E> implements ReadVector<E> {
   /**
    * Creates an empty [PersistentVector] using its default implementation.
    */
-  factory PersistentVector() => new PersistentVectorImpl.empty();
+  factory PersistentVector() => new _PersistentVectorImpl.empty();
 
   /**
    * Creates an [PersistentVector] filled by [values]
    * using its default implementation.
    */
-  factory PersistentVector.from(Iterable<E> values) => new PersistentVectorImpl.from(values);
+  factory PersistentVector.from(Iterable<E> values) => new _PersistentVectorImpl.from(values);
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -229,7 +229,7 @@ abstract class TransientVector<E> implements ReadVector<E> {
   PersistentVector<E> asPersistent();
 }
 
-abstract class PersistentVectorBase<E> extends IterableBase<E> {
+abstract class _PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
   E _get(int index, {Function orElse: null});
@@ -240,14 +240,14 @@ abstract class PersistentVectorBase<E> extends IterableBase<E> {
   Iterator<E> get iterator;
 }
 
-abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
-  Owner _owner;
+abstract class _BaseVectorImpl<E> extends _PersistentVectorBase<E> {
+  _Owner _owner;
   _VNode _root;
   _VNode _tail;
   int _level;
   bool __altered = false;
 
-  BaseVectorImpl._prototype() {
+  _BaseVectorImpl._prototype() {
     this._owner = null;
     this._root = new _VNode([], _owner);
     this._tail = _root;
@@ -255,7 +255,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     this._size = 0;
   }
 
-  Iterator<E> get iterator => new VectorIterator([this._root, this._tail]);
+  Iterator<E> get iterator => new _VectorIterator([this._root, this._tail]);
 
   E _get(int index, {Function orElse: null}) {
     try {
@@ -274,13 +274,13 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     return node._get(maskedIndex);
   }
 
-  BaseVectorImpl<E> _set(int index, E value) {
+  _BaseVectorImpl<E> _set(int index, E value) {
     index = _checkIndex(index);
 
     var vector = this;
     var newTail = vector._tail;
     var newRoot = vector._root;
-    var didAlter = new Bool();
+    var didAlter = new _Bool();
     if (index >= _getTailOffset(vector._size)) {
       newTail = newTail._update(vector._owner, 0, index, value, didAlter);
     } else {
@@ -295,15 +295,15 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       vector.__altered = true;
       return vector;
     }
-    return new PersistentVectorImpl._make(vector._size, vector._level, newRoot, newTail);
+    return new _PersistentVectorImpl._make(vector._size, vector._level, newRoot, newTail);
   }
 
-  BaseVectorImpl<E> _push(E value) {
+  _BaseVectorImpl<E> _push(E value) {
     var len = this.length;
     return this._withTransient((vect) => vect._resize(len+1)._set(len, value));
   }
 
-  BaseVectorImpl<E> _pop() {
+  _BaseVectorImpl<E> _pop() {
     return this._resize(this.length-1);
   }
 
@@ -334,7 +334,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     return null;
   }
 
-  BaseVectorImpl<E> _resize(int end) {
+  _BaseVectorImpl<E> _resize(int end) {
     if (end < 0) {
       throw new RangeError.value(end);
     }
@@ -342,7 +342,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     if (_owner == null) {
       owner = _owner;
     } else {
-      owner = new Owner();
+      owner = new _Owner();
     }
     var oldSize = _size;
     var newSize = end;
@@ -405,7 +405,7 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
       __altered = true;
       return this;
     }
-    return new PersistentVectorImpl._make(newSize, newLevel, newRoot, newTail);
+    return new _PersistentVectorImpl._make(newSize, newLevel, newRoot, newTail);
 
   }
 
@@ -417,26 +417,26 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
     print("Tail: $_tail");
   }
 
-  BaseVectorImpl _ensureOwner(Owner ownerID) {
+  _BaseVectorImpl _ensureOwner(_Owner ownerID) {
     if (ownerID == this._owner) {
       return this;
     }
     if (ownerID == null) {
       this._owner = ownerID;
-      return new PersistentVectorImpl._make(this._size, this._level, this._root, this._tail);
+      return new _PersistentVectorImpl._make(this._size, this._level, this._root, this._tail);
     }
-    return new TransientVectorImpl._make(this._size, this._level, this._root, this._tail, ownerID);
+    return new _TransientVectorImpl._make(this._size, this._level, this._root, this._tail, ownerID);
   }
 
-  TransientVectorImpl _asTransient() {
-    return this._owner != null ? this : this._ensureOwner(new Owner());
+  _TransientVectorImpl _asTransient() {
+    return this._owner != null ? this : this._ensureOwner(new _Owner());
   }
 
-  PersistentVectorImpl _asPersistent() {
+  _PersistentVectorImpl _asPersistent() {
     return this._ensureOwner(null);
   }
 
-  BaseVectorImpl _withTransient(fn) {
+  _BaseVectorImpl _withTransient(fn) {
     var transient = this._asTransient();
     fn(transient);
     return transient.wasAltered() ? transient._ensureOwner(this._owner) : this;
@@ -444,12 +444,12 @@ abstract class BaseVectorImpl<E> extends PersistentVectorBase<E> {
 
 }
 
-class VectorIterator<E> implements Iterator<E> {
+class _VectorIterator<E> implements Iterator<E> {
   List _array;
   int _index = 0;
   Iterator _current = null;
 
-  VectorIterator(this._array);
+  _VectorIterator(this._array);
   E get current => (_current != null) ? _current.current : null;
 
   bool moveNext() {
@@ -470,13 +470,13 @@ class VectorIterator<E> implements Iterator<E> {
 
 class _VNode {
   List _array;
-  Owner _ownerID;
+  _Owner _ownerID;
 
   int get length => _array.length;
 
   Iterator get iterator {
     if (_array.length == 0) return _array.iterator;
-    if (_array[0] is _VNode) return new VectorIterator(_array);
+    if (_array[0] is _VNode) return new _VectorIterator(_array);
     return _array.iterator;
   }
 
@@ -498,7 +498,7 @@ class _VNode {
 
   _get(int index) => (index >= 0 && index < this.length) ? this._array[index] : null;
 
-  _VNode _removeAfter(Owner ownerID, int newSize) {
+  _VNode _removeAfter(_Owner ownerID, int newSize) {
     var sizeIndex = (newSize - 1) & _MASK;
     if (newSize != 0 && sizeIndex >= this.length - 1) {
       return this;
@@ -513,8 +513,8 @@ class _VNode {
 
   }
 
-  _VNode _update(ownerID, level, index, value, Bool didAlter) {
-    var deleted = value == getNotSet();
+  _VNode _update(ownerID, level, index, value, _Bool didAlter) {
+    var deleted = value == _getNotSet();
     var node = this;
     var newNode;
     var idx = (index >> level) & _MASK;
@@ -554,23 +554,23 @@ class _VNode {
   }
 }
 
-_VNode _transientVNode(_VNode node, Owner ownerID) {
+_VNode _transientVNode(_VNode node, _Owner ownerID) {
   if (ownerID != null && node != null && ownerID == node._ownerID) {
     return node;
   }
   return new _VNode(node != null ? node._array.sublist(0) : [], ownerID);
 }
 
-class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVector<E> {
+class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PersistentVector<E> {
   // cached hashCode.
   int _hashCode = null;
 
 
-  factory PersistentVectorImpl.from(Iterable<E> values) {
+  factory _PersistentVectorImpl.from(Iterable<E> values) {
     if (values.length == 0) {
-      return new PersistentVectorImpl.empty();
+      return new _PersistentVectorImpl.empty();
     }
-    PersistentVectorImpl<E> result = new PersistentVectorImpl.empty();
+    _PersistentVectorImpl<E> result = new _PersistentVectorImpl.empty();
     result = result.withTransient((vector) {
       values.forEach((E value) {
         vector.doPush(value);
@@ -580,11 +580,11 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     return result;
   }
 
-  factory PersistentVectorImpl.empty() => new PersistentVectorImpl._prototype();
-  PersistentVectorImpl._prototype() : super._prototype();
+  factory _PersistentVectorImpl.empty() => new _PersistentVectorImpl._prototype();
+  _PersistentVectorImpl._prototype() : super._prototype();
 
-  factory PersistentVectorImpl._make(int size, int level, _VNode root, _VNode tail) {
-    var x = new PersistentVectorImpl._prototype();
+  factory _PersistentVectorImpl._make(int size, int level, _VNode root, _VNode tail) {
+    var x = new _PersistentVectorImpl._prototype();
     x._size = size;
     x._level = level;
     x._root = root;
@@ -601,8 +601,8 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
   }
 
   bool operator==(other) {
-    if (other is! PersistentVectorImpl) return false;
-    PersistentVectorImpl otherVector = other;
+    if (other is! _PersistentVectorImpl) return false;
+    _PersistentVectorImpl otherVector = other;
     if (this.hashCode != otherVector.hashCode) return false;
     if (this.length != otherVector.length) return false;
     for (int i = 0; i < this.length; i++) {
@@ -611,27 +611,27 @@ class PersistentVectorImpl<E> extends BaseVectorImpl<E> implements PersistentVec
     return true;
   }
 
-  PersistentVectorImpl _clear() {
+  _PersistentVectorImpl _clear() {
     if (this.length == 0) {
       return this;
     }
-    return new PersistentVectorImpl.empty();
+    return new _PersistentVectorImpl.empty();
   }
 
-  TransientVectorImpl asTransient() => _asTransient();
-  PersistentVectorImpl withTransient(fn) => _withTransient(fn);
-  PersistentVectorImpl push(E value) => _push(value);
-  PersistentVectorImpl pop() => _pop();
-  PersistentVectorImpl set(int index, E value) => _set(index, value);
+  _TransientVectorImpl asTransient() => _asTransient();
+  _PersistentVectorImpl withTransient(fn) => _withTransient(fn);
+  _PersistentVectorImpl push(E value) => _push(value);
+  _PersistentVectorImpl pop() => _pop();
+  _PersistentVectorImpl set(int index, E value) => _set(index, value);
   E get(int index, {Function orElse: null}) => _get(index, orElse: orElse);
   E operator[](int index) => _get(index);
 }
 
-class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVector<E> {
-  TransientVectorImpl._prototype() : super._prototype();
+class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TransientVector<E> {
+  _TransientVectorImpl._prototype() : super._prototype();
 
-  factory TransientVectorImpl._make(int size, int level, _VNode root, _VNode tail, Owner ownerID) {
-    var x = new TransientVectorImpl._prototype();
+  factory _TransientVectorImpl._make(int size, int level, _VNode root, _VNode tail, _Owner ownerID) {
+    var x = new _TransientVectorImpl._prototype();
     x._size = size;
     x._level = level;
     x._root = root;
@@ -644,7 +644,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
     return this.__altered;
   }
 
-  TransientVectorImpl _clear() {
+  _TransientVectorImpl _clear() {
     this._size = 0;
     this._level = _SHIFT;
     this._root = this._tail = null;
@@ -652,7 +652,7 @@ class TransientVectorImpl<E> extends BaseVectorImpl<E> implements TransientVecto
     return this;
   }
 
-  PersistentVectorImpl asPersistent() => _asPersistent();
+  _PersistentVectorImpl asPersistent() => _asPersistent();
   void doPush(E value) {
     _push(value);
   }
