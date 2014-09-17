@@ -1,5 +1,7 @@
 # Efficient Persistent Data Structures
 
+[![Build Status](https://drone.io/github.com/vacuumlabs/persistent/status.png)](https://drone.io/github.com/vacuumlabs/persistent/latest)
+
 Transient and persistent sets, maps and vectors with utilities
 
 The project is forked from
