@@ -6,9 +6,19 @@
 
 part of persistent;
 
+/**
+ * All the persistent structures implements this.
+ */
 class Persistent {}
-class Owner {}
 
+class _Owner {}
+
+/**
+ * Converts structure of [List]s and [Map]s to the equivalent
+ * persistent structure.
+ *
+ * Works recursively.
+ */
 deepPersistent(from) {
   if(from is Persistent) return from;
   if(from is Map) {
@@ -27,11 +37,15 @@ deepPersistent(from) {
 }
 
 final _none = new Object();
-final getNone = () => _none;
-bool isNone(val) => val == _none;
+final _getNone = () => _none;
+bool _isNone(val) => val == _none;
 
 /**
- * Calls [lookup] recursively using [path] elemenets as keys.
+ * Looks up the element given by the [path] of keys and indices
+ * in the [structure] of Maps and Vectors.
+ *
+ * If the [path] does not exist, [orElse] is called to obtain the
+ * return value. Default [orElse] throws exception.
  */
 lookupIn(Persistent structure, List path, {orElse()}) =>
     _lookupIn(structure, path.iterator, orElse: orElse);
@@ -56,8 +70,11 @@ _lookupIn(dynamic s, Iterator path, {orElse()}) {
 }
 
 /**
-  * Calls [insert] recursively using [path] elemenets as keys.
-  */
+ * Inserts the [value] to the position given by the [path] of keys and indices
+ * in the [structure] of Maps and Vectors.
+ *
+ * This will not create any middleway structures.
+ */
 Persistent insertIn(Persistent structure, Iterable path, dynamic value) =>
     _insertIn(structure, path.iterator..moveNext(), value);
 
@@ -106,7 +123,12 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
 }
 
 /**
- * Calls [delete] recursively using [path] elemenets as keys.
+ * Removes the element given by the [path] of keys and indices
+ * in the [structure] of Maps and Vectors.
+ *
+ * If the [path] does not exist and [safe] is not `true`, exception is thrown.
+ * If the [path] does not exist and [safe] is specified as `true`,
+ * the same map is returned.
  */
 Persistent deleteIn(Persistent structure, List path, {bool safe: false}) =>
     _deleteIn(structure, path.iterator..moveNext(), safe: safe);

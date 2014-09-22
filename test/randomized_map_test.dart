@@ -10,6 +10,9 @@ import 'dart:math';
 import 'dart:core';
 import 'utils.dart';
 
+final _none = new Object();
+final _getNone = () => _none;
+bool _isNone(val) => val == _none;
 
 main() {
   doTest(1000, (message) => print(message));
@@ -262,7 +265,7 @@ doTest(operationsCnt, print_fn){
 
     // test 'lookup'
     for(int j=0; j<100; j++){
-      var last_val = getNone();
+      var last_val = _getNone();
       var elem = random_elem(all_keys);
       for (var impl in impls.keys){
         var val;
@@ -271,7 +274,7 @@ doTest(operationsCnt, print_fn){
         } catch (_){
           val = null;
         }
-        if (!isNone(last_val)){
+        if (!_isNone(last_val)){
           expect(last_val, equals(val));
         }
         last_val = val;
