@@ -19,16 +19,16 @@ class _Owner {}
  *
  * Works recursively.
  */
-deepPersistent(from) {
+persist(from) {
   if(from is Persistent) return from;
   if(from is Map) {
     var map = new PersistentMap();
     return map.withTransient((TransientMap map) {
-      from.forEach((key,value) => map.doInsert(key, deepPersistent(value)));
+      from.forEach((key,value) => map.doInsert(persist(key), persist(value)));
     });
   }
   else if(from is List) {
-    from = from.map((e) => deepPersistent(e));
+    from = from.map((e) => persist(e));
     return new PersistentVector.from(from);
   }
   else {

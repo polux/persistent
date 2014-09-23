@@ -160,9 +160,9 @@ main() {
       map = map.insert('a', new PersistentMap());
       PersistentMap map2 = insertIn(map, ['a', 'b'], 'c');
 
-      expect(map2 == deepPersistent({'a': {'b': 'c'}}), isTrue);
+      expect(map2 == persist({'a': {'b': 'c'}}), isTrue);
       expect(map == map2, isFalse);
-      expect(map, equals(deepPersistent({'a': {}})));
+      expect(map, equals(persist({'a': {}})));
     });
 
     test('deleteIn', () {
