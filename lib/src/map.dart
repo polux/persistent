@@ -74,21 +74,21 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new PersistentMapImpl();
+  factory PersistentMap() => new _PersistentMapImpl();
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
    * [PersistentMap].
    */
   factory PersistentMap.fromMap(Map<K, V> map) =>
-      new PersistentMapImpl.fromMap(map);
+      new _PersistentMapImpl.fromMap(map);
 
   /**
    * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
    * implementation of [PersistentMap].
    */
   factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) =>
-      new PersistentMapImpl.fromPairs(pairs);
+      new _PersistentMapImpl.fromPairs(pairs);
 
   /**
    * The equality operator.
@@ -245,7 +245,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    * Creates an empty map using the default implementation of
    * [TransientMap].
    */
-  factory TransientMap() => new TransientMapImpl();
+  factory TransientMap() => new _TransientMapImpl();
 
   /**
    * Binds [key] to [value].

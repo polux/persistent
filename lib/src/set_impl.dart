@@ -6,10 +6,65 @@
 
 part of persistent;
 
-abstract class _SetImplBase<E> extends ReadSetBase<E> {
+/**
+ * A base class for implementations of [ReadSet].
+ */
+abstract class _ReadSetBase<E>
+    extends IterableBase<E>
+    implements ReadSet<E> {
+
+  String toString() {
+    StringBuffer buffer = new StringBuffer('{');
+    bool comma = false;
+    this.forEach((E e) {
+      if (comma) buffer.write(', ');
+      buffer.write(e.toString());
+      comma = true;
+    });
+    buffer.write('}');
+    return buffer.toString();
+  }
+}
+
+abstract class _PersistentSetMixim<E>
+    implements PersistentSet<E> {
+
+  PersistentSet<E> union(PersistentSet<E> persistentSet) =>
+      this.withTransient((set)=>
+        persistentSet.where((e) => !this.contains(e)).forEach((e)=>
+            set.doInsert(e)
+        )
+      );
+
+  PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
+      union(persistentSet);
+
+  PersistentSet<E> difference(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => !persistentSet.contains(e)));
+
+  PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
+      difference(persistentSet);
+
+  Iterable<Pair> cartesianProduct(PersistentSet<E> persistentSet) =>
+      this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+
+  Iterable<Pair> operator *(PersistentSet persistentSet) =>
+      cartesianProduct(persistentSet);
+
+  PersistentSet<E> intersect(PersistentSet<E> persistentSet) =>
+      new PersistentSet.from(this.where((e) => persistentSet.contains(e)));
+
+  PersistentSet strictMap(f(E element)) =>
+      new PersistentSet.from(this.map(f));
+
+  PersistentSet<E> strictWhere(bool f(E element)) =>
+      new PersistentSet<E>.from(this.where(f));
+}
+
+abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !isNone(_map.lookup(element, orElse: getNone));
+  bool contains(E element) => !_isNone(_map.lookup(element, orElse: _getNone));
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
@@ -36,7 +91,7 @@ abstract class _SetImplBase<E> extends ReadSetBase<E> {
 
 class _PersistentSetImpl<E>
     extends _SetImplBase<E>
-    with PersistentSetMixim<E> {
+    with _PersistentSetMixim<E> {
 
   final PersistentMap<E, Null> _map;
 
@@ -90,7 +145,7 @@ class _PersistentSetImpl<E>
   int get hashCode => this._map.hashCode;
 }
 
-class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet {
+class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
   final TransientMap<E, Null> _map;
 
   _TransientSetImpl._internal(this._map);
