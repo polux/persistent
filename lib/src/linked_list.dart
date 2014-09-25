@@ -182,7 +182,7 @@ class Cons<E> extends _LinkedListBase<E> {
     elem = elem,
     tail = tail,
     length = tail.length + 1,
-    hashCode = (elem.hashCode + 5*tail.hashCode) & 0x1fffffff;
+    hashCode = hash2(elem.hashCode, tail.hashCode);
 
   bool get isNil => false;
   bool get isCons => true;
@@ -193,10 +193,19 @@ class Cons<E> extends _LinkedListBase<E> {
 
   Iterator<E> get iterator => new _ConsIterator<E>(this);
 
-  bool operator==(LinkedList<E> other) =>
-    other.isCons &&
-    this.hashCode == other.hashCode &&
-    this.elem == other.asCons.elem &&
-    this.tail == other.asCons.tail;
+  bool operator==(LinkedList<E> other){
+    if ( !other.isCons
+      || this.hashCode != other.hashCode
+      || this.length != other.length
+    ) return false;
+    var x = this;
+    var y = other;
+    while(x.isCons){
+      if(x.elem != y.elem) return false;
+      x = x.tail;
+      y = y.tail;
+    }
+    return true;
+  }
 
 }
