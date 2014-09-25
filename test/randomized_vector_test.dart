@@ -4,7 +4,7 @@
 
 // Authors are listed in the AUTHORS file
 
-library vector_test;
+library randomized_vector_test;
 
 import 'package:unittest/unittest.dart';
 import 'package:persistent/persistent.dart';
@@ -12,7 +12,15 @@ import 'dart:core';
 import 'utils.dart';
 
 main() {
-  doTest(1000, (message) => print(message));
+  run(print_fn: (message) => print(message));
+  print('Test successfully finished');
+}
+
+run({print_fn}) {
+  if (print_fn == null){
+    print_fn = (msg) => null;
+  }
+  doTest(1000, print_fn);
 }
 
 doTest(operationsCnt, print_fn){
@@ -122,7 +130,7 @@ doTest(operationsCnt, print_fn){
     },
   });
 
-  test('random_test', () {
+  test('Random Vector Test', () {
     Map oldImpls = {};
 
     impls.forEach((name, impl) {

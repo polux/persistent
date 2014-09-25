@@ -8,16 +8,16 @@ part of persistent;
 
 final _random = new Random();
 
-ThrowKeyError (key) => throw new Exception('Key Error: ${key} is not defined');
+_ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
-abstract class ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
-  NodeBase _root;
+abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
+  _NodeBase _root;
 
   V lookup(K key, {orElse()}) {
     var val = _root.lookup(key);
-    if(isNone(val)){
+    if(_isNone(val)){
       if (orElse == null) {
-        ThrowKeyError(key);
+        _ThrowKeyError(key);
       } else {
         return orElse();
       }
@@ -46,13 +46,13 @@ abstract class ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
   int get length => _root.length;
 
   bool containsKey(key) {
-    final value = this.lookup(key, orElse: getNone);
-    return !isNone(value);
+    final value = this.lookup(key, orElse: _getNone);
+    return !_isNone(value);
   }
 }
 
-class PersistentMapImpl<K, V>
-        extends ReadMapImpl<K, V>
+class _PersistentMapImpl<K, V>
+        extends _ReadMapImpl<K, V>
         implements PersistentMap<K, V>, Persistent {
 
   int _hash;
@@ -68,7 +68,7 @@ class PersistentMapImpl<K, V>
   }
 
   bool operator==(other) {
-    if (other is! PersistentMapImpl) return false;
+    if (other is! _PersistentMapImpl) return false;
     if(other.hashCode != this.hashCode || this.length != other.length)
       return false;
     bool equals = true;
@@ -78,56 +78,56 @@ class PersistentMapImpl<K, V>
     return equals;
   }
 
-  PersistentMapImpl() {
+  _PersistentMapImpl() {
     this._root = new _EmptyMap<K, V>(null);
   }
 
-  PersistentMapImpl.fromMap(Map<K, V> map) {
+  _PersistentMapImpl.fromMap(Map<K, V> map) {
     _root = new _EmptyMap<K, V>(null);
-    Owner owner = new Owner();
+    _Owner owner = new _Owner();
     map.forEach((K key, V value) {
       _root = _root.insert(owner, key, value);
     });
   }
 
-  PersistentMapImpl.fromPairs(Iterable<Pair<K, V>> pairs) {
+  _PersistentMapImpl.fromPairs(Iterable<Pair<K, V>> pairs) {
     _root = new _EmptyMap<K, V>(null);
-    Owner owner = new Owner();
+    _Owner owner = new _Owner();
     pairs.forEach((pair) {
       _root = _root.insert(owner, pair.fst, pair.snd);
     });
   }
 
-  PersistentMapImpl.fromTransient(TransientMapImpl map) {
+  _PersistentMapImpl.fromTransient(_TransientMapImpl map) {
     this._root = map._root;
   }
 
-  PersistentMapImpl._new(NodeBase __root) { _root = __root; }
+  _PersistentMapImpl._new(_NodeBase __root) { _root = __root; }
 
-  PersistentMapImpl<K, V>
+  _PersistentMapImpl<K, V>
       insert(K key, V value, [V combine(V oldvalue, V newvalue)]) {
-        return new PersistentMapImpl._new(_root.insert(null, key, value, combine));
+        return new _PersistentMapImpl._new(_root.insert(null, key, value, combine));
       }
 
-  PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
-    return new PersistentMapImpl._new(_root.delete(null, key, safe));
+  _PersistentMapImpl<K, V> delete(K key, {bool safe: false}) {
+    return new _PersistentMapImpl._new(_root.delete(null, key, safe));
   }
 
-  PersistentMapImpl<K, V> adjust(K key, V update(V value), {safe: false}) {
-    return  new PersistentMapImpl._new(_root.adjust(null, key, update, safe));
+  _PersistentMapImpl<K, V> adjust(K key, V update(V value), {safe: false}) {
+    return  new _PersistentMapImpl._new(_root.adjust(null, key, update, safe));
   }
 
-  PersistentMapImpl mapValues(f(V value)) {
-    Owner owner = new Owner();
-    return new PersistentMapImpl._new(_root.mapValues(owner, f));
+  _PersistentMapImpl mapValues(f(V value)) {
+    _Owner owner = new _Owner();
+    return new _PersistentMapImpl._new(_root.mapValues(owner, f));
   }
 
-  PersistentMapImpl<K, V>
+  _PersistentMapImpl<K, V>
       union(PersistentMap<K, V> other, [V combine(V left, V right)]) {
 
-    if(other is PersistentMapImpl<K, V>){
-      Owner owner = new Owner();
-      return new PersistentMapImpl._new(
+    if(other is _PersistentMapImpl<K, V>){
+      _Owner owner = new _Owner();
+      return new _PersistentMapImpl._new(
           _root.union(owner, other._root, combine));
 
     } else {
@@ -144,11 +144,11 @@ class PersistentMapImpl<K, V>
     }
   }
 
-  PersistentMapImpl<K, V>
+  _PersistentMapImpl<K, V>
     intersection(PersistentMap<K, V> other, [V combine(V left, V right)]){
 
-      if(other is PersistentMapImpl<K, V>){
-        return new PersistentMapImpl._new(
+      if(other is _PersistentMapImpl<K, V>){
+        return new _PersistentMapImpl._new(
             _root.intersection(null, other._root, combine));
 
       } else {
@@ -164,17 +164,17 @@ class PersistentMapImpl<K, V>
     }
 
 
-  PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
-      new PersistentMapImpl.fromPairs(this.map(f));
+  _PersistentMapImpl strictMap(Pair f(Pair<K, V> pair)) =>
+      new _PersistentMapImpl.fromPairs(this.map(f));
 
-  PersistentMapImpl<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-      new PersistentMapImpl<K, V>.fromPairs(this.where(f));
+  _PersistentMapImpl<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+      new _PersistentMapImpl<K, V>.fromPairs(this.where(f));
 
   TransientMap asTransient() {
-    return new TransientMapImpl.fromPersistent(this);
+    return new _TransientMapImpl.fromPersistent(this);
   }
 
-  PersistentMapImpl withTransient(dynamic f(TransientMap map)) {
+  _PersistentMapImpl withTransient(dynamic f(TransientMap map)) {
     TransientMap transient = this.asTransient();
     f(transient);
     return transient.asPersistent();
@@ -182,22 +182,22 @@ class PersistentMapImpl<K, V>
   toString() => 'PersistentMap$_root';
 }
 
-class TransientMapImpl<K, V>
-        extends ReadMapImpl<K, V>
+class _TransientMapImpl<K, V>
+        extends _ReadMapImpl<K, V>
         implements TransientMap<K, V> {
-  NodeBase _root;
-  Owner _owner;
+  _NodeBase _root;
+  _Owner _owner;
   get owner => _owner != null ? _owner :
       throw new Exception('Cannot modify TransientMap after calling asPersistent.');
 
-  factory TransientMapImpl() => new TransientMapImpl.fromPersistent(new PersistentMap());
+  factory _TransientMapImpl() => new _TransientMapImpl.fromPersistent(new PersistentMap());
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
    * [TransientMap].
    */
-  TransientMapImpl.fromPersistent(PersistentMapImpl<K, V> map) {
-    _owner = new Owner();
+  _TransientMapImpl.fromPersistent(_PersistentMapImpl<K, V> map) {
+    _owner = new _Owner();
     _root = map._root;
   }
 
@@ -229,7 +229,7 @@ class TransientMapImpl<K, V>
 
   PersistentMap asPersistent() {
     _owner = null;
-    return new PersistentMapImpl.fromTransient(this);
+    return new _PersistentMapImpl.fromTransient(this);
   }
 
   toString() => 'TransientMap(${owner.hashCode}, $_root)';
@@ -240,13 +240,13 @@ class TransientMapImpl<K, V>
  */
 class _Stop implements Exception {}
 
-abstract class NodeBase<K, V>
+abstract class _NodeBase<K, V>
     extends IterableBase<Pair<K, V>> {
 
   int _length;
   get length => _length;
 
-  NodeBase(this._length);
+  _NodeBase(this._length);
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
@@ -273,64 +273,64 @@ abstract class NodeBase<K, V>
   Pair<K, V> pickRandomEntry([Random random]) =>
       elementAt((random != null ? random : _random).nextInt(this.length));
 
-  NodeBase<K, V>
-    insert(Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
+  _NodeBase<K, V>
+    insert(_Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
 
-  NodeBase<K, V> delete(Owner owner, K key, bool safe);
+  _NodeBase<K, V> delete(_Owner owner, K key, bool safe);
 
   V lookup(K key);
 
   void forEachKeyValue(f(K key, V value));
 
-  NodeBase<K, V> adjust(Owner owner, K key, V update(V value), bool safe);
+  _NodeBase<K, V> adjust(_Owner owner, K key, V update(V value), bool safe);
 
-  NodeBase mapValues(Owner owner, f(V value));
+  _NodeBase mapValues(_Owner owner, f(V value));
 
-  NodeBase<K, V>
-      union(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+  _NodeBase<K, V>
+      union(_Owner owner, _NodeBase<K, V> other, [V combine(V left, V right)]);
 
-  NodeBase<K, V>
-      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]);
+  _NodeBase<K, V>
+      intersection(_Owner owner, _NodeBase<K, V> other, [V combine(V left, V right)]);
 
 }
 
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
-  Owner _owner;
+abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
+  _Owner _owner;
 
   _ANodeBase(this._owner, length, this._isLeaf) : super(length);
 
   final bool _isLeaf;
 
   V _lookup(K key, int hash, int depth);
-  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe);
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe);
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool safe);
+  _NodeBase<K, V> _adjust(_Owner owner, K key, V update(V), int hash, int depth, bool safe);
 
   _ANodeBase<K, V>
-      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth);
+      _unionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth);
   _ANodeBase<K, V>
-      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth);
+      _unionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth);
   _ANodeBase<K, V>
-      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
+      _unionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
   _ANodeBase<K, V>
-      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
+      _unionWithSubMap(_Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
 
   _ANodeBase<K, V>
-      _intersectionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
+      _intersectionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
                         int depth);
   _ANodeBase<K, V>
-      _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
+      _intersectionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
                                 int depth);
   _ANodeBase<K, V>
-      _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
+      _intersectionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth);
   _ANodeBase<K, V>
-      _intersectionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
+      _intersectionWithSubMap(_Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth);
 
   Pair<K, V> _elementAt(int index);
 
@@ -340,23 +340,23 @@ abstract class _ANodeBase<K, V> extends NodeBase<K, V> {
   V lookup(K key) =>
       _lookup(key, key.hashCode & 0x3fffffff, 0);
 
-  NodeBase<K, V> insert(Owner owner, K key, V value, [V combine(V x, V y)]) =>
+  _NodeBase<K, V> insert(_Owner owner, K key, V value, [V combine(V x, V y)]) =>
       _insertWith(owner, _onePair(key, value),
           1,
           (combine != null) ? combine : (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
-  NodeBase<K, V> delete(Owner owner, K key, bool safe) =>
+  _NodeBase<K, V> delete(_Owner owner, K key, bool safe) =>
       _delete(owner ,key, key.hashCode & 0x3fffffff, 0, safe);
 
-  NodeBase<K, V> adjust(Owner owner, K key, V update(V), bool safe) =>
+  _NodeBase<K, V> adjust(_Owner owner, K key, V update(V), bool safe) =>
       _adjust(owner, key, update, key.hashCode & 0x3fffffff, 0, safe);
 
-  NodeBase<K, V> union(Owner owner, NodeBase<K, V> other, [V combine(V x, V y)]) =>
+  _NodeBase<K, V> union(_Owner owner, _NodeBase<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(owner, other, (combine != null) ? combine : (V x, V y) => y, 0);
 
-  NodeBase<K, V>
-      intersection(Owner owner, NodeBase<K, V> other, [V combine(V left, V right)]) =>
+  _NodeBase<K, V>
+      intersection(_Owner owner, _NodeBase<K, V> other, [V combine(V left, V right)]) =>
     this._intersectionWith(owner, other,
         (combine != null) ? combine : (V x, V y) => y, 0);
 
@@ -375,64 +375,64 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _EmptyMap<K, V> extends _ANodeBase<K, V> {
-  _EmptyMap(Owner owner) : super(owner, 0, false);
+  _EmptyMap(_Owner owner) : super(owner, 0, false);
 
   V _lookup(K key, int hash, int depth) => _none;
 
-  NodeBase<K, V> _insertWith(Owner owner,
+  _NodeBase<K, V> _insertWith(_Owner owner,
       LinkedList<Pair<K, V>> keyValues, int size, V combine(V x, V y), int hash,
       int depth) {
     assert(size == keyValues.length);
     return new _Leaf<K, V>.abc(owner, hash, keyValues, size);
   }
 
-  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     return this;
   }
 
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) =>
-    safe ? this : ThrowKeyError(key);
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool safe) =>
+    safe ? this : _ThrowKeyError(key);
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) =>
-    safe ? this : ThrowKeyError(key);
+  _NodeBase<K, V> _adjust(_Owner owner, K key, V update(V), int hash, int depth, bool safe) =>
+    safe ? this : _ThrowKeyError(key);
 
-  NodeBase<K, V>
-      _unionWith(Owner owner, NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
+  _NodeBase<K, V>
+      _unionWith(_Owner owner, _NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
 
-  NodeBase<K, V>
-      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) {
+  _NodeBase<K, V>
+      _unionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) {
     throw "should never be called";
   }
 
-  NodeBase<K, V>
-      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) => m;
+  _NodeBase<K, V>
+      _unionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
-  NodeBase<K, V>
-      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) => m;
+  _NodeBase<K, V>
+      _unionWithSubMap(_Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  NodeBase<K, V>
-      _intersectionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
+  _NodeBase<K, V>
+      _intersectionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y),
                         int depth) => this;
 
-  NodeBase<K, V>
-      _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
+  _NodeBase<K, V>
+      _intersectionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y),
                                 int depth) {
         throw "should never be called";
   }
 
-  NodeBase<K, V> _intersectionWithLeaf(Owner owner,
+  _NodeBase<K, V> _intersectionWithLeaf(_Owner owner,
       _Leaf<K, V> m, V combine(V x, V y), int depth) => this;
 
-  NodeBase<K, V> _intersectionWithSubMap(Owner owner,
+  _NodeBase<K, V> _intersectionWithSubMap(_Owner owner,
       _SubMap<K, V> m, V combine(V x, V y), int depth) => this;
 
-  NodeBase mapValues(Owner owner, f(V)) => this;
+  _NodeBase mapValues(_Owner owner, f(V)) => this;
 
   void forEachKeyValue(f(K, V)) {}
 
-  bool operator ==(NodeBase<K, V> other) => other is _EmptyMap;
+  bool operator ==(_NodeBase<K, V> other) => other is _EmptyMap;
 
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
@@ -451,13 +451,13 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
   int _hash;
   LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf.abc(Owner owner, this._hash, pairs, int size) : super(owner, size, true) {
+  _Leaf.abc(_Owner owner, this._hash, pairs, int size) : super(owner, size, true) {
     this._pairs = pairs;
     assert(size == pairs.length);
   }
 
-  factory _Leaf.ensureOwner(_Leaf old, Owner owner, hash, pairs, int size) {
-    if(ownerEquals(owner, old._owner)) {
+  factory _Leaf.ensureOwner(_Leaf old, _Owner owner, hash, pairs, int size) {
+    if(_ownerEquals(owner, old._owner)) {
       old._pairs = pairs;
       old._hash = hash;
       old._length = size;
@@ -466,7 +466,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     return new _Leaf.abc(owner, hash, pairs, size);
   }
 
-  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // newsize is incremented as a side effect of insertPair
@@ -525,7 +525,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
     // TODO(polux): possibly faster implementation
@@ -541,9 +541,9 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     return new _Leaf.ensureOwner(this, owner, _hash, builder.build(), newsize);
   }
 
-  NodeBase<K, V> _delete(Owner owner, K key, int hash, int depth, bool safe) {
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool safe) {
     if (hash != _hash) {
-      if(!safe) ThrowKeyError(key);
+      if(!safe) _ThrowKeyError(key);
       return this;
     }
     bool found = false;
@@ -555,13 +555,13 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       return true;
     });
 
-    if(!found && !safe) ThrowKeyError(key);
+    if(!found && !safe) _ThrowKeyError(key);
     return newPairs.isNil
         ? new _EmptyMap<K, V>(owner)
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
   }
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) {
+  _NodeBase<K, V> _adjust(_Owner owner, K key, V update(V), int hash, int depth, bool safe) {
     LinkedList<Pair<K, V>> adjustPairs() {
       LinkedListBuilder<Pair<K, V>> builder =
           new LinkedListBuilder<Pair<K, V>>();
@@ -576,45 +576,45 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         builder.add(elem);
         it = cons.tail;
       }
-      if(!safe) ThrowKeyError(key);
+      if(!safe) _ThrowKeyError(key);
       return builder.build();
     }
 
     return (hash != _hash)
-        ? (safe ? this : ThrowKeyError(key))
+        ? (safe ? this : _ThrowKeyError(key))
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
   }
 
-  NodeBase<K, V>
-      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithLeaf(owner, this, combine, depth);
 
-  NodeBase<K, V>
-      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  NodeBase<K, V>
-      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(owner, _pairs, length, combine, _hash, depth);
 
-  NodeBase<K, V>
-      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWithSubMap(_Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(owner, _pairs, length, combine, _hash, depth);
 
-  NodeBase<K, V> _intersectionWith(Owner owner, _ANodeBase<K, V> m,
+  _NodeBase<K, V> _intersectionWith(_Owner owner, _ANodeBase<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithLeaf(owner, this, combine, depth);
 
-  NodeBase<K, V> _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m,
+  _NodeBase<K, V> _intersectionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m,
                                                 V combine(V x, V y),
                                                 int depth) =>
       m;
 
-  NodeBase<K, V> _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y),
+  _NodeBase<K, V> _intersectionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
       m._intersectWith(owner, _pairs, length, combine, _hash, depth);
 
-  NodeBase<K, V> _intersectionWithSubMap(Owner owner, _SubMap<K, V> m,
+  _NodeBase<K, V> _intersectionWithSubMap(_Owner owner, _SubMap<K, V> m,
                                               V combine(V x, V y), int depth) =>
       m._intersectWith(owner, _pairs, length, combine, _hash, depth);
 
@@ -631,7 +631,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     return _none;
   }
 
-  NodeBase mapValues(Owner owner, f(V)) =>
+  _NodeBase mapValues(_Owner owner, f(V)) =>
       new _Leaf.ensureOwner(this, owner, _hash,
                 _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
 
@@ -639,7 +639,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
-  bool operator ==(NodeBase<K, V> other) {
+  bool operator ==(_NodeBase<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
     _Leaf otherLeaf = other;
@@ -713,10 +713,10 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   int _bitmap;
   List<_ANodeBase<K, V>> _array;
 
-  _SubMap.abc(Owner owner, this._bitmap, this._array, int size) : super(owner, size, false);
+  _SubMap.abc(_Owner owner, this._bitmap, this._array, int size) : super(owner, size, false);
 
-  factory _SubMap.ensureOwner(_SubMap old, Owner owner, bitmap, array, int size) {
-    if(ownerEquals(owner, old._owner)) {
+  factory _SubMap.ensureOwner(_SubMap old, _Owner owner, bitmap, array, int size) {
+    if(_ownerEquals(owner, old._owner)) {
       old._bitmap = bitmap;
       old._array = array;
       old._length = size;
@@ -745,7 +745,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _insertWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 
@@ -762,7 +762,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         if(oldSize != m.length) this._length += m.length - oldSize;
         return this;
       }
-      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
+      List<_ANodeBase<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newM;
       int delta = newM.length - oldSize;
       return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap, newarray, length + delta);
@@ -778,7 +778,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _intersectWith(Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
+  _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
     assert(size == keyValues.length);
 
@@ -794,7 +794,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool safe) {
+  _NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool safe) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
@@ -831,23 +831,23 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         if (_array.length == 1) {
           return newm;
         } else {
-          List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
+          List<_ANodeBase<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
           newarray[index] = newm;
           return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
         }
       } else {
-        List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
+        List<_ANodeBase<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
         newarray[index] = newm;
 
         return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
-      if(!safe) ThrowKeyError(key);
+      if(!safe) _ThrowKeyError(key);
       return this;
     }
   }
 
-  NodeBase<K, V> _adjust(Owner owner, K key, V update(V), int hash, int depth, bool safe) {
+  _NodeBase<K, V> _adjust(_Owner owner, K key, V update(V), int hash, int depth, bool safe) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
@@ -857,30 +857,30 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       if (identical(newm, m)) {
         return this;
       }
-      List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
+      List<_ANodeBase<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
       newarray[index] = newm;
 
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
-      return (safe ? this : ThrowKeyError(key));
+      return (safe ? this : _ThrowKeyError(key));
     }
   }
 
-  NodeBase<K, V>
-      _unionWith(Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithSubMap(owner, this, combine, depth);
 
-  NodeBase<K, V>
-      _unionWithEmptyMap(Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
           this;
 
-  NodeBase<K, V>
-      _unionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
+  _NodeBase<K, V>
+      _unionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y), int depth) =>
           this._insertWith(owner, m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
-  NodeBase<K, V>
-      _unionWithSubMap(Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) {
+  _NodeBase<K, V>
+      _unionWithSubMap(_Owner owner, _SubMap<K, V> m, V combine(V x, V y), int depth) {
     int ormap = _bitmap | m._bitmap;
     int andmap = _bitmap & m._bitmap;
     List<_ANodeBase<K, V>> newarray =
@@ -916,21 +916,21 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     return new _SubMap<K, V>.ensureOwner(this, owner, ormap, newarray, newSize);
   }
 
-  NodeBase<K, V> _intersectionWith(Owner owner, _ANodeBase<K, V> m,
+  _NodeBase<K, V> _intersectionWith(_Owner owner, _ANodeBase<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithSubMap(owner, this, combine, depth);
 
-  NodeBase<K, V> _intersectionWithEmptyMap(Owner owner, _EmptyMap<K, V> m,
+  _NodeBase<K, V> _intersectionWithEmptyMap(_Owner owner, _EmptyMap<K, V> m,
                                                 V combine(V x, V y),
                                                 int depth) =>
       m;
 
-  NodeBase<K, V> _intersectionWithLeaf(Owner owner, _Leaf<K, V> m, V combine(V x, V y),
+  _NodeBase<K, V> _intersectionWithLeaf(_Owner owner, _Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
       _intersectWith(owner, m._pairs,  m.length, (V v1, V v2) => combine(v2, v1),
                      m._hash, depth);
 
-  NodeBase<K, V> _intersectionWithSubMap(Owner owner,
+  _NodeBase<K, V> _intersectionWithSubMap(_Owner owner,
       _SubMap<K, V> m, V combine(V x, V y), int depth) {
     int andmap = _bitmap & m._bitmap;
     List<_ANodeBase<K, V>> newarray = new List<_ANodeBase<K, V>>();
@@ -967,8 +967,8 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  NodeBase mapValues(Owner owner, f(V)) {
-    List<_ANodeBase<K, V>> newarray = makeCopyIfNeeded(owner, this._owner, _array);
+  _NodeBase mapValues(_Owner owner, f(V)) {
+    List<_ANodeBase<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
     for (int i = 0; i < _array.length; i++) {
       _ANodeBase<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(owner, f);
@@ -980,7 +980,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 
-  bool operator ==(NodeBase<K, V> other) {
+  bool operator ==(_NodeBase<K, V> other) {
     if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
     _SubMap otherSubMap = other;
@@ -1016,12 +1016,12 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   toDebugString() => "_SubMap($_array)";
 }
 
-ownerEquals(Owner a, Owner b) {
+_ownerEquals(_Owner a, _Owner b) {
   return a != null && a == b;
 }
 
-makeCopyIfNeeded(Owner a, Owner b, List c) {
-  if(ownerEquals(a, b))
+_makeCopyIfNeeded(_Owner a, _Owner b, List c) {
+  if(_ownerEquals(a, b))
     return c;
   else return c.sublist(0);
 }
