@@ -5,12 +5,26 @@
 
 part of persistent;
 
+/**
+ * Immutable list of elements of type E. All its predecessors must
+ * be accessed before accessing an element.
+ *
+ * Can be either [Cons] or [Nil].
+ * [Nil] is an empty list,
+ * while [Cons] contains the first element (`elem`)
+ * and the rest of the list (`tail`).
+ */
 abstract class LinkedList<E> implements Iterable<E> {
   bool get isNil;
   bool get isCons;
+
+  /// Converts this to [Nil] or returns `null`
   Nil<E> get asNil;
+
+  /// Converts this to [Cons] or returns `null`
   Cons<E> get asCons;
 
+  /// Passes all the elements of this to [f].
   void foreach(f(A));
 
   /// A strict (non-lazy) version of [:map:].
@@ -18,36 +32,55 @@ abstract class LinkedList<E> implements Iterable<E> {
 
   /// A strict (non-lazy) version of [:where:].
   LinkedList<E> strictWhere(bool f(A));
+
+  /**
+   * The equality operator.
+   *
+   * Two linked lists are equal if and only if they have same lengths,
+   * and for each possition, the elements at it are equal.
+   */
+  bool operator==(LinkedList<E> other);
+
+  // Documentation inherited from Object
+  int get hashCode;
 }
 
+/**
+ * [LinkedList] builder.
+ *
+ * Elements are added from the first.
+ */
 class LinkedListBuilder<E> {
-  LinkedList<E> _first = null;
-  Cons<E> _last = null;
+  List<E> _data = [];
 
+  /// Adds the next element to the list.
   void add(E x) {
-    Cons<E> cons = new Cons<E>(x, null);
-    if (_first == null) {
-      _first = cons;
-    } else {
-      _last.tail = cons;
-    }
-    _last = cons;
+    _data.add(x);
   }
 
+  /// Adds all the elements of [iterable] to the list.
+  void addAll(Iterable<E> iterable) {
+    _data.addAll(iterable);
+  }
+
+  /**
+   * Creates a new list prepending so far added elements to the
+   * optional [tail].
+   */
   LinkedList<E> build([tail = null]) {
     if (tail == null)
       tail = new Nil<E>();
-    if (_first == null) {
-      return tail;
-    } else {
-      _last.tail = tail;
-      return _first;
+    for (E x in _data.reversed){
+      tail = new Cons<E>(x, tail);
     }
+    return tail;
   }
 }
 
 abstract class _LinkedListBase<E> extends IterableBase<E>
     implements LinkedList<E> {
+
+  const _LinkedListBase();
 
   void foreach(f(A)) {
     LinkedList<E> it = this;
@@ -89,17 +122,26 @@ class _NilIterator<E> implements Iterator<E> {
   bool moveNext() => false;
 }
 
+/**
+ * Empty [LinkedList]
+ */
 class Nil<E> extends _LinkedListBase<E> {
   bool get isNil => true;
   bool get isCons => false;
   Nil<E> get asNil => this;
   Cons<E> get asCons => null;
 
+  const Nil();
+
   toString() => "nil()";
 
   int get length => 0;
 
   Iterator<E> get iterator => const _NilIterator();
+
+  bool operator==(LinkedList<E> other) => other.isNil;
+
+  int get hashCode => 0;
 }
 
 class _ConsIterator<E> implements Iterator<E> {
@@ -123,13 +165,24 @@ class _ConsIterator<E> implements Iterator<E> {
   }
 }
 
+/**
+ * Nonempty [LinkedList]
+ */
 class Cons<E> extends _LinkedListBase<E> {
-  int _length = null;
+  final int length;
+  final int hashCode;
 
+  /// The first element of this
   final E elem;
-  LinkedList<E> tail;
 
-  Cons(this.elem, this.tail);
+  /// The rest of this - without the first element
+  final LinkedList<E> tail;
+
+  Cons(elem, tail):
+    elem = elem,
+    tail = tail,
+    length = tail.length + 1,
+    hashCode = hash2(elem.hashCode, tail.hashCode);
 
   bool get isNil => false;
   bool get isCons => true;
@@ -138,12 +191,21 @@ class Cons<E> extends _LinkedListBase<E> {
 
   toString() => "cons($elem, $tail)";
 
-  int get length {
-    if (_length == null) {
-      _length = tail.length + 1;
+  Iterator<E> get iterator => new _ConsIterator<E>(this);
+
+  bool operator==(LinkedList<E> other){
+    if ( !other.isCons
+      || this.hashCode != other.hashCode
+      || this.length != other.length
+    ) return false;
+    var x = this;
+    var y = other;
+    while(x.isCons){
+      if(x.elem != y.elem) return false;
+      x = x.tail;
+      y = y.tail;
     }
-    return _length;
+    return true;
   }
 
-  Iterator<E> get iterator => new _ConsIterator<E>(this);
 }
