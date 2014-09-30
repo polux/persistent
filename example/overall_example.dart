@@ -6,7 +6,7 @@
 
 library overall_example;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 
 example(){
   var couple = new PersistentMap.fromMap({'father': 'Homer', 'mother': 'Marge'});

@@ -6,7 +6,7 @@
 
 library map_memory;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'dart:convert';
 
 Map template = {};

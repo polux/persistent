@@ -6,7 +6,7 @@
 
 library vector_test;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {

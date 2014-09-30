@@ -5,7 +5,7 @@
 
 library map_example;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 
 main() {
   final emptyMap = new PersistentMap<String,int>();
