@@ -93,7 +93,7 @@ class _PersistentMapImpl<K, V>
     _root = new _EmptyMap<K, V>(null);
     _Owner owner = new _Owner();
     pairs.forEach((pair) {
-      _root = _root.insert(owner, pair.fst, pair.snd);
+      _root = _root.insert(owner, pair.first, pair.second);
     });
   }
 
@@ -133,10 +133,10 @@ class _PersistentMapImpl<K, V>
       if(combine == null) combine = (_, x)=>x;
       return this.withTransient((map){
         other.forEach((pair){
-          if(this.containsKey(pair.fst)){
-            map[pair.fst] = combine(map[pair.fst], pair.snd);
+          if(this.containsKey(pair.first)){
+            map[pair.first] = combine(map[pair.first], pair.second);
           } else {
-            map[pair.fst] = pair.snd;
+            map[pair.first] = pair.second;
           }
         });
       });
@@ -153,8 +153,8 @@ class _PersistentMapImpl<K, V>
       } else {
         if(combine == null) combine = (_, x)=>x;
         return new PersistentMap.fromPairs(this.expand((pair){
-          if(other.containsKey(pair.fst)){
-            return [new Pair(pair.fst,combine(pair.snd,other[pair.fst]))];
+          if(other.containsKey(pair.first)){
+            return [new Pair(pair.first,combine(pair.second,other[pair.first]))];
           } else {
             return [];
           }
@@ -265,9 +265,9 @@ abstract class _NodeBase<K, V>
     return buffer.toString();
   }
 
-  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
+  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.first);
 
-  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
+  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.second);
 
   Pair<K, V> pickRandomEntry([Random random]) =>
       elementAt((random != null ? random : _random).nextInt(this.length));
@@ -479,10 +479,10 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
-        if (elem.fst == toInsert.fst) {
+        if (elem.first == toInsert.first) {
           builder.add(new Pair<K, V>(
-              toInsert.fst,
-              combine(elem.snd, toInsert.snd)));
+              toInsert.first,
+              combine(elem.second, toInsert.second)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
@@ -532,8 +532,8 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     LinkedListBuilder<Pair<K, V>> builder = new LinkedListBuilder<Pair<K, V>>();
     int newsize = 0;
     keyValues.foreach((Pair<K, V> pair) {
-      if (map.containsKey(pair.fst)) {
-        builder.add(new Pair<K, V>(pair.fst, combine(map[pair.fst], pair.snd)));
+      if (map.containsKey(pair.first)) {
+        builder.add(new Pair<K, V>(pair.first, combine(map[pair.first], pair.second)));
         newsize++;
       }
     });
@@ -547,7 +547,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     }
     bool found = false;
     LinkedList<Pair<K, V>> newPairs = _pairs.strictWhere((p) {
-      if (p.fst == key) {
+      if (p.first == key) {
         found = true;
         return false;
       }
@@ -568,8 +568,8 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       while (it.isCons) {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
-        if (elem.fst == key) {
-          builder.add(new Pair<K, V>(key, update(elem.snd)));
+        if (elem.first == key) {
+          builder.add(new Pair<K, V>(key, update(elem.second)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
@@ -624,7 +624,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return elem.snd;
+      if (elem.first == key) return elem.second;
       it = cons.tail;
     }
     return _none;
@@ -632,10 +632,10 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
 
   _NodeBase mapValues(_Owner owner, f(V)) =>
       new _Leaf.ensureOwner(this, owner, _hash,
-                _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
+                _pairs.strictMap((p) => new Pair(p.first, f(p.second))), length);
 
   void forEachKeyValue(f(K, V)) {
-    _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
+    _pairs.foreach((Pair<K, V> pair) => f(pair.first, pair.second));
   }
 
   bool operator ==(_NodeBase<K, V> other) {
@@ -650,9 +650,9 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.snd == null && !thisAsMap.containsKey(elem.fst))
+      if (elem.second == null && !thisAsMap.containsKey(elem.first))
         return false;
-      if (thisAsMap[elem.fst] != elem.snd)
+      if (thisAsMap[elem.first] != elem.second)
         return false;
       counter++;
       it = cons.tail;

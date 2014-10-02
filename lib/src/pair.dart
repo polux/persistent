@@ -15,15 +15,15 @@ part of persistent;
 class Pair<A, B> {
 
   /// First value
-  final A fst;
+  final A first;
 
   /// Second value
-  final B snd;
+  final B second;
 
   /**
    * Creates a new pair of given values
    */
-  Pair(this.fst, this.snd);
+  Pair(this.first, this.second);
 
   /**
    * The equality operator.
@@ -33,11 +33,23 @@ class Pair<A, B> {
    */
   bool operator ==(Pair<A, B> other) {
     return (other is Pair<A, B>)
-        && fst == other.fst
-        && snd == other.snd;
+        && first == other.first
+        && second == other.second;
   }
 
-  int get hashCode => fst.hashCode + 31 * snd.hashCode;
+  operator [](int pos) {
+    switch (pos) {
+      case 0: return first;
+      case 1: return second;
+      default: throw new RangeError("Pair does not contain value on position $pos");
+    }
+  }
 
-  String toString() => "Pair($fst, $snd)";
+  A get key => first;
+
+  B get value => second;
+
+  int get hashCode => first.hashCode + 31 * second.hashCode;
+
+  String toString() => "Pair($first, $second)";
 }

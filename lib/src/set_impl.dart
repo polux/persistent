@@ -69,7 +69,7 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
   Iterable map(f(E element)) {
-    return _map.map((pair)=>f(pair.fst));
+    return _map.map((pair)=>f(pair.first));
   }
 
   int get length => _map.length;
@@ -77,13 +77,13 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   bool operator ==(_SetImplBase<E> other) => _map == other._map;
 
   Iterator<E> get iterator =>
-      _map.map((Pair<E, Object> pair) => pair.fst).iterator;
+      _map.map((Pair<E, Object> pair) => pair.first).iterator;
 
   // PersistentMap's "last" is optimized
-  E get last => _map.last.fst;
+  E get last => _map.last.first;
 
   // PersistentMap's "elementAt" is optimized
-  E elementAt(int index) => _map.elementAt(index).fst;
+  E elementAt(int index) => _map.elementAt(index).first;
 }
 
 

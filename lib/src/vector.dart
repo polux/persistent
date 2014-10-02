@@ -17,8 +17,8 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
   /**
    * Returns element at given [index].
    *
-   * If the [index] is outside the array, [orElse] is called
-   * to obtain the return value. Default [orElse] throws
+   * If the [index] is outside the array, [defVal] is returned instead.
+   * Default [defVal] throws
    * [RangeError]
    *
    *     var v = new PersistentVector.from(["Hello","world"]);
@@ -26,7 +26,7 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
    *     v.get(2, ()=>null); // returns null
    *     v.get(2); // throws RangeError
    */
-  E get(int index, {Function orElse: null});
+  E get(int index, {defVal: null});
 
   /**
    * Returns element at given [index].

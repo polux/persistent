@@ -25,7 +25,7 @@ class _Bool {
 abstract class _PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
-  E _get(int index, {Function orElse: null});
+  E _get(int index, {defVal: null});
 
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
@@ -50,14 +50,14 @@ abstract class _BaseVectorImpl<E> extends _PersistentVectorBase<E> {
 
   Iterator<E> get iterator => new _VectorIterator([this._root, this._tail]);
 
-  E _get(int index, {Function orElse: null}) {
+  E _get(int index, {defVal: null}) {
     try {
       index = _checkIndex(index);
     } catch(e) {
-      if (orElse == null) {
+      if (defVal == null) {
         throw(e);
       } else {
-        return orElse();
+        return defVal;
       }
     }
 
@@ -416,7 +416,7 @@ class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PersistentV
   _PersistentVectorImpl push(E value) => _push(value);
   _PersistentVectorImpl pop() => _pop();
   _PersistentVectorImpl set(int index, E value) => _set(index, value);
-  E get(int index, {Function orElse: null}) => _get(index, orElse: orElse);
+  E get(int index, {defVal: null}) => _get(index, defVal: defVal);
   E operator[](int index) => _get(index);
 }
 
@@ -452,7 +452,7 @@ class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TransientVec
   void doPop() {
     _pop();
   }
-  E get(int index, {Function orElse: null}) => _get(index, orElse: orElse);
+  E get(int index, {defVal: null}) => _get(index, defVal: defVal);
   E operator[](int index) => _get(index);
   void doSet(int index, E value) {
     _set(index, value);
