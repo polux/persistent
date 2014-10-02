@@ -51,22 +51,22 @@ bool _isNone(val) => val == _none;
  * If the [path] does not exist, [orElse] is called to obtain the
  * return value. Default [orElse] throws exception.
  */
-lookupIn(Persistent structure, List path, {orElse()}) =>
-    _lookupIn(structure, path.iterator, orElse: orElse);
+lookupIn(Persistent structure, List path, {defVal}) =>
+    _lookupIn(structure, path.iterator, defVal: defVal);
 
-_lookupIn(dynamic s, Iterator path, {orElse()}) {
+_lookupIn(dynamic s, Iterator path, {defVal}) {
   if(!path.moveNext()) return s;
   if(s is PersistentMap) {
-    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
   }
   else if(s is PersistentVector) {
-    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
   }
   else if(s is TransientMap) {
-    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
   }
   else if(s is TransientVector) {
-    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
   }
   else {
     throw new Exception('This should not happen');

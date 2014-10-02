@@ -100,7 +100,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    * Two sets of keys are equal if and only if for each key exists
    * an equal key in the other set.
    */
-  bool operator== (PersistentMap other);
+  bool operator== (other);
 
   /*
    * The documentation is inherited from the Object

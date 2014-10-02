@@ -106,7 +106,7 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * Two persistent sets are equal if and only if for each element
    * in any of them exists an equal element in the other one.
    */
-  bool operator==(PersistentSet<E> other);
+  bool operator==(other);
 
   /*
    * The documentation is inherited from the Object

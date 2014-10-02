@@ -431,7 +431,7 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
 
   void forEachKeyValue(f(K, V)) {}
 
-  bool operator ==(_NodeBase<K, V> other) => other is _EmptyMap;
+  bool operator ==(other) => other is _NodeBase ? other is _EmptyMap : false;
 
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
@@ -638,7 +638,8 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     _pairs.foreach((Pair<K, V> pair) => f(pair.first, pair.second));
   }
 
-  bool operator ==(_NodeBase<K, V> other) {
+  bool operator ==(other) {
+    if (other is! _NodeBase) return false;
     if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
     _Leaf otherLeaf = other;
@@ -979,7 +980,8 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 
-  bool operator ==(_NodeBase<K, V> other) {
+  bool operator ==(other) {
+    if (other is! _NodeBase) return false;
     if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
     _SubMap otherSubMap = other;

@@ -64,7 +64,7 @@ abstract class _PersistentSetMixim<E>
 abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !_isNone(_map.get(element, orElse: _getNone));
+  bool contains(E element) => !_isNone(_map.get(element, defVal: _getNone));
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
@@ -74,7 +74,8 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
 
   int get length => _map.length;
 
-  bool operator ==(_SetImplBase<E> other) => _map == other._map;
+  bool operator ==(other) =>
+      other is _SetImplBase ? _map == other._map : false;
 
   Iterator<E> get iterator =>
       _map.map((Pair<E, Object> pair) => pair.first).iterator;
@@ -133,12 +134,15 @@ class _PersistentSetImpl<E>
     return result.asPersistent();
   }
 
-  bool operator==(ReadSet<E> other) =>
-      other is TransientSet ?
-        this.length == other.length &&
-        this.fold(true, (test, v)=> test && other.contains(v))
+  bool operator==(other) =>
+      other is ReadSet ?
+        other is TransientSet ?
+          this.length == other.length &&
+          this.fold(true, (test, v)=> test && other.contains(v))
+        :
+          super == other
       :
-        super == other;
+        false;
 
   int get hashCode => this._map.hashCode;
 }
