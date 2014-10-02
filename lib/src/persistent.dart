@@ -24,7 +24,7 @@ persist(from) {
   if(from is Map) {
     var map = new PersistentMap();
     return map.withTransient((TransientMap map) {
-      from.forEach((key,value) => map.doInsert(persist(key), persist(value)));
+      from.forEach((key,value) => map.doAssoc(persist(key), persist(value)));
     });
   }
   else if(from is List) {
@@ -36,7 +36,11 @@ persist(from) {
   }
 }
 
-final _none = new Object();
+class None{
+  const None();
+}
+
+const _none = const None();
 final _getNone = () => _none;
 bool _isNone(val) => val == _none;
 
@@ -53,13 +57,13 @@ lookupIn(Persistent structure, List path, {orElse()}) =>
 _lookupIn(dynamic s, Iterator path, {orElse()}) {
   if(!path.moveNext()) return s;
   if(s is PersistentMap) {
-    return _lookupIn(s.lookup(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
   }
   else if(s is PersistentVector) {
     return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
   }
   else if(s is TransientMap) {
-    return _lookupIn(s.lookup(path.current, orElse: orElse), path, orElse: orElse);
+    return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
   }
   else if(s is TransientVector) {
     return _lookupIn(s.get(path.current, orElse: orElse), path, orElse: orElse);
@@ -82,13 +86,13 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {
-      return s.insert(current, _insertIn(s.lookup(current), path, value));
+      return s.assoc(current, _insertIn(s.get(current), path, value));
     }
     else if(s is PersistentVector) {
       return s.set(current, _insertIn(s.get(current), path, value));
     }
     else if(s is TransientMap) {
-      return s.doInsert(current, _insertIn(s.lookup(current), path, value));
+      return s.doAssoc(current, _insertIn(s.get(current), path, value));
     }
     else if(s is TransientVector) {
       return s.doSet(current, _insertIn(s.get(current), path, value));
@@ -99,7 +103,7 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
   }
   else {
     if(s is PersistentMap) {
-      return s.insert(current, value);
+      return s.assoc(current, value);
     }
     else if(s is PersistentVector) {
       if(current == s.length) {
@@ -108,7 +112,7 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
       return s.set(current, value);
     }
     else if(s is TransientMap) {
-      return s.doInsert(current, value);
+      return s.doAssoc(current, value);
     }
     else if(s is TransientVector) {
       if(current == s.length) {
@@ -137,16 +141,16 @@ Persistent _deleteIn(s, Iterator path, {bool safe: false}) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {
-      var deleted = _deleteIn(s.lookup(current), path, safe: safe);
-      return s.insert(current, deleted);
+      var deleted = _deleteIn(s.get(current), path, safe: safe);
+      return s.assoc(current, deleted);
     }
     else if(s is PersistentVector) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);
       return s.set(current, deleted);
     }
     else if(s is TransientMap) {
-      var deleted = _deleteIn(s.lookup(current), path, safe: safe);
-      return s.doInsert(current, deleted);
+      var deleted = _deleteIn(s.get(current), path, safe: safe);
+      return s.doAssoc(current, deleted);
     }
     else if(s is TransientVector) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);

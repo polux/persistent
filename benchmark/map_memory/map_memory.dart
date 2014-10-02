@@ -18,7 +18,7 @@ var creators = {
 
   "transient": (){
     var res = new TransientMap();
-    template.forEach((k, v) => res.doInsert(k, v));
+    template.forEach((k, v) => res.doAssoc(k, v));
     return res;
   },
 

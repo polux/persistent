@@ -85,25 +85,25 @@ doTest(operationsCnt, print_fn){
       'persistent': {
         'create': () => new PersistentMap(),
         'bulkInsert': (PersistentMap me, Map updateWith) =>
-            updateWith.keys.fold(me, (me, k) => me.insert(k, updateWith[k])),
+            updateWith.keys.fold(me, (me, k) => me.assoc(k, updateWith[k])),
         'bulkDelete': (PersistentMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.delete(k, safe: true)),
         'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.adjust(k, fn_adjust)),
+            keys.fold(me, (me, k) => me.update(k, fn_adjust)),
         'deepCopy': (PersistentMap me) => me
       },
       // always transient
       'transient': {
         'create': () => new PersistentMap().asTransient(),
         'bulkInsert': (TransientMap me, Map updateWith) =>
-            updateWith.keys.fold(me, (me, k) => me.doInsert(k, updateWith[k])),
+            updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
         'bulkDelete': (TransientMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.doDelete(k, safe: true)),
         'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.doAdjust(k, fn_adjust)),
+            keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust)),
         'deepCopy': (TransientMap me) {
           TransientMap res = new TransientMap();
-          me.forEachKeyValue((k, v) => res.doInsert(k, v));
+          me.forEachKeyValue((k, v) => res.doAssoc(k, v));
           return res;
         }
       },
@@ -112,13 +112,13 @@ doTest(operationsCnt, print_fn){
         'create': () => new PersistentMap(),
         'bulkInsert': (PersistentMap me, Map updateWith) =>
             me.withTransient((TransientMap me) =>
-              updateWith.keys.fold(me, (me, k) => me.doInsert(k, updateWith[k]))),
+              updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
         'bulkDelete': (PersistentMap me, List keys) =>
             me.withTransient((TransientMap me) =>
               keys.fold(me, (me, k) =>  me.doDelete(k, safe: true))),
         'bulkAdjust': (PersistentMap me, List keys) =>
             me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) => me.doAdjust(k, fn_adjust))),
+              keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust))),
         'deepCopy': (PersistentMap me) => me
       },
   };
@@ -245,11 +245,11 @@ doTest(operationsCnt, print_fn){
       // test iterating, equality and hashCode
       PersistentMap copy = new PersistentMap();
       for(Pair p in pm){
-        copy = copy.insert(p.fst, p.snd);
+        copy = copy.assoc(p.fst, p.snd);
       }
       expect(pm == copy, isTrue);
       expect(pm.hashCode == copy.hashCode, isTrue);
-      PersistentMap not_copy = copy.insert('something', 'completely different');
+      PersistentMap not_copy = copy.assoc('something', 'completely different');
       expect(pm == not_copy, isFalse);
       // this may very rarely not be true
       expect(pm.hashCode == not_copy.hashCode, isFalse);

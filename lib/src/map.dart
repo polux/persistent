@@ -7,7 +7,11 @@
 part of persistent;
 
 /**
- * A read-only map, binding keys of type [K] to values of type [V]. Null
+ * The interface is defined mainly for documenting read-functions of PersistentMap
+ * and TransientMap; the interfaceis not supposed to be actualy used
+ * (as you usually knows, which Map you are using).
+ *
+ * [ReadMap] binds keys of type [K] to values of type [V]. Null
  * values are supported but null keys are not.
  *
  * There is no default implementation of [ReadMap], since it just
@@ -21,10 +25,10 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   /**
    * Returns the value bound to [key].
    *
-   * If [key] is not bound, [orElse] is called to obtain the
-   * return value. Default [orElse] throws exception.
+   * If [key] is not bound, [defVal] is returned; if [defVal] is not set, Exception
+   * is thrown.
    */
-  V lookup(K key, {orElse()});
+  V get(K key, {defVal});
 
   /**
    * Returns the value bound to [key].
@@ -49,9 +53,6 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// The values of `this`.
   Iterable<V> get values;
-
-  /// Randomly picks an entry of `this`.
-  Pair<K, V> pickRandomEntry([Random random]);
 
   /// An iterator through the entries of `this`.
   Iterator<Pair<K, V>> get iterator;
@@ -120,34 +121,33 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b': -1}
    */
   PersistentMap<K, V>
-      insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+      assoc(K key, V value);
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
    *
-   * If [key] is not bound and [safe] is not `true`, exception is thrown.
-   * If [key] is not bound and [safe] is specified as `true`,
+   * If [key] is not bound and [allowMissing] is not `true`, an Exception is thrown.
+   * If [key] is not bound and [allowMissing] is specified as `true`,
    * the same map is returned.
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') == {'a': 1}
    */
 
-  PersistentMap<K, V> delete(K key, {bool safe: false});
+  PersistentMap<K, V> delete(K key, {bool allowMissing: false});
 
   /**
    * Returns a new map identical to `this` except that the value it possibly
    * binds to [key] has been adjusted by [update].
    *
-   * If [key] is not bound and [safe] is not `true`, exception is thrown.
-   * If [key] is not bound and [safe] is specified as `true`,
-   * the same map is returned.
+   * If [key] is not bound, [defVal] is used as the argument for [update]
+   * If [key] is not bound and [defVal] is not set, Exception is thrown.
    *
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
-   *     {'a': 1}.adjust('b', (x) => x + 1) == {'a': 1}
+   *     {'a': 1}.adjust('b', (x) => x + 1) throws
    */
-  PersistentMap<K, V> adjust(K key, V update(V value), {bool safe: false});
+  PersistentMap<K, V> update(K key, V update(V value), {dynamic defVal});
 
   /**
    * Returns a new map identical to `this` where each value has been updated by
@@ -261,32 +261,33 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doInsert('b', 2, (x,y) => x - y); // map is now {'a': 3, 'b': 1}
    */
   TransientMap<K, V>
-      doInsert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+      doAssoc(K key, V value, [V combine(V oldvalue, V newvalue)]);
 
   /**
    * Unbinds [key].
    *
-   * If [key] is not bound and [safe] is not `true`, exception is thrown.
-   * If [key] is not bound and [safe] is specified as `true`, nothing happens.
+   * If [key] is not bound and [allowMissing] is not `true`, exception is thrown.
+   * If [key] is not bound and [allowMissing] is specified as `true`, nothing happens.
    *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.doDelete('b', 2); // map is now {'a': 1}
    *     map.doDelete('b', 2); // map is still {'a': 1}
    */
-  TransientMap<K, V> doDelete(K key, {bool safe: false}) ;
+  TransientMap<K, V> doDelete(K key, {bool allowMissing: false}) ;
 
   /**
+   * TODO: check how this works
    * Adjusts the value that is possibly bound to [key] by [update].
    *
-   * If [key] is not bound and [safe] is not `true`, exception is thrown.
-   * If [key] is not bound and [safe] is specified as `true`, nothing happens.
+   * If [key] is not bound, [defVal] is used as an argument for [update]
+   * If [key] is not bound and [defVal] is not set, an Exception is thrown.
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
-   *     map.doAdjust('b', (x) => x + 1); // map is still {'a': 1}
+   *     map.doUpdate('b', (x) => x + 1); // map is still {'a': 1}
    *     map.doUpdate('b', 2);
-   *     map.doAdjust('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
+   *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
    */
-  TransientMap<K, V> doAdjust(K key, V update(V value), {bool safe: false});
+  TransientMap<K, V> doUpdate(K key, V update(V value), {dynamic defVal});
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.

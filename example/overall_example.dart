@@ -10,7 +10,7 @@ import 'package:vacuum_persistent/persistent.dart';
 
 example(){
   var couple = new PersistentMap.fromMap({'father': 'Homer', 'mother': 'Marge'});
-  var withChild = couple.insert('boy', 'Bart');
+  var withChild = couple.assoc('boy', 'Bart');
   print(couple); // {mother: Marge, father: Homer}
   print(withChild); // {boy: Bart, mother: Marge, father: Homer}
 }
@@ -32,13 +32,13 @@ main() {
   final map2 = new PersistentMap.fromMap({"b":3, "c":4});
 
   print(map1["a"]); // 1
-  print(map1.lookup("b")); // 2
-  print(map1.lookup("c", orElse: ()=>":(")); // :(
+  print(map1.get("b")); // 2
+  print(map1.get("c", orElse: ()=>":(")); // :(
 
-  print(map1.insert("c", 3)); // {a: 1, b: 2, c: 3}
-  print(map1.insert("d", 4)); // {a: 1, b: 2, d: 4}
+  print(map1.assoc("c", 3)); // {a: 1, b: 2, c: 3}
+  print(map1.assoc("d", 4)); // {a: 1, b: 2, d: 4}
 
-  final map3 = map2.insert("c", 3, (x,y) => x+y);
+  final map3 = map2.assoc("c", 3, (x,y) => x+y);
   print(map3.delete("b")); // {c: 7}
   print(map3.delete("a", safe: true)); // {b: 3, c: 7}
 

@@ -49,12 +49,10 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   /**
    * Returns a set identical to `this` except that it does not contain [element].
    *
-   * If `this` does not contain [element] and [safe]
-   * is not specified, the error is thrown.
-   * If `this` does not contain [element] and [safe]
-   * is `true`, the same set is returned.
+   * If `this` does not contain [element], `this` is returned or Exception is thrown
+   * dependent on what is value of [allowMissing] flag.
    */
-  PersistentSet<E> delete(E element, {bool safe: false});
+  PersistentSet<E> delete(E element, {bool allowMissing: false});
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -95,9 +93,6 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * in both `this` and [other]
    */
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
-
-  /// Randomly picks an element of [this].
-  E pickRandomElement([Random random]);
 
   /// A strict (non-lazy) version of [map].
   PersistentSet strictMap(f(E element));
@@ -141,12 +136,12 @@ abstract class TransientSet<E> implements ReadSet<E> {
   /**
    * Removes [element] from `this`.
    *
-   * If `this` does not contain [element] and [safe]
-   * is not specified, the error is thrown.
-   * If `this` does not contain [element] and [safe]
+   * If `this` does not contain [element] and [allowMissing]
+   * is not specified or false, the error is thrown.
+   * If `this` does not contain [element] and [allowMissing]
    * is `true`, nothing happens.
    */
-  void doDelete(E element, {bool safe: false});
+  void doDelete(E element, {bool allowMissing: false});
 
   PersistentSet<E> asPersistent();
 }
