@@ -27,7 +27,11 @@ persist(from) {
       from.forEach((key,value) => map.doInsert(persist(key), persist(value)));
     });
   }
-  else if(from is List) {
+  else if (from is Set) {
+    from = from.map((e) => persist(e));
+    return new PersistentSet.from(from);
+  }
+  else if(from is Iterable) {
     from = from.map((e) => persist(e));
     return new PersistentVector.from(from);
   }

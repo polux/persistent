@@ -22,7 +22,7 @@ abstract class ReadSet<E> implements Iterable<E> {
  * Persistent data structure is an immutable structure, that provides effective
  * creation of slightly mutated copies.
  */
-abstract class PersistentSet<E> implements ReadSet<E> {
+abstract class PersistentSet<E> implements ReadSet<E>, Persistent {
 
   /// Creates an empty [PersistentSet] using its default implementation.
   factory PersistentSet() => new _PersistentSetImpl<E>();

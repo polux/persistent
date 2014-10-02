@@ -19,3 +19,4 @@ part 'src/linked_list.dart';
 part 'src/pair.dart';
 part 'src/vector.dart';
 part 'src/vector_impl.dart';
+part 'src/functions.dart';

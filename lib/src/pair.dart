@@ -31,7 +31,8 @@ class Pair<A, B> {
    * Two pairs are equal if and only if both their first and second
    * values are equal.
    */
-  bool operator ==(Pair<A, B> other) {
+  bool operator ==(other) {
+    print(other);
     return (other is Pair<A, B>)
         && fst == other.fst
         && snd == other.snd;
