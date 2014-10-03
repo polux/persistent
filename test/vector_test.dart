@@ -23,10 +23,10 @@ run() {
       PersistentVector v = PV([0, 1, 2]);
       expect(v.get(0), equals(0));
       expect(v[1], equals(1));
-      expect(v.get(2, orElse:()=>47), equals(2));
+      expect(v.get(2, 47), equals(2));
       expect(() => v.get(3), throws);
       expect(() => v[4], throws);
-      expect(v.get(5, orElse:()=>47), equals(47));
+      expect(v.get(5, 47), equals(47));
     });
 
     test('first', () {
@@ -108,10 +108,10 @@ run() {
       TransientVector v = TV([0, 1, 2]);
       expect(v.get(0), equals(0));
       expect(v[1], equals(1));
-      expect(v.get(2, orElse:()=>47), equals(2));
+      expect(v.get(2, 47), equals(2));
       expect(() => v.get(3), throws);
       expect(() => v[4], throws);
-      expect(v.get(5, orElse:()=>47), equals(47));
+      expect(v.get(5, 47), equals(47));
     });
 
     test('first', () {

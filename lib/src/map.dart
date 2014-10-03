@@ -256,14 +256,11 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    * Binds [key] to [value].
    *
    * If [key] was bound to some `oldvalue`, it is nevertheless bound
-   * to [value]. If [key] was bound to some `oldvalue`
-   * and if [combine] is provided then [key] is bound to
-   * `combine(oldvalue, value)`.
+   * to [value].
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
    *     map.doAssoc('b', 2); // map is now {'a': 1, 'b': 2}
    *     map.doAssoc('b', 3); // map is now {'a': 1, 'b': 3}
-   *     map.doAssoc('b', 2, (x,y) => x - y); // map is now {'a': 3, 'b': 1}
    */
   TransientMap<K, V>
       doAssoc(K key, V value);

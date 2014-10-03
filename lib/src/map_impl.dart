@@ -604,9 +604,17 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       return builder.build();
     }
 
-    return (hash != _hash)
-        ? (this) // TODO What should it do now ?
-        : new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
+    if (hash != _hash) {
+      V value;
+      try{
+        value = updateF();
+        return this._insertWith(owner, _onePair(key, value), 1, (x,y) => y, hash, depth);
+      } catch (e) {
+        throw _ThrowUpdateKeyError(key, e);
+      }
+    } else {
+      return new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
+    }
   }
 
   _NodeBase<K, V>

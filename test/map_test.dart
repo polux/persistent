@@ -35,13 +35,13 @@ run() {
       expect(pm.get('c','none'), equals('none'));
     });
 
-    solo_test('update', () {
+    test('update', () {
       PersistentMap pm = new PersistentMap();
       pm = pm.assoc('a', 'b');
 
-//      expect(pm.update('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
-//      expect(() => pm.update('c', (a) => '$a b'), throws);
-      expect(pm.update('c', ([a = 'new value']) => '$a b').toMap(), equals({'a': 'b', 'c': 'new value'}));
+      expect(pm.update('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+      expect(() => pm.update('c', (a) => '$a b'), throws);
+      expect(pm.update('c', ([a = 'new value']) => '$a b').toMap(), equals({'a': 'b', 'c': 'new value b'}));
     });
 
     test('delete', () {
@@ -102,9 +102,6 @@ run() {
 
       tm.doAssoc('a', 'c');
       expect(tm.toMap(), equals({'a': 'c'}));
-
-      tm.doAssoc('a', 'b', (a, b) => '$a$b');
-      expect(tm.toMap(), equals({'a': 'cb'}));
     });
 
     test('get', () {
@@ -114,7 +111,7 @@ run() {
 
       expect(tm.get('a'), equals('b'));
       expect(() => tm.get('c'), throws);
-      expect(tm.get('c', orElse: () => 'none'), equals('none'));
+      expect(tm.get('c', 'none'), equals('none'));
     });
 
     test('update', () {

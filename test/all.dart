@@ -14,8 +14,8 @@ import 'randomized_vector_test.dart' as randomized_vector_test;
 main() {
   linked_list_test.run();
   map_test.run();
-//  set_test.run();
-//  vector_test.run();
-//  randomized_map_test.run();
-//  randomized_vector_test.run();
+  set_test.run();
+  vector_test.run();
+  randomized_map_test.run();
+  randomized_vector_test.run();
 }
