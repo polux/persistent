@@ -32,7 +32,6 @@ class Pair<A, B> {
    * values are equal.
    */
   bool operator ==(other) {
-    print(other);
     return (other is Pair<A, B>)
         && fst == other.fst
         && snd == other.snd;

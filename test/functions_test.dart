@@ -13,6 +13,8 @@ main() {
   run();
 }
 
+eqPer(x) => equals(persist(x));
+
 run() {
   group("conj", (){
     test("- PersistentVector", (){
@@ -84,33 +86,177 @@ run() {
   group("dissoc", () {
     test("- PersistentMap", (){
       PersistentMap s = persist({'a': 5, 'b': 6, 'c': 7});
-      expect(dissoc(s, 'b', 'c'), equals(persist({'a': 5})));
-      expect(dissoc(s, 'b', 'd'), equals(persist({'a': 5, 'c': 7})));
+      expect(dissoc(s, 'b', 'c'), eqPer({'a': 5}));
+      expect(dissoc(s, 'b', 'd'), eqPer({'a': 5, 'c': 7}));
     });
   });
 
   group("distinc", () {
     test("- PersistentVector", (){
       PersistentVector s = persist([1, 3, 2, 4, 3, 3]);
-      expect(distinct(s), equals(persist([1,3,2,4])));
+      expect(distinct(s), eqPer([1,3,2,4]));
       s = persist([1, null, 1, null]);
-      expect(distinct(s), equals(persist([1, null])));
+      expect(distinct(s), eqPer([1, null]));
     });
   });
 
   group("empty", () {
     test("- PersistentVector", (){
       PersistentVector s = persist([1, 2, 3]);
-      expect(empty(s), equals(persist([])));
+      expect(empty(s), eqPer([]));
     });
     test("- PersistentMap", (){
       PersistentMap s = persist({'a': 5});
-      expect(empty(s), equals(persist({})));
+      expect(empty(s), eqPer({}));
     });
 
     test("- PersistentSet", (){
       PersistentSet s = persist(new Set.from(['a', 'c']));
-      expect(empty(s), equals(persist(new Set())));
+      expect(empty(s), eqPer(new Set()));
+    });
+  });
+
+  group("hasKey", () {
+    test("- PersistentVector", (){
+      PersistentVector s = persist([1, 2, 3]);
+      expect(hasKey(s, -1), equals(false));
+      expect(hasKey(s, 0), equals(true));
+      expect(hasKey(s, 2), equals(true));
+      expect(hasKey(s, 3), equals(false));
+    });
+    test("- PersistentMap", (){
+      PersistentMap s = persist({'a': 5});
+      expect(hasKey(s, 'a'), equals(true));
+      expect(hasKey(s, 'b'), equals(false));
+      expect(hasKey(s, 2), equals(false));
+    });
+
+    test("- PersistentSet", (){
+      PersistentSet s = persist(new Set.from(['a', 'c']));
+      expect(hasKey(s, 'a'), equals(true));
+      expect(hasKey(s, 'b'), equals(false));
+    });
+  });
+
+  group("get", () {
+    test("- PersistentVector", (){
+      PersistentVector s = persist([1, 2, 3]);
+      expect(get(s, 0), equals(1));
+      expect(get(s, 2), equals(3));
+      expect(get(s, -1, 10), equals(10));
+      expect(() => get(s, -1), throws);
+    });
+    test("- PersistentMap", (){
+      PersistentMap s = persist({'a': 5, 'b': {'c': 1}});
+      expect(get(s, 'a'), equals(5));
+      expect(get(s, 'b'), eqPer({'c':1}));
+      expect(get(s, 'c', 10), equals(10));
+      expect(() => get(s, 'c'), throws);
+    });
+
+    test("- PersistentSet", (){
+      PersistentSet s = persist(new Set.from(['a', 'c']));
+      expect(get(s, 'a'), equals('a'));
+      expect(get(s, 'c'), equals('c'));
+      expect(get(s, 'd', 10), equals(10));
+      expect(() => get(s, 'd'), throws);
+    });
+  });
+
+
+  group("getIn", () {
+    test("- Tree structure", (){
+      PersistentVector s = persist([1, {'a': {'b': 4}}, 3]);
+      expect(getIn(s, []), equals(s));
+      expect(getIn(s, [0]), equals(1));
+      expect(getIn(s, [1]), eqPer({'a': {'b': 4}}));
+      expect(getIn(s, [1, 'a']), eqPer({'b': 4}));
+      expect(getIn(s, [1, 'a', 'b']), equals(4));
+      expect(getIn(s, [1, 'c', 'c', 'c'], 15), equals(15));
+      expect(() => getIn(s, [1, 'c', 'c', 'c']), throws);
+      expect(getIn(s, [1, 'a', 'c'], 17), equals(17));
+      expect(() => getIn(s, [1, 'a', 'c']), throws);
+    });
+  });
+
+  group("find", () {
+    test("- PersistentVector", (){
+      PersistentVector s = persist([1, 2, 3]);
+      expect(() => find(s, -1), throws);
+      expect(find(s, -1, 17), equals(new Pair(-1, 17)));
+      expect(find(s, 0, 1), equals(new Pair(0, 1)));
+      expect(find(s, 1, 2), equals(new Pair(1, 2)));
+    });
+    test("- PersistentMap", (){
+      PersistentMap s = persist({'a': 5});
+      expect(() => find(s, -1), throws);
+      expect(find(s, -1, 17), equals(new Pair(-1, 17)));
+      expect(find(s, 'a'), equals(new Pair('a', 5)));
+      expect(find(s, 'a', 17), equals(new Pair('a', 5)));
+    });
+
+    test("- PersistentSet", (){
+      PersistentSet s = persist(new Set.from(['a', 'c']));
+      expect(() => find(s, -1), throws);
+      expect(find(s, -1, 17), equals(new Pair(-1, 17)));
+      expect(find(s, 'a'), equals(new Pair('a', 'a')));
+      expect(find(s, 'a', 17), equals(new Pair('a', 'a')));
+    });
+  });
+
+  group("assocIn", () {
+    test("- Tree structure", (){
+      PersistentVector s = persist([1, {'a': {'b': 4}}, 3]);
+      expect(assocIn(s, [], persist({'c':10})), eqPer({'c': 10}));
+      expect(assocIn(s, [], 5), equals(5));
+      expect(assocIn(s, [0], 5), equals(assoc(s, 0, 5)));
+      expect(assocIn(s, [1, 'a'], 17), eqPer([1, {'a': 17}, 3]));
+      expect(assocIn(s, [1, 'a', 'b'], 17), eqPer([1, {'a': {'b':17}}, 3]));
+      expect(assocIn(s, [1, 'a', 'c'], {'c':5}), eqPer([1, {'a': {'b': 4, 'c':{'c':5}}}, 3]));
+      expect(() => assocIn(s, [1, 'c', 'c', 'c'], 14), throws);
+    });
+  });
+
+  group("updateIn", () {
+    test("- Tree structure", (){
+      PersistentVector s = persist([1, {'a': {'b': 4}}, 3]);
+      inc(x) => ++x;
+      expect(updateIn(s, [], (x) => persist({})), eqPer({}));
+      expect(() => updateIn(s, [], inc), throws);
+      expect(updateIn(s, [0], inc), equals(assoc(s, 0, 2)));
+
+      expect(updateIn(s, [1, 'a'], (x) => assoc(x, 'b', 6)), eqPer([1, {'a': {'b': 6}}, 3]));
+      expect(updateIn(s, [1, 'a', 'b'], inc), eqPer([1, {'a': {'b':5}}, 3]));
+      expect(() => updateIn(s, [1, 'a', 'c'], inc), throws);
+      expect(() => updateIn(s, [1, 'c', 'c', 'c'], inc), throws);
+    });
+  });
+
+  group("zipmap", () {
+    test("", () {
+      expect(zipmap(['a', 'b', 'c'], [1, 2, 3]), eqPer({'a':1, 'b':2, 'c':3}));
+      expect(zipmap(['a', 'b', 'c'], [1, 2, 3, 4, 5]), eqPer({'a':1, 'b':2, 'c':3}));
+      expect(zipmap(['a', 'b', 'c', 'd', 'e'], [1, 2, 3]), eqPer({'a':1, 'b':2, 'c':3}));
+    });
+  });
+
+  group("subvec", () {
+    test("", () {
+      var s = persist([1,2,3,4,5]);
+      expect(subvec(s, 0), equals(s));
+      expect(subvec(s, 1), eqPer([2,3,4,5]));
+      expect(subvec(s, 1, 3), eqPer([2,3]));
+      expect(subvec(s, 1, 10), eqPer([2,3,4,5]));
+      expect(subvec(s, 10), eqPer([]));
+      expect(subvec(s, 1, -1), eqPer([]));
+    });
+  });
+
+  group("disj", () {
+    test("", () {
+      var s = persist(new Set.from([1,'a','c']));
+      expect(disj(s, 1), eqPer(new Set.from(['a', 'c'])));
+      expect(disj(s, 5), equals(s));
     });
   });
 }
