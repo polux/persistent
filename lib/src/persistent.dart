@@ -19,16 +19,16 @@ class _Owner {}
  *
  * Works recursively.
  */
-persist(from) {
+per(from) {
   if(from is Persistent) return from;
   if(from is Map) {
     var map = new PersistentMap();
     return map.withTransient((TransientMap map) {
-      from.forEach((key,value) => map.doAssoc(persist(key), persist(value)));
+      from.forEach((key,value) => map.doAssoc(per(key), per(value)));
     });
   }
   else if(from is List) {
-    from = from.map((e) => persist(e));
+    from = from.map((e) => per(e));
     return new PersistentVector.from(from);
   }
   else {
@@ -57,16 +57,16 @@ lookupIn(Persistent structure, List path, {defVal}) =>
 _lookupIn(dynamic s, Iterator path, {defVal}) {
   if(!path.moveNext()) return s;
   if(s is PersistentMap) {
-    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
   }
   else if(s is PersistentVector) {
-    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
   }
   else if(s is TransientMap) {
-    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
   }
   else if(s is TransientVector) {
-    return _lookupIn(s.get(path.current, defVal: defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
   }
   else {
     throw new Exception('This should not happen');

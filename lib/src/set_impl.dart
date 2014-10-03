@@ -64,7 +64,11 @@ abstract class _PersistentSetMixim<E>
 abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !_isNone(_map.get(element, defVal: _getNone));
+  bool contains(E element) => _map.containsKey(element);
+
+  bool hasKey(E key) => contains(key);
+
+  E get(E element, [E notFound]) => contains(element) ? element : notFound;
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 

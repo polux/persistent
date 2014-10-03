@@ -25,10 +25,10 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
   /**
    * Returns the value bound to [key].
    *
-   * If [key] is not bound, [defVal] is returned; if [defVal] is not set, Exception
+   * If [key] is not bound, [notFound] is returned; if [notFound] is not set, Exception
    * is thrown.
    */
-  V get(K key, {defVal});
+  V get(K key, [V notFound]);
 
   /**
    * Returns the value bound to [key].
@@ -50,6 +50,9 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 
   /// Returns true if contains [key]
   bool containsKey(K key);
+
+  /// Returns true if contains [key]
+  bool hasKey(K key);
 
   /// The values of `this`.
   Iterable<V> get values;
@@ -116,9 +119,9 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    * and if [combine] is provided then [key] it bound to
    * `combine(oldvalue, value)` in the new map.
    *
-   *     {'a': 1}.insert('b', 2) == {'a': 1, 'b': 2}
-   *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b': 3}
-   *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b': -1}
+   *     {'a': 1}.assoc('b', 2) == {'a': 1, 'b': 2}
+   *     {'a': 1, 'b': 2}.assoc('b', 3) == {'a': 3, 'b': 3}
+   *     {'a': 1, 'b': 2}.assoc('b', 3, (x,y) => x - y) == {'a': 3, 'b': -1}
    */
   PersistentMap<K, V>
       assoc(K key, V value);
@@ -139,15 +142,17 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
 
   /**
    * Returns a new map identical to `this` except that the value it possibly
-   * binds to [key] has been adjusted by [update].
+   * binds to [key] has been adjusted by [f].
    *
-   * If [key] is not bound, [defVal] is used as the argument for [update]
+   * [f] should have one of the following signatures: V f(V value), V f([V value])
+   *
+   * If [key] is not bound, [defVal] is used as the argument for [f]
    * If [key] is not bound and [defVal] is not set, Exception is thrown.
    *
    *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
    *     {'a': 1}.adjust('b', (x) => x + 1) throws
    */
-  PersistentMap<K, V> update(K key, V update(V value), {dynamic defVal});
+  PersistentMap<K, V> update(K key, dynamic f);
 
   /**
    * Returns a new map identical to `this` where each value has been updated by
@@ -166,7 +171,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var transient = persistent1.asTransient();
-   *     transient.doInsert({'b':2});
+   *     transient.doAssoc({'b':2});
    *     var persistent2 = new transient.asPersistent();
    */
   TransientMap<K, V> asTransient();
@@ -177,7 +182,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var persistent2 = persistent1.withTransient((m){
-   *       m.doInsert({'b':2});
+   *       m.doAssoc({'b':2});
    *     });
    */
   PersistentMap<K, V> withTransient(dynamic change(TransientMap));
@@ -256,12 +261,12 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    * `combine(oldvalue, value)`.
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
-   *     map.doInsert('b', 2); // map is now {'a': 1, 'b': 2}
-   *     map.doInsert('b', 3); // map is now {'a': 1, 'b': 3}
-   *     map.doInsert('b', 2, (x,y) => x - y); // map is now {'a': 3, 'b': 1}
+   *     map.doAssoc('b', 2); // map is now {'a': 1, 'b': 2}
+   *     map.doAssoc('b', 3); // map is now {'a': 1, 'b': 3}
+   *     map.doAssoc('b', 2, (x,y) => x - y); // map is now {'a': 3, 'b': 1}
    */
   TransientMap<K, V>
-      doAssoc(K key, V value, [V combine(V oldvalue, V newvalue)]);
+      doAssoc(K key, V value);
 
   /**
    * Unbinds [key].
@@ -275,19 +280,21 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    */
   TransientMap<K, V> doDelete(K key, {bool allowMissing: false}) ;
 
+  // TODO: check how this works
   /**
-   * TODO: check how this works
-   * Adjusts the value that is possibly bound to [key] by [update].
+   * Adjusts the value that is possibly bound to [key] by [f].
    *
-   * If [key] is not bound, [defVal] is used as an argument for [update]
-   * If [key] is not bound and [defVal] is not set, an Exception is thrown.
+   * [f] should have one of the following signatures: V f(V value), V f([V value])
+   *
+   * If [key] is not bound, result of calling [f] with no argument is used as value
+   * If [key] is not bound and [f] can not be called with no argument, [Exception] is thrown.
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
    *     map.doUpdate('b', (x) => x + 1); // map is still {'a': 1}
    *     map.doUpdate('b', 2);
    *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
    */
-  TransientMap<K, V> doUpdate(K key, V update(V value), {dynamic defVal});
+  TransientMap<K, V> doUpdate(K key, dynamic f);
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.
@@ -295,7 +302,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
    */
-  TransientMap doMapValues(f(V value)) ;
+  TransientMap doMapValues(f(V value));
 
   /**
    * Returns a persistent copy of `this`.
@@ -305,7 +312,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var transient = persistent1.asTransient();
-   *     transient.doInsert({'b':2});
+   *     transient.doAssoc({'b':2});
    *     var persistent2 = new transient.asPersistent();
    */
   PersistentMap asPersistent();

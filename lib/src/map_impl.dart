@@ -10,16 +10,19 @@ final _random = new Random();
 
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
+_ThrowUpdateKeyError(key, exception) => throw new Exception('Key $key was not found, calling update with no arguments threw: $exception');
+
+
 abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
   _NodeBase _root;
 
-  V get(K key, {defVal: _none}) {
+  V get(K key, [V notFound = _none]) {
     var val = _root.get(key);
     if(_isNone(val)){
-      if (_isNone(defVal)) {
+      if (_isNone(notFound)) {
         _ThrowKeyError(key);
       } else {
-        return defVal;
+        return notFound;
       }
     } else {
       return val;
@@ -45,9 +48,11 @@ abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
 
   bool containsKey(key) {
     final _none = new Object();
-    final value = this.get(key, defVal: _none);
+    final value = this.get(key, _none);
     return value != _none;
   }
+
+  bool hasKey(key) => containsKey(key);
 }
 
 class _PersistentMapImpl<K, V>
@@ -85,7 +90,7 @@ class _PersistentMapImpl<K, V>
     _root = new _EmptyMap<K, V>(null);
     _Owner owner = new _Owner();
     map.forEach((K key, V value) {
-      _root = _root.insert(owner, key, value);
+      _root = _root.assoc(owner, key, value);
     });
   }
 
@@ -93,7 +98,7 @@ class _PersistentMapImpl<K, V>
     _root = new _EmptyMap<K, V>(null);
     _Owner owner = new _Owner();
     pairs.forEach((pair) {
-      _root = _root.insert(owner, pair.first, pair.second);
+      _root = _root.assoc(owner, pair.first, pair.second);
     });
   }
 
@@ -104,16 +109,20 @@ class _PersistentMapImpl<K, V>
   _PersistentMapImpl._new(_NodeBase __root) { _root = __root; }
 
   _PersistentMapImpl<K, V>
-      assoc(K key, V value, [V combine(V oldvalue, V newvalue)]) {
-        return new _PersistentMapImpl._new(_root.insert(null, key, value, combine));
+      assoc(K key, V value) {
+        return new _PersistentMapImpl._new(_root.assoc(null, key, value));
       }
 
   _PersistentMapImpl<K, V> delete(K key, {bool allowMissing: false}) {
     return new _PersistentMapImpl._new(_root.delete(null, key, allowMissing));
   }
 
-  _PersistentMapImpl<K, V> update(K key, V update(V value), {dynamic defVal: _none}) {
-    return new _PersistentMapImpl._new(_root.update(null, key, update, defVal));
+  /**
+   * [updateF] parameter may have one of following signatures: V updateF(V value), V updateF([V value])
+   * If key was not found, it will try to associate the key with updateF()
+   */
+  _PersistentMapImpl<K, V> update(K key, dynamic updateF) {
+    return new _PersistentMapImpl._new(_root.update(null, key, updateF));
   }
 
   _PersistentMapImpl mapValues(f(V value)) {
@@ -206,8 +215,8 @@ class _TransientMapImpl<K, V>
   }
 
   TransientMap<K, V>
-      doAssoc(K key, V value, [V combine(V oldvalue, V newvalue)]) {
-        return _adjustRootAndReturn(_root.insert(owner, key, value, combine));
+      doAssoc(K key, V value) {
+        return _adjustRootAndReturn(_root.assoc(owner, key, value));
       }
 
   operator []=(key, value){
@@ -218,8 +227,12 @@ class _TransientMapImpl<K, V>
     return _adjustRootAndReturn(_root.delete(owner, key, allowMissing));
   }
 
-  TransientMap<K, V> doUpdate(K key, V update(V value), {dynamic defVal}) {
-    return _adjustRootAndReturn(_root.update(owner, key, update, defVal));
+  /**
+   * [updateF] parameter may have one of following signatures: V updateF(V value), V updateF([V value])
+   * If key was not found, it will try to associate the key with updateF()
+   */
+  TransientMap<K, V> doUpdate(K key, dynamic updateF) {
+    return _adjustRootAndReturn(_root.update(owner, key, updateF));
   }
 
   TransientMap doMapValues(f(V value)) {
@@ -273,7 +286,7 @@ abstract class _NodeBase<K, V>
       elementAt((random != null ? random : _random).nextInt(this.length));
 
   _NodeBase<K, V>
-    insert(_Owner owner, K key, V value, [V combine(V oldvalue, V newvalue)]);
+    assoc(_Owner owner, K key, V value);
 
   _NodeBase<K, V> delete(_Owner owner, K key, bool allowMissing);
 
@@ -281,7 +294,7 @@ abstract class _NodeBase<K, V>
 
   void forEachKeyValue(f(K key, V value));
 
-  _NodeBase<K, V> update(_Owner owner, K key, V update(V value), defVal);
+  _NodeBase<K, V> update(_Owner owner, K key, dynamic updateF);
 
   _NodeBase mapValues(_Owner owner, f(V value));
 
@@ -309,7 +322,7 @@ abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
   _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
   _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing);
-  _NodeBase<K, V> _update(_Owner owner, K key, V update(V), int hash, int depth, bool allowMissing);
+  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth);
 
   _ANodeBase<K, V>
       _unionWith(_Owner owner, _ANodeBase<K, V> m, V combine(V x, V y), int depth);
@@ -339,17 +352,16 @@ abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
   V get(K key) =>
       _get(key, key.hashCode & 0x3fffffff, 0);
 
-  _NodeBase<K, V> insert(_Owner owner, K key, V value, [V combine(V x, V y)]) =>
+  _NodeBase<K, V> assoc(_Owner owner, K key, V value) =>
       _insertWith(owner, _onePair(key, value),
-          1,
-          (combine != null) ? combine : (V x, V y) => y,
+          1, (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
   _NodeBase<K, V> delete(_Owner owner, K key, bool allowMissing) =>
       _delete(owner ,key, key.hashCode & 0x3fffffff, 0, allowMissing);
 
-  _NodeBase<K, V> update(_Owner owner, K key, V update(V), dynamic defVal) =>
-      _update(owner, key, update, key.hashCode & 0x3fffffff, 0, defVal);
+  _NodeBase<K, V> update(_Owner owner, K key, dynamic updateF) =>
+      _update(owner, key, updateF, key.hashCode & 0x3fffffff, 0);
 
   _NodeBase<K, V> union(_Owner owner, _NodeBase<K, V> other, [V combine(V x, V y)]) =>
     this._unionWith(owner, other, (combine != null) ? combine : (V x, V y) => y, 0);
@@ -394,8 +406,15 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
   _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing) =>
     allowMissing ? this : _ThrowKeyError(key);
 
-  _NodeBase<K, V> _update(_Owner owner, K key, V update(V), int hash, int depth, defVal) =>
-    _isNone(defVal) ? _ThrowKeyError(key) : this;
+  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) {
+    V value;
+    try {
+      value = updateF();
+    } catch (e) {
+      _ThrowUpdateKeyError(key, e);
+    }
+    return assoc(owner, key, value);
+  }
 
   _NodeBase<K, V>
       _unionWith(_Owner owner, _NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
@@ -560,7 +579,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
   }
 
-  _NodeBase<K, V> _update(_Owner owner, K key, V update(V), int hash, int depth, dynamic defVal) {
+  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) {
     LinkedList<Pair<K, V>> adjustPairs() {
       LinkedListBuilder<Pair<K, V>> builder =
           new LinkedListBuilder<Pair<K, V>>();
@@ -569,18 +588,24 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         Cons<Pair<K, V>> cons = it.asCons;
         Pair<K, V> elem = cons.elem;
         if (elem.first == key) {
-          builder.add(new Pair<K, V>(key, update(elem.second)));
+          builder.add(new Pair<K, V>(key, updateF(elem.second)));
           return builder.build(cons.tail);
         }
         builder.add(elem);
         it = cons.tail;
       }
-      if(_isNone(defVal)) _ThrowKeyError(key);
+      V value;
+      try {
+        value = updateF();
+      } catch (e) {
+        _ThrowUpdateKeyError(key, e);
+      }
+      builder.add(new Pair<K, V>(key, value));
       return builder.build();
     }
 
     return (hash != _hash)
-        ? (_isNone(defVal) ? _ThrowKeyError(key) : this)
+        ? (this) // TODO What should it do now ?
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
   }
 
@@ -847,13 +872,13 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  _NodeBase<K, V> _update(_Owner owner, K key, V update(V), int hash, int depth, dynamic defVal) {
+  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
+    int index = _popcount(_bitmap & (mask - 1));
     if ((_bitmap & mask) != 0) {
-      int index = _popcount(_bitmap & (mask - 1));
       _ANodeBase<K, V> m = _array[index];
-      _ANodeBase<K, V> newm = m._update(owner, key, update, hash, depth + 1, defVal);
+      _ANodeBase<K, V> newm = m._update(owner, key, updateF, hash, depth + 1);
       if (identical(newm, m)) {
         return this;
       }
@@ -862,7 +887,20 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
-      return (_isNone(defVal) ? _ThrowKeyError(key) : this);
+      int newlength = _array.length + 1;
+      List<_ANodeBase<K, V>> newarray =
+          new List<_ANodeBase<K, V>>(newlength);
+      // TODO: find out if there's a "copy array" native function somewhere
+      for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
+      for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
+      V value;
+      try {
+        value = updateF();
+      } catch(e) {
+        _ThrowUpdateKeyError(key, e);
+      }
+      newarray[index] = new _Leaf<K, V>.abc(owner, hash, _onePair(key, value), 1);
+      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + 1);
     }
   }
 

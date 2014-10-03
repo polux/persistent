@@ -17,11 +17,11 @@ example(){
 
 example2(){
   // deeply persist the structure of Maps and Lists
-  var a = persist({[1,2]: 'tower', [1,3]: 'water'});
-  var b = persist({[1,2]: 'tower', [1,3]: 'water'});
+  var a = per({[1,2]: 'tower', [1,3]: 'water'});
+  var b = per({[1,2]: 'tower', [1,3]: 'water'});
   assert(a==b);
   // kids, don't try this with standard List, it ain't work
-  print(a[persist([1, 2])]); // prints hello
+  print(a[per([1, 2])]); // prints hello
 }
 
 main() {

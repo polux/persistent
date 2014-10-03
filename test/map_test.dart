@@ -195,9 +195,9 @@ run() {
       map = map.assoc('a', new PersistentMap());
       PersistentMap map2 = insertIn(map, ['a', 'b'], 'c');
 
-      expect(map2 == persist({'a': {'b': 'c'}}), isTrue);
+      expect(map2 == per({'a': {'b': 'c'}}), isTrue);
       expect(map == map2, isFalse);
-      expect(map, equals(persist({'a': {}})));
+      expect(map, equals(per({'a': {}})));
     });
 
     test('deleteIn', () {

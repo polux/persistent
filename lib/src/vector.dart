@@ -26,7 +26,7 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
    *     v.get(2, ()=>null); // returns null
    *     v.get(2); // throws RangeError
    */
-  E get(int index, {defVal: null});
+  E get(int index, [E notFound]);
 
   /**
    * Returns element at given [index].
@@ -44,11 +44,14 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
 
   /// The last element of `this`
   E get last;
+
+  /// Checks if it contains key [key]
+  bool hasKey(int key);
 }
 
 
 /**
- * A persistent vector, resizable ordered collection of elements of type [K].
+ * A persistent vector, resizable ordered collection of elements of type [E].
  *
  * Persistent data structure is an immutable structure, that provides effective
  * creation of slightly mutated copies.
