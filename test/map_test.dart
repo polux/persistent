@@ -32,17 +32,16 @@ run() {
 
       expect(pm.get('a'), equals('b'));
       expect(() => pm.get('c'), throws);
-      expect(pm.get('c', defVal: 'none'), equals('none'));
+      expect(pm.get('c','none'), equals('none'));
     });
 
     solo_test('update', () {
       PersistentMap pm = new PersistentMap();
       pm = pm.assoc('a', 'b');
 
-      expect(pm.update('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
-      expect(() => pm.update('c', (a) => '$a b'), throws);
-      print('GGG ${pm.update('c', (a) => '$a b', defVal: 'def')}');
-      expect(pm.update('c', (a) => '$a b', defVal: 'def').toMap(), equals({'a': 'b', 'c': 'def b'}));
+//      expect(pm.update('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+//      expect(() => pm.update('c', (a) => '$a b'), throws);
+      expect(pm.update('c', ([a = 'new value']) => '$a b').toMap(), equals({'a': 'b', 'c': 'new value'}));
     });
 
     test('delete', () {
