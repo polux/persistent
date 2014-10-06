@@ -19,7 +19,7 @@ run() {
 
     PV(list) => new PersistentVector.from(list);
 
-    solo_test('get', () {
+    test('get', () {
       PersistentVector v = PV([0, 1, 2]);
       expect(v.get(0), equals(0));
       expect(v[1], equals(1));

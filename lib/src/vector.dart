@@ -25,7 +25,7 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
    *     v.get(2, null); // returns null
    *     v.get(2); // throws RangeError
    */
-  E get(int index, [E notFound = _none]);
+  E get(int index, [E notFound]);
 
   /**
    * Returns element at given [index].

@@ -56,7 +56,7 @@ abstract class _BaseVectorImpl<E> extends _PersistentVectorBase<E> {
     try {
       index = _checkIndex(index);
     } catch(e) {
-      if (notFound == null) {
+      if (notFound == _none) {
         _ThrowKeyError(index);
       } else {
         return notFound;
@@ -418,8 +418,8 @@ class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PersistentV
   _PersistentVectorImpl push(E value) => _push(value);
   _PersistentVectorImpl pop() => _pop();
   _PersistentVectorImpl set(int index, E value) => _set(index, value);
-  E get(int index, [E notFound]) => _get(index, notFound);
-  E operator[](int index) => _get(index);
+  E get(int index, [E notFound = _none]) => _get(index, notFound);
+  E operator[](int index) => get(index);
 }
 
 class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TransientVector<E> {
