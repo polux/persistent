@@ -52,11 +52,11 @@ abstract class _BaseVectorImpl<E> extends _PersistentVectorBase<E> {
 
   bool hasKey(int key) => ((key >= 0) && (key < this.length));
 
-  E _get(int index, [E notFound = _none]) {
+  E _get(int index, [E notFound]) {
     try {
       index = _checkIndex(index);
     } catch(e) {
-      if (notFound == _none) {
+      if (notFound == null) {
         _ThrowKeyError(index);
       } else {
         return notFound;
