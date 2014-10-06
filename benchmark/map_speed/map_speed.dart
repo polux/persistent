@@ -6,7 +6,7 @@
 
 library map_bench;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'package:benchmark_harness/benchmark_harness.dart';
 
 part 'benchmarks.dart';

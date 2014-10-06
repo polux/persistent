@@ -12,9 +12,9 @@ class PersistentMapInterface<K, V>
   create() => object = new PersistentMap<K, V>();
 
   insert(K key, V value, V combine(V left, V right)) =>
-    object = object.insert(key, value, combine);
+    object = object.assoc(key, value, combine);
 
-  lookup(K key) => object.lookup(key, orElse: ()=>null);
+  lookup(K key) => object.get(key, orElse: ()=>null);
 
   delete(K key) => object = object.delete(key, safe: true);
 
@@ -28,9 +28,9 @@ class TransientMapInterface<K, V>
   create() => object = new PersistentMap<K, V>().asTransient();
 
   insert(K key, V value, V combine(V left, V right)) =>
-    object.doInsert(key, value, combine);
+    object.doAssoc(key, value, combine);
 
-  lookup(K key) => object.lookup(key, orElse: ()=>null);
+  lookup(K key) => object.get(key, orElse: ()=>null);
 
   delete(K key) => object.doDelete(key, safe: true);
 

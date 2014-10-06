@@ -6,7 +6,7 @@
 
 library map_test;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
@@ -15,49 +15,48 @@ main() {
 
 run() {
   group('Persistent map', () {
-    test('insert', () {
+    test('assoc', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
+      pm = pm.assoc('a', 'b');
       expect(pm.toMap(), equals({'a': 'b'}));
 
-      pm = pm.insert('a', 'c');
+      pm = pm.assoc('a', 'c');
       expect(pm.toMap(), equals({'a': 'c'}));
 
-      pm = pm.insert('a', 'b', (a, b) => '$a$b');
-      expect(pm.toMap(), equals({'a': 'cb'}));
     });
 
-    test('lookup', () {
+    test('get', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
-      pm = pm.insert('b', 'c');
+      pm = pm.assoc('a', 'b');
+      pm = pm.assoc('b', 'c');
 
-      expect(pm.lookup('a'), equals('b'));
-      expect(() => pm.lookup('c'), throws);
-      expect(pm.lookup('c', orElse: () => 'none'), equals('none'));
+      expect(pm.get('a'), equals('b'));
+      expect(() => pm.get('c'), throws);
+      expect(pm.get('c','none'), equals('none'));
     });
 
-    test('adjust', () {
+    test('update', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
+      pm = pm.assoc('a', 'b');
 
-      expect(pm.adjust('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
-      expect(() => pm.adjust('c', (a) => '$a b'), throws);
+      expect(pm.update('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+      expect(() => pm.update('c', (a) => '$a b'), throws);
+      expect(pm.update('c', ([a = 'new value']) => '$a b').toMap(), equals({'a': 'b', 'c': 'new value b'}));
     });
 
     test('delete', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
+      pm = pm.assoc('a', 'b');
 
       expect(pm.delete('a').toMap(), equals({}));
       expect(() => pm.delete('b'), throws);
-      expect(pm.delete('b', safe: true).toMap(), equals({'a': 'b'}));
+      expect(pm.delete('b', allowMissing: true).toMap(), equals({'a': 'b'}));
     });
 
     test('forEachKeyValue', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
-      pm = pm.insert('c', 'b');
+      pm = pm.assoc('a', 'b');
+      pm = pm.assoc('c', 'b');
 
       String res = '';
       pm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
@@ -67,8 +66,8 @@ run() {
 
     test('mapValues', () {
       PersistentMap pm = new PersistentMap();
-      pm = pm.insert('a', 'b');
-      pm = pm.insert('c', 'b');
+      pm = pm.assoc('a', 'b');
+      pm = pm.assoc('c', 'b');
 
       String res = '';
       pm = pm.mapValues((v) => '$v a');
@@ -98,48 +97,45 @@ run() {
   group('Transient map', () {
     test('insert', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
+      tm.doAssoc('a', 'b');
       expect(tm.toMap(), equals({'a': 'b'}));
 
-      tm.doInsert('a', 'c');
+      tm.doAssoc('a', 'c');
       expect(tm.toMap(), equals({'a': 'c'}));
-
-      tm.doInsert('a', 'b', (a, b) => '$a$b');
-      expect(tm.toMap(), equals({'a': 'cb'}));
     });
 
-    test('lookup', () {
+    test('get', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
-      tm.doInsert('b', 'c');
+      tm.doAssoc('a', 'b');
+      tm.doAssoc('b', 'c');
 
-      expect(tm.lookup('a'), equals('b'));
-      expect(() => tm.lookup('c'), throws);
-      expect(tm.lookup('c', orElse: () => 'none'), equals('none'));
+      expect(tm.get('a'), equals('b'));
+      expect(() => tm.get('c'), throws);
+      expect(tm.get('c', 'none'), equals('none'));
     });
 
-    test('adjust', () {
+    test('update', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
+      tm.doAssoc('a', 'b');
 
-      expect(tm.doAdjust('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
-      expect(() => tm.doAdjust('c', (a) => '$a b'), throws);
+      expect(tm.doUpdate('a', (a) => '$a b').toMap(), equals({'a': 'b b'}));
+      expect(() => tm.doUpdate('c', (a) => '$a b'), throws);
     });
 
     test('delete', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
-      tm.doInsert('b', 'b');
+      tm.doAssoc('a', 'b');
+      tm.doAssoc('b', 'b');
 
       expect(tm.doDelete('a').toMap(), equals({'b': 'b'}));
       expect(() => tm.doDelete('c'), throws);
-      expect(tm.doDelete('c', safe: true).toMap(), equals({'b': 'b'}));
+      expect(tm.doDelete('c', allowMissing: true).toMap(), equals({'b': 'b'}));
     });
 
     test('forEachKeyValue', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
-      tm.doInsert('c', 'b');
+      tm.doAssoc('a', 'b');
+      tm.doAssoc('c', 'b');
 
       String res = '';
       tm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
@@ -149,8 +145,8 @@ run() {
 
     test('mapValues', () {
       TransientMap tm = new TransientMap();
-      tm.doInsert('a', 'b');
-      tm.doInsert('c', 'b');
+      tm.doAssoc('a', 'b');
+      tm.doAssoc('c', 'b');
 
       String res = '';
       tm.doMapValues((v) => '$v a');
@@ -163,18 +159,18 @@ run() {
 
       test('lookup', (){
         PersistentMap map = new PersistentMap();
-        map = map.insert('key1', 'val1');
+        map = map.assoc('key1', 'val1');
         for (var _map in [map, map.asTransient()]) {
-          expect(_map.lookup('key1'), equals('val1'));
-          expect(() => _map.lookup('key2'), throws);
+          expect(_map.get('key1'), equals('val1'));
+          expect(() => _map.get('key2'), throws);
         }
       });
 
       test('containsKey', () {
         PersistentMap map = new PersistentMap();
-        map = map.insert('key1', 'val1');
-        map = map.insert('key2', 'val2');
-        map = map.insert('key3', 'val3');
+        map = map.assoc('key1', 'val1');
+        map = map.assoc('key2', 'val2');
+        map = map.assoc('key3', 'val3');
         expect(map.containsKey('key1'), isTrue);
         expect(map.containsKey('key2'), isTrue);
         expect(map.containsKey('key22'), isFalse);
@@ -192,17 +188,17 @@ run() {
   group('deep persistent data', () {
     test('insertIn', () {
       PersistentMap map = new PersistentMap();
-      map = map.insert('a', new PersistentMap());
+      map = map.assoc('a', new PersistentMap());
       PersistentMap map2 = insertIn(map, ['a', 'b'], 'c');
 
-      expect(map2 == persist({'a': {'b': 'c'}}), isTrue);
+      expect(map2 == per({'a': {'b': 'c'}}), isTrue);
       expect(map == map2, isFalse);
-      expect(map, equals(persist({'a': {}})));
+      expect(map, equals(per({'a': {}})));
     });
 
     test('deleteIn', () {
       PersistentMap map = new PersistentMap();
-      map = map.insert('a', new PersistentMap());
+      map = map.assoc('a', new PersistentMap());
       map = insertIn(map, ['a', 'b'], 'c');
       PersistentMap map2 = deleteIn(map, ['a', 'b']);
 
@@ -213,7 +209,7 @@ run() {
 
     test('lookupIn', () {
       PersistentMap map = new PersistentMap();
-      map = map.insert('a', new PersistentMap());
+      map = map.assoc('a', new PersistentMap());
       map = insertIn(map, ['a', 'b'], 'c');
 
       expect(lookupIn(map, ['a', 'b']), equals('c'));

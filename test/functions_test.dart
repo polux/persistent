@@ -6,7 +6,7 @@
 
 library functions_list_test;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
@@ -26,8 +26,8 @@ run() {
 
     test("- PersistentMap", (){
       PersistentMap s = persist({'a': 5});
-      expect(conj(s, new Pair('b', 6)), equals(s.insert('b', 6)));
-      expect(conj(s, ['b', 6]), equals(s.insert('b', 6)));
+      expect(conj(s, new Pair('b', 6)), equals(s.assoc('b', 6)));
+      expect(conj(s, ['b', 6]), equals(s.assoc('b', 6)));
       expect(() => conj(s, 6), throws);
     });
 
@@ -50,7 +50,7 @@ run() {
     });
     test("- PersistentMap", (){
       PersistentMap s = persist({'a': 5});
-      expect(into(s, [new Pair('b', 6), new Pair('a', 8)]), equals(s.insert('b', 6).insert('a', 8)));
+      expect(into(s, [new Pair('b', 6), new Pair('a', 8)]), equals(s.assoc('b', 6).assoc('a', 8)));
     });
 
     test("- PersistentSet", (){
@@ -68,7 +68,7 @@ run() {
     });
     test("- PersistentMap", (){
       PersistentMap s = persist({'a': 5});
-      expect(assoc(s, 'b', 8, 'c', 10), equals(s.insert('b', 8).insert('c', 10)));
+      expect(assoc(s, 'b', 8, 'c', 10), equals(s.assoc('b', 8).assoc('c', 10)));
     });
 
     test("- PersistentSet", (){
@@ -195,8 +195,9 @@ run() {
       expect(find(s, 'a', 17), equals(new Pair('a', 5)));
     });
 
-    test("- PersistentSet", (){
+    solo_test("- PersistentSet", (){
       PersistentSet s = persist(new Set.from(['a', 'c']));
+      print(find(s,-1));
       expect(() => find(s, -1), throws);
       expect(find(s, -1, 17), equals(new Pair(-1, 17)));
       expect(find(s, 'a'), equals(new Pair('a', 'a')));

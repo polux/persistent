@@ -64,28 +64,38 @@ abstract class _PersistentSetMixim<E>
 abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   ReadMap<E, Null> get _map;
 
-  bool contains(E element) => !_isNone(_map.lookup(element, orElse: _getNone));
+  bool contains(E element) => _map.containsKey(element);
+
+  bool hasKey(E key) => contains(key);
+
+  E get(E element, [E notFound = _none]) =>
+      contains(element) ?
+        element
+      :
+        notFound == _none ?
+          _ThrowKeyError(element)
+        :
+          notFound;
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
   Iterable map(f(E element)) {
-    return _map.map((pair)=>f(pair.fst));
+    return _map.map((pair)=>f(pair.first));
   }
 
   int get length => _map.length;
 
-  bool operator ==(_SetImplBase<E> other) => _map == other._map;
+  bool operator ==(other) =>
+      other is _SetImplBase ? _map == other._map : false;
 
   Iterator<E> get iterator =>
-      _map.map((Pair<E, Object> pair) => pair.fst).iterator;
-
-  E pickRandomElement([Random random]) => _map.pickRandomEntry(random).fst;
+      _map.map((Pair<E, Object> pair) => pair.first).iterator;
 
   // PersistentMap's "last" is optimized
-  E get last => _map.last.fst;
+  E get last => _map.last.first;
 
   // PersistentMap's "elementAt" is optimized
-  E elementAt(int index) => _map.elementAt(index).fst;
+  E elementAt(int index) => _map.elementAt(index).first;
 }
 
 
@@ -101,10 +111,10 @@ class _PersistentSetImpl<E>
       new _PersistentSetImpl._internal(new PersistentMap<E, Object>());
 
   _PersistentSetImpl<E> insert(E element) =>
-      new _PersistentSetImpl._internal(_map.insert(element, null));
+      new _PersistentSetImpl._internal(_map.assoc(element, null));
 
-  _PersistentSetImpl<E> delete(E element, {bool safe:false}) =>
-      new _PersistentSetImpl._internal(_map.delete(element, safe:safe));
+  _PersistentSetImpl<E> delete(E element, {bool allowMissing:false}) =>
+      new _PersistentSetImpl._internal(_map.delete(element, allowMissing:allowMissing));
 
   TransientSet asTransient() {
     return new _TransientSetImpl._internal(_map.asTransient());
@@ -135,12 +145,15 @@ class _PersistentSetImpl<E>
     return result.asPersistent();
   }
 
-  bool operator==(ReadSet<E> other) =>
-      other is TransientSet ?
-        this.length == other.length &&
-        this.fold(true, (test, v)=> test && other.contains(v))
+  bool operator==(other) =>
+      other is ReadSet ?
+        other is TransientSet ?
+          this.length == other.length &&
+          this.fold(true, (test, v)=> test && other.contains(v))
+        :
+          super == other
       :
-        super == other;
+        false;
 
   int get hashCode => this._map.hashCode;
 }
@@ -154,11 +167,11 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
       new _TransientSetImpl._internal(new TransientMap<E, Object>());
 
   void doInsert(E element){
-    _map.doInsert(element, null);
+    _map.doAssoc(element, null);
   }
 
-  void doDelete(E element, {bool safe:false}){
-    _map.doDelete(element, safe:safe);
+  void doDelete(E element, {bool allowMissing:false}){
+    _map.doDelete(element, allowMissing:allowMissing);
   }
 
   PersistentSet asPersistent() {

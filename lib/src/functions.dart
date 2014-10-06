@@ -75,7 +75,7 @@ Persistent conj(Persistent coll, arg0, [arg1 = _undefArg, arg2 = _undefArg, arg3
 Persistent into(Persistent coll, Iterable iter) {
   return _dispatch(coll,
      op: 'conj',
-     map:()=>  (coll as PersistentMap).withTransient((TransientMap t) => iter.forEach((arg) => t.doInsert(_firstP(arg), _secondP(arg)))),
+     map:()=>  (coll as PersistentMap).withTransient((TransientMap t) => iter.forEach((arg) => t.doAssoc(_firstP(arg), _secondP(arg)))),
      vec:()=>  (coll as PersistentVector).withTransient((t) => iter.forEach((arg) => t.doPush(arg))),
      set:()=>  (coll as PersistentSet).withTransient((t) => iter.forEach((arg) => t.doInsert(arg)))
   );
@@ -161,7 +161,7 @@ PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _undefArg, arg2 = _undefA
  *      dissocI(p, ['a']); // == persist({'b': 15, 'c': 17})
  */
 PersistentMap dissocI(PersistentMap coll, Iterable iter){
-  return coll.withTransient((TransientMap t) => iter.forEach((arg) => t.doDelete(arg, safe: true)));
+  return coll.withTransient((TransientMap t) => iter.forEach((arg) => t.doDelete(arg, allowMissing: true)));
 }
 
 /**
@@ -230,13 +230,13 @@ bool hasKey(Persistent coll, key) {
   );
 }
 
-//TODO Juro Specify what exception is thrown
+//TODO Sadly, it doesn't throw any specific Exceptions
 /**
  * Returns an element of persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) stored under
  * [key]. [PersistentVector] takes [key] as index. [PersistentSet] takes [key] as element of that set
  * and returns it.
  * Optional argument [notFound] is returned if [coll] doesn't have that key.
- * If you don't specify [notFound] and [key] is missing in [coll], then exception [] is thrown.
+ * If you don't specify [notFound] and [key] is missing in [coll], then [Exception] is thrown.
  * [null] is a valid value for [notFound] and results in same behaviour as dart maps.
  *
  * Example:
@@ -256,26 +256,18 @@ bool hasKey(Persistent coll, key) {
  *      get(ps, 'c', 17); // 17
  */
 dynamic get(Persistent coll, key, [notFound = _undefArg]) {
-  return _dispatch(coll,
-     op: 'get',
-     map:()=> hasKey(coll, key)? (coll as PersistentMap).lookup(key):
-       (notFound != _undefArg)? notFound: throw new Exception("Key $key doesn't exist in $coll"),
-     vec:()=> hasKey(coll, key)? (coll as PersistentVector).elementAt(key):
-       (notFound != _undefArg)? notFound: throw new Exception("Key $key doesn't exist in $coll"),
-     set:()=> hasKey(coll, key)? key:
-       (notFound != _undefArg)? notFound: throw new Exception("Key $key doesn't exist in $coll")
-  );
+  return (coll as dynamic).get(key, notFound);
 }
 
-//TODO juro add what exception is thrown
+//TODO Sadly, it doesn't throw any specific Exceptions
 /**
- * Return element form recursive persistent [coll] under path of keys.
+ * Returns an element form recursive persistent [coll] under path of keys.
  * [coll] can contain nested [PersistentMap]s, [PersistentVector]s and [PersistentSet]s.
- * Optional argument [notFound] is returned if [coll] don't have that key path.
- * If you don't specify [notFound] and [coll] is missing key path then exception ... is thrown.
+ * Optional argument [notFound] is returned if [coll] doesn't have that key path.
+ * If you don't specify [notFound] and key path is missing in [coll], then [Exception] is thrown.
  *
  * Example:
- *      PersistantMap pm = persist({'a': {'b': 10}});
+ *      PersistentMap pm = persist({'a': {'b': 10}});
  *      getIn(pm, ['a', 'b']); // == 10
  *      getIn(pm, ['a', 'b', 'c']); // throw
  *      getIn(pm, ['a', 'b', 'c'], null); // null
@@ -303,7 +295,7 @@ _getIn(Persistent coll, Iterable keys, [notFound = _undefArg]) {
  * Return [Pair] of [key] and result of [get] ([coll], [key], [notFound]).
  *
  * Example:
- *      PersistantMap pm = persist({'a' : 10});
+ *      PersistentMap pm = persist({'a' : 10});
  *      find(pm, 'a'); // == new Pair('a', 10);
  *      find(pm, 'b'); // throw
  *      find(pm, 'b', 15); // == new Pair('b', 15)
@@ -313,11 +305,11 @@ Pair find(Persistent coll, key, [notFound = _undefArg]) {
 }
 
 /**
- * Return new persistant collection wihich is result of [assoc] of [val] under [keys] path in [coll].
- * If key path is not presented in collection than exception is thrown
+ * Returns a new persistent collection which is the result of [assoc] of [val] under [keys] path in [coll].
+ * If key path is not present in collection, then [Exception] is thrown
  *
  *  Example:
- *      PersistenMap pm = persist({'a': [1, 2, 3]});
+ *      PersistentMap pm = persist({'a': [1, 2, 3]});
  *      assocIn(pm, ['a', 0], 17); // == persist({'a': [17, 2, 3]);
  *
  *      PersistenMap pm = persist({'a': {'b': 10}});
@@ -343,12 +335,12 @@ dynamic _assocIn(Persistent coll, keys, val) {
 
 
 /**
- * Return new persistant collection wihich is result of [assoc] of apllied [f] to value under [keys] path in [coll].
- * If only last key from path is not persented [f] is called without arguments and result is added to return value.
- * If other parth of key path is not presented in collection than exception is thrown.
+ * Returns a new persistent collection which is the result of [assoc] of apllied [f] to value under [keys] path in [coll].
+ * If only the last key from path is not present, [f] is called without arguments and result is added to return value.
+ * If other part of key path is not present in collection, then exception is thrown.
  *
  * Example:
- *      PersistantMap pm = persist({'a': {'b': 10}});
+ *      PersistentMap pm = persist({'a': {'b': 10}});
  *      inc(x) => x+1;
  *      maybeInc([x]) => (x != null)? x+1 : 0;
  *      updateIn(pm, ['a', 'b'], inc) // == persist({'a': {'b': 11}})
@@ -374,7 +366,7 @@ dynamic _updateIn(Persistent coll, Iterable keys, f) {
 
 /**
  * Take iterable [s0] as keys and [s1] as values and return [PersistentMap] constructed from key/value pairs.
- * If they have different length then longer is trimed to shorter one.
+ * If they have different length, the longer is trimmed to shorter one.
  *
  * Example:
  *      zipmap(['a', 'b'], [1, 2]); // == persist({'a': 1, 'b': 2})
@@ -392,9 +384,9 @@ PersistentMap zipmap(Iterable s0, Iterable s1) {
 }
 
 /**
- * Return new [PersistentVector] as subvector from [vector] starting at index [start] inclusive and
- * ending at index [end] excusive. If [end] is not setted then its length of [vector].
- * If they overlap than empty vector is returned.
+ * Returns a new [PersistentVector] as subvector from [vector], starting at index [start] inclusive and
+ * ending at index [end] excusive. If [end] is not set, the length of [vector] is taken as [end] index.
+ * If they overlap, empty vector is returned.
  *
  * Example:
  *      PersistentVector pv = persist([1, 2, 3, 4]);
@@ -412,7 +404,7 @@ PersistentVector subvec(PersistentVector vector, start, [end]) {
 }
 
 /**
- * Return number of elements in [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Returns the number of elements in [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
  *
  * Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -427,7 +419,7 @@ PersistentVector subvec(PersistentVector vector, start, [end]) {
 num count(Persistent coll) => (coll as Iterable).length;
 
 /**
- *  Return of [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) is empty.
+ *  Returns whether [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) is empty.
  *
  *  Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -442,7 +434,7 @@ num count(Persistent coll) => (coll as Iterable).length;
 bool isEmpty(Persistent coll) => (coll as Iterable).isEmpty;
 
 /**
- * Reverse order of in which [coll] is iterated.
+ * Reverse order of iteration on [coll].
  *
  * Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -469,18 +461,18 @@ Iterable keys(PersistentMap map) => map.keys;
 Iterable values(PersistentMap map) => map.values;
 
 /**
- * Return new [PersistentSet] as result of removing [elem] from [coll].
- * It's inverset operation to [conj].
- * If element is not in [coll] then original [coll] is returned.
+ * Returns a new [PersistentSet] as result of removing [elem] from [coll].
+ * It is an inverted operation to [conj].
+ * If element is not in [coll], original [coll] is returned.
  *
  * Example:
  *      PersistentSet ps = persist(new Set.from(['a', 'b']));
  *      disj(ps, 'a'); // ==  persist(new Set.from(['b']));
  */
-PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, safe: true);
+PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, allowMissing: true);
 
 /**
- * Return new [PersistentSet] as union of [s1] and [s2].
+ * Returns a new [PersistentSet] as union of [s1] and [s2].
  *
  * Example:
  *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
@@ -490,7 +482,7 @@ PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, safe: true);
 PersistentSet union(PersistentSet s1, PersistentSet s2) => s1.union(s2);
 
 /**
- * Return new [PersistentSet] as intersection of [s1] and [s2].
+ * Returns a new [PersistentSet] as intersection of [s1] and [s2].
  *
  * Example:
  *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
@@ -500,7 +492,7 @@ PersistentSet union(PersistentSet s1, PersistentSet s2) => s1.union(s2);
 PersistentSet intersection(PersistentSet s1, PersistentSet s2) => s1.intersection(s2);
 
 /**
- * Return new [PersistentSet] as difference of [s1] and [s2].
+ * Returns a new [PersistentSet] as difference of [s1] and [s2].
  *
  * Example:
  *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
@@ -510,7 +502,7 @@ PersistentSet intersection(PersistentSet s1, PersistentSet s2) => s1.intersectio
 PersistentSet difference(PersistentSet s1, PersistentSet s2) => s1.difference(s2);
 
 /**
- * Return true if [PersistentSet] [s1] is subset of [s2].
+ * Returns true if [PersistentSet] [s1] is a subset of [s2].
  * Inverse operation is [isSuperset].
  *
  * Example:
@@ -523,7 +515,7 @@ bool isSubset(PersistentSet s1, PersistentSet s2) => intersection(s1,s2) == s1;
 
 
 /**
- * Return true if [PersistentSet] [s1] is superset of [s2].
+ * Returns true if [PersistentSet] [s1] is a superset of [s2].
  * Inverse operation is [isSubset].
  *
  * Example:
