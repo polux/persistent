@@ -17,7 +17,7 @@ abstract class ReadSet<E> implements Iterable<E> {
   bool hasKey(E key);
 
   /**
-   * If if contains given [element], it is returned. Otherwise returns [notFound]
+   * If it contains given [element], it is returned. Otherwise returns [notFound]
    */
   E get(E element, [E notFound]);
 }
@@ -70,29 +70,29 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * Returns a new set of all the elements that are included
    * in either `this` or [other]
    */
-  PersistentSet<E> union(PersistentSet<E> persistentSet);
+  PersistentSet<E> union(PersistentSet<E> other);
 
   /// Alias for [union].
-  PersistentSet<E> operator +(PersistentSet<E> persistentSet);
+  PersistentSet<E> operator +(PersistentSet<E> other);
 
   /**
    * Returns a new set of all the elements that are included in `this` but
    * not in [other]
    */
-  PersistentSet<E> difference(PersistentSet<E> persistentSet);
+  PersistentSet<E> difference(PersistentSet<E> other);
 
   /// Alias for [difference].
-  PersistentSet<E> operator -(PersistentSet<E> persistentSet);
+  PersistentSet<E> operator -(PersistentSet<E> other);
 
   /**
    * Returns a lazy iterable with all the pairs `Pair(first, second)`
    * such that `first` is included in `this` and
    * `second` is included in [other]
    */
-  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet other);
 
   /// Alias for [cartesianProduct].
-  Iterable<Pair<E,dynamic>> operator *(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> operator *(PersistentSet other);
 
   /**
    * Returns a new set of all the elements that are included
@@ -126,7 +126,7 @@ abstract class PersistentSet<E> implements ReadSet<E> {
  * A transient set, unordered collection of distinct elements of type [E].
  *
  * Transient data structure is a mutable structure, that can be effectively
- * converted to the persistent data structure. It is ussualy created from
+ * converted to the persistent data structure. It is usually created from
  * a persistent structure to apply some changes and obtain a new persistent
  * structure.
  */

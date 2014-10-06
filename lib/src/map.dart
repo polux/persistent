@@ -8,8 +8,8 @@ part of persistent;
 
 /**
  * The interface is defined mainly for documenting read-functions of PersistentMap
- * and TransientMap; the interfaceis not supposed to be actualy used
- * (as you usually knows, which Map you are using).
+ * and TransientMap; the interface is not supposed to be actually used
+ * (as you usually know, which Map you are using).
  *
  * [ReadMap] binds keys of type [K] to values of type [V]. Null
  * values are supported but null keys are not.
@@ -115,13 +115,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    * [value].
    *
    * If [key] was bound to some `oldvalue` in `this`, it is nevertheless bound
-   * to [value] in the new map. If [key] was bound to some `oldvalue` in `this`
-   * and if [combine] is provided then [key] it bound to
-   * `combine(oldvalue, value)` in the new map.
+   * to [value] in the new map.
    *
    *     {'a': 1}.assoc('b', 2) == {'a': 1, 'b': 2}
    *     {'a': 1, 'b': 2}.assoc('b', 3) == {'a': 3, 'b': 3}
-   *     {'a': 1, 'b': 2}.assoc('b', 3, (x,y) => x - y) == {'a': 3, 'b': -1}
    */
   PersistentMap<K, V>
       assoc(K key, V value);
@@ -132,12 +129,11 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *
    * If [key] is not bound and [allowMissing] is not `true`, an Exception is thrown.
    * If [key] is not bound and [allowMissing] is specified as `true`,
-   * the same map is returned.
+   * the same map is returned. [allowMissing] defaults to `false`.
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
-   *     {'a': 1}.delete('b') == {'a': 1}
+   *     {'a': 1}.delete('b') // throws an Exception
    */
-
   PersistentMap<K, V> delete(K key, {bool allowMissing: false});
 
   /**
@@ -146,11 +142,13 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    *
    * [f] should have one of the following signatures: V f(V value), V f([V value])
    *
-   * If [key] is not bound, [defVal] is used as the argument for [f]
-   * If [key] is not bound and [defVal] is not set, Exception is thrown.
+   * If [key] is not bound, [f] with no arguments will be called, and the result
+   * will be associated with [key]. If [key] is not bound and [f] cannot take no arguments,
+   * an Exception will be thrown.
    *
-   *     {'a': 1, 'b': 2}.adjust('b', (x) => x + 1) == {'a': 1, 'b': 3}
-   *     {'a': 1}.adjust('b', (x) => x + 1) throws
+   *     {'a': 1, 'b': 2}.update('b', (x) => x + 1) == {'a': 1, 'b': 3}
+   *     {'a': 1}.update('b', (x) => x + 1) // throws
+   *     {'a': 2}.update('b', ([x]) => x == null ? 0 : x + 1) == {'a': 2, 'b': 0}
    */
   PersistentMap<K, V> update(K key, dynamic f);
 
@@ -166,7 +164,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   /**
    * Returns a transient copy of `this`.
    *
-   * This is ussualy called to do some changes and
+   * This is usually called to make many changes and
    * then create a new [PersistentMap].
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
@@ -177,8 +175,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
   TransientMap<K, V> asTransient();
 
   /**
-   * Creates transient copy of `this`, lets it to be modified by [change]
-   * and returns persistent result.
+   * Creates a transient copy of `this`, lets it to be modified by [change]
+   * and returns a persistent result.
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var persistent2 = persistent1.withTransient((m){
@@ -238,11 +236,10 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
  * A transient map, binding keys of type [K] to values of type [V]. Null values
  * are supported but null keys are not.
  *
- * Transient data structure is a mutable structure, that can be effectively
- * converted to the persistent data structure. It is ussualy created from
+ * Transient data structure is a mutable structure, which can be efficiently
+ * converted to the persistent data structure. It is usually created from
  * a persistent structure to apply some changes and obtain a new persistent
- * structure. The less changes are done, the more efficient the conversion
- * is.
+ * structure. The less changes are done, the more efficient is the conversion.
  */
 abstract class TransientMap<K, V> implements ReadMap<K, V> {
 
@@ -268,28 +265,29 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   /**
    * Unbinds [key].
    *
-   * If [key] is not bound and [allowMissing] is not `true`, exception is thrown.
+   * If [key] is not bound and [allowMissing] is `false`, exception is thrown.
    * If [key] is not bound and [allowMissing] is specified as `true`, nothing happens.
+   * [allowMissing] defaults to `false`.
    *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.doDelete('b', 2); // map is now {'a': 1}
-   *     map.doDelete('b', 2); // map is still {'a': 1}
+   *     map.doDelete('b', 2, allowMissing: true); // map is still {'a': 1}
    */
   TransientMap<K, V> doDelete(K key, {bool allowMissing: false}) ;
 
   // TODO: check how this works
   /**
-   * Adjusts the value that is possibly bound to [key] by [f].
+   * Adjusts the value that is possibly bound to [key] by applying [f].
    *
    * [f] should have one of the following signatures: V f(V value), V f([V value])
    *
-   * If [key] is not bound, result of calling [f] with no argument is used as value
-   * If [key] is not bound and [f] can not be called with no argument, [Exception] is thrown.
+   * If [key] is not bound, result of calling [f] with no arguments is associated with [key]
+   * If [key] is not bound and [f] can not be called with no arguments, [Exception] is thrown.
    *
    *     var map = PersistentMap.fromMap({'a': 1}).asTransient();
-   *     map.doUpdate('b', (x) => x + 1); // map is still {'a': 1}
-   *     map.doUpdate('b', 2);
-   *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 2}
+   *     map.doUpdate('b', (x) => x + 1); // throws
+   *     map.doUpdate('b', ([x]) => x == null ? 2 : x + 1); // map is now {'a': 1, 'b': 2}
+   *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 3}
    */
   TransientMap<K, V> doUpdate(K key, dynamic f);
 

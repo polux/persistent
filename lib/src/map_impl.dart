@@ -12,6 +12,13 @@ _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
 _ThrowUpdateKeyError(key, exception) => throw new Exception('Key $key was not found, calling update with no arguments threw: $exception');
 
+_getUpdateValue(key, updateF) {
+  try {
+    return updateF();
+  } catch(e) {
+    _ThrowUpdateKeyError(key, e);
+  }
+}
 
 abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
   _NodeBase _root;
@@ -406,15 +413,8 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
   _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing) =>
     allowMissing ? this : _ThrowKeyError(key);
 
-  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) {
-    V value;
-    try {
-      value = updateF();
-    } catch (e) {
-      _ThrowUpdateKeyError(key, e);
-    }
-    return assoc(owner, key, value);
-  }
+  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) =>
+    assoc(owner, key, _getUpdateValue(key, updateF));
 
   _NodeBase<K, V>
       _unionWith(_Owner owner, _NodeBase<K, V> m, V combine(V x, V y), int depth) => m;
@@ -594,24 +594,12 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
         builder.add(elem);
         it = cons.tail;
       }
-      V value;
-      try {
-        value = updateF();
-      } catch (e) {
-        _ThrowUpdateKeyError(key, e);
-      }
-      builder.add(new Pair<K, V>(key, value));
+      builder.add(new Pair<K, V>(key, _getUpdateValue(key, updateF)));
       return builder.build();
     }
 
     if (hash != _hash) {
-      V value;
-      try{
-        value = updateF();
-        return this._insertWith(owner, _onePair(key, value), 1, (x,y) => y, hash, depth);
-      } catch (e) {
-        throw _ThrowUpdateKeyError(key, e);
-      }
+      return this._insertWith(owner, _onePair(key, _getUpdateValue(key, updateF)), 1, (x,y) => y, hash, depth);
     } else {
       return new _Leaf<K, V>.ensureOwner(this, owner, _hash, adjustPairs(), length);
     }
@@ -895,20 +883,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
 
       return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length);
     } else {
-      int newlength = _array.length + 1;
-      List<_ANodeBase<K, V>> newarray =
-          new List<_ANodeBase<K, V>>(newlength);
-      // TODO: find out if there's a "copy array" native function somewhere
-      for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
-      for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      V value;
-      try {
-        value = updateF();
-      } catch(e) {
-        _ThrowUpdateKeyError(key, e);
-      }
-      newarray[index] = new _Leaf<K, V>.abc(owner, hash, _onePair(key, value), 1);
-      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + 1);
+      return _insertWith(owner, _onePair(key, _getUpdateValue(key, updateF)), 1, (x,y) => y, hash, depth);
     }
   }
 

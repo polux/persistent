@@ -7,7 +7,7 @@
 part of persistent;
 
 /**
- * A read-only vector, ordered collection of elements of type [K].
+ * A read-only vector, ordered collection of elements of type [E].
  *
  * There is no default implementation of [ReadVector], since it just
  * specifies the common interface of [PersistentVector] and [TransientVector].
@@ -17,13 +17,12 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
   /**
    * Returns element at given [index].
    *
-   * If the [index] is outside the array, [defVal] is returned instead.
-   * Default [defVal] throws
-   * [RangeError]
+   * If the [index] is outside the array, [notFound] is returned instead.
+   * If [notFound] is not set, [RangeError] is thrown.
    *
    *     var v = new PersistentVector.from(["Hello","world"]);
    *     v.get(0); // returns "Hello"
-   *     v.get(2, ()=>null); // returns null
+   *     v.get(2, null); // returns null
    *     v.get(2); // throws RangeError
    */
   E get(int index, [E notFound]);
@@ -45,7 +44,7 @@ abstract class ReadVector<E> implements Iterable<E>, Persistent {
   /// The last element of `this`
   E get last;
 
-  /// Checks if it contains key [key]
+  /// Checks if it contains key [key].
   bool hasKey(int key);
 }
 
@@ -103,7 +102,7 @@ abstract class PersistentVector<E> implements ReadVector<E> {
    *     var persistent1 = new PersistentVector.from([1]);
    *     var transient = persistent1.asTransient();
    *     transient.doPush(2);
-   *     var persistent2 = new transient.asPersistent();
+   *     var persistent2 = new transient.asPersistent(); // persistent2 is now [1,2]
    */
   TransientVector<E> asTransient();
 
@@ -146,10 +145,10 @@ abstract class PersistentVector<E> implements ReadVector<E> {
 
 
 /**
- * A transient vector, resizable ordered collection of elements of type [K].
+ * A transient vector, resizable ordered collection of elements of type [E].
  *
- * Transient data structure is a mutable structure, that can be effectively
- * converted to the persistent data structure. It is ussualy created from
+ * Transient data structure is a mutable structure, which can be efficiently
+ * converted to the persistent data structure. It is usually created from
  * a persistent structure to apply some changes and obtain a new persistent
  * structure.
  */

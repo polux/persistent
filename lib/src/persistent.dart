@@ -19,7 +19,7 @@ class _Owner {}
  *
  * Works recursively.
  */
-per(from) {
+persistent(from) {
   if(from is Persistent) return from;
   if(from is Map) {
     var map = new PersistentMap();
@@ -36,6 +36,9 @@ per(from) {
   }
 }
 
+/// Alias for [persistent]
+per(from) => persistent(from);
+
 class None{
   const None();
 }
@@ -51,22 +54,22 @@ bool _isNone(val) => val == _none;
  * If the [path] does not exist, [orElse] is called to obtain the
  * return value. Default [orElse] throws exception.
  */
-lookupIn(Persistent structure, List path, {defVal}) =>
-    _lookupIn(structure, path.iterator, defVal: defVal);
+lookupIn(Persistent structure, List path, {notFound}) =>
+    _lookupIn(structure, path.iterator, notFound: notFound);
 
-_lookupIn(dynamic s, Iterator path, {defVal}) {
+_lookupIn(dynamic s, Iterator path, {notFound}) {
   if(!path.moveNext()) return s;
   if(s is PersistentMap) {
-    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
   else if(s is PersistentVector) {
-    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
   else if(s is TransientMap) {
-    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
   else if(s is TransientVector) {
-    return _lookupIn(s.get(path.current, defVal), path, defVal: defVal);
+    return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
   else {
     throw new Exception('This should not happen');
