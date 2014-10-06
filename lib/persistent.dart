@@ -9,6 +9,7 @@ library persistent;
 import 'dart:collection';
 import 'dart:math';
 import 'package:quiver/core.dart';
+import 'package:quiver/iterables.dart' as quiver;
 
 part 'src/persistent.dart';
 part 'src/map.dart';

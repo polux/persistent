@@ -16,7 +16,7 @@ final TransientMap emt = em.asTransient();
 final TransientVector evt = ev.asTransient();
 final TransientSet est = es.asTransient();
 
-_dispach(x, {op:"operation", map, vec, set}) {
+_dispatch(x, {op:"operation", map, vec, set}) {
   if (x is PersistentMap) {
     if (map != null) return map();
   } else if (x is PersistentVector) {
@@ -24,7 +24,7 @@ _dispach(x, {op:"operation", map, vec, set}) {
   } else if (x is PersistentSet) {
     if (set != null) return set();
   }
-  throw new Exception("${x.runtimeType} don't support $op operation");
+  throw new Exception("${x.runtimeType} does not support $op operation");
 }
 
 _undefArg(){}
@@ -33,16 +33,16 @@ _firstP(p) => (p is Pair)? p.fst : p.first;
 _secondP(p) => (p is Pair)? p.snd : p.last;
 
 /**
- * Return new collection with its result of inserting element to persistent
+ * Returns a new collection which is the result of inserting elements to persistent
  * collection([PersistentMap]/[PersistentSet]/[PersistentVector]).
  * Accepts up to 9 positional elements in one call. If you need to insert
  * more elements, call [into] with [List] of elements.
- * When conjing to map as element use [List] of length 2 or [Pair].
+ * When conjing to a map as element use [List] of length 2 or [Pair].
  * Inserting element to [PersistentSet], which is already presented, does nothing.
  * Inserting element to [PersistentMap] with existing key will overwrite that key.
  *
  * Examples:
- *      PersistantMap pm = new PersistantMap();
+ *      PersistentMap pm = new PersistentMap();
  *      conj(pm, new Pair(['a', 6])); // == persist({'a': 6});
  *      conj(pm, ['a', 8], ['b', 10]); // == persist({'a': 8, 'b': 10})
  *
@@ -55,25 +55,25 @@ Persistent conj(Persistent coll, arg0, [arg1 = _undefArg, arg2 = _undefArg, arg3
 }
 
 /**
- * Return new collection which is result of inserting all elements of [iter]
- * to persistant [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Returns a new collection which is the result of inserting all elements of [iter]
+ * to persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
  * Inserting element to [PersistentSet], which is already presented, does nothing.
  * Inserting element to [PersistentMap] with existing key will overwrite that key.
  *
  * Examples:
- *      PersistantVector pv = persist([]);
+ *      PersistentVector pv = persist([]);
  *      insert(pv, [0, 2, 4]); // == persist([0, 2, 4])
  *
- *      PersistantMap pm1 = persist({'a': 10, 'b': 9});
- *      PersistantMap pm2 = persist({'b': 15, 'c': 7});
+ *      PersistentMap pm1 = persist({'a': 10, 'b': 9});
+ *      PersistentMap pm2 = persist({'b': 15, 'c': 7});
  *      insert(pm1, pm2); // persist({'a':10, 'b': 15, 'c': 7})
  *      insert(pm1, [['b', 15], new Pair(c, 7)]); // == persist({'a':10, 'b': 15, 'c': 7});
  *
- *      PersistantSet perSet = new PersistantSet();
+ *      PersistentSet perSet = new PersistentSet();
  *      into(perSet, [1,2,1,3,2]); // == persist(new Set.from([1, 2, 3]))
  */
 Persistent into(Persistent coll, Iterable iter) {
-  return _dispach(coll,
+  return _dispatch(coll,
      op: 'conj',
      map:()=>  (coll as PersistentMap).withTransient((TransientMap t) => iter.forEach((arg) => t.doInsert(_firstP(arg), _secondP(arg)))),
      vec:()=>  (coll as PersistentVector).withTransient((t) => iter.forEach((arg) => t.doPush(arg))),
@@ -81,9 +81,9 @@ Persistent into(Persistent coll, Iterable iter) {
   );
 }
 /**
- * Return new collection which is result of inserting new keys, values
- * into indexed peristant [coll] ([PersistentMap]/[PersistentVector]).
- * Accept up to 9 key, val positional arguments. If you need more arguments use [assocI] with [Iterable].
+ * Returns a new collection which is the result of inserting new keys and values
+ * into indexed peristent [coll] ([PersistentMap]/[PersistentVector]).
+ * Accepts up to 9 key:value positional arguments. If you need more arguments use [assocI] with [Iterable].
  *
  * Example:
  *      PersistentMap pm = persist({});
@@ -119,7 +119,7 @@ Persistent assoc(Persistent coll, key0, val0, [
 }
 
 /**
- * Return new collection which is result of adding all elements of [iter]
+ * Returns a new collection which is the result of adding all elements of [iter]
  * into indexed peristent [coll] ([PersistentMap]/[PersistentVector]).
  * Elements of [iter] should be [Pair] or [List] with 2 arguments.
  *
@@ -131,7 +131,7 @@ Persistent assoc(Persistent coll, key0, val0, [
  *      assoc(pm2, [[0, 7], [2, 8], [0, 10]]); // == persist([10, 2, 8])
  */
 Persistent assocI(Persistent coll, Iterable iter) {
-  return _dispach(coll,
+  return _dispatch(coll,
      op: 'assocI',
      map:()=> into(coll, iter),
      vec:()=> (coll as PersistentVector).withTransient((t) => iter.forEach((arg) => t[_firstP(arg)] = _secondP(arg)))
@@ -139,8 +139,8 @@ Persistent assocI(Persistent coll, Iterable iter) {
 }
 
 /**
- * Return new [PersistentMap] which is result of removing keys from persistant [coll] ([PersistentMap]).
- * Accept up to 9 keys, val positional argumenrs. If you need more argumets use [dissocI] with [Iterable].
+ * Returns a new [PersistentMap] which is the result of removing keys from persistent [coll] ([PersistentMap]).
+ * Accepts up to 9 key:value positional arguments. If you need more arguments use [dissocI] with [Iterable].
  *
  * Example:
  *      PersistentMap p = persist({'a': 10, 'b':15, 'c': 17});
@@ -153,7 +153,7 @@ PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _undefArg, arg2 = _undefA
 }
 
 /**
- * Return new [PersistentMap] which is result of removing all keys in [iter]  from persistant [coll] ([PersistentMap]).
+ * Returns a new [PersistentMap] which is the result of removing all keys in [iter] from persistent [coll] ([PersistentMap]).
  *
  * Example:
  *      PersistentMap p = persist({'a': 10, 'b':15, 'c': 17});
@@ -165,7 +165,7 @@ PersistentMap dissocI(PersistentMap coll, Iterable iter){
 }
 
 /**
- * Return new [PersistentVector] which is result of removing duplicate elements inside [iter].
+ * Returns a new [PersistentVector] which is the result of removing duplicate elements inside [iter].
  *
  * Example:
  *      PersistentVector p = persist([1, 2, 1, 3, 1, 2]);
@@ -184,16 +184,16 @@ PersistentVector distinct(Iterable iter) {
 }
 
 /**
- * Return new empty collection of same type as [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Returns a new empty collection of the same type as [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
  *
  * Example:
- *      PersistantVector pv = persist([1, 2, 3]);
+ *      PersistentVector pv = persist([1, 2, 3]);
  *      empty(pv); // == persist([])
- *      PersistantMap pv = persist({'a': 10, 'b': 11});
+ *      PersistentMap pv = persist({'a': 10, 'b': 11});
  *      empty(pv); // == persist({})
  */
 Persistent empty(Persistent coll) {
-  return _dispach(coll,
+  return _dispatch(coll,
      op: 'empty',
      map:()=> new PersistentMap(),
      vec:()=> new PersistentVector(),
@@ -202,9 +202,9 @@ Persistent empty(Persistent coll) {
 }
 
 /**
- * Returns if persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) contains [key].
- * For [PersistentSet] returns true if [key] is element of [coll].
- * For [PersistentVector] returns true if [key] is correct index to [coll].
+ * Returns true if persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) contains [key].
+ * As for [PersistentSet], true is returned if [key] is element of [coll].
+ * As for [PersistentVector], true is returned if [key] is correct index in [coll].
  *
  * Example:
  *      PersistantVector pv = persist([1, 2, 5, 7]);
@@ -222,7 +222,7 @@ Persistent empty(Persistent coll) {
  *      hasKey(pm, 'c'); // == false
  */
 bool hasKey(Persistent coll, key) {
-  return _dispach(coll,
+  return _dispatch(coll,
     op: 'hasKey',
     map:()=> (coll as PersistentMap).containsKey(key),
     vec:()=> key >= 0 && key < (coll as PersistentVector).length,
@@ -232,12 +232,12 @@ bool hasKey(Persistent coll, key) {
 
 //TODO Juro Specify what exception is thrown
 /**
- * Return element of persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) stored under
- * [key]. [PersistentVector] takes as [key] index. [PersistentSet] takes as [key] element of that set
+ * Returns an element of persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) stored under
+ * [key]. [PersistentVector] takes [key] as index. [PersistentSet] takes [key] as element of that set
  * and returns it.
- * Optional argument [notFound] is returned if [coll] don't have that key.
- * If you don't specify [notFound] and [coll] is missing key then exception [] is thrown.
- * [null] is valid value for [notFound] and will result to behaviour as dart maps.
+ * Optional argument [notFound] is returned if [coll] doesn't have that key.
+ * If you don't specify [notFound] and [key] is missing in [coll], then exception [] is thrown.
+ * [null] is a valid value for [notFound] and results in same behaviour as dart maps.
  *
  * Example:
  *      PersistantMap pm = persist({'a': 10});
@@ -256,7 +256,7 @@ bool hasKey(Persistent coll, key) {
  *      get(ps, 'c', 17); // 17
  */
 dynamic get(Persistent coll, key, [notFound = _undefArg]) {
-  return _dispach(coll,
+  return _dispatch(coll,
      op: 'get',
      map:()=> hasKey(coll, key)? (coll as PersistentMap).lookup(key):
        (notFound != _undefArg)? notFound: throw new Exception("Key $key doesn't exist in $coll"),
