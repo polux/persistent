@@ -27,10 +27,8 @@ _dispatch(x, {op:"operation", map, vec, set}) {
   throw new Exception("${x.runtimeType} does not support $op operation");
 }
 
-_undefArg(){}
-
-_firstP(p) => (p is Pair)? p.fst : p.first;
-_secondP(p) => (p is Pair)? p.snd : p.last;
+_firstP(p) => p.first;
+_secondP(p) => (p is Pair)? p.second : p.last;
 
 /**
  * Returns a new collection which is the result of inserting elements to persistent
@@ -49,8 +47,8 @@ _secondP(p) => (p is Pair)? p.snd : p.last;
  *      PersistentVector pv = persist([1, 2])
  *      conj(pv, 3, 4, 5); // == persist([1, 2, 3, 4, 5])
  */
-Persistent conj(Persistent coll, arg0, [arg1 = _undefArg, arg2 = _undefArg, arg3 = _undefArg, arg4 = _undefArg, arg5 = _undefArg, arg6 = _undefArg, arg7 = _undefArg, arg8 = _undefArg, arg9 = _undefArg]) {
-  var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _undefArg);
+Persistent conj(Persistent coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
+  var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none);
   return into(coll, varArgs);
 }
 
@@ -93,15 +91,15 @@ Persistent into(Persistent coll, Iterable iter) {
  *      assoc(pm, 0, 7, 2, 8, 0, 10); // == persist([10, 2, 8])
  */
 Persistent assoc(Persistent coll, key0, val0, [
-                                  key1 = _undefArg, val1 = _undefArg,
-                                  key2 = _undefArg, val2 = _undefArg,
-                                  key3 = _undefArg, val3 = _undefArg,
-                                  key4 = _undefArg, val4 = _undefArg,
-                                  key5 = _undefArg, val5 = _undefArg,
-                                  key6 = _undefArg, val6 = _undefArg,
-                                  key7 = _undefArg, val7 = _undefArg,
-                                  key8 = _undefArg, val8 = _undefArg,
-                                  key9 = _undefArg, val9 = _undefArg
+                                  key1 = _none, val1 = _none,
+                                  key2 = _none, val2 = _none,
+                                  key3 = _none, val3 = _none,
+                                  key4 = _none, val4 = _none,
+                                  key5 = _none, val5 = _none,
+                                  key6 = _none, val6 = _none,
+                                  key7 = _none, val7 = _none,
+                                  key8 = _none, val8 = _none,
+                                  key9 = _none, val9 = _none
                                  ]) {
   var argsAll = [[key0,val0],
                  [key1,val1],
@@ -113,8 +111,8 @@ Persistent assoc(Persistent coll, key0, val0, [
                  [key7,val7],
                  [key8,val8],
                  [key9,val9]];
-  argsAll.forEach((a) => (a[0] != _undefArg && a[1] ==_undefArg)? throw new ArgumentError("Key is specified but value is not") : null);
-  var varArgs = argsAll.where((x) => x[0]!= _undefArg && x[1] != _undefArg);
+  argsAll.forEach((a) => (a[0] != _none && a[1] ==_none)? throw new ArgumentError("Key is specified but value is not") : null);
+  var varArgs = argsAll.where((x) => x[0]!= _none && x[1] != _none);
   return assocI(coll, varArgs);
 }
 
@@ -147,8 +145,8 @@ Persistent assocI(Persistent coll, Iterable iter) {
  *      dissoc(p, 'c', 'b'); // == persist({'a': 10})
  *      dissoc(p, 'a'); // == persist({'b': 15, 'c': 17})
  */
-PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _undefArg, arg2 = _undefArg, arg3 = _undefArg, arg4 = _undefArg, arg5 = _undefArg, arg6 = _undefArg, arg7 = _undefArg, arg8 = _undefArg, arg9 = _undefArg]) {
-  var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _undefArg);
+PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
+  var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none);
   return dissocI(coll, varArgs);
 }
 
@@ -255,7 +253,7 @@ bool hasKey(Persistent coll, key) {
  *      get(ps, 'c'); // throw ..
  *      get(ps, 'c', 17); // 17
  */
-dynamic get(Persistent coll, key, [notFound = _undefArg]) {
+dynamic get(Persistent coll, key, [notFound = _none]) {
   return (coll as dynamic).get(key, notFound);
 }
 
@@ -277,7 +275,7 @@ dynamic get(Persistent coll, key, [notFound = _undefArg]) {
  *      getIn(pv, [0, 'b']); // throws
  *      getIn(pv, [0, 'b'], 47); // 47
  */
-getIn(Persistent coll, Iterable keys, [notFound = _undefArg]) {
+getIn(Persistent coll, Iterable keys, [notFound = _none]) {
   try {
     return _getIn(coll, keys, notFound);
   } catch (e){
@@ -285,7 +283,7 @@ getIn(Persistent coll, Iterable keys, [notFound = _undefArg]) {
   }
 }
 
-_getIn(Persistent coll, Iterable keys, [notFound = _undefArg]) {
+_getIn(Persistent coll, Iterable keys, [notFound = _none]) {
   if (keys.length == 0) return coll;
   if (keys.length == 1) return get(coll, keys.first, notFound);
   return getIn(get(coll, keys.first, persist({})), keys.skip(1), notFound);
@@ -300,7 +298,7 @@ _getIn(Persistent coll, Iterable keys, [notFound = _undefArg]) {
  *      find(pm, 'b'); // throw
  *      find(pm, 'b', 15); // == new Pair('b', 15)
  */
-Pair find(Persistent coll, key, [notFound = _undefArg]) {
+Pair find(Persistent coll, key, [notFound = _none]) {
   return new Pair(key, get(coll, key, notFound));
 }
 
@@ -547,8 +545,8 @@ cons(dynamic val, dynamic coll) => [[val], seq(coll)].expand((x) => x);
 
 concatI(Iterable<dynamic> a) => a.map((e) => seq(e)).expand((x) => x);
 
-concat(arg0, arg1, [arg2 = _undefArg, arg3 = _undefArg, arg4 = _undefArg, arg5 = _undefArg, arg6 = _undefArg, arg7 = _undefArg, arg8 = _undefArg, arg9 = _undefArg])
-  => concatI([arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _undefArg));
+concat(arg0, arg1, [arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none])
+  => concatI([arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none));
 
 //flatten ?? what to do on maps? sets?
 
@@ -558,8 +556,8 @@ Iterable map(f, Iterable i) => i.map(f);
 
 Iterable mapcatI(f, Iterable<Iterable> ii) => concatI(ii.map((i) => map(f, i)));
 
-mapcat(f, arg0, arg1, [arg2 = _undefArg, arg3 = _undefArg, arg4 = _undefArg, arg5 = _undefArg, arg6 = _undefArg, arg7 = _undefArg, arg8 = _undefArg, arg9 = _undefArg])
-  => mapcatI(f, [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _undefArg));
+mapcat(f, arg0, arg1, [arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none])
+  => mapcatI(f, [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none));
 
 Iterable filter(pred, Iterable coll) => coll.where(pred);
 
@@ -575,10 +573,10 @@ is returned and f is not called.  If val is supplied, returns the
 result of applying f to val and the first item in coll, then
 applying f to that result and the 2nd item, etc. If coll contains no
 items, returns val and f is not called. */
-reduce(f, second, [third = _undefArg]) {
+reduce(f, second, [third = _none]) {
   Iterable seq;
-  var initialVal = _undefArg;
-  if (third == _undefArg) {
+  var initialVal = _none;
+  if (third == _none) {
     seq = second;
   } else {
     seq = third;
@@ -586,7 +584,7 @@ reduce(f, second, [third = _undefArg]) {
   }
   if (seq.isEmpty) return f();
   if (rest(seq).isEmpty) return first(seq);
-  return (initialVal == _undefArg)? rest(seq).fold(first(seq), f) : seq.fold(second, f);
+  return (initialVal == _none)? rest(seq).fold(first(seq), f) : seq.fold(second, f);
 }
 
 //reduce_kv do we want it ???

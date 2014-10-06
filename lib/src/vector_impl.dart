@@ -25,7 +25,7 @@ class _Bool {
 abstract class _PersistentVectorBase<E> extends IterableBase<E> {
   int _size;
 
-  E _get(int index, [E notFound]);
+  E _get(int index, [E notFound = _none]);
 
   E get first => _get(0);
   E get last => _get(this.length > 0 ? this.length - 1 : 0);
@@ -52,12 +52,12 @@ abstract class _BaseVectorImpl<E> extends _PersistentVectorBase<E> {
 
   bool hasKey(int key) => ((key >= 0) && (key < this.length));
 
-  E _get(int index, [E notFound]) {
+  E _get(int index, [E notFound = _none]) {
     try {
       index = _checkIndex(index);
     } catch(e) {
       if (notFound == _none) {
-        _ThrowKeyError(index);
+        throw(e);
       } else {
         return notFound;
       }
@@ -454,7 +454,7 @@ class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TransientVec
   void doPop() {
     _pop();
   }
-  E get(int index, [E notFound]) => _get(index, notFound);
+  E get(int index, [E notFound = _none]) => _get(index, notFound);
   E operator[](int index) => _get(index);
   void doSet(int index, E value) {
     _set(index, value);

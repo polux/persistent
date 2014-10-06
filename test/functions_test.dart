@@ -195,9 +195,8 @@ run() {
       expect(find(s, 'a', 17), equals(new Pair('a', 5)));
     });
 
-    solo_test("- PersistentSet", (){
+    test("- PersistentSet", (){
       PersistentSet s = persist(new Set.from(['a', 'c']));
-      print(find(s,-1));
       expect(() => find(s, -1), throws);
       expect(find(s, -1, 17), equals(new Pair(-1, 17)));
       expect(find(s, 'a'), equals(new Pair('a', 'a')));
