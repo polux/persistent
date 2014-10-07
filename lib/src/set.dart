@@ -14,6 +14,12 @@ part of persistent;
  */
 abstract class ReadSet<E> implements Iterable<E> {
 
+  bool hasKey(E key);
+
+  /**
+   * If it contains given [element], it is returned. Otherwise returns [notFound]
+   */
+  E get(E element, [E notFound]);
 }
 
 /**
@@ -49,12 +55,10 @@ abstract class PersistentSet<E> implements ReadSet<E> {
   /**
    * Returns a set identical to `this` except that it does not contain [element].
    *
-   * If `this` does not contain [element] and [safe]
-   * is not specified, the error is thrown.
-   * If `this` does not contain [element] and [safe]
-   * is `true`, the same set is returned.
+   * If `this` does not contain [element], `this` is returned or Exception is thrown
+   * dependent on what is value of [allowMissing] flag.
    */
-  PersistentSet<E> delete(E element, {bool safe: false});
+  PersistentSet<E> delete(E element, {bool allowMissing: false});
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -66,38 +70,35 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * Returns a new set of all the elements that are included
    * in either `this` or [other]
    */
-  PersistentSet<E> union(PersistentSet<E> persistentSet);
+  PersistentSet<E> union(PersistentSet<E> other);
 
   /// Alias for [union].
-  PersistentSet<E> operator +(PersistentSet<E> persistentSet);
+  PersistentSet<E> operator +(PersistentSet<E> other);
 
   /**
    * Returns a new set of all the elements that are included in `this` but
    * not in [other]
    */
-  PersistentSet<E> difference(PersistentSet<E> persistentSet);
+  PersistentSet<E> difference(PersistentSet<E> other);
 
   /// Alias for [difference].
-  PersistentSet<E> operator -(PersistentSet<E> persistentSet);
+  PersistentSet<E> operator -(PersistentSet<E> other);
 
   /**
    * Returns a lazy iterable with all the pairs `Pair(first, second)`
    * such that `first` is included in `this` and
    * `second` is included in [other]
    */
-  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet other);
 
   /// Alias for [cartesianProduct].
-  Iterable<Pair<E,dynamic>> operator *(PersistentSet persistentSet);
+  Iterable<Pair<E,dynamic>> operator *(PersistentSet other);
 
   /**
    * Returns a new set of all the elements that are included
    * in both `this` and [other]
    */
   PersistentSet<E> intersection(PersistentSet<E> persistentSet);
-
-  /// Randomly picks an element of [this].
-  E pickRandomElement([Random random]);
 
   /// A strict (non-lazy) version of [map].
   PersistentSet strictMap(f(E element));
@@ -111,7 +112,7 @@ abstract class PersistentSet<E> implements ReadSet<E> {
    * Two persistent sets are equal if and only if for each element
    * in any of them exists an equal element in the other one.
    */
-  bool operator==(PersistentSet<E> other);
+  bool operator==(other);
 
   /*
    * The documentation is inherited from the Object
@@ -125,7 +126,7 @@ abstract class PersistentSet<E> implements ReadSet<E> {
  * A transient set, unordered collection of distinct elements of type [E].
  *
  * Transient data structure is a mutable structure, that can be effectively
- * converted to the persistent data structure. It is ussualy created from
+ * converted to the persistent data structure. It is usually created from
  * a persistent structure to apply some changes and obtain a new persistent
  * structure.
  */
@@ -141,12 +142,12 @@ abstract class TransientSet<E> implements ReadSet<E> {
   /**
    * Removes [element] from `this`.
    *
-   * If `this` does not contain [element] and [safe]
-   * is not specified, the error is thrown.
-   * If `this` does not contain [element] and [safe]
+   * If `this` does not contain [element] and [allowMissing]
+   * is not specified or false, the error is thrown.
+   * If `this` does not contain [element] and [allowMissing]
    * is `true`, nothing happens.
    */
-  void doDelete(E element, {bool safe: false});
+  void doDelete(E element, {bool allowMissing: false});
 
   PersistentSet<E> asPersistent();
 }

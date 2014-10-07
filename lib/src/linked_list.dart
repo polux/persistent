@@ -39,7 +39,7 @@ abstract class LinkedList<E> implements Iterable<E> {
    * Two linked lists are equal if and only if they have same lengths,
    * and for each possition, the elements at it are equal.
    */
-  bool operator==(LinkedList<E> other);
+  bool operator==(other);
 
   // Documentation inherited from Object
   int get hashCode;
@@ -139,7 +139,7 @@ class Nil<E> extends _LinkedListBase<E> {
 
   Iterator<E> get iterator => const _NilIterator();
 
-  bool operator==(LinkedList<E> other) => other.isNil;
+  bool operator==(other) => other is LinkedList ? other.isNil : false;
 
   int get hashCode => 0;
 }
@@ -193,7 +193,8 @@ class Cons<E> extends _LinkedListBase<E> {
 
   Iterator<E> get iterator => new _ConsIterator<E>(this);
 
-  bool operator==(LinkedList<E> other){
+  bool operator==(other){
+    if (other is! LinkedList) return false;
     if ( !other.isCons
       || this.hashCode != other.hashCode
       || this.length != other.length

@@ -6,7 +6,7 @@
 
 library set_test;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
@@ -96,7 +96,7 @@ run() {
       set = set.delete("c");
       expect(set, equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
-      set = set.delete("d", safe:true);
+      set = set.delete("d", allowMissing:true);
       expect(set, equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
@@ -136,7 +136,7 @@ run() {
       expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
       set = set.asPersistent().asTransient();
-      set.doDelete("d", safe:true);
+      set.doDelete("d", allowMissing:true);
       expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });

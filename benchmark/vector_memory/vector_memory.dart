@@ -6,7 +6,7 @@
 
 library vector_memory;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'dart:convert';
 
 List template = [];

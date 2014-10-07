@@ -6,7 +6,7 @@
 
 library map_memory;
 
-import 'package:persistent/persistent.dart';
+import 'package:vacuum_persistent/persistent.dart';
 import 'dart:convert';
 
 Map template = {};
@@ -18,7 +18,7 @@ var creators = {
 
   "transient": (){
     var res = new TransientMap();
-    template.forEach((k, v) => res.doInsert(k, v));
+    template.forEach((k, v) => res.doAssoc(k, v));
     return res;
   },
 
