@@ -357,7 +357,7 @@ dynamic updateIn(Persistent coll, Iterable keys, Function f) {
 dynamic _updateIn(Persistent coll, Iterable keys, f) {
   if (keys.length == 0) return f(coll);
   if (keys.length == 1) {
-    return assoc(coll, keys.first, f(get(coll,keys.first)));
+    return assoc(coll, keys.first, hasKey(coll, keys.first)? f(get(coll,keys.first)) : f());
   } else {
     return assoc(coll, keys.first, _updateIn(get(coll, keys.first), keys.skip(1), f));
   }

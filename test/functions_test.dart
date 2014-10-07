@@ -228,6 +228,9 @@ run() {
       expect(updateIn(s, [1, 'a'], (x) => assoc(x, 'b', 6)), eqPer([1, {'a': {'b': 6}}, 3]));
       expect(updateIn(s, [1, 'a', 'b'], inc), eqPer([1, {'a': {'b':5}}, 3]));
       expect(() => updateIn(s, [1, 'a', 'c'], inc), throws);
+
+      maybeInc([x]) => (x == null)? 0 : ++x;
+      expect(updateIn(s, [1, 'a', 'c'], maybeInc), eqPer([1, {'a': {'b':4, 'c': 0}}, 3]));
       expect(() => updateIn(s, [1, 'c', 'c', 'c'], inc), throws);
     });
   });
