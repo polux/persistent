@@ -33,14 +33,14 @@ main() {
 
   print(map1["a"]); // 1
   print(map1.get("b")); // 2
-  print(map1.get("c", orElse: ()=>":(")); // :(
+  print(map1.get("c", ":(")); // :(
 
   print(map1.assoc("c", 3)); // {a: 1, b: 2, c: 3}
   print(map1.assoc("d", 4)); // {a: 1, b: 2, d: 4}
 
-  final map3 = map2.assoc("c", 3, (x,y) => x+y);
+  final map3 = map2.update("c", (x) => x+3);
   print(map3.delete("b")); // {c: 7}
-  print(map3.delete("a", safe: true)); // {b: 3, c: 7}
+  print(map3.delete("a", allowMissing: true)); // {b: 3, c: 7}
 
   print(map1); // {a: 1, b: 2}
   print(map2); // {b: 3, c: 4}
@@ -76,6 +76,6 @@ main() {
   final set1 = new PersistentSet.from(["a", "b"]);
   final set2 = new PersistentSet.from([1, 2, 3]);
   print((set1 * set2).toList());
-  // [Pair(a, 2), Pair(a, 1), Pair(b, 3), Pair(b, 2), Pair(b, 1), Pair(a, 3)]
+  // [Pair(a, 1), Pair(a, 2), Pair(a, 3), Pair(b, 1), Pair(b, 2), Pair(b, 3)]
 
 }
