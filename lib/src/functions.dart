@@ -6,16 +6,6 @@
 
 part of persistent;
 
-//---- Collection Operations ----
-// just for testing purpouse
-final PersistentMap em = new PersistentMap();
-final PersistentVector ev = new PersistentVector();
-final PersistentSet es = new PersistentSet();
-
-final TransientMap emt = em.asTransient();
-final TransientVector evt = ev.asTransient();
-final TransientSet est = es.asTransient();
-
 _dispatch(x, {op:"operation", map, vec, set}) {
   if (x is PersistentMap) {
     if (map != null) return map();
