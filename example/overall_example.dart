@@ -40,7 +40,7 @@ main() {
 
   final map3 = map2.update("c", (x) => x+3);
   print(map3.delete("b")); // {c: 7}
-  print(map3.delete("a", allowMissing: true)); // {b: 3, c: 7}
+  print(map3.delete("a", missingOk: true)); // {b: 3, c: 7}
 
   print(map1); // {a: 1, b: 2}
   print(map2); // {b: 3, c: 4}

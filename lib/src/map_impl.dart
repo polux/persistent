@@ -120,8 +120,8 @@ class _PersistentMapImpl<K, V>
         return new _PersistentMapImpl._new(_root.assoc(null, key, value));
       }
 
-  _PersistentMapImpl<K, V> delete(K key, {bool allowMissing: false}) {
-    return new _PersistentMapImpl._new(_root.delete(null, key, allowMissing));
+  _PersistentMapImpl<K, V> delete(K key, {bool missingOk: false}) {
+    return new _PersistentMapImpl._new(_root.delete(null, key, missingOk));
   }
 
   /**
@@ -230,8 +230,8 @@ class _TransientMapImpl<K, V>
     this.doAssoc(key, value);
   }
 
-  TransientMap<K, V> doDelete(K key, {bool allowMissing: false}) {
-    return _adjustRootAndReturn(_root.delete(owner, key, allowMissing));
+  TransientMap<K, V> doDelete(K key, {bool missingOk: false}) {
+    return _adjustRootAndReturn(_root.delete(owner, key, missingOk));
   }
 
   /**
@@ -295,7 +295,7 @@ abstract class _NodeBase<K, V>
   _NodeBase<K, V>
     assoc(_Owner owner, K key, V value);
 
-  _NodeBase<K, V> delete(_Owner owner, K key, bool allowMissing);
+  _NodeBase<K, V> delete(_Owner owner, K key, bool missingOk);
 
   V get(K key);
 
@@ -328,7 +328,7 @@ abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
       V combine(V x, V y), int hash, int depth);
   _NodeBase<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
-  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing);
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
   _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth);
 
   _ANodeBase<K, V>
@@ -364,8 +364,8 @@ abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
           1, (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
-  _NodeBase<K, V> delete(_Owner owner, K key, bool allowMissing) =>
-      _delete(owner ,key, key.hashCode & 0x3fffffff, 0, allowMissing);
+  _NodeBase<K, V> delete(_Owner owner, K key, bool missingOk) =>
+      _delete(owner ,key, key.hashCode & 0x3fffffff, 0, missingOk);
 
   _NodeBase<K, V> update(_Owner owner, K key, dynamic updateF) =>
       _update(owner, key, updateF, key.hashCode & 0x3fffffff, 0);
@@ -410,8 +410,8 @@ class _EmptyMap<K, V> extends _ANodeBase<K, V> {
     return this;
   }
 
-  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing) =>
-    allowMissing ? this : _ThrowKeyError(key);
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) =>
+      missingOk ? this : _ThrowKeyError(key);
 
   _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) =>
     this.assoc(owner, key, _getUpdateValue(key, updateF));
@@ -559,9 +559,9 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
     return new _Leaf.ensureOwner(this, owner, _hash, builder.build(), newsize);
   }
 
-  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool allowMissing) {
+  _NodeBase<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
     if (hash != _hash) {
-      if(!allowMissing) _ThrowKeyError(key);
+      if(!missingOk) _ThrowKeyError(key);
       return this;
     }
     bool found = false;
@@ -573,7 +573,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
       return true;
     });
 
-    if(!found && !allowMissing) _ThrowKeyError(key);
+    if(!found && !missingOk) _ThrowKeyError(key);
     return newPairs.isNil
         ? new _EmptyMap<K, V>(owner)
         : new _Leaf<K, V>.ensureOwner(this, owner, _hash, newPairs, found ? length - 1 : length);
@@ -815,7 +815,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
     }
   }
 
-  _NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool allowMissing) {
+  _NodeBase<K, V> _delete(owner, K key, int hash, int depth, bool missingOk) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
 
@@ -823,7 +823,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       int index = _popcount(_bitmap & (mask - 1));
       _ANodeBase<K, V> m = _array[index];
       int oldSize = m.length;
-      _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1, allowMissing);
+      _ANodeBase<K, V> newm = m._delete(owner, key, hash, depth + 1, missingOk);
       int delta = newm.length - oldSize;
       if (identical(m, newm)) {
         this._length += delta;
@@ -863,7 +863,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
         return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
       }
     } else {
-      if(!allowMissing) _ThrowKeyError(key);
+      if(!missingOk) _ThrowKeyError(key);
       return this;
     }
   }

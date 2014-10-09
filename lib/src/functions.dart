@@ -160,7 +160,7 @@ PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _none, arg2 = _none, arg3
  *      dissocI(p, ['a']); // == persist({'b': 15, 'c': 17})
  */
 PersistentMap dissocI(PersistentMap coll, Iterable iter){
-  return coll.withTransient((TransientMap t) => iter.forEach((arg) => t.doDelete(arg, allowMissing: true)));
+  return coll.withTransient((TransientMap t) => iter.forEach((arg) => t.doDelete(arg, missingOk: true)));
 }
 
 /**
@@ -468,7 +468,7 @@ Iterable values(PersistentMap map) => map.values;
  *      PersistentSet ps = persist(new Set.from(['a', 'b']));
  *      disj(ps, 'a'); // ==  persist(new Set.from(['b']));
  */
-PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, allowMissing: true);
+PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, missingOk: true);
 
 /**
  * Returns a new [PersistentSet] as union of [s1] and [s2].

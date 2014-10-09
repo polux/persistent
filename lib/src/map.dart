@@ -127,14 +127,14 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, Persistent {
    * Returns a new map identical to `this` except that it doesn't bind [key]
    * anymore.
    *
-   * If [key] is not bound and [allowMissing] is not `true`, an Exception is thrown.
-   * If [key] is not bound and [allowMissing] is specified as `true`,
-   * the same map is returned. [allowMissing] defaults to `false`.
+   * If [key] is not bound and [missingOk] is not `true`, an Exception is thrown.
+   * If [key] is not bound and [missingOk] is specified as `true`,
+   * the same map is returned. [missingOk] defaults to `false`.
    *
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') // throws an Exception
    */
-  PersistentMap<K, V> delete(K key, {bool allowMissing: false});
+  PersistentMap<K, V> delete(K key, {bool missingOk: false});
 
   /**
    * Returns a new map identical to `this` except that the value it possibly
@@ -265,15 +265,15 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
   /**
    * Unbinds [key].
    *
-   * If [key] is not bound and [allowMissing] is `false`, exception is thrown.
-   * If [key] is not bound and [allowMissing] is specified as `true`, nothing happens.
-   * [allowMissing] defaults to `false`.
+   * If [key] is not bound and [missingOk] is `false`, exception is thrown.
+   * If [key] is not bound and [missingOk] is specified as `true`, nothing happens.
+   * [missingOk] defaults to `false`.
    *
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.doDelete('b', 2); // map is now {'a': 1}
-   *     map.doDelete('b', 2, allowMissing: true); // map is still {'a': 1}
+   *     map.doDelete('b', 2, missingOk: true); // map is still {'a': 1}
    */
-  TransientMap<K, V> doDelete(K key, {bool allowMissing: false}) ;
+  TransientMap<K, V> doDelete(K key, {bool missingOk: false}) ;
 
   // TODO: check how this works
   /**

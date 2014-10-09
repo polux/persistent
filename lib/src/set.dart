@@ -56,9 +56,9 @@ abstract class PersistentSet<E> implements ReadSet<E>, Persistent {
    * Returns a set identical to `this` except that it does not contain [element].
    *
    * If `this` does not contain [element], `this` is returned or Exception is thrown
-   * dependent on what is value of [allowMissing] flag.
+   * dependent on what is value of [missingOk] flag.
    */
-  PersistentSet<E> delete(E element, {bool allowMissing: false});
+  PersistentSet<E> delete(E element, {bool missingOk: false});
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -142,12 +142,12 @@ abstract class TransientSet<E> implements ReadSet<E> {
   /**
    * Removes [element] from `this`.
    *
-   * If `this` does not contain [element] and [allowMissing]
+   * If `this` does not contain [element] and [missingOk]
    * is not specified or false, the error is thrown.
-   * If `this` does not contain [element] and [allowMissing]
+   * If `this` does not contain [element] and [missingOk]
    * is `true`, nothing happens.
    */
-  void doDelete(E element, {bool allowMissing: false});
+  void doDelete(E element, {bool missingOk: false});
 
   PersistentSet<E> asPersistent();
 }
