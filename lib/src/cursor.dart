@@ -15,7 +15,7 @@ class Cursor {
 
   Cursor operator[](val) => new Cursor(_ref, conj(_path, val) as PersistentVector);
 
-  deref([notFound = _none]) => getIn(_ref.value, _path, notFound);
+  deref([notFound = _none]) => getIn(_ref.deref(), _path, notFound);
 
-  update(f) => _ref.value = updateIn(_ref.value, _path, f);
+  update(f) => _ref.update((_) => updateIn(_ref.deref(), _path, f));
 }

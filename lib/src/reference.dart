@@ -22,10 +22,15 @@ class Reference<V> {
     return _onChangeSyncController.stream;
   }
 
-  get value => _value;
+  deref() => _value;
 
-  set value(val) {
-     var change = {'oldVal': _value, 'newVal': val};
+  /** Change value of [Reference] accept [f] as [Function] or [f] as value.
+   */
+  update(f) => _setValue(f(deref()));
+
+
+  _setValue(val) {
+     var change = per({'oldVal': _value, 'newVal': val});
      _value = val;
      if (_onChangeSyncController != null) _onChangeSyncController.add(change);
      if (_onChangeController != null) _onChangeController.add(change);

@@ -24,7 +24,7 @@ run() {
   });
 
   test('Create top cursor from reference', () {
-    expect(c.deref(), eqPer(r.value));
+    expect(c.deref(), equals(r.deref()));
   });
 
   test('Create cursor with path from reference', () {
@@ -47,7 +47,7 @@ run() {
     expect(c.deref(), eqPer({'a': {'b' : 10}}));
     expect(c1.deref(), eqPer({'b' : 10}));
 
-    r.value = per({'c': 10, 'a': 15});
+    r.update((_)=> per({'c': 10, 'a': 15}));
     expect(c.deref(), eqPer({'c': 10, 'a': 15}));
     expect(c1.deref(), eqPer(15));
   });
@@ -57,20 +57,20 @@ run() {
     expect(() => c1.deref(), throws);
     expect(c1.deref(null), null);
 
-    r.value = per({'c': {'d': {'e': 15}}});
+    r.update((_) => per({'c': {'d': {'e': 15}}}));
     expect(c1.deref(), per({'e': 15}));
   });
 
   test('Update on cursor work', () {
     var c1 = c['a'];
     c1.update((x) => assoc(x, 'g', 17));
-    expect(r.value, eqPer({'a': {'b' : 10, 'g': 17}}));
+    expect(r.deref(), eqPer({'a': {'b' : 10, 'g': 17}}));
   });
 
   test('Update on invalid cursor work', () {
     var c2 = c['a']['h'];
     c2.update(([x]) => 15);
-    expect(r.value, eqPer({'a': {'b' : 10, 'h': 15}}));
+    expect(r.deref(), eqPer({'a': {'b' : 10, 'h': 15}}));
 
     var c3 = c['a']['j']['k'];
     expect(() => c3.update(([x]) => 15), throws);
