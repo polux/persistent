@@ -9,7 +9,7 @@ part of persistent;
 /**
  * All the persistent structures implements this.
  */
-class Persistent {}
+class PersistentCollection {}
 
 class _Owner {}
 
@@ -20,7 +20,7 @@ class _Owner {}
  * Works recursively.
  */
 persist(from) {
-  if(from is Persistent) return from;
+  if(from is PersistentCollection) return from;
   if(from is Map) {
     var map = new PersistentMap();
     return map.withTransient((TransientMap map) {
@@ -58,7 +58,7 @@ bool _isNone(val) => val == _none;
  * If the [path] does not exist, [orElse] is called to obtain the
  * return value. Default [orElse] throws exception.
  */
-lookupIn(Persistent structure, List path, {notFound}) =>
+lookupIn(PersistentCollection structure, List path, {notFound}) =>
     _lookupIn(structure, path.iterator, notFound: notFound);
 
 _lookupIn(dynamic s, Iterator path, {notFound}) {
@@ -86,10 +86,10 @@ _lookupIn(dynamic s, Iterator path, {notFound}) {
  *
  * This will not create any middleway structures.
  */
-Persistent insertIn(Persistent structure, Iterable path, dynamic value) =>
+PersistentCollection insertIn(PersistentCollection structure, Iterable path, dynamic value) =>
     _insertIn(structure, path.iterator..moveNext(), value);
 
-Persistent _insertIn(s, Iterator path, dynamic value) {
+PersistentCollection _insertIn(s, Iterator path, dynamic value) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {
@@ -141,10 +141,10 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
  * If the [path] does not exist and [safe] is specified as `true`,
  * the same map is returned.
  */
-Persistent deleteIn(Persistent structure, List path, {bool safe: false}) =>
+PersistentCollection deleteIn(PersistentCollection structure, List path, {bool safe: false}) =>
     _deleteIn(structure, path.iterator..moveNext(), safe: safe);
 
-Persistent _deleteIn(s, Iterator path, {bool safe: false}) {
+PersistentCollection _deleteIn(s, Iterator path, {bool safe: false}) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {

@@ -37,7 +37,7 @@ _secondP(p) => (p is Pair)? p.second : p.last;
  *      conj(pm, ['a', 8]); // == persist({'a': 8});
  *      conj(pm, new Pair(['a', 6]), ['b', 10]); // == persist({'a': 6, 'b': 10})
  */
-Persistent conj(Persistent coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
+PersistentCollection conj(PersistentCollection coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
   var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none);
   return into(coll, varArgs);
 }
@@ -60,7 +60,7 @@ Persistent conj(Persistent coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none
  *      PersistentSet perSet = new PersistentSet();
  *      into(perSet, [1,2,1,3,2]); // == persist(new Set.from([1, 2, 3]))
  */
-Persistent into(Persistent coll, Iterable iter) {
+PersistentCollection into(PersistentCollection coll, Iterable iter) {
   return _dispatch(coll,
      op: 'into',
      map:()=>  (coll as PersistentMap).withTransient((TransientMap t) => iter.forEach((arg) => t.doAssoc(_firstP(arg), _secondP(arg)))),
@@ -80,7 +80,7 @@ Persistent into(Persistent coll, Iterable iter) {
  *      PersistentVector p = persist([1, 2, 3]);
  *      assoc(pm, 0, 'a', 2, 'b', 0, 'c'); // == persist(['c', 2, 'b'])
  */
-Persistent assoc(Persistent coll, key0, val0, [
+PersistentCollection assoc(PersistentCollection coll, key0, val0, [
                                   key1 = _none, val1 = _none,
                                   key2 = _none, val2 = _none,
                                   key3 = _none, val3 = _none,
@@ -119,7 +119,7 @@ Persistent assoc(Persistent coll, key0, val0, [
  *      PersistentVector pm2 = persist([1, 2, 3]);
  *      assoc(pm2, [[0, 'a'], [2, 'b'], [0, 'c']]); // == persist(['c', 2, 'b'])
  */
-Persistent assocI(Persistent coll, Iterable iter) {
+PersistentCollection assocI(PersistentCollection coll, Iterable iter) {
   return _dispatch(coll,
      op: 'assocI',
      map:()=> into(coll, iter),
@@ -181,7 +181,7 @@ PersistentVector distinct(Iterable iter) {
  *      PersistentMap pv = persist({'a': 10, 'b': 11});
  *      empty(pv); // == persist({})
  */
-Persistent empty(Persistent coll) {
+PersistentCollection empty(PersistentCollection coll) {
   return _dispatch(coll,
      op: 'empty',
      map:()=> new PersistentMap(),
@@ -210,7 +210,7 @@ Persistent empty(Persistent coll) {
  *      hasKey(pm, 'a'); // == true
  *      hasKey(pm, 'c'); // == false
  */
-bool hasKey(Persistent coll, key) {
+bool hasKey(PersistentCollection coll, key) {
   return _dispatch(coll,
     op: 'hasKey',
     map:()=> (coll as PersistentMap).containsKey(key),
@@ -244,7 +244,7 @@ bool hasKey(Persistent coll, key) {
  *      get(ps, 'c'); // throw ..
  *      get(ps, 'c', 17); // 17
  */
-dynamic get(Persistent coll, key, [notFound = _none]) {
+dynamic get(PersistentCollection coll, key, [notFound = _none]) {
   return (coll as dynamic).get(key, notFound);
 }
 
@@ -266,7 +266,7 @@ dynamic get(Persistent coll, key, [notFound = _none]) {
  *      getIn(pv, [0, 'b']); // throws
  *      getIn(pv, [0, 'b'], 47); // 47
  */
-getIn(Persistent coll, Iterable keys, [notFound = _none]) {
+getIn(PersistentCollection coll, Iterable keys, [notFound = _none]) {
   try {
     return _getIn(coll, keys, notFound);
   } catch (e){
@@ -274,7 +274,7 @@ getIn(Persistent coll, Iterable keys, [notFound = _none]) {
   }
 }
 
-_getIn(Persistent coll, Iterable keys, [notFound = _none]) {
+_getIn(PersistentCollection coll, Iterable keys, [notFound = _none]) {
   if (keys.length == 0) return coll;
   if (keys.length == 1) return get(coll, keys.first, notFound);
   return getIn(get(coll, keys.first, persist({})), keys.skip(1), notFound);
@@ -289,7 +289,7 @@ _getIn(Persistent coll, Iterable keys, [notFound = _none]) {
  *      find(pm, 'b'); // throw
  *      find(pm, 'b', 15); // == new Pair('b', 15)
  */
-Pair find(Persistent coll, key, [notFound = _none]) {
+Pair find(PersistentCollection coll, key, [notFound = _none]) {
   return new Pair(key, get(coll, key, notFound));
 }
 
@@ -305,7 +305,7 @@ Pair find(Persistent coll, key, [notFound = _none]) {
  *      assocIn(pm, ['a', 'c'], 17); // == persist({'a': {'b': 10, 'c': 17});
  *      assocIn(pm, ['a', 'c', 'd'], 17); // throws
  */
-dynamic assocIn(Persistent coll, Iterable keys, val) {
+dynamic assocIn(PersistentCollection coll, Iterable keys, val) {
   try{
     return _assocIn(coll, keys, val);
   } catch (e) {
@@ -313,7 +313,7 @@ dynamic assocIn(Persistent coll, Iterable keys, val) {
   }
 }
 
-dynamic _assocIn(Persistent coll, keys, val) {
+dynamic _assocIn(PersistentCollection coll, keys, val) {
   if (keys.length == 0) return val;
   if (keys.length == 1) {
     return assoc(coll, keys.first, persist(val));
@@ -336,7 +336,7 @@ dynamic _assocIn(Persistent coll, keys, val) {
  *      updateIn(pm, ['a', 'c'], inc) // throws
  *      updateIn(pm, ['a', 'c'], maybeInc) // == persist({'a': {'b': 10, 'c': 0}})
  */
-dynamic updateIn(Persistent coll, Iterable keys, Function f) {
+dynamic updateIn(PersistentCollection coll, Iterable keys, Function f) {
   try{
     return _updateIn(coll, keys, f);
   } catch (e) {
@@ -344,7 +344,7 @@ dynamic updateIn(Persistent coll, Iterable keys, Function f) {
   }
 }
 
-dynamic _updateIn(Persistent coll, Iterable keys, f) {
+dynamic _updateIn(PersistentCollection coll, Iterable keys, f) {
   if (keys.length == 0) return f(coll);
   if (keys.length == 1) {
     return assoc(coll, keys.first, hasKey(coll, keys.first)? f(get(coll,keys.first)) : f());
@@ -405,7 +405,7 @@ PersistentVector subvec(PersistentVector vector, start, [end]) {
  *      PersistentSet ps = persist(new Set.from('a'));
  *      count(ps); // == 1
  */
-num count(Persistent coll) => (coll as Iterable).length;
+num count(PersistentCollection coll) => (coll as Iterable).length;
 
 /**
  *  Returns whether [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) is empty.
@@ -420,7 +420,7 @@ num count(Persistent coll) => (coll as Iterable).length;
  *      PersistentSet ps = persist(new Set.from('a'));
  *      isEmpty(ps); // == false
  */
-bool isEmpty(Persistent coll) => (coll as Iterable).isEmpty;
+bool isEmpty(PersistentCollection coll) => (coll as Iterable).isEmpty;
 
 /**
  * Reverse order of iteration on [coll].
@@ -429,7 +429,7 @@ bool isEmpty(Persistent coll) => (coll as Iterable).isEmpty;
  *      PersistentVector pv = persist([1, 2, 3]);
  *      reverse(pv); // == iterable(1, 2, 3)
  */
-Iterable reverse(Persistent coll) => persist((coll as Iterable).toList().reversed);
+Iterable reverse(PersistentCollection coll) => persist((coll as Iterable).toList().reversed);
 
 /**
  * Get iterable from keys of [map] ([PersistentMap]).

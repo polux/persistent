@@ -12,7 +12,7 @@ part of persistent;
  * There is no default implementation of [ReadVector], since it just
  * specifies the common interface of [PersistentVector] and [TransientVector].
  */
-abstract class ReadVector<E> implements Iterable<E>, Persistent {
+abstract class ReadVector<E> implements Iterable<E>, PersistentCollection {
 
   /**
    * Returns element at given [index].

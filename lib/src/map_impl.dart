@@ -64,7 +64,7 @@ abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
 
 class _PersistentMapImpl<K, V>
         extends _ReadMapImpl<K, V>
-        implements PersistentMap<K, V>, Persistent {
+        implements PersistentMap<K, V>, PersistentCollection {
 
   int _hash;
 
