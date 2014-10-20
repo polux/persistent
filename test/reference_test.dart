@@ -43,5 +43,4 @@ run() {
     expect(r.onChangeSync.first, completion(per({'oldVal': 15, 'newVal': 20})));
     r.update((_) => 20);
   });
-
 }
