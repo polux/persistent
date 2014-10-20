@@ -89,6 +89,20 @@ run() {
       expect(dissoc(s, 'b', 'c'), eqPer({'a': 5}));
       expect(dissoc(s, 'b', 'd'), eqPer({'a': 5, 'c': 7}));
     });
+
+    test("- PersistentSet", (){
+      PersistentSet s = persist(new Set.from(['a', 'b', 'c', 'd']));
+      expect(dissoc(s, 'b', 'c'), eqPer(['a', 'd']));
+      expect(dissoc(s, 'b', 'd'), eqPer(['a', 'c']));
+    });
+
+    test("- PersistentVector", (){
+      PersistentVector s = persist(['a', 5, 'b', 6, 'c', 7]);
+      expect(dissoc(s, 0, 3), eqPer([5, 'b', 'c', 7]));
+      expect(dissoc(s, 3, 0), eqPer([5, 'b', 'c', 7]));
+      expect(dissoc(s, -1), equals(s));
+      expect(dissoc(s, 50), equals(s));
+    });
   });
 
   group("distinc", () {

@@ -128,30 +128,63 @@ PersistentCollection assocI(PersistentIndexedCollection coll, Iterable iter) {
 }
 
 /**
- * Returns a new [PersistentMap] which is the result of removing keys from persistent [coll] ([PersistentMap]).
- * Accepts up to 9 key:value positional arguments. If you need more arguments use [dissocI] with [Iterable].
+ * Returns a new [PersistentCollection] which is the result of removing keys from
+ * persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Accepts up to 9 key:value positional arguments.
+ * If you need more arguments use [dissocI] with [Iterable].
+ *
+ * Removing not existing key do nothing.
  *
  * Example:
  *      PersistentMap p = persist({'a': 10, 'b':15, 'c': 17});
  *      dissoc(p, 'c', 'b'); // == persist({'a': 10})
  *      dissoc(p, 'a'); // == persist({'b': 15, 'c': 17})
+ *
+ *      PersistentSet p = persist(['a', 'b', 'c']);
+ *      dissoc(p, 'c', 'b'); // == persist(['a'])
+ *      dissoc(p, 'a'); // == persist(['b', 'c'])
  */
-PersistentMap dissoc(PersistentMap coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
+PersistentCollection dissoc(PersistentCollection coll, arg0, [arg1 = _none, arg2 = _none, arg3 = _none, arg4 = _none, arg5 = _none, arg6 = _none, arg7 = _none, arg8 = _none, arg9 = _none]) {
   var varArgs = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9].where((x) => x != _none);
   return dissocI(coll, varArgs);
 }
 
 /**
- * Returns a new [PersistentMap] which is the result of removing all keys in [iter] from persistent [coll] ([PersistentMap]).
+ * Returns a new [Persistent] collection which is the result of removing all
+ * keys in [iter] from persistent [coll]
+ * ([PersistentMap]/[PersistentSet]/[PersistentVector]).
  *
  * Example:
  *      PersistentMap p = persist({'a': 10, 'b':15, 'c': 17});
  *      dissocI(p, ['c', 'b']); // == persist({'a': 10})
  *      dissocI(p, ['a']); // == persist({'b': 15, 'c': 17})
+*
+ *      PersistentSet p = persist(['a', 'b', 'c', 'd']);
+ *      dissocI(p, ['a', 'b']); // == persist(['c', 'd'])
+ *
+ *      PersistentVector p = persist(['a', 'b', 'c', 'd']);
+ *      dissocI(p, [0, 2]); // == persist(['b', 'd'])
+ *
  */
-PersistentMap dissocI(PersistentMap coll, Iterable iter){
-  return coll.withTransient((TransientMap t) => iter.forEach((arg) => t.doDelete(arg, missingOk: true)));
+PersistentCollection dissocI(PersistentCollection coll, Iterable iter){
+  return _dispatch(coll,
+     op: 'dissocI',
+     map:()=> (coll as PersistentMap).withTransient((TransientMap t) =>
+         iter.forEach((arg) => t.doDelete(arg, missingOk: true))),
+     vec:()=> _dissocFromVector(coll as PersistentVector, iter),
+     set:()=> (coll as PersistentSet).withTransient((TransientSet t) =>
+         iter.forEach((arg) => t.doDelete(arg, missingOk: true)))
+  );
 }
+
+//TODO implement doDelete from Vector more effective
+PersistentVector _dissocFromVector(PersistentVector pv, Iterable indexes) {
+  var r = [];
+  var indexesSet = indexes.toSet();
+  for(int i =0;i< pv.length;i++) (!indexesSet.contains(i))? r.add(pv[i]) : null;
+  return per(r);
+}
+
 
 /**
  * Returns a new [PersistentVector] which is the result of removing duplicate elements inside [iter].
