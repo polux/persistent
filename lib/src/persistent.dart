@@ -11,6 +11,11 @@ part of persistent;
  */
 class PersistentCollection {}
 
+/**
+ * PersistentCollection that have index access implements this.
+ */
+class PersistentIndexedCollection extends PersistentCollection {}
+
 class _Owner {}
 
 /**
@@ -58,7 +63,7 @@ bool _isNone(val) => val == _none;
  * If the [path] does not exist, [orElse] is called to obtain the
  * return value. Default [orElse] throws exception.
  */
-lookupIn(PersistentCollection structure, List path, {notFound}) =>
+lookupIn(PersistentIndexedCollection structure, List path, {notFound}) =>
     _lookupIn(structure, path.iterator, notFound: notFound);
 
 _lookupIn(dynamic s, Iterator path, {notFound}) {
@@ -86,7 +91,7 @@ _lookupIn(dynamic s, Iterator path, {notFound}) {
  *
  * This will not create any middleway structures.
  */
-PersistentCollection insertIn(PersistentCollection structure, Iterable path, dynamic value) =>
+PersistentCollection insertIn(PersistentIndexedCollection structure, Iterable path, dynamic value) =>
     _insertIn(structure, path.iterator..moveNext(), value);
 
 PersistentCollection _insertIn(s, Iterator path, dynamic value) {
@@ -141,7 +146,7 @@ PersistentCollection _insertIn(s, Iterator path, dynamic value) {
  * If the [path] does not exist and [safe] is specified as `true`,
  * the same map is returned.
  */
-PersistentCollection deleteIn(PersistentCollection structure, List path, {bool safe: false}) =>
+PersistentCollection deleteIn(PersistentIndexedCollection structure, List path, {bool safe: false}) =>
     _deleteIn(structure, path.iterator..moveNext(), safe: safe);
 
 PersistentCollection _deleteIn(s, Iterator path, {bool safe: false}) {

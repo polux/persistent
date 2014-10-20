@@ -70,7 +70,7 @@ PersistentCollection into(PersistentCollection coll, Iterable iter) {
 }
 /**
  * Returns a new collection which is the result of inserting new keys and values
- * into indexed peristent [coll] ([PersistentMap]/[PersistentVector]).
+ * into [PersistentIndexedCollection] [coll] ([PersistentMap]/[PersistentVector]).
  * Accepts up to 9 key:value positional arguments. If you need more arguments use [assocI] with [Iterable].
  *
  * Example:
@@ -80,7 +80,7 @@ PersistentCollection into(PersistentCollection coll, Iterable iter) {
  *      PersistentVector p = persist([1, 2, 3]);
  *      assoc(pm, 0, 'a', 2, 'b', 0, 'c'); // == persist(['c', 2, 'b'])
  */
-PersistentCollection assoc(PersistentCollection coll, key0, val0, [
+PersistentCollection assoc(PersistentIndexedCollection coll, key0, val0, [
                                   key1 = _none, val1 = _none,
                                   key2 = _none, val2 = _none,
                                   key3 = _none, val3 = _none,
@@ -109,7 +109,7 @@ PersistentCollection assoc(PersistentCollection coll, key0, val0, [
 
 /**
  * Returns a new collection which is the result of adding all elements of [iter]
- * into indexed peristent [coll] ([PersistentMap]/[PersistentVector]).
+ * into [PersistentIndexedCollection] [coll] ([PersistentMap]/[PersistentVector]).
  * Elements of [iter] should be [Pair] or [List] with 2 arguments.
  *
  * Example:
@@ -119,7 +119,7 @@ PersistentCollection assoc(PersistentCollection coll, key0, val0, [
  *      PersistentVector pm2 = persist([1, 2, 3]);
  *      assoc(pm2, [[0, 'a'], [2, 'b'], [0, 'c']]); // == persist(['c', 2, 'b'])
  */
-PersistentCollection assocI(PersistentCollection coll, Iterable iter) {
+PersistentCollection assocI(PersistentIndexedCollection coll, Iterable iter) {
   return _dispatch(coll,
      op: 'assocI',
      map:()=> into(coll, iter),
@@ -305,7 +305,7 @@ Pair find(PersistentCollection coll, key, [notFound = _none]) {
  *      assocIn(pm, ['a', 'c'], 17); // == persist({'a': {'b': 10, 'c': 17});
  *      assocIn(pm, ['a', 'c', 'd'], 17); // throws
  */
-dynamic assocIn(PersistentCollection coll, Iterable keys, val) {
+dynamic assocIn(PersistentIndexedCollection coll, Iterable keys, val) {
   try{
     return _assocIn(coll, keys, val);
   } catch (e) {
@@ -313,7 +313,7 @@ dynamic assocIn(PersistentCollection coll, Iterable keys, val) {
   }
 }
 
-dynamic _assocIn(PersistentCollection coll, keys, val) {
+dynamic _assocIn(PersistentIndexedCollection coll, keys, val) {
   if (keys.length == 0) return val;
   if (keys.length == 1) {
     return assoc(coll, keys.first, persist(val));
@@ -336,7 +336,7 @@ dynamic _assocIn(PersistentCollection coll, keys, val) {
  *      updateIn(pm, ['a', 'c'], inc) // throws
  *      updateIn(pm, ['a', 'c'], maybeInc) // == persist({'a': {'b': 10, 'c': 0}})
  */
-dynamic updateIn(PersistentCollection coll, Iterable keys, Function f) {
+dynamic updateIn(PersistentIndexedCollection coll, Iterable keys, Function f) {
   try{
     return _updateIn(coll, keys, f);
   } catch (e) {
@@ -344,7 +344,7 @@ dynamic updateIn(PersistentCollection coll, Iterable keys, Function f) {
   }
 }
 
-dynamic _updateIn(PersistentCollection coll, Iterable keys, f) {
+dynamic _updateIn(PersistentIndexedCollection coll, Iterable keys, f) {
   if (keys.length == 0) return f(coll);
   if (keys.length == 1) {
     return assoc(coll, keys.first, hasKey(coll, keys.first)? f(get(coll,keys.first)) : f());

@@ -75,7 +75,7 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
 
-abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentCollection {
+abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCollection {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
   factory PersistentMap() => new _PersistentMapImpl();

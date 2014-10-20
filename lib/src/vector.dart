@@ -12,7 +12,7 @@ part of persistent;
  * There is no default implementation of [ReadVector], since it just
  * specifies the common interface of [PersistentVector] and [TransientVector].
  */
-abstract class ReadVector<E> implements Iterable<E>, PersistentCollection {
+abstract class ReadVector<E> implements Iterable<E> {
 
   /**
    * Returns element at given [index].
@@ -55,7 +55,7 @@ abstract class ReadVector<E> implements Iterable<E>, PersistentCollection {
  * Persistent data structure is an immutable structure, that provides effective
  * creation of slightly mutated copies.
  */
-abstract class PersistentVector<E> implements ReadVector<E> {
+abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCollection {
 
   /**
    * Returns a new vector identical to `this` except that
