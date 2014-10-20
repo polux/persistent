@@ -587,16 +587,20 @@ Iterable filter(pred, Iterable coll) => coll.where(pred);
 
 Iterable remove(pred, Iterable coll) => filter((x) => !x, coll);
 
-/* TODO do we want it as it's in clojure???
-  [CLOJURE] f should be a function of 2 arguments. If val is not supplied,
-returns the result of applying f to the first 2 items in coll, then
-applying f to that result and the 3rd item, etc. If coll contains no
-items, f must accept no arguments as well, and reduce returns the
-result of calling f with no arguments.  If coll has only 1 item, it
-is returned and f is not called.  If val is supplied, returns the
-result of applying f to val and the first item in coll, then
-applying f to that result and the 2nd item, etc. If coll contains no
-items, returns val and f is not called. */
+//TODO maybe descrive better what it does
+/** reduce(f, collection)
+ * reduce(f, intialValue, collection)
+ *
+ * Reduce take function [f] of up to two arguments collection and optionaly
+ * initial value as second argument. Collection is provided as second argument or
+ * as third argument if initial value is provided
+ *
+ * If called on empty collection f() is returned.
+ * If called on collection with one item this item is returned.
+ * If called with at least two elements
+ *  - and initial value is provided then collection is foleded with initial value.
+ *  - with no initial value rest of collection is folded with first element and f.
+ */
 reduce(f, second, [third = _none]) {
   Iterable seq;
   var initialVal = _none;
@@ -608,7 +612,7 @@ reduce(f, second, [third = _none]) {
   }
   if (seq.isEmpty) return f();
   if (rest(seq).isEmpty) return first(seq);
-  return (initialVal == _none)? rest(seq).fold(first(seq), f) : seq.fold(second, f);
+  return (initialVal == _none)? rest(seq).fold(first(seq), f) : seq.fold(initialVal, f);
 }
 
 //reduce_kv do we want it ???
