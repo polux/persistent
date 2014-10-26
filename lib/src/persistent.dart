@@ -9,7 +9,12 @@ part of persistent;
 /**
  * All the persistent structures implements this.
  */
-class Persistent {}
+class PersistentCollection {}
+
+/**
+ * PersistentCollection that have index access implements this.
+ */
+class PersistentIndexedCollection extends PersistentCollection {}
 
 class _Owner {}
 
@@ -19,16 +24,20 @@ class _Owner {}
  *
  * Works recursively.
  */
-persistent(from) {
-  if(from is Persistent) return from;
+persist(from) {
+  if(from is PersistentCollection) return from;
   if(from is Map) {
     var map = new PersistentMap();
     return map.withTransient((TransientMap map) {
       from.forEach((key,value) => map.doAssoc(per(key), per(value)));
     });
   }
-  else if(from is List) {
-    from = from.map((e) => per(e));
+  else if (from is Set) {
+    from = from.map((e) => persist(e));
+    return new PersistentSet.from(from);
+  }
+  else if(from is Iterable) {
+    from = from.map((e) => persist(e));
     return new PersistentVector.from(from);
   }
   else {
@@ -36,8 +45,8 @@ persistent(from) {
   }
 }
 
-/// Alias for [persistent]
-per(from) => persistent(from);
+/// Alias for [persist]
+per(from) => persist(from);
 
 class None{
   const None();
@@ -54,7 +63,7 @@ bool _isNone(val) => val == _none;
  * If the [path] does not exist, [orElse] is called to obtain the
  * return value. Default [orElse] throws exception.
  */
-lookupIn(Persistent structure, List path, {notFound}) =>
+lookupIn(PersistentIndexedCollection structure, List path, {notFound}) =>
     _lookupIn(structure, path.iterator, notFound: notFound);
 
 _lookupIn(dynamic s, Iterator path, {notFound}) {
@@ -82,10 +91,10 @@ _lookupIn(dynamic s, Iterator path, {notFound}) {
  *
  * This will not create any middleway structures.
  */
-Persistent insertIn(Persistent structure, Iterable path, dynamic value) =>
+PersistentCollection insertIn(PersistentIndexedCollection structure, Iterable path, dynamic value) =>
     _insertIn(structure, path.iterator..moveNext(), value);
 
-Persistent _insertIn(s, Iterator path, dynamic value) {
+PersistentCollection _insertIn(s, Iterator path, dynamic value) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {
@@ -137,10 +146,10 @@ Persistent _insertIn(s, Iterator path, dynamic value) {
  * If the [path] does not exist and [safe] is specified as `true`,
  * the same map is returned.
  */
-Persistent deleteIn(Persistent structure, List path, {bool safe: false}) =>
+PersistentCollection deleteIn(PersistentIndexedCollection structure, List path, {bool safe: false}) =>
     _deleteIn(structure, path.iterator..moveNext(), safe: safe);
 
-Persistent _deleteIn(s, Iterator path, {bool safe: false}) {
+PersistentCollection _deleteIn(s, Iterator path, {bool safe: false}) {
   var current = path.current;
   if(path.moveNext()) { //path continues
     if(s is PersistentMap) {

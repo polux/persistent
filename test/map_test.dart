@@ -50,7 +50,7 @@ run() {
 
       expect(pm.delete('a').toMap(), equals({}));
       expect(() => pm.delete('b'), throws);
-      expect(pm.delete('b', allowMissing: true).toMap(), equals({'a': 'b'}));
+      expect(pm.delete('b', missingOk: true).toMap(), equals({'a': 'b'}));
     });
 
     test('forEachKeyValue', () {
@@ -129,7 +129,7 @@ run() {
 
       expect(tm.doDelete('a').toMap(), equals({'b': 'b'}));
       expect(() => tm.doDelete('c'), throws);
-      expect(tm.doDelete('c', allowMissing: true).toMap(), equals({'b': 'b'}));
+      expect(tm.doDelete('c', missingOk: true).toMap(), equals({'b': 'b'}));
     });
 
     test('forEachKeyValue', () {

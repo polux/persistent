@@ -11,7 +11,7 @@ the old structure, you create the new, independent, (slightly) modified copy of 
 
      var couple = new PersistentMap.fromMap({'father': 'Homer', 'mother': 'Marge'});
      // do not (and can not) modify couple anymore
-     var withChild = couple.insert('boy', 'Bart');
+     var withChild = couple.assoc('boy', 'Bart');
      print(couple); // {mother: Marge, father: Homer}
      print(withChild); // {boy: Bart, mother: Marge, father: Homer}
 
@@ -49,7 +49,7 @@ Fast copying or equality done right are nice features, but this is not the only 
 
 ### Structure sharing 
     var map1 = persist({'a': 'something', 'b': bigMap});
-    var map2 = a.insert('a', 'something completely different');
+    var map2 = a.assoc('a', 'something completely different');
 Suppose you are interested, whether map1['b'] == map2['b']. Thanks to structure sharing, this is O(1) operation, which means it is amazingly fast - no need to traverse through the bigMap. Although it may sound unimportant at the first glance, it is what really enables fast caching of complex functions. Also, this is the reason, why [Om](https://github.com/swannodette/om/) framework is MUCH faster than Facebooks [React](http://facebook.github.io/react/).
 
 ## And what is the prize for this all

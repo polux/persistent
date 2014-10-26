@@ -9,6 +9,8 @@ library persistent;
 import 'dart:collection';
 import 'dart:math';
 import 'package:quiver/core.dart';
+import 'package:quiver/iterables.dart' as quiver;
+import 'dart:async';
 
 part 'src/persistent.dart';
 part 'src/map.dart';
@@ -19,3 +21,6 @@ part 'src/linked_list.dart';
 part 'src/pair.dart';
 part 'src/vector.dart';
 part 'src/vector_impl.dart';
+part 'src/functions.dart';
+part 'src/cursor.dart';
+part 'src/reference.dart';

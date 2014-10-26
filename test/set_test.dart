@@ -96,7 +96,7 @@ run() {
       set = set.delete("c");
       expect(set, equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
-      set = set.delete("d", allowMissing:true);
+      set = set.delete("d", missingOk:true);
       expect(set, equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
@@ -136,7 +136,7 @@ run() {
       expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
       set = set.asPersistent().asTransient();
-      set.doDelete("d", allowMissing:true);
+      set.doDelete("d", missingOk:true);
       expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });

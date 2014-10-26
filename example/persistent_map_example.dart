@@ -14,8 +14,8 @@ main() {
 
   print(m1);  // {a: 1, b: 2}
   print(m2);  // {c: 4, a: 3}
-  print(m1.get('a'));  // Option.some(1)
-  print(m1.get('c'));  // Option.none()
+  print(m1.get('a'));  // 1
+  print(m1.get('c', null));  // null
 
   final m3 = m1.delete('a');
   print(m1);  // {a: 1, b: 2}
@@ -33,7 +33,7 @@ main() {
   for (final pair in m4) {
     print(pair);  // Pair(a, 4), Pair(c, 4), Pair(b, 2)
   }
-
+  print(m4.keys); // (a, c, b)
   print(m4.keys.toList());  // [a, c, b]
   print(m4.values.toList());  // [4, 4, 2]
 }

@@ -68,7 +68,14 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
 
   bool hasKey(E key) => contains(key);
 
-  E get(E element, [E notFound]) => contains(element) ? element : notFound;
+  E get(E element, [E notFound = _none]) =>
+      contains(element) ?
+        element
+      :
+        notFound == _none ?
+          _ThrowKeyError(element)
+        :
+          notFound;
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
@@ -106,8 +113,8 @@ class _PersistentSetImpl<E>
   _PersistentSetImpl<E> insert(E element) =>
       new _PersistentSetImpl._internal(_map.assoc(element, null));
 
-  _PersistentSetImpl<E> delete(E element, {bool allowMissing:false}) =>
-      new _PersistentSetImpl._internal(_map.delete(element, allowMissing:allowMissing));
+  _PersistentSetImpl<E> delete(E element, {bool missingOk:false}) =>
+      new _PersistentSetImpl._internal(_map.delete(element, missingOk:missingOk));
 
   TransientSet asTransient() {
     return new _TransientSetImpl._internal(_map.asTransient());
@@ -163,8 +170,8 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
     _map.doAssoc(element, null);
   }
 
-  void doDelete(E element, {bool allowMissing:false}){
-    _map.doDelete(element, allowMissing:allowMissing);
+  void doDelete(E element, {bool missingOk:false}){
+    _map.doDelete(element, missingOk:missingOk);
   }
 
   PersistentSet asPersistent() {
