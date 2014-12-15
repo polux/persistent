@@ -319,9 +319,7 @@ abstract class _NodeBase<K, V>
 abstract class _ANodeBase<K, V> extends _NodeBase<K, V> {
   _Owner _owner;
 
-  _ANodeBase(this._owner, length, this._isLeaf) : super(length);
-
-  final bool _isLeaf;
+  _ANodeBase(this._owner, length) : super(length);
 
   V _get(K key, int hash, int depth);
   _NodeBase<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int size,
@@ -393,7 +391,7 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _EmptyMap<K, V> extends _ANodeBase<K, V> {
-  _EmptyMap(_Owner owner) : super(owner, 0, false);
+  _EmptyMap(_Owner owner) : super(owner, 0);
 
   V _get(K key, int hash, int depth) => _none;
 
@@ -469,7 +467,7 @@ class _Leaf<K, V> extends _ANodeBase<K, V> {
   int _hash;
   LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf.abc(_Owner owner, this._hash, pairs, int size) : super(owner, size, true) {
+  _Leaf.abc(_Owner owner, this._hash, pairs, int size) : super(owner, size) {
     this._pairs = pairs;
     assert(size == pairs.length);
   }
@@ -734,7 +732,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
   int _bitmap;
   List<_ANodeBase<K, V>> _array;
 
-  _SubMap.abc(_Owner owner, this._bitmap, this._array, int size) : super(owner, size, false);
+  _SubMap.abc(_Owner owner, this._bitmap, this._array, int size) : super(owner, size);
 
   factory _SubMap.ensureOwner(_SubMap old, _Owner owner, bitmap, array, int size) {
     if(_ownerEquals(owner, old._owner)) {
@@ -842,13 +840,13 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
           assert(_array.length == 2);
           assert(index == 0 || index == 1);
           _ANodeBase<K, V> onlyValueLeft = _array[1 - index];
-          return onlyValueLeft._isLeaf
+          return (onlyValueLeft is _Leaf)
               ? onlyValueLeft
               : new _SubMap.ensureOwner(this, owner, _bitmap ^ mask,
                             <_ANodeBase<K, V>>[onlyValueLeft],
                             length + delta);
         }
-      } else if (newm._isLeaf){
+      } else if (newm is _Leaf){
         if (_array.length == 1) {
           return newm;
         } else {
@@ -980,7 +978,7 @@ class _SubMap<K, V> extends _ANodeBase<K, V> {
       return new _SubMap<K, V>.ensureOwner(this, owner, newMask, newarray, newSize);
     } else if (newarray.length == 1) {
       _ANodeBase<K, V> onlyValueLeft = newarray[0];
-      return onlyValueLeft._isLeaf
+      return (onlyValueLeft is _Leaf)
           ? onlyValueLeft
           : new _SubMap<K, V>.ensureOwner(this, owner, newMask, newarray, newSize);
     } else {
