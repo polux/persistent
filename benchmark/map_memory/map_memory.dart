@@ -40,7 +40,7 @@ void run(int template_size, String mode) {
       var a = creators[mode]();
       data[allocated] = a;
       go = true;
-      print(1024000000.0 / allocated / template_size);
+      print(1073741824.0 / allocated / template_size);
     } catch(e) {
       data = null;
     }

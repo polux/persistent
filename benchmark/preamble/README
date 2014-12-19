@@ -1,0 +1,2 @@
+The d8.js is polyfill some of the functionality that browsers provide. For more info:
+http://dart.googlecode.com/svn/branches/1.8/dart/sdk/lib/_internal/compiler/js_lib/preambles/README
