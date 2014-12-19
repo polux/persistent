@@ -1,14 +1,21 @@
 template_size = 1000
 
-all: run
+all: clean run
 
+define RUNNER
+function dartMainRunner(main, args){
+  main(process.argv.slice(2));
+}
+endef
+
+export RUNNER
 
 build/vector_memory.js: vector_memory.dart
 	mkdir -p build
-	dart2js -o build/vector_memory.js vector_memory.dart
-	echo "function dartMainRunner(main, args){" >> build/vector_memory.js
-	echo "  main(process.argv.slice(2));" >> build/vector_memory.js
-	echo "}" >> build/vector_memory.js
+	dart2js -o build/tmp.js vector_memory.dart
+	cat ../preamble/d8.js >> build/vector_memory.js
+	cat build/tmp.js >> build/vector_memory.js
+	echo "$$RUNNER" >> build/vector_memory.js
 
 
 clean:

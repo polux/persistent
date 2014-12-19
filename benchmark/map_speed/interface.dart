@@ -9,8 +9,8 @@ part of map_bench;
 abstract class BenchmarkInterface<K, V>{
 
   void create();
-  void insert(K key, V value, V combine(V left, V right));
-  void lookup(K key);
+  void assoc(K key, V value);
+  void get(K key);
   void delete(K key);
 
   void save();
@@ -31,6 +31,6 @@ abstract class EncapsulatingInterface<K, V, T>
   }
 
   restore(){
-    return object_copy;
+    return object = object_copy;
   }
 }
