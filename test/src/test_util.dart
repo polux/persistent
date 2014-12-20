@@ -105,7 +105,7 @@ class Enumerations {
         .apply(smallints).apply(smallints).apply(smallints)
         .apply(smallints).apply(smallints).apply(smallints)
         .apply(twoBits);
-    keys = en.apply((k, b) => new Key(k, b), smallints, c.bools);
+    keys = en.apply((k, b) => new Key(k, b), smalllists, c.bools);
     values = c.ints + new en.Enumeration.singleton(null);
     maps = c.mapsOf(keys, values);
     elements = en.apply((i, b) => new Element(i, b), c.ints, c.bools);
