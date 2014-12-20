@@ -37,20 +37,12 @@ run: build/map_memory.js
 	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} map > build/temp.out 2>/dev/null
 	@tail -1 build/temp.out
 
-	@echo -n "DartVM json: "
-	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} json > build/temp.out 2>/dev/null
-	@tail -1 build/temp.out
-
 	@echo -n "NodeJS persistent: "
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} persistent > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 
 	@echo -n "NodeJS map: "
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} map > build/temp.out) 2>/dev/null
-	@tail -1 build/temp.out
-
-	@echo -n "NodeJS json: "
-	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} json > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 
 	rm -f build/temp.out

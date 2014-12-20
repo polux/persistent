@@ -7,16 +7,15 @@
 library vector_memory;
 
 import 'package:vacuum_persistent/persistent.dart';
-import 'dart:convert';
 
 List template = [];
-List data = new List.filled(200000, null);
+
+// here we will store the data to prevent it from garbage collection
+List data = [];
 
 var creators = {
 
   "persistent": () => new PersistentVector.from(template),
-
-  "json": () => JSON.encode(template),
 
   "list": () => new List.from(template),
 };
@@ -30,7 +29,7 @@ void run(int template_size, String mode) {
     try{
       go = false;
       var a = creators[mode]();
-      data[allocated] = a;
+      data.add(a);
       go = true;
       print(1073741824.0 / allocated / template_size);
     } catch(e) {
