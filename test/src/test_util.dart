@@ -184,7 +184,7 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   final flags = parser.parse(arguments);
 
   if (flags['help']) {
-    print(parser.getUsage());
+    print(parser.usage);
     return;
   }
 
