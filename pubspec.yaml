@@ -1,5 +1,5 @@
 name: persistent
-version: 0.8.2
+version: 0.8.3
 author: Paul Brauner <polux@google.com>
 description: Efficient persistent data structures for Dart
 homepage: https://github.com/polux/persistent
