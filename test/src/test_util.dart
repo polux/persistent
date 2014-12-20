@@ -105,14 +105,10 @@ class Enumerations {
         .apply(smallints).apply(smallints).apply(smallints)
         .apply(smallints).apply(smallints).apply(smallints)
         .apply(twoBits);
-    keys = en.singleton((k) => (b) => new Key(k, b))
-             .apply(smalllists)
-             .apply(c.bools);
+    keys = en.apply((k, b) => new Key(k, b), smallints, c.bools);
     values = c.ints + new en.Enumeration.singleton(null);
     maps = c.mapsOf(keys, values);
-    elements = en.singleton((i) => (b) => new Element(i, b))
-                 .apply(c.ints)
-                 .apply(c.bools);
+    elements = en.apply((i, b) => new Element(i, b), c.ints, c.bools);
     sets = c.setsOf(elements);
   }
 }
