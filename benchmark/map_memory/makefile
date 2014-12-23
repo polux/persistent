@@ -8,6 +8,18 @@ endef
 
 export RUNNER
 
+define INTRO
+- - - - - - - -
+Using (flat) map of size ${template_size}. Benchmark internally counts number of objects that fit
+into 1GB heap space. Output is in bytes per one key->value storage place. Instances of keys and
+values are shared between multiple copies of the structure we create, therefore their size do not
+affect the result (much). 
+- - - - - - - -
+endef
+
+export INTRO
+
+
 all: clean run
 
 
@@ -24,10 +36,7 @@ clean:
 
 run: build/map_memory.js
 
-	@echo "Using flat map of size ${template_size}."
-	@echo "Keys and values are Strings of length 8. Output is in bytes per one (key, value) pair." 
-	@echo "Benchmark internally counts number of objects that fit into 1GB heap space."
-	@echo "- - - - - - - -"
+	@echo "$$INTRO"
 
 	@echo -n "DartVM persistent: "
 	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} persistent > build/temp.out 2>/dev/null
