@@ -92,38 +92,9 @@ doTest(operationsCnt, print_fn){
             keys.fold(me, (me, k) => me.update(k, fn_adjust)),
         'deepCopy': (PersistentMap me) => me
       },
-      // always transient
-      'transient': {
-        'create': () => new PersistentMap().asTransient(),
-        'bulkInsert': (TransientMap me, Map updateWith) =>
-            updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
-        'bulkDelete': (TransientMap me, List keys) =>
-            keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust)),
-        'deepCopy': (TransientMap me) {
-          TransientMap res = new TransientMap();
-          me.forEachKeyValue((k, v) => res.doAssoc(k, v));
-          return res;
-        }
-      },
-      // uses transient impl for bulk insert, delete atomicaly
-      'persistentWithTransient': {
-        'create': () => new PersistentMap(),
-        'bulkInsert': (PersistentMap me, Map updateWith) =>
-            me.withTransient((TransientMap me) =>
-              updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
-        'bulkDelete': (PersistentMap me, List keys) =>
-            me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true))),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust))),
-        'deepCopy': (PersistentMap me) => me
-      },
   };
 
-  // some helper helper fns for persistentSlashTransient
+  // some helper fns for persistentSlashTransient
   impl_for(map){
     if (map is PersistentMap) return impls['persistent'];
     if (map is TransientMap) return impls['transient'];

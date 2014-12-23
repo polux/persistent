@@ -150,7 +150,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *     {'a': 1}.update('b', (x) => x + 1) // throws
    *     {'a': 2}.update('b', ([x]) => x == null ? 0 : x + 1) == {'a': 2, 'b': 0}
    */
-  PersistentMap<K, V> update(K key, dynamic f);
+//  PersistentMap<K, V> update(K key, dynamic f);
 
   /**
    * Returns a new map identical to `this` where each value has been updated by
@@ -159,7 +159,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a': 2, 'b': 3}
    *     {}.mapValues((x) => x + 1) == {}
    */
-  ReadMap mapValues(f(V value));
+//  ReadMap mapValues(f(V value));
 
   /**
    * Returns a transient copy of `this`.
@@ -202,8 +202,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  PersistentMap<K, V>
-      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+//  PersistentMap<K, V>
+//      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -222,8 +222,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [intersection] is commutative if and only if [combine] is
    * provided and if it is commutative.
    */
-  PersistentMap<K, V>
-      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+//  PersistentMap<K, V>
+//      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /// A strict (non-lazy) version of [map].
   PersistentMap strictMap(Pair f(Pair<K, V> pair));
@@ -289,7 +289,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doUpdate('b', ([x]) => x == null ? 2 : x + 1); // map is now {'a': 1, 'b': 2}
    *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 3}
    */
-  TransientMap<K, V> doUpdate(K key, dynamic f);
+//  TransientMap<K, V> doUpdate(K key, dynamic f);
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.
@@ -297,7 +297,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
    */
-  TransientMap doMapValues(f(V value));
+//  TransientMap doMapValues(f(V value));
 
   /**
    * Returns a persistent copy of `this`.
