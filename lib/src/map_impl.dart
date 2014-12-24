@@ -8,6 +8,11 @@ part of persistent;
 
 final _random = new Random();
 
+const leafSize = 32;
+const binSearchThr = 8;
+//const recsize = 3; //0 - key, 1 - val, 2 - hash
+
+
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
 _ThrowUpdateKeyError(key, exception) => throw new Exception('Key $key was not found, calling update with no arguments threw: $exception');
@@ -17,6 +22,20 @@ _getUpdateValue(key, updateF) {
     return updateF();
   } catch(e) {
     _ThrowUpdateKeyError(key, e);
+  }
+}
+
+abstract class _Zmaz2 <T> extends IterableBase<T>{
+  int bordel;
+  _Zmaz2(){
+    bordel = _random.nextInt(10000);
+  }
+}
+
+abstract class _Zmaz <T> extends _Zmaz2<T>{
+  int bordel;
+  _Zmaz(){
+    bordel = _random.nextInt(10000);
   }
 }
 
@@ -202,7 +221,8 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
   int _length;
   get length => _length;
 
-  _Node(this._owner, this._length);
+  _Node(this._owner, this._length){
+  }
 
   V _get(K key, int hash, int depth);
   _Node<K, V> _insertWith(_Owner owner, keyValues, int kvLength,
@@ -223,7 +243,6 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
     });
     return res;
   }
-
 
   V get(K key) =>
       _get(key, key.hashCode & 0x3fffffff, 0);
@@ -279,7 +298,7 @@ class _EmptyMap<K, V> extends _Node<K, V> {
   _Node<K, V> _insertWith(_Owner owner,
       keyValues, int kvLength, V combine(V x, V y), int hash,
       int depth) {
-    return new _Leaf<K, V>.abc(owner, hash, keyValues, kvLength);
+    return new _Leaf<K, V>.abc(owner, keyValues, kvLength);
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) =>
@@ -306,27 +325,34 @@ class _EmptyMap<K, V> extends _Node<K, V> {
 }
 
 class _Leaf<K, V> extends _Node<K, V> {
-  int _hash;
   List _kv;
 
-  get iterator => throw new Exception('not implemented');
-
-  _Leaf.abc(_Owner owner, this._hash, this._kv, int kvLength) : super(owner, kvLength) {
+  get iterator {
+    List<Pair<K, V>> pairs = [];
+    for (int i=0; i<_kv.length; i++){
+      if (i%2==0) {
+        pairs.add(new Pair(_kv[i], _kv[i+1]));
+      }
+    }
+    return pairs.iterator;
   }
 
-  factory _Leaf.ensureOwner(_Leaf old, _Owner owner, hash, kv, int length) {
+  _Leaf.abc(_Owner owner, this._kv, int kvLength) : super(owner, kvLength) {
+  }
+
+  factory _Leaf.ensureOwner(_Leaf old, _Owner owner, kv, int length) {
     if(_ownerEquals(owner, old._owner)) {
       old._kv = kv;
-      old._hash = hash;
       old._length = length;
       return old;
     }
-    return new _Leaf.abc(owner, hash, kv, length);
+    return new _Leaf.abc(owner, kv, length);
   }
 
   _Node<K, V> polish(_Owner owner, int depth, List _kv) {
-    if (_kv.length < 32 || depth > 5) {
-      return new _Leaf.abc(owner, _hash, _kv, _kv.length);
+    assert(_kv.length % 2 == 0);
+    if (_kv.length < 2*leafSize || depth > 5) {
+      return new _Leaf.abc(owner, _kv, _kv.length ~/ 2);
     } else {
       List<List> kvs = new List.generate(32, (_) => []);
       for (int i=0; i<_kv.length; i++){
@@ -343,46 +369,78 @@ class _Leaf<K, V> extends _Node<K, V> {
       for (int i=0; i<32; i++){
         if (!kvs[i].isEmpty) {
           bitmap |= 1<<i;
-          array.add(new _Leaf.abc(owner, _hash, kvs[i], kvs[i].length));
+          assert(kvs[i].length%2 == 0);
+          array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length~/2));
         }
       }
-      return new _SubMap.abc(owner, bitmap, array, length);
+      return new _SubMap.abc(owner, bitmap, array, _kv.length~/2);
     }
+  }
+
+  _insertLinear(List into, key, val, int from, int to){
+    if (to < from) {
+      into.add(key);
+      into.add(val);
+      return;
+    }
+    for (int i=from; i<=to; i+=2) {
+      assert(i%2 == 0);
+      if (key.hashCode > into[i].hashCode) {
+        continue;
+      }
+      if (key.hashCode == into[i].hashCode && key == into[i]) {
+        into[i+1] = val;
+        return;
+      }
+      if (key.hashCode < into[i].hashCode) {
+        into.insert(i, val);
+        into.insert(i, key);
+        return;
+      }
+    }
+    into.add(key);
+    into.add(val);
+  }
+
+
+  _insert(List into, key, val){
+    int from = 0;
+    int to = into.length - 2;
+    while(from - to > binSearchThr){
+      int mid = (from + to) ~/ 2;
+      if (into[mid].hashCode > key.hashCode){
+        to = mid;
+      } else if (into[mid].hashCode < key.hashCode){
+        from = mid;
+      } else {
+        break;
+      }
+    }
+    _insertLinear(into, key, val, from, to);
   }
 
   _Node<K, V> _insertWith(_Owner owner, List kv, int kvLength,
       V combine(V x, V y), int hash, int depth) {
+    assert(kv.length == 2);
     List nkv = new List.from(_kv);
     for (int i=0; i<kv.length; i++){
-      if (i%2 == 0) {
-        for (int j=0; j<nkv.length; j++){
-          if (j%2 == 0) {
-            if (kv[i] == nkv[j]) {
-              nkv.removeAt(j);
-              nkv.removeAt(j);
-              break;
-            }
-          }
-        }
-        nkv.add(kv[i]);
-        nkv.add(kv[i+1]);
+      if(i%2 == 0) {
+        _insert(nkv, kv[i], kv[i+1]);
       }
     }
+
     return polish(owner, depth, nkv);
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
-    if (hash != _hash) {
-      if(!missingOk) _ThrowKeyError(key);
-      return this;
-    }
     bool found = false;
     List nkv = new List.from(_kv);
-    for (int i=0; i<_kv.length; i++){
-      if (i%2 == 0 && this._kv[i] == key){
+    for (int i=0; i<nkv.length; i++){
+      if (i%2 == 0 && nkv[i] == key){
         nkv.removeAt(i);
         nkv.removeAt(i);
         found = true;
+        break;
       }
     }
 
@@ -390,7 +448,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     if(!found && missingOk) return this;
     return nkv.isEmpty?
           new _EmptyMap<K, V>(owner)
-        : new _Leaf<K, V>.ensureOwner(this, owner, _hash, nkv, length - 1);
+        : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/2);
   }
 
   V _get(K key, int hash, int depth) {
@@ -410,14 +468,42 @@ class _Leaf<K, V> extends _Node<K, V> {
     }
   }
 
-  toDebugString() => "_Leaf($_hash, $_kv)";
+  toDebugString() => "_Leaf($_kv)";
 }
+
+class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
+  List<_Node<K, V>> _array;
+  int _index = 0;
+  // invariant: _currentIterator != null => _currentIterator.current != null
+  Iterator<Pair<K, V>> _currentIterator = null;
+
+  _SubMapIterator(this._array);
+
+  Pair<K, V> get current =>
+      (_currentIterator != null) ? _currentIterator.current : null;
+
+  bool moveNext() {
+    while (_index < _array.length) {
+      if (_currentIterator == null) {
+        _currentIterator = _array[_index].iterator;
+      }
+      if (_currentIterator.moveNext()) {
+        return true;
+      } else {
+        _currentIterator = null;
+        _index++;
+      }
+    }
+    return false;
+  }
+}
+
 
 class _SubMap<K, V> extends _Node<K, V> {
   int _bitmap;
   List<_Node<K, V>> _array;
 
-  get iterator => throw new Exception('not implemented');
+  Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);
 
   _SubMap.abc(_Owner owner, this._bitmap, this._array, int length) : super(owner, length);
 
@@ -478,7 +564,7 @@ class _SubMap<K, V> extends _Node<K, V> {
       // TODO: find out if there's a "copy array" native function somewhere
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      newarray[index] = new _Leaf<K, V>.abc(owner, hash, keyValues, kvLength);
+      newarray[index] = new _Leaf<K, V>.abc(owner, keyValues, kvLength);
       return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + kvLength);
     }
   }

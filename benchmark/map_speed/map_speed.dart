@@ -14,25 +14,30 @@ part 'interface.dart';
 part 'interface_impl.dart';
 
 var interfaces = {
-  //"LinkedList": () => new LinkedListInterface(),
   "PersistentMap": () => new PersistentMapInterface(),
   "TransientMap": () => new TransientMapInterface(),
-  "StandartMap": () => new StandardMapInterface(),
-  //"CopyMap": () => new CopyMapInterface(),
+  "Map": () => new StandardMapInterface(),
 };
 
+var sizes = [2,10,10000];
+
 void main() {
-
-  for (int n in [1,10,100,1000,10000]) {
+  for (int n in sizes) {
+    double unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
     for (String name in interfaces.keys){
-      new ReadBenchmark(n, interfaces[name](), name).report();
+      double res = new ReadBenchmark(n, interfaces[name](), name).measure();
+      print('Reading ${name} size $n: ${res/unit} ${res} us');
     }
+    print('');
   }
-
-  for (int n in [1,10,100,1000,10000]) {
+  print('');
+  for (int n in sizes) {
+    double unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();
     for (String name in interfaces.keys){
-      new WriteBenchmark(n, interfaces[name](), name).report();
+      double res = new WriteBenchmark(n, interfaces[name](), name).measure();
+      print('Writing ${name} size $n: ${res/unit} ${res} us');
     }
+    print('');
   }
 
 }

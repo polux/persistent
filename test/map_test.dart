@@ -46,16 +46,16 @@ run() {
       expect(pm.delete('b', missingOk: true).toMap(), equals({'a': 'b'}));
     });
 
-    test('forEachKeyValue', () {
-      PersistentMap pm = new PersistentMap();
-      pm = pm.assoc('a', 'b');
-      pm = pm.assoc('c', 'b');
-
-      String res = '';
-      pm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
-
-      expect(res, equals('ab,cb,'));
-    });
+//    test('forEachKeyValue', () {
+//      PersistentMap pm = new PersistentMap();
+//      pm = pm.assoc('a', 'b');
+//      pm = pm.assoc('c', 'b');
+//
+//      String res = '';
+//      pm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
+//
+//      expect(res, equals('ab,cb,'));
+//    });
   });
 
   group('random', (){
@@ -74,7 +74,14 @@ run() {
         m[key] = val;
       }
       print("round: $i, size: ${pm.length}");
-      expect(pm, equals(new PersistentMap.fromMap(m)));
+      if (pm != new PersistentMap.fromMap(m)){
+        print(m.length);
+        print((new PersistentMap.fromMap(m)).length);
+        print(pm.length);
+        print(pm);
+        print(m);
+        expect(false, isTrue);
+      }
     }
   });
 

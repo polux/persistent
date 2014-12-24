@@ -7,6 +7,7 @@
 library map_memory;
 
 import 'package:vacuum_persistent/persistent.dart';
+import 'dart:collection';
 
 Map template = {};
 
@@ -24,6 +25,7 @@ var creators = {
   },
 
   "map": () => new Map.from(template),
+  "hashmap": () => new HashMap.from(template)
 };
 
 void run(int template_size, String mode) {
