@@ -19,20 +19,25 @@ var interfaces = {
   "Map": () => new StandardMapInterface(),
 };
 
-var sizes = [2,10,10000];
+//var sizes = [2,10,10000];
+var sizes = [10000];
 
 void main() {
+//  for (int n in sizes) {
+//    double unit;
+//    unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
+//    unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
+//    for (String name in interfaces.keys){
+//      double res = new ReadBenchmark(n, interfaces[name](), name).measure();
+//      print('Reading ${name} size $n: ${res/unit} ${res} us');
+//    }
+//    print('');
+//  }
+//  print('');
   for (int n in sizes) {
-    double unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
-    for (String name in interfaces.keys){
-      double res = new ReadBenchmark(n, interfaces[name](), name).measure();
-      print('Reading ${name} size $n: ${res/unit} ${res} us');
-    }
-    print('');
-  }
-  print('');
-  for (int n in sizes) {
-    double unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();
+    double unit;
+    unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();
+    unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();
     for (String name in interfaces.keys){
       double res = new WriteBenchmark(n, interfaces[name](), name).measure();
       print('Writing ${name} size $n: ${res/unit} ${res} us');

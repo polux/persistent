@@ -8,9 +8,9 @@ part of persistent;
 
 final _random = new Random();
 
-const leafSize = 32;
-const binSearchThr = 8;
-//const recsize = 3; //0 - key, 1 - val, 2 - hash
+const leafSize = 64;
+const binSearchThr = 16;
+const recsize = 3; //0 - key, 1 - val, 2 - hash
 
 
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
@@ -22,20 +22,6 @@ _getUpdateValue(key, updateF) {
     return updateF();
   } catch(e) {
     _ThrowUpdateKeyError(key, e);
-  }
-}
-
-abstract class _Zmaz2 <T> extends IterableBase<T>{
-  int bordel;
-  _Zmaz2(){
-    bordel = _random.nextInt(10000);
-  }
-}
-
-abstract class _Zmaz <T> extends _Zmaz2<T>{
-  int bordel;
-  _Zmaz(){
-    bordel = _random.nextInt(10000);
   }
 }
 
@@ -248,7 +234,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
       _get(key, key.hashCode & 0x3fffffff, 0);
 
   _Node<K, V> assoc(_Owner owner, K key, V value) =>
-      _insertWith(owner, [key, value],
+      _insertWith(owner, [key, value, key.hashCode],
           1, (V x, V y) => y,
           key.hashCode & 0x3fffffff, 0);
 
@@ -329,10 +315,8 @@ class _Leaf<K, V> extends _Node<K, V> {
 
   get iterator {
     List<Pair<K, V>> pairs = [];
-    for (int i=0; i<_kv.length; i++){
-      if (i%2==0) {
-        pairs.add(new Pair(_kv[i], _kv[i+1]));
-      }
+    for (int i=0; i<_kv.length; i+=recsize){
+      pairs.add(new Pair(_kv[i], _kv[i+1]));
     }
     return pairs.iterator;
   }
@@ -350,110 +334,116 @@ class _Leaf<K, V> extends _Node<K, V> {
   }
 
   _Node<K, V> polish(_Owner owner, int depth, List _kv) {
-    assert(_kv.length % 2 == 0);
-    if (_kv.length < 2*leafSize || depth > 5) {
-      return new _Leaf.abc(owner, _kv, _kv.length ~/ 2);
+    assert(_kv.length % recsize == 0);
+    if (_kv.length < recsize*leafSize) {
+      return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
     } else {
-      List<List> kvs = new List.generate(32, (_) => []);
-      for (int i=0; i<_kv.length; i++){
-        if (i%2 == 0) {
-          var key = _kv[i];
-          var val = _kv[i+1];
-          int branch = (key.hashCode >> (depth * 5)) & 0x1f;
-          kvs[branch].add(key);
-          kvs[branch].add(val);
+      List<List> kvs = new List.filled(32, null);
+      for (int i=0; i<_kv.length; i+=recsize){
+//        var key = _kv[i];
+//        var val = _kv[i + 1];
+//        var hash = _kv[i + 2];
+        int branch = (_kv[i+2] >> (depth * 5)) & 0x1f;
+        if (kvs[branch] == null){
+          kvs[branch] = [];
         }
+        int l = kvs[branch].length;
+        kvs[branch].length = l+recsize;
+        kvs[branch].setRange(l, l+recsize, _kv, i);
+//        kvs[branch].add(key);
+//        kvs[branch].add(val);
+//        kvs[branch].add(hash);
       }
       List <_Node<K, V>> array = [];
       int bitmap=0;
       for (int i=0; i<32; i++){
-        if (!kvs[i].isEmpty) {
+          if (kvs[i] != null) {
           bitmap |= 1<<i;
-          assert(kvs[i].length%2 == 0);
-          array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length~/2));
+          assert(kvs[i].length % recsize == 0);
+          array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
         }
       }
-      return new _SubMap.abc(owner, bitmap, array, _kv.length~/2);
+      return new _SubMap.abc(owner, bitmap, array, _kv.length ~/ recsize);
     }
   }
 
-  _insertLinear(List into, key, val, int from, int to){
-    if (to < from) {
-      into.add(key);
-      into.add(val);
-      return;
-    }
-    for (int i=from; i<=to; i+=2) {
-      assert(i%2 == 0);
-      if (key.hashCode > into[i].hashCode) {
-        continue;
-      }
-      if (key.hashCode == into[i].hashCode && key == into[i]) {
-        into[i+1] = val;
-        return;
-      }
-      if (key.hashCode < into[i].hashCode) {
-        into.insert(i, val);
-        into.insert(i, key);
-        return;
-      }
-    }
-    into.add(key);
-    into.add(val);
-  }
-
-
-  _insert(List into, key, val){
+  _insert(List into, kv){
+    assert(into.length % recsize == 0);
+    var key = kv[0];
+    var val = kv[1];
+    var hash = kv[2];
     int from = 0;
-    int to = into.length - 2;
+    int to = into.length - recsize;
     while(from - to > binSearchThr){
       int mid = (from + to) ~/ 2;
-      if (into[mid].hashCode > key.hashCode){
+      if (into[mid + 2] > hash){
         to = mid;
-      } else if (into[mid].hashCode < key.hashCode){
+      } else if (into[mid + 2] < hash){
         from = mid;
       } else {
         break;
       }
     }
-    _insertLinear(into, key, val, from, to);
+
+    if (to < from) {
+      into.addAll(kv);
+      return;
+    }
+    for (int i=from; i<=to; i+=recsize) {
+      assert(i%recsize == 0);
+      if (hash <= into[i+2]) {
+        if (hash == into[i+2] && key == into[i]) {
+          into[i+1] = val;
+          return;
+        }
+        if (hash < into[i+2]) {
+          into.insertAll(i, kv);
+          return;
+        }
+      }
+    }
+    into.addAll(kv);
+    assert(into.length % recsize == 0);
   }
 
   _Node<K, V> _insertWith(_Owner owner, List kv, int kvLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kv.length == 2);
+    assert(kv.length == recsize);
     List nkv = new List.from(_kv);
-    for (int i=0; i<kv.length; i++){
-      if(i%2 == 0) {
-        _insert(nkv, kv[i], kv[i+1]);
-      }
+    for (int i=0; i<kv.length; i+=recsize){
+      _insert(nkv, kv);
     }
 
-    return polish(owner, depth, nkv);
+//    var a = polish(owner, depth, nkv);
+//    return a;
+    var a = polish(owner, depth, new List.from(nkv));
+    var b = polish(owner, depth, new List.from(nkv));
+    return _random.nextBool()?a:b;
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
     bool found = false;
     List nkv = new List.from(_kv);
-    for (int i=0; i<nkv.length; i++){
-      if (i%2 == 0 && nkv[i] == key){
-        nkv.removeAt(i);
-        nkv.removeAt(i);
+    hash = key.hashCode;
+    for (int i=0; i<nkv.length; i+=recsize){
+      if (nkv[i+2] == hash && nkv[i] == key){
+        nkv.removeRange(i, i+3);
         found = true;
         break;
       }
     }
+    assert(nkv.length % recsize == 0);
 
     if(!found && !missingOk) _ThrowKeyError(key);
     if(!found && missingOk) return this;
     return nkv.isEmpty?
           new _EmptyMap<K, V>(owner)
-        : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/2);
+        : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/ recsize);
   }
 
   V _get(K key, int hash, int depth) {
-    for(int i=0; i<_kv.length; i++){
-      if (i%2 == 0 && _kv[i] == key) {
+    for(int i=0; i<_kv.length; i+=recsize){
+      if (_kv[i] == key) {
         return _kv[i+1];
       }
     }
@@ -461,10 +451,8 @@ class _Leaf<K, V> extends _Node<K, V> {
   }
 
   void forEachKeyValue(f(K, V)) {
-    for (int i=0; i<_kv.length; i++) {
-      if (i%2 == 0) {
-        f(_kv[i], _kv[i+1]);
-      }
+    for (int i=0; i<_kv.length; i+=recsize) {
+      f(_kv[i], _kv[i+1]);
     }
   }
 

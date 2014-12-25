@@ -54,7 +54,7 @@ run: build/map_memory.js
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} map > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 
-	@echo -n "NodeJS map: "
+	@echo -n "NodeJS hashmap: "
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} hashmap > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 

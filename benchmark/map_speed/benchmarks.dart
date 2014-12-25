@@ -25,14 +25,10 @@ class WriteBenchmark extends BenchmarkBase{
     for (int i = 0; i < size; i++) {
       object.assoc("key$i", "foo");
       object.assoc("key$i", "bar");
+      object.assoc("key$i", "baz");
+      object.assoc("key$i", "woo");
     }
 
-    object.save();
-    for (int i = 0; i < size; i++) {
-      object.delete("key$i");
-    }
-
-    object.restore();
     for (int i = 0; i < size; i++) {
       object.delete("key$i");
     }

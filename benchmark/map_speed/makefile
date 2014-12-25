@@ -16,9 +16,9 @@ run: build/map_speed.js
 	@echo "Performing several insert, lookup and delete operations on flat maps."
 	@echo "The number of operations depends on the map size."
 
-	@echo "--------"
-	@echo "DartVM:"
-	@dart map_speed.dart
+#	@echo "--------"
+#	@echo "DartVM:"
+#	@dart map_speed.dart
 
 	@echo "--------"
 	@echo "NodeJS:"
