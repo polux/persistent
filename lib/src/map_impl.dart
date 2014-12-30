@@ -8,7 +8,17 @@ part of persistent;
 
 final _random = new Random();
 
-const leafSize = 64;
+
+//const branching = 16;
+//const branchingBits = 4;
+//const branchingMask = 0xf;
+
+const branching = 32;
+const branchingBits = 5;
+const branchingMask = 0x1f;
+
+const leafSize = branching * 3;
+
 const binSearchThr = 16;
 const recsize = 3; //0 - key, 1 - val, 2 - hash
 
@@ -338,12 +348,12 @@ class _Leaf<K, V> extends _Node<K, V> {
     if (_kv.length < recsize*leafSize) {
       return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
     } else {
-      List<List> kvs = new List.filled(32, null);
+      List<List> kvs = new List.filled(branching, null);
       for (int i=0; i<_kv.length; i+=recsize){
 //        var key = _kv[i];
 //        var val = _kv[i + 1];
 //        var hash = _kv[i + 2];
-        int branch = (_kv[i+2] >> (depth * 5)) & 0x1f;
+        int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
         if (kvs[branch] == null){
           kvs[branch] = [];
         }
@@ -356,7 +366,7 @@ class _Leaf<K, V> extends _Node<K, V> {
       }
       List <_Node<K, V>> array = [];
       int bitmap=0;
-      for (int i=0; i<32; i++){
+      for (int i=0; i<branching; i++){
           if (kvs[i] != null) {
           bitmap |= 1<<i;
           assert(kvs[i].length % recsize == 0);
@@ -374,7 +384,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     var hash = kv[2];
     int from = 0;
     int to = into.length - recsize;
-    while(from - to > binSearchThr){
+    while(from - to > recsize * binSearchThr){
       int mid = (from + to) ~/ 2;
       if (into[mid + 2] > hash){
         to = mid;
@@ -414,11 +424,13 @@ class _Leaf<K, V> extends _Node<K, V> {
       _insert(nkv, kv);
     }
 
-//    var a = polish(owner, depth, nkv);
-//    return a;
-    var a = polish(owner, depth, new List.from(nkv));
-    var b = polish(owner, depth, new List.from(nkv));
-    return _random.nextBool()?a:b;
+
+    var a = polish(owner, depth, nkv);
+    return a;
+      // to meassure how long does polish take
+//    var a = polish(owner, depth, new List.from(nkv));
+//    var b = polish(owner, depth, new List.from(nkv));
+//    return _random.nextBool()?a:b;
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
@@ -514,7 +526,7 @@ class _SubMap<K, V> extends _Node<K, V> {
   }
 
   V _get(K key, int hash, int depth) {
-    int branch = (hash >> (depth * 5)) & 0x1f;
+    int branch = (hash >> (depth * branchingBits)) & branchingMask;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
@@ -528,7 +540,7 @@ class _SubMap<K, V> extends _Node<K, V> {
   _Node<K, V> _insertWith(_Owner owner, List keyValues, int kvLength,
       V combine(V x, V y), int hash, int depth) {
 
-    int branch = (hash >> (depth * 5)) & 0x1f;
+    int branch = (hash >> (depth * branchingBits)) & branchingMask;
     int mask = 1 << branch;
     int index = _popcount(_bitmap & (mask - 1));
 
@@ -559,7 +571,7 @@ class _SubMap<K, V> extends _Node<K, V> {
 
 
   _Node<K, V> _delete(owner, K key, int hash, int depth, bool missingOk) {
-    int branch = (hash >> (depth * 5)) & 0x1f;
+    int branch = (hash >> (depth * branchingBits)) & branchingMask;
     int mask = 1 << branch;
 
     if ((_bitmap & mask) != 0) {
