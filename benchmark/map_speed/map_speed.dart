@@ -23,17 +23,16 @@ var interfaces = {
 var sizes = [10000];
 
 void main() {
-//  for (int n in sizes) {
-//    double unit;
-//    unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
-//    unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
-//    for (String name in interfaces.keys){
-//      double res = new ReadBenchmark(n, interfaces[name](), name).measure();
-//      print('Reading ${name} size $n: ${res/unit} ${res} us');
-//    }
-//    print('');
-//  }
-//  print('');
+  for (int n in sizes) {
+    double unit;
+    unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
+    for (String name in interfaces.keys){
+      double res = new ReadBenchmark(n, interfaces[name](), name).measure();
+      print('Reading ${name} size $n: ${res/unit} ${res} us');
+    }
+    print('');
+  }
+  print('');
   for (int n in sizes) {
     double unit;
     unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();

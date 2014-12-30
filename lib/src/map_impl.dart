@@ -348,15 +348,12 @@ class _Leaf<K, V> extends _Node<K, V> {
     if (_kv.length < recsize*leafSize) {
       return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
     } else {
-      List<List> kvs = new List.filled(branching, null);
+      List<List> kvs = new List.generate(branching, (_) => []);
       for (int i=0; i<_kv.length; i+=recsize){
 //        var key = _kv[i];
 //        var val = _kv[i + 1];
 //        var hash = _kv[i + 2];
         int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
-        if (kvs[branch] == null){
-          kvs[branch] = [];
-        }
         int l = kvs[branch].length;
         kvs[branch].length = l+recsize;
         kvs[branch].setRange(l, l+recsize, _kv, i);
@@ -370,7 +367,10 @@ class _Leaf<K, V> extends _Node<K, V> {
           if (kvs[i] != null) {
           bitmap |= 1<<i;
           assert(kvs[i].length % recsize == 0);
-          array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
+          array.add(kvs[i].isEmpty ?
+                      new _EmptyMap(owner):
+                      new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
+
         }
       }
       return new _SubMap.abc(owner, bitmap, array, _kv.length ~/ recsize);
@@ -446,11 +446,19 @@ class _Leaf<K, V> extends _Node<K, V> {
     }
     assert(nkv.length % recsize == 0);
 
-    if(!found && !missingOk) _ThrowKeyError(key);
-    if(!found && missingOk) return this;
-    return nkv.isEmpty?
-          new _EmptyMap<K, V>(owner)
-        : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/ recsize);
+    if(!found){
+      if (missingOk) {
+        return this;
+      } else {
+        _ThrowKeyError(key);
+        // won't get here, just to make Darteditor happy
+        return this;
+      }
+    } else {
+      return nkv.isEmpty?
+            new _EmptyMap<K, V>(owner)
+          : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/ recsize);
+    }
   }
 
   V _get(K key, int hash, int depth) {
@@ -516,112 +524,48 @@ class _SubMap<K, V> extends _Node<K, V> {
     return new _SubMap.abc(owner , bitmap, array, length);
   }
 
-  static _popcount(int n) {
-    n = n - ((n >> 1) & 0x55555555);
-    n = (n & 0x33333333) + ((n >> 2) & 0x33333333);
-    n = (n + (n >> 4)) & 0x0F0F0F0F;
-    n = n + (n >> 8);
-    n = n + (n >> 16);
-    return n & 0x0000003F;
-  }
-
   V _get(K key, int hash, int depth) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
-    int mask = 1 << branch;
-    if ((_bitmap & mask) != 0) {
-      int index = _popcount(_bitmap & (mask - 1));
-      _Node<K, V> map = _array[index];
-      return map._get(key, hash, depth + 1);
-    } else {
-      return _none;
-    }
+    _Node<K, V> map = _array[branch];
+    return map._get(key, hash, depth + 1);
   }
 
   _Node<K, V> _insertWith(_Owner owner, List keyValues, int kvLength,
       V combine(V x, V y), int hash, int depth) {
-
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
-    int mask = 1 << branch;
-    int index = _popcount(_bitmap & (mask - 1));
-
-    if ((_bitmap & mask) != 0) {
-      _Node<K, V> m = _array[index];
-      int oldSize = m.length;
-      _Node<K, V> newM =
-                m._insertWith(owner, keyValues, kvLength, combine, hash, depth + 1);
-      if(identical(m, newM)) {
-        if(oldSize != m.length) this._length += m.length - oldSize;
-        return this;
-      }
-      List<_Node<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
-      newarray[index] = newM;
-      int delta = newM.length - oldSize;
-      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap, newarray, length + delta);
-    } else {
-      int newlength = _array.length + 1;
-      List<_Node<K, V>> newarray =
-          new List<_Node<K, V>>(newlength);
-      // TODO: find out if there's a "copy array" native function somewhere
-      for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
-      for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      newarray[index] = new _Leaf<K, V>.abc(owner, keyValues, kvLength);
-      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + kvLength);
+    _Node<K, V> m = _array[branch];
+    int oldSize = m.length;
+    _Node<K, V> newM = m._insertWith(owner, keyValues, kvLength, combine,
+        hash, depth + 1);
+    if(identical(m, newM)) {
+      if(oldSize != m.length) this._length += m.length - oldSize;
+      return this;
     }
+    List<_Node<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
+    newarray[branch] = newM;
+    int delta = newM.length - oldSize;
+    return new _SubMap<K, V>.ensureOwner(this, owner, null, newarray, length + delta);
   }
 
 
   _Node<K, V> _delete(owner, K key, int hash, int depth, bool missingOk) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
-    int mask = 1 << branch;
-
-    if ((_bitmap & mask) != 0) {
-      int index = _popcount(_bitmap & (mask - 1));
-      _Node<K, V> m = _array[index];
-      int oldSize = m.length;
-      _Node<K, V> newm = m._delete(owner, key, hash, depth + 1, missingOk);
-      int delta = newm.length - oldSize;
-      if (identical(m, newm)) {
-        this._length += delta;
-        return this;
-      }
-      if (newm is _EmptyMap) {
-        if (_array.length > 2) {
-          int newsize = _array.length - 1;
-          List<_Node<K, V>> newarray =
-              new List<_Node<K, V>>(newsize);
-          for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
-          for (int i = index; i < newsize; i++) { newarray[i] = _array[i + 1]; }
-          assert(newarray.length >= 2);
-          return new _SubMap.ensureOwner(this, owner, _bitmap ^ mask, newarray, length + delta);
-        } else {
-          assert(_array.length == 2);
-          assert(index == 0 || index == 1);
-          _Node<K, V> onlyValueLeft = _array[1 - index];
-          return (onlyValueLeft is _Leaf)
-              ? onlyValueLeft
-              : new _SubMap.ensureOwner(this, owner, _bitmap ^ mask,
-                            <_Node<K, V>>[onlyValueLeft],
-                            length + delta);
-        }
-      } else if (newm is _Leaf){
-        if (_array.length == 1) {
-          return newm;
-        } else {
-          List<_Node<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
-          newarray[index] = newm;
-          return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
-        }
-      } else {
-        List<_Node<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
-        newarray[index] = newm;
-
-        return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, length + delta);
-      }
-    } else {
-      if(!missingOk) _ThrowKeyError(key);
+    _Node<K, V> m = _array[branch];
+    int oldSize = m.length;
+    _Node<K, V> newm = m._delete(owner, key, hash, depth + 1, missingOk);
+    int newLength = this.length + newm.length - oldSize;
+    if (identical(m, newm)) {
+      this._length = newLength;
       return this;
     }
+    if (this._length == 0) {
+        return new _EmptyMap(owner);
+    }
+    List<_Node<K, V>> newarray = new List<_Node<K, V>>.from(_array);
+    newarray[branch] = newm;
+    return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, newLength);
   }
+
 
   forEachKeyValue(f(K, V)) {
     _array.forEach((mi) => mi.forEachKeyValue(f));
