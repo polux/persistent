@@ -19,14 +19,23 @@ class WriteBenchmark extends BenchmarkBase{
       object.create();
 
       for (int i = 0; i < size; i++) {
+        var key = "key$i";
+//        var key = persist({"key$i": "val$i"});
+//        object.assoc(key, "foo");
+//        object.assoc(key, "bar");
+//        object.assoc(key, "baz");
+//        object.assoc(key, "woo");
         object.assoc("key$i", "foo");
         object.assoc("key$i", "bar");
         object.assoc("key$i", "baz");
         object.assoc("key$i", "woo");
+
       }
 
       for (int i = 0; i < size; i++) {
-        object.delete("key$i");
+        var key = "key$i";
+//        var key = persist({"key$i": "val$i"});
+        object.delete(key);
       }
     }
   }
