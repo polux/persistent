@@ -19,11 +19,13 @@ var interfaces = {
   "Map": () => new StandardMapInterface(),
 };
 
-//var sizes = [2,10,10000];
-var sizes = [10000];
+//var wSizes = [[1,2,3,4,5,6], [1000, 2000, 3000, 5000, 8000, 13000]];
+//var rSizes = [2, 10000];
+var wSizes = [[1000, 2000, 3000, 5000, 8000, 13000]];
+var rSizes = [10000];
 
 void main() {
-  for (int n in sizes) {
+  for (int n in rSizes) {
     double unit;
     unit = new ReadBenchmark(n, interfaces["Map"](), '').measure();
     for (String name in interfaces.keys){
@@ -33,7 +35,7 @@ void main() {
     print('');
   }
   print('');
-  for (int n in sizes) {
+  for (List n in wSizes) {
     double unit;
     unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();
     unit = new WriteBenchmark(n, interfaces["Map"](), '').measure();

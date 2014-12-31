@@ -105,11 +105,11 @@ class _PersistentMapImpl<K, V>
   }
 
   _PersistentMapImpl() {
-    this._root = new _EmptyMap<K, V>(null);
+    _root = new _Leaf.empty(null);
   }
 
   _PersistentMapImpl.fromMap(Map<K, V> map) {
-    _root = new _EmptyMap<K, V>(null);
+    _root = new _Leaf.empty(null);
     _Owner owner = new _Owner();
     map.forEach((K key, V value) {
       _root = _root.assoc(owner, key, value);
@@ -117,7 +117,7 @@ class _PersistentMapImpl<K, V>
   }
 
   _PersistentMapImpl.fromPairs(Iterable<Pair<K, V>> pairs) {
-    _root = new _EmptyMap<K, V>(null);
+    _root = new _Leaf.empty(null);
     _Owner owner = new _Owner();
     pairs.forEach((pair) {
       _root = _root.assoc(owner, pair.first, pair.second);
@@ -286,40 +286,6 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
   bool moveNext() => false;
 }
 
-class _EmptyMap<K, V> extends _Node<K, V> {
-  _EmptyMap(_Owner owner) : super(owner, 0);
-
-  V _get(K key, int hash, int depth) => _none;
-
-  _Node<K, V> _insertWith(_Owner owner,
-      keyValues, int kvLength, V combine(V x, V y), int hash,
-      int depth) {
-    return new _Leaf<K, V>.abc(owner, keyValues, kvLength);
-  }
-
-  _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) =>
-      missingOk ? this : _ThrowKeyError(key);
-
-  _Node<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) =>
-    this.assoc(owner, key, _getUpdateValue(key, updateF));
-
-  void forEachKeyValue(f(K, V)) {}
-
-  bool operator ==(other) => other is _Node ? other is _EmptyMap : false;
-
-  Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
-
-  Pair<K, V> _elementAt(int index) {
-    throw new RangeError.value(index);
-  }
-
-  Pair<K, V> get last {
-    throw new StateError("Empty map has no entries");
-  }
-
-  toDebugString() => "_EmptyMap()";
-}
-
 class _Leaf<K, V> extends _Node<K, V> {
   List _kv;
 
@@ -331,7 +297,10 @@ class _Leaf<K, V> extends _Node<K, V> {
     return pairs.iterator;
   }
 
-  _Leaf.abc(_Owner owner, this._kv, int kvLength) : super(owner, kvLength) {
+  _Leaf.abc(_Owner owner, this._kv, int kvLength) : super(owner, kvLength);
+
+  _Leaf.empty(_Owner owner): super(owner, 0) {
+    this._kv = [];
   }
 
   factory _Leaf.ensureOwner(_Leaf old, _Owner owner, kv, int length) {
@@ -362,18 +331,11 @@ class _Leaf<K, V> extends _Node<K, V> {
 //        kvs[branch].add(hash);
       }
       List <_Node<K, V>> array = [];
-      int bitmap=0;
       for (int i=0; i<branching; i++){
-          if (kvs[i] != null) {
-          bitmap |= 1<<i;
-          assert(kvs[i].length % recsize == 0);
-          array.add(kvs[i].isEmpty ?
-                      new _EmptyMap(owner):
-                      new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
-
-        }
+        assert(kvs[i].length % recsize == 0);
+        array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
       }
-      return new _SubMap.abc(owner, bitmap, array, _kv.length ~/ recsize);
+      return new _SubMap.abc(owner, array, _kv.length ~/ recsize);
     }
   }
 
@@ -418,8 +380,9 @@ class _Leaf<K, V> extends _Node<K, V> {
 
   _Node<K, V> _insertWith(_Owner owner, List kv, int kvLength,
       V combine(V x, V y), int hash, int depth) {
+    // temporarily allow inserting of only one record
     assert(kv.length == recsize);
-    List nkv = new List.from(_kv);
+    List nkv = _makeCopyIfNeeded(owner, this._owner, _kv);
     for (int i=0; i<kv.length; i+=recsize){
       _insert(nkv, kv);
     }
@@ -455,9 +418,7 @@ class _Leaf<K, V> extends _Node<K, V> {
         return this;
       }
     } else {
-      return nkv.isEmpty?
-            new _EmptyMap<K, V>(owner)
-          : new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/ recsize);
+        return new _Leaf<K, V>.ensureOwner(this, owner, nkv, nkv.length ~/ recsize);
     }
   }
 
@@ -508,20 +469,18 @@ class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
 
 
 class _SubMap<K, V> extends _Node<K, V> {
-  int _bitmap;
   List<_Node<K, V>> _array;
 
   Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);
 
-  _SubMap.abc(_Owner owner, this._bitmap, this._array, int length) : super(owner, length);
+  _SubMap.abc(_Owner owner, this._array, int length) : super(owner, length);
 
-  factory _SubMap.ensureOwner(_SubMap old, _Owner owner, bitmap, array, int length) {
+  factory _SubMap.ensureOwner(_SubMap old, _Owner owner, array, int length) {
     if(_ownerEquals(owner, old._owner)) {
-      old._bitmap = bitmap;
       old._array = array;
       old._length = length;
     }
-    return new _SubMap.abc(owner , bitmap, array, length);
+    return new _SubMap.abc(owner, array, length);
   }
 
   V _get(K key, int hash, int depth) {
@@ -544,26 +503,27 @@ class _SubMap<K, V> extends _Node<K, V> {
     List<_Node<K, V>> newarray = _makeCopyIfNeeded(owner, this._owner, _array);
     newarray[branch] = newM;
     int delta = newM.length - oldSize;
-    return new _SubMap<K, V>.ensureOwner(this, owner, null, newarray, length + delta);
+    return new _SubMap<K, V>.ensureOwner(this, owner, newarray, length + delta);
   }
-
 
   _Node<K, V> _delete(owner, K key, int hash, int depth, bool missingOk) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
-    _Node<K, V> m = _array[branch];
-    int oldSize = m.length;
-    _Node<K, V> newm = m._delete(owner, key, hash, depth + 1, missingOk);
-    int newLength = this.length + newm.length - oldSize;
-    if (identical(m, newm)) {
+    _Node<K, V> child = _array[branch];
+    int childLength = child.length;
+    // need to remember child length as this may modify
+    // the child (if working with transient)
+    _Node<K, V> newChild = child._delete(owner, key, hash, depth + 1, missingOk);
+    int newLength = this.length + (newChild.length - childLength);
+    if (identical(child, newChild)) {
       this._length = newLength;
       return this;
     }
     if (this._length == 0) {
-        return new _EmptyMap(owner);
+        return new _Leaf.empty(owner);
     }
     List<_Node<K, V>> newarray = new List<_Node<K, V>>.from(_array);
-    newarray[branch] = newm;
-    return new _SubMap.ensureOwner(this, owner, _bitmap, newarray, newLength);
+    newarray[branch] = newChild;
+    return new _SubMap.ensureOwner(this, owner, newarray, newLength);
   }
 
 
@@ -578,6 +538,8 @@ _ownerEquals(_Owner a, _Owner b) {
   return a != null && a == b;
 }
 
+/// usually, we need to copy some arrays when associng. However, when working
+/// with transients (and owners match), it is safe just to modify the array
 _makeCopyIfNeeded(_Owner a, _Owner b, List c) {
   if(_ownerEquals(a, b))
     return c;

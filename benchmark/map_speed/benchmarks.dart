@@ -8,29 +8,26 @@ part of map_bench;
 
 class WriteBenchmark extends BenchmarkBase{
 
-  final int size;
+  final List<int> sizes;
   final BenchmarkInterface object;
 
 
-  WriteBenchmark(size, object, name):
-    size = size,
-    object = object,
-    super("Writing $name($size)");
-
+  WriteBenchmark(this.sizes, this.object, name):super('Writing');
 
   void run(){
+    for (int size in sizes) {
+      object.create();
 
-    object.create();
+      for (int i = 0; i < size; i++) {
+        object.assoc("key$i", "foo");
+        object.assoc("key$i", "bar");
+        object.assoc("key$i", "baz");
+        object.assoc("key$i", "woo");
+      }
 
-    for (int i = 0; i < size; i++) {
-      object.assoc("key$i", "foo");
-      object.assoc("key$i", "bar");
-      object.assoc("key$i", "baz");
-      object.assoc("key$i", "woo");
-    }
-
-    for (int i = 0; i < size; i++) {
-      object.delete("key$i");
+      for (int i = 0; i < size; i++) {
+        object.delete("key$i");
+      }
     }
   }
 }
