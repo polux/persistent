@@ -9,7 +9,9 @@ part of map_bench;
 class PersistentMapInterface<K, V>
   extends EncapsulatingInterface<K, V, PersistentMap<K, V>>{
 
-  create() => object = new PersistentMap<K, V>();
+  PersistentMapInterface(){
+    this.object = new PersistentMap<K, V>();
+  }
 
   assoc(K key, V value) =>
     object = object.assoc(key, value);
@@ -25,7 +27,9 @@ class PersistentMapInterface<K, V>
 class TransientMapInterface<K, V>
   extends EncapsulatingInterface<K, V, TransientMap<K, V>>{
 
-  create() => object = new PersistentMap<K, V>().asTransient();
+  TransientMapInterface(){
+    this.object = new PersistentMap<K, V>().asTransient();
+  }
 
   assoc(K key, V value) =>
     object.doAssoc(key, value);
@@ -45,7 +49,9 @@ class TransientMapInterface<K, V>
 class StandardMapInterface<K, V>
   extends EncapsulatingInterface<K, V, Map<K, V>>{
 
-  create() => object = new Map<K, V>();
+  StandardMapInterface(){
+    object = new Map<K, V>();
+  }
 
   assoc(K key, V value) =>
     object[key] = value;

@@ -8,34 +8,30 @@ part of map_bench;
 
 class WriteBenchmark extends BenchmarkBase{
 
-  final List<int> sizes;
-  final BenchmarkInterface object;
+  final Map<num, num> sample;
+  BenchmarkInterface object;
+  final dynamic factory;
 
+  void setup(){
+    object = factory();
+  }
 
-  WriteBenchmark(this.sizes, this.object, name):super('Writing');
+  WriteBenchmark(this.sample, this.factory):super('Writing');
 
   void run(){
-    for (int size in sizes) {
-      object.create();
-
-      for (int i = 0; i < size; i++) {
-        var key = "key$i";
-//        var key = persist({"key$i": "val$i"});
-//        object.assoc(key, "foo");
-//        object.assoc(key, "bar");
-//        object.assoc(key, "baz");
-//        object.assoc(key, "woo");
-        object.assoc("key$i", "foo");
-        object.assoc("key$i", "bar");
-        object.assoc("key$i", "baz");
-        object.assoc("key$i", "woo");
-
-      }
-
-      for (int i = 0; i < size; i++) {
-        var key = "key$i";
-//        var key = persist({"key$i": "val$i"});
-        object.delete(key);
+    for (var size in this.sample.keys) {
+      for (var j=0; j<this.sample[size]; j++){
+        for (int i = 0; i < size; i++) {
+          var key = "key$i";
+          object.assoc("key$i", "foo");
+          object.assoc("key$i", "bar");
+          object.assoc("key$i", "baz");
+          object.assoc("key$i", "woo");
+        }
+        for (int i = 0; i < size; i++) {
+          var key = "key$i";
+          object.delete(key);
+        }
       }
     }
   }
@@ -44,32 +40,33 @@ class WriteBenchmark extends BenchmarkBase{
 
 class ReadBenchmark extends BenchmarkBase{
 
-  final int size;
-  final BenchmarkInterface object;
+  final Map<num, num> sample;
+  Map<num, BenchmarkInterface> objects = new Map();
+  final dynamic factory;
 
-
-  ReadBenchmark(size, object, name):
-    size = size,
-    object = object,
-    super("Reading $name($size)");
+  ReadBenchmark(this.sample, this.factory):super('Reading');
 
   void setup(){
-
-    object.create();
-
-    for (int i = 0; i < size; i++) {
-      object.assoc("key$i", "foo");
-    }
+    this.sample.forEach((size, count){
+      BenchmarkInterface object = factory();
+      objects[size] = object;
+      for (int i = 0; i < size; i++) {
+        object.assoc("key$i", "foo");
+      }
+    });
   }
 
   void run(){
-
-    for (int i = size * 2; i >= 0; i--) {
-      object.get("key$i");
-    }
-
-    for (int i = 0; i <= size * 2; i++) {
-      object.get("key$i");
+    for (var size in this.sample.keys) {
+      BenchmarkInterface object = objects[size];
+      for (var j=0; j<this.sample[size]; j++){
+        for (int i = size; i >= 0; i--) {
+          object.get("key$i");
+        }
+        for (int i = 0; i <= size; i++) {
+          object.get("key$i");
+        }
+      }
     }
   }
 }
