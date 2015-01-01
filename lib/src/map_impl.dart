@@ -330,11 +330,8 @@ class _Leaf<K, V> extends _Node<K, V> {
 //        kvs[branch].add(val);
 //        kvs[branch].add(hash);
       }
-      List <_Node<K, V>> array = [];
-      for (int i=0; i<branching; i++){
-        assert(kvs[i].length % recsize == 0);
-        array.add(new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
-      }
+      List <_Node<K, V>> array = new List.generate(branching,
+          (i) => new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
       return new _SubMap.abc(owner, array, _kv.length ~/ recsize);
     }
   }
