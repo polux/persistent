@@ -3,6 +3,10 @@ all: clean run
 
 build/vector_speed.js: vector_speed.dart
 	mkdir -p build
+	dart2js -o build/tmp.js vector_speed.dart
+	cat ../preamble/d8.js >> build/vector_speed.js
+	cat build/tmp.js >> build/vector_speed.js
+
 	dart2js -o build/vector_speed.js vector_speed.dart
 
 

@@ -1,14 +1,22 @@
 template_size = 1000
 
-all: run
+define RUNNER
+function dartMainRunner(main, args){
+  main(process.argv.slice(2));
+}
+endef
+
+export RUNNER
+
+all: clean run
 
 
 build/map_memory.js: map_memory.dart
 	mkdir -p build
-	dart2js -o build/map_memory.js map_memory.dart
-	echo "function dartMainRunner(main, args){" >> build/map_memory.js
-	echo "  main(process.argv.slice(2));" >> build/map_memory.js
-	echo "}" >> build/map_memory.js
+	dart2js -o build/tmp.js map_memory.dart
+	cat ../preamble/d8.js >> build/map_memory.js
+	cat build/tmp.js >> build/map_memory.js
+	echo "$$RUNNER" >> build/map_memory.js
 
 clean:
 	rm -rf build

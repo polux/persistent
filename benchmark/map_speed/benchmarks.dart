@@ -23,17 +23,17 @@ class WriteBenchmark extends BenchmarkBase{
     object.create();
 
     for (int i = 0; i < size; i++) {
-      object.insert("key$i", "foo", (String x, String y) => x + y);
-      object.insert("key$i", "bar", (String x, String y) => x + y);
+      object.assoc("key$i", "foo");
+      object.assoc("key$i", "bar");
     }
 
     object.save();
-    for (int i = size * 2; i >= 0; i--) {
+    for (int i = 0; i < size; i++) {
       object.delete("key$i");
     }
 
     object.restore();
-    for (int i = 0; i < size * 2; i++) {
+    for (int i = 0; i < size; i++) {
       object.delete("key$i");
     }
   }
@@ -56,18 +56,18 @@ class ReadBenchmark extends BenchmarkBase{
     object.create();
 
     for (int i = 0; i < size; i++) {
-      object.insert("key$i", "foo", (String x, String y) => x + y);
+      object.assoc("key$i", "foo");
     }
   }
 
   void run(){
 
     for (int i = size * 2; i >= 0; i--) {
-      object.lookup("key$i");
+      object.get("key$i");
     }
 
     for (int i = 0; i <= size * 2; i++) {
-      object.lookup("key$i");
+      object.get("key$i");
     }
   }
 }

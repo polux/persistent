@@ -11,12 +11,12 @@ class PersistentMapInterface<K, V>
 
   create() => object = new PersistentMap<K, V>();
 
-  insert(K key, V value, V combine(V left, V right)) =>
-    object = object.assoc(key, value, combine);
+  assoc(K key, V value) =>
+    object = object.assoc(key, value);
 
-  lookup(K key) => object.get(key, orElse: ()=>null);
+  get(K key) => object.get(key, null);
 
-  delete(K key) => object = object.delete(key, safe: true);
+  delete(K key) => object = object.delete(key);
 
   _copy() => object;
 }
@@ -27,12 +27,12 @@ class TransientMapInterface<K, V>
 
   create() => object = new PersistentMap<K, V>().asTransient();
 
-  insert(K key, V value, V combine(V left, V right)) =>
-    object.doAssoc(key, value, combine);
+  assoc(K key, V value) =>
+    object.doAssoc(key, value);
 
-  lookup(K key) => object.get(key, orElse: ()=>null);
+  get(K key) => object.get(key, null);
 
-  delete(K key) => object.doDelete(key, safe: true);
+  delete(K key) => object.doDelete(key);
 
   _copy(){
     var copy = object.asPersistent();
@@ -47,11 +47,10 @@ class StandardMapInterface<K, V>
 
   create() => object = new Map<K, V>();
 
-  insert(K key, V value, V combine(V left, V right)) =>
-    object[key] =
-      object.containsKey(key) ? combine(object[key], value) : value;
+  assoc(K key, V value) =>
+    object[key] = value;
 
-  lookup(K key) => object[key];
+  get(K key) => object[key];
 
   delete(K key) => object.remove(key);
 
@@ -64,13 +63,12 @@ class CopyMapInterface<K, V>
 
  create() => object = new Map<K, V>();
 
- insert(K key, V value, V combine(V left, V right)){
+ assoc(K key, V value){
    object = new Map.from(object);
-   object[key] =
-     object.containsKey(key) ? combine(object[key], value) : value;
+   object[key] = value;
  }
 
- lookup(K key) => object[key];
+ get(K key) => object[key];
 
  delete(K key){
    object = new Map.from(object);
@@ -86,15 +84,15 @@ class LinkedListInterface<K, V>
 
   create() => object = new Nil<Pair<K, V>>();
 
-  insert(K key, V value, V combine(V left, V right)){
+  assoc(K key, V value){
     LinkedListBuilder<Pair<K, V>> builder =
         new LinkedListBuilder<Pair<K, V>>();
     LinkedList<Pair<K, V>> it = object;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) {
-        builder.add(new Pair<K, V>(key, combine(elem.snd, value)));
+      if (elem.first == key) {
+        builder.add(new Pair<K, V>(key, value));
         return builder.build(cons.tail);
       }
       builder.add(elem);
@@ -104,12 +102,12 @@ class LinkedListInterface<K, V>
     object = builder.build();
   }
 
-  lookup(K key){
+  get(K key){
     LinkedList<Pair<K, V>> it = object;
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.fst == key) return;
+      if (elem.first == key) return;
       it = cons.tail;
     }
   }
