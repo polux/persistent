@@ -271,9 +271,9 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
   _Node(this._owner, this._length);
 
   V _get(K key, int hash, int depth);
-  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth);
-  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth);
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
   _Node<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth);
@@ -373,15 +373,15 @@ class _EmptyMap<K, V> extends _Node<K, V> {
   V _get(K key, int hash, int depth) => _none;
 
   _Node<K, V> _insertWith(_Owner owner,
-      LinkedList<Pair<K, V>> keyValues, int kvLength, V combine(V x, V y), int hash,
+      LinkedList<Pair<K, V>> pairs, int pairsLength, V combine(V x, V y), int hash,
       int depth) {
-    assert(kvLength == keyValues.length);
-    return new _Leaf<K, V>.abc(owner, hash, keyValues, kvLength);
+    assert(pairsLength == pairs.length);
+    return new _Leaf<K, V>.abc(owner, hash, pairs, pairsLength);
   }
 
-  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kvLength == keyValues.length);
+    assert(pairsLength == pairs.length);
     return this;
   }
 
@@ -444,9 +444,9 @@ class _Leaf<K, V> extends _Node<K, V> {
   int _hash;
   LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf.abc(_Owner owner, this._hash, pairs, int kvLength) : super(owner, kvLength) {
+  _Leaf.abc(_Owner owner, this._hash, pairs, int pairsLength) : super(owner, pairsLength) {
     this._pairs = pairs;
-    assert(kvLength == pairs.length);
+    assert(pairsLength == pairs.length);
   }
 
   factory _Leaf.ensureOwner(_Leaf old, _Owner owner, hash, pairs, int length) {
@@ -459,9 +459,9 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, hash, pairs, length);
   }
 
-  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kvLength == keyValues.length);
+    assert(pairsLength == pairs.length);
     // newsize is incremented as a side effect of insertPair
     int newsize = length;
 
@@ -503,29 +503,29 @@ class _Leaf<K, V> extends _Node<K, V> {
 
     if (depth > 5) {
       assert(_hash == hash);
-      final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
+      final LinkedList<Pair<K, V>> newPairs = insertPairs(pairs, _pairs);
       return new _Leaf<K, V>.ensureOwner(this, owner, hash, newPairs, newsize);
     } else {
       if (hash == _hash) {
-        final LinkedList<Pair<K, V>> newPairs = insertPairs(keyValues, _pairs);
+        final LinkedList<Pair<K, V>> newPairs = insertPairs(pairs, _pairs);
         return new _Leaf<K, V>.ensureOwner(this, owner, hash, newPairs, newsize);
       } else {
         int branch = (_hash >> (depth * 5)) & 0x1f;
         List<_Node<K, V>> array = new List.filled(1, this);
         return new _SubMap<K, V>.abc(owner, 1 << branch, array, length)
-            ._insertWith(owner, keyValues, kvLength, combine, hash, depth);
+            ._insertWith(owner, pairs, pairsLength, combine, hash, depth);
       }
     }
   }
 
-  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kvLength == keyValues.length);
+    assert(pairsLength == pairs.length);
     // TODO(polux): possibly faster implementation
     Map<K, V> map = toMap();
     LinkedListBuilder<Pair<K, V>> builder = new LinkedListBuilder<Pair<K, V>>();
     int newsize = 0;
-    keyValues.foreach((Pair<K, V> pair) {
+    pairs.foreach((Pair<K, V> pair) {
       if (map.containsKey(pair.first)) {
         builder.add(new Pair<K, V>(pair.first, combine(map[pair.first], pair.second)));
         newsize++;
@@ -741,9 +741,9 @@ class _SubMap<K, V> extends _Node<K, V> {
     }
   }
 
-  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _insertWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kvLength == keyValues.length);
+    assert(pairsLength == pairs.length);
 
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
@@ -753,7 +753,7 @@ class _SubMap<K, V> extends _Node<K, V> {
       _Node<K, V> m = _array[index];
       int oldSize = m.length;
       _Node<K, V> newM =
-                m._insertWith(owner, keyValues, kvLength, combine, hash, depth + 1);
+                m._insertWith(owner, pairs, pairsLength, combine, hash, depth + 1);
       if(identical(m, newM)) {
         if(oldSize != m.length) this._length += m.length - oldSize;
         return this;
@@ -769,14 +769,14 @@ class _SubMap<K, V> extends _Node<K, V> {
       // TODO: find out if there's a "copy array" native function somewhere
       for (int i = 0; i < index; i++) { newarray[i] = _array[i]; }
       for (int i = index; i < newlength - 1; i++) { newarray[i+1] = _array[i]; }
-      newarray[index] = new _Leaf<K, V>.abc(owner, hash, keyValues, kvLength);
-      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + kvLength);
+      newarray[index] = new _Leaf<K, V>.abc(owner, hash, pairs, pairsLength);
+      return new _SubMap<K, V>.ensureOwner(this, owner, _bitmap | mask, newarray, length + pairsLength);
     }
   }
 
-  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> keyValues, int kvLength,
+  _Node<K, V> _intersectWith(_Owner owner, LinkedList<Pair<K, V>> pairs, int pairsLength,
       V combine(V x, V y), int hash, int depth) {
-    assert(kvLength == keyValues.length);
+    assert(pairsLength == pairs.length);
 
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
@@ -784,7 +784,7 @@ class _SubMap<K, V> extends _Node<K, V> {
     if ((_bitmap & mask) != 0) {
       int index = _popcount(_bitmap & (mask - 1));
       _Node<K, V> m = _array[index];
-      return m._intersectWith(owner, keyValues, kvLength, combine, hash, depth + 1);
+      return m._intersectWith(owner, pairs, pairsLength, combine, hash, depth + 1);
     } else {
       return new _EmptyMap(owner);
     }
