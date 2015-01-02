@@ -7,10 +7,11 @@
 library map_memory;
 
 import 'package:vacuum_persistent/persistent.dart';
-import 'dart:convert';
 
 Map template = {};
-List data = new List.filled(100000, null);
+
+// here we will store the data to prevent it from garbage collection
+List data = [];
 
 var creators = {
 
@@ -21,8 +22,6 @@ var creators = {
     template.forEach((k, v) => res.doAssoc(k, v));
     return res;
   },
-
-  "json": () => JSON.encode(template),
 
   "map": () => new Map.from(template),
 };
@@ -38,7 +37,7 @@ void run(int template_size, String mode) {
     try{
       go = false;
       var a = creators[mode]();
-      data[allocated] = a;
+      data.add(a);
       go = true;
       print(1073741824.0 / allocated / template_size);
     } catch(e) {
