@@ -35,6 +35,7 @@ _getUpdateValue(key, updateF) {
   }
 }
 
+
 abstract class _ReadMapImpl<K, V> extends IterableBase<Pair<K, V>> {
   _Node _root;
 
@@ -81,21 +82,11 @@ class _PersistentMapImpl<K, V>
         extends _ReadMapImpl<K, V>
         implements PersistentMap<K, V>, PersistentCollection {
 
-  int _hash;
-
-  int get hashCode {
-    if(_hash != null) return _hash;
-    _hash = 0;
-    this.forEachKeyValue((key, value) {
-      _hash += key.hashCode ^ value.hashCode;
-      _hash = _hash & 0x1fffffff;
-    });
-    return _hash;
-  }
-
   bool operator==(other) {
     if (other is! _PersistentMapImpl) return false;
-    if(other.hashCode != this.hashCode || this.length != other.length)
+//    if(other.hashCode != this.hashCode || this.length != other.length)
+//      return false;
+    if(this.length != other.length)
       return false;
     bool equals = true;
     this.forEachKeyValue((key, dynamic value) {
@@ -103,6 +94,8 @@ class _PersistentMapImpl<K, V>
     });
     return equals;
   }
+
+  int get hashCode => _root.hashCode;
 
   _PersistentMapImpl() {
     _root = new _Leaf.empty(null);
@@ -155,7 +148,17 @@ class _PersistentMapImpl<K, V>
     f(transient);
     return transient.asPersistent();
   }
+
   toString() => 'PersistentMap$_root';
+
+  /**
+   * [updateF] parameter may have one of following signatures: V updateF(V value), V updateF([V value])
+   * If key was not found, it will try to associate the key with updateF()
+   */
+  _PersistentMapImpl<K, V> update(K key, dynamic updateF) {
+    return new _PersistentMapImpl._new(_root.update(null, key, updateF));
+  }
+
 }
 
 class _TransientMapImpl<K, V>
@@ -215,6 +218,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
   _Owner _owner;
 
   int _length;
+  int _hash;
   get length => _length;
 
   _Node(this._owner, this._length){
@@ -222,8 +226,16 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
 
   V _get(K key, int hash, int depth);
   _Node<K, V> _insertWith(_Owner owner, keyValues, int kvLength,
-      V combine(V x, V y), int hash, int depth);
+      int hash, int depth, [update]);
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
+
+  int get hashCode;
+
+  _Node<K, V> update(_Owner owner, K key, dynamic updateF);
+
+//  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) =>
+//    this.assoc(owner, key, _getUpdateValue(key, updateF));
+
 
   bool operator ==(other) {
     if (other is! _Node) return false;
@@ -245,8 +257,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
 
   _Node<K, V> assoc(_Owner owner, K key, V value) =>
       _insertWith(owner, [key, value, key.hashCode],
-          1, (V x, V y) => y,
-          key.hashCode & 0x3fffffff, 0);
+          1, key.hashCode & 0x3fffffff, 0);
 
   _Node<K, V> delete(_Owner owner, K key, bool missingOk) =>
       _delete(owner ,key, key.hashCode & 0x3fffffff, 0, missingOk);
@@ -297,6 +308,16 @@ class _Leaf<K, V> extends _Node<K, V> {
     return pairs.iterator;
   }
 
+  int get hashCode {
+    if(_hash != null) return _hash;
+    _hash = 0;
+    for(int i=0; i<_kv.length; i+=recsize){
+      _hash ^= hash2(_kv[i+2], _kv[i+1].hashCode);
+
+    }
+    return _hash;
+  }
+
   _Leaf.abc(_Owner owner, this._kv, int kvLength) : super(owner, kvLength);
 
   _Leaf.empty(_Owner owner): super(owner, 0) {
@@ -320,9 +341,6 @@ class _Leaf<K, V> extends _Node<K, V> {
       List<List> kvs = new List.generate(branching, (_) => []);
       for (int i=0; i<_kv.length; i+=recsize){
         int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
-//        int l = kvs[branch].length;
-//        kvs[branch].length = l+recsize;
-//        kvs[branch].setRange(l, l+recsize, _kv, i);
         kvs[branch].add(_kv[i]);
         kvs[branch].add(_kv[i + 1]);
         kvs[branch].add(_kv[i + 2]);
@@ -333,7 +351,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     }
   }
 
-  _insert(List into, kv){
+  _insert(List into, kv, [update]){
     assert(into.length % recsize == 0);
     var key = kv[0];
     var val = kv[1];
@@ -363,36 +381,36 @@ class _Leaf<K, V> extends _Node<K, V> {
           return;
         }
         if (key == into[i]) {
-          into[i+1] = val;
+          if (update == null) {
+            into[i+1] = val;
+          } else {
+            into[i+1] = update(into[i+1]);
+          }
           return;
         }
       }
     }
-    into.addAll(kv);
+    if (update == null) {
+      into.addAll(kv);
+    } else {
+      kv[2] = _getUpdateValue(key, update);
+    }
     assert(into.length % recsize == 0);
   }
 
   _Node<K, V> _insertWith(_Owner owner, List kv, int kvLength,
-      V combine(V x, V y), int hash, int depth) {
-    // temporarily allow inserting of only one record
-    assert(kv.length == recsize);
+       int hash, int depth, [update]) {
     List nkv = _makeCopyIfNeeded(owner, this._owner, _kv);
     for (int i=0; i<kv.length; i+=recsize){
-      _insert(nkv, kv);
+      _insert(nkv, kv, update);
     }
-
-
-    var a = polish(owner, depth, nkv);
-    return a;
-      // to meassure how long does polish take
-//    var a = polish(owner, depth, new List.from(nkv));
-//    var b = polish(owner, depth, new List.from(nkv));
-//    return _random.nextBool()?a:b;
+    return polish(owner, depth, nkv);
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
     bool found = false;
     List nkv = new List.from(_kv);
+    assert(hash == key.hashCode);
     hash = key.hashCode;
     for (int i=0; i<nkv.length; i+=recsize){
       if (nkv[i+2] == hash && nkv[i] == key){
@@ -408,7 +426,7 @@ class _Leaf<K, V> extends _Node<K, V> {
         return this;
       } else {
         _ThrowKeyError(key);
-        // won't get here, just to make Darteditor happy
+        // won't get here, just to make Dart Editor happy
         return this;
       }
     } else {
@@ -434,11 +452,6 @@ class _Leaf<K, V> extends _Node<K, V> {
         return _kv[i+1];
       }
     }
-//    for(int i=0; i<_kv.length; i+=recsize){
-//      if (_kv[i] == key) {
-//        return _kv[i+1];
-//      }
-//    }
     return _none;
   }
 
@@ -494,6 +507,16 @@ class _SubMap<K, V> extends _Node<K, V> {
     return new _SubMap.abc(owner, array, length);
   }
 
+  int get hashCode {
+    if(_hash != null) return _hash;
+    _hash = 0;
+    for(var child in _array){
+      _hash ^= child.hashCode;
+
+    }
+    return _hash;
+  }
+
   V _get(K key, int hash, int depth) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
     _Node<K, V> map = _array[branch];
@@ -501,7 +524,7 @@ class _SubMap<K, V> extends _Node<K, V> {
   }
 
   _Node<K, V> _insertWith(_Owner owner, List keyValues, int kvLength,
-      V combine(V x, V y), int hash, int depth) {
+          int hash, int depth, [update]) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
     _Node<K, V> m = _array[branch];
     int oldSize = m.length;
@@ -536,7 +559,6 @@ class _SubMap<K, V> extends _Node<K, V> {
     newarray[branch] = newChild;
     return new _SubMap.ensureOwner(this, owner, newarray, newLength);
   }
-
 
   forEachKeyValue(f(K, V)) {
     _array.forEach((mi) => mi.forEachKeyValue(f));

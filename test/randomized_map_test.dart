@@ -63,7 +63,7 @@ doTest(operationsCnt, print_fn){
     return res;
   }
 
-  fn_adjust(String a) => '${a}j';
+  fn_adjust(String a) => '${a} adjusted';
 
   Map impls = {
       'map': {
@@ -76,8 +76,8 @@ doTest(operationsCnt, print_fn){
             keys.forEach((k) =>  me.remove(k));
             return me;
         },
-        'bulkAdjust': (Map me, List keys) {
-          keys.forEach((k) => me[k] = fn_adjust(me[k]));
+        'bulkAdjust': (Map me, List keys, adjust) {
+          keys.forEach((k) => me[k] = adjust(me[k]));
           return me;
         },
         'deepCopy': (Map me) => deepCopyMap(me)
@@ -88,13 +88,44 @@ doTest(operationsCnt, print_fn){
             updateWith.keys.fold(me, (me, k) => me.assoc(k, updateWith[k])),
         'bulkDelete': (PersistentMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.delete(k, missingOk: true)),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.update(k, fn_adjust)),
+        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
+            keys.fold(me, (me, k) => me.update(k, adjust)),
         'deepCopy': (PersistentMap me) => me
       },
+      // always transient
+      'transient': {
+        'create': () => new PersistentMap().asTransient(),
+        'bulkInsert': (TransientMap me, Map updateWith) =>
+            updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
+        'bulkDelete': (TransientMap me, List keys) =>
+            keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
+        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
+            keys.fold(me, (me, k) => me.doUpdate(k, adjust)),
+        'deepCopy': (TransientMap me) {
+          TransientMap res = new TransientMap();
+          me.forEachKeyValue((k, v) => res.doAssoc(k, v));
+          return res;
+        }
+      },
+      // uses transient impl for bulk insert, delete atomicaly
+      'persistentWithTransient': {
+        'create': () => new PersistentMap(),
+        'bulkInsert': (PersistentMap me, Map updateWith) =>
+            me.withTransient((TransientMap me) =>
+              updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
+        'bulkDelete': (PersistentMap me, List keys) =>
+            me.withTransient((TransientMap me) =>
+              keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true))),
+        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
+            me.withTransient((TransientMap me) =>
+              keys.fold(me, (me, k) => me.doUpdate(k, adjust))),
+        'deepCopy': (PersistentMap me) => me
+      },
+
+      'randomlyChangingPersistentTransient': 'will be defined later',
   };
 
-  // some helper fns for persistentSlashTransient
+  // helper for randomlyChangingPersistentTransient implementation
   impl_for(map){
     if (map is PersistentMap) return impls['persistent'];
     if (map is TransientMap) return impls['transient'];
@@ -116,14 +147,14 @@ doTest(operationsCnt, print_fn){
   // from time to time randomly change the implementation from persistent to
   // transient and vice versa; may perform multiple bulk operations in one
   // transient state
-  impls.addAll({
-      'randomlyChangingPersistentTransient': {
+  impls['randomlyChangingPersistentTransient'] =
+      {
         'create': () => new PersistentMap(),
         'bulkInsert': (me, Map updateWith) => randomlyChangeImpl(impl_for(me)['bulkInsert'](me, updateWith)),
         'bulkDelete': (me, List keys) => randomlyChangeImpl(impl_for(me)['bulkDelete'](me, keys)),
+        'bulkAdjust': (me, List keys, adjust) => randomlyChangeImpl(impl_for(me)['bulkAdjust'](me, keys, adjust)),
         'deepCopy': (me) => deepCopyMap(me)
-      },
-  });
+      };
 
 
   int range = 10000;
@@ -155,11 +186,11 @@ doTest(operationsCnt, print_fn){
 
       if(probability(0.5)) {
         // bulkInsert
-        // let's add some fixed percentage of all keys to the map
-        int num = r.nextInt((range/10).floor());
+        // let's add up to count keys to the map
+        int count = r.nextInt((range/10).floor());
 
         Map  map = {};
-        for(int i=0; i < num; i++) {
+        for(int i=0; i < count; i++) {
           map[random_elem(all_keys)] = random_elem(all_values);
         }
 
@@ -174,9 +205,9 @@ doTest(operationsCnt, print_fn){
           // from time to time, delete the whole map
           keys = new List.from(pm.keys);
         } else {
-          int num = r.nextInt(range);
+          int count = r.nextInt(range);
           keys = [];
-          for(int i=0; i < num; i++) {
+          for(int i=0; i < count; i++) {
             // sometimes try to delete key which is not there
             keys.add(random_elem(all_keys));
           }
@@ -187,19 +218,18 @@ doTest(operationsCnt, print_fn){
         });
       }
       else {
+        // bulkAdjust
         List keys = [];
-        int num = r.nextInt(range);
         List activeKeys = impls['map']['instance'].keys.toList();
-        if(activeKeys.length != 0) {
-          for(int i=0; i < num; i++) {
-            // sometimes try to delete key which is not there
-            keys.add(random_elem(activeKeys));
-          }
-          // perform deletion on each instance
-          impls.forEach((name, impl){
-            impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
-          });
+        int count = r.nextInt(range);
+        // get count from active keys
+        for(int i=0; i < count; i++) {
+          keys.add(random_elem(activeKeys));
         }
+        impls.forEach((name, impl){
+          impls[name]['instance'] = impls[name]['bulkAdjust'](impl['instance'],
+              keys, fn_adjust);
+        });
       }
 
       // from time to time, deep-copy all the instances to test immutability
@@ -218,6 +248,8 @@ doTest(operationsCnt, print_fn){
       for(Pair p in pm){
         copy = copy.assoc(p.first, p.second);
       }
+      print(pm);
+      print(copy);
       expect(pm == copy, isTrue);
       expect(pm.hashCode == copy.hashCode, isTrue);
       PersistentMap not_copy = copy.assoc('something', 'completely different');
