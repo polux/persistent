@@ -17,7 +17,7 @@ main() {
 
 run() {
   group('Persistent map', () {
-    solo_test('assoc', () {
+    test('assoc', () {
       PersistentMap pm = new PersistentMap();
       pm = pm.assoc('a', 'b');
       expect(pm.toMap(), equals({'a': 'b'}));
@@ -49,9 +49,22 @@ run() {
       PersistentMap pm = persist({'a':'b', 'c': 'd'});
       expect(pm.update('c', (v) => 'updated $v'), equals(persist({'a': 'b', 'c': 'updated d'})));
     });
+
+    test('transient basics', (){
+      TransientMap m = new TransientMap();
+      m.doAssoc('a', 'b');
+      m.doAssoc('c', 'd');
+      expect(m.toMap(), equals({'a':'b', 'c':'d'}));
+      m.doAssoc('a', 'bb');
+      expect(m.toMap(), equals({'a':'bb', 'c':'d'}));
+      m.doUpdate('a', (v) => "b${v}");
+      expect(m.toMap(), equals({'a':'bbb', 'c':'d'}));
+      m.doDelete('a');
+      expect(m.toMap(), equals({'c':'d'}));
+    });
   });
 
-  group('random', (){
+  skip_group('random', (){
     Random r = new Random(47);
     PersistentMap pm = new PersistentMap();
     Map m = {};

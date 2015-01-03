@@ -84,25 +84,13 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Creates an immutable copy of [map] using the default implementation of
    * [PersistentMap].
    */
-  factory PersistentMap.fromMap(Map<K, V> map) {
-    _Node root = new _Leaf.empty(null);
-    map.forEach((K key, V value) {
-      root = root._assoc(null, key, value);
-    });
-    return root;
-  }
+  factory PersistentMap.fromMap(Map<K, V> map) => new _Node.fromMap(map);
 
   /**
    * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
    * implementation of [PersistentMap].
    */
-  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
-      var _root = new _Leaf.empty(null);
-      pairs.forEach((pair) {
-        _root = _root._assoc(null, pair.first, pair.second);
-      });
-      return _root;
-  }
+  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) => new _Node.fromPairs(pairs);
 
   /**
    * The equality operator.
@@ -130,8 +118,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *     {'a': 1}.assoc('b', 2) == {'a': 1, 'b': 2}
    *     {'a': 1, 'b': 2}.assoc('b', 3) == {'a': 3, 'b': 3}
    */
-  PersistentMap<K, V>
-      assoc(K key, V value);
+  PersistentMap<K, V> assoc(K key, V value);
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
@@ -288,7 +275,6 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    */
   TransientMap<K, V> doDelete(K key, {bool missingOk: false}) ;
 
-  // TODO: check how this works
   /**
    * Adjusts the value that is possibly bound to [key] by applying [f].
    *
@@ -302,7 +288,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doUpdate('b', ([x]) => x == null ? 2 : x + 1); // map is now {'a': 1, 'b': 2}
    *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 3}
    */
-//  TransientMap<K, V> doUpdate(K key, dynamic f);
+  TransientMap<K, V> doUpdate(K key, dynamic f);
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.
