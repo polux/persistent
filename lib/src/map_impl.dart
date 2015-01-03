@@ -84,15 +84,7 @@ class _PersistentMapImpl<K, V>
 
   bool operator==(other) {
     if (other is! _PersistentMapImpl) return false;
-//    if(other.hashCode != this.hashCode || this.length != other.length)
-//      return false;
-    if(this.length != other.length)
-      return false;
-    bool equals = true;
-    this.forEachKeyValue((key, dynamic value) {
-      equals = equals && other.containsKey(key) && other[key] == value;
-    });
-    return equals;
+    return this._root == other._root;
   }
 
   int get hashCode => _root.hashCode;
@@ -198,6 +190,10 @@ class _TransientMapImpl<K, V>
     return _adjustRootAndReturn(_root.delete(owner, key, missingOk));
   }
 
+  TransientMap<K, V> doUpdate(K key, dynamic updateF) {
+    return _adjustRootAndReturn(_root.update(null, key, updateF));
+  }
+
   PersistentMap asPersistent() {
     _owner = null;
     return new _PersistentMapImpl.fromTransient(this);
@@ -225,13 +221,14 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
   }
 
   V _get(K key, int hash, int depth);
-  _Node<K, V> _insertWith(_Owner owner, keyValues, int kvLength,
-      int hash, int depth, [update]);
+  _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]);
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
   int get hashCode;
 
-  _Node<K, V> update(_Owner owner, K key, dynamic updateF);
+  _Node<K, V> update(_Owner owner, K key, dynamic updateF){
+    return _insertOneWith(owner, key, null, key.hashCode, 0, updateF);
+  }
 
 //  _NodeBase<K, V> _update(_Owner owner, K key, dynamic updateF, int hash, int depth) =>
 //    this.assoc(owner, key, _getUpdateValue(key, updateF));
@@ -256,8 +253,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> {
       _get(key, key.hashCode & 0x3fffffff, 0);
 
   _Node<K, V> assoc(_Owner owner, K key, V value) =>
-      _insertWith(owner, [key, value, key.hashCode],
-          1, key.hashCode & 0x3fffffff, 0);
+      _insertOneWith(owner, key, value, key.hashCode, 0);
 
   _Node<K, V> delete(_Owner owner, K key, bool missingOk) =>
       _delete(owner ,key, key.hashCode & 0x3fffffff, 0, missingOk);
@@ -351,13 +347,10 @@ class _Leaf<K, V> extends _Node<K, V> {
     }
   }
 
-  _insert(List into, kv, [update]){
+  _insert(List into, key, val, hash, [update]){
     assert(into.length % recsize == 0);
-    var key = kv[0];
-    var val = kv[1];
-    var hash = kv[2];
     if (into.length == 0) {
-      into.addAll(kv);
+      into.addAll([key, val, hash]);
       return;
     }
     int from = 0;
@@ -377,7 +370,7 @@ class _Leaf<K, V> extends _Node<K, V> {
       assert(i%recsize == 0);
       if (hash <= into[i+2]) {
         if (hash < into[i+2]) {
-          into.insertAll(i, kv);
+          into.insertAll(i, [key, val, hash]);
           return;
         }
         if (key == into[i]) {
@@ -391,19 +384,16 @@ class _Leaf<K, V> extends _Node<K, V> {
       }
     }
     if (update == null) {
-      into.addAll(kv);
+      into.addAll([key, val, hash]);
     } else {
-      kv[2] = _getUpdateValue(key, update);
+      into.addAll([key, _getUpdateValue(key, update), hash]);
     }
     assert(into.length % recsize == 0);
   }
 
-  _Node<K, V> _insertWith(_Owner owner, List kv, int kvLength,
-       int hash, int depth, [update]) {
+  _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]) {
     List nkv = _makeCopyIfNeeded(owner, this._owner, _kv);
-    for (int i=0; i<kv.length; i+=recsize){
-      _insert(nkv, kv, update);
-    }
+    _insert(nkv, key, val, hash, update);
     return polish(owner, depth, nkv);
   }
 
@@ -523,13 +513,11 @@ class _SubMap<K, V> extends _Node<K, V> {
     return map._get(key, hash, depth + 1);
   }
 
-  _Node<K, V> _insertWith(_Owner owner, List keyValues, int kvLength,
-          int hash, int depth, [update]) {
+  _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]) {
     int branch = (hash >> (depth * branchingBits)) & branchingMask;
     _Node<K, V> m = _array[branch];
     int oldSize = m.length;
-    _Node<K, V> newM = m._insertWith(owner, keyValues, kvLength, combine,
-        hash, depth + 1);
+    _Node<K, V> newM = m._insertOneWith(owner, key, val, hash, depth + 1, update);
     if(identical(m, newM)) {
       if(oldSize != m.length) this._length += m.length - oldSize;
       return this;

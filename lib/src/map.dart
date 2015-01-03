@@ -230,6 +230,9 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
 
   /// A strict (non-lazy) version of [where].
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
+
+  _PersistentMapImpl<K, V> update(K key, dynamic updateF);
+
 }
 
 /**

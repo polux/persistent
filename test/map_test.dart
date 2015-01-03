@@ -21,9 +21,8 @@ run() {
       PersistentMap pm = new PersistentMap();
       pm = pm.assoc('a', 'b');
       expect(pm.toMap(), equals({'a': 'b'}));
-
-//      pm = pm.assoc('a', 'c');
-//      expect(pm.toMap(), equals({'a': 'c'}));
+      pm = pm.assoc('a', 'c');
+      expect(pm.toMap(), equals({'a': 'c'}));
 
     });
 
@@ -46,16 +45,10 @@ run() {
       expect(pm.delete('b', missingOk: true).toMap(), equals({'a': 'b'}));
     });
 
-//    test('forEachKeyValue', () {
-//      PersistentMap pm = new PersistentMap();
-//      pm = pm.assoc('a', 'b');
-//      pm = pm.assoc('c', 'b');
-//
-//      String res = '';
-//      pm.forEachKeyValue((k,v) => res = '${res}${k}${v},');
-//
-//      expect(res, equals('ab,cb,'));
-//    });
+    test('update', () {
+      PersistentMap pm = persist({'a':'b', 'c': 'd'});
+      expect(pm.update('c', (v) => 'updated $v'), equals(persist({'a': 'b', 'c': 'updated d'})));
+    });
   });
 
   group('random', (){

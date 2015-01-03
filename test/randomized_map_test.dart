@@ -99,7 +99,7 @@ doTest(operationsCnt, print_fn){
             updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
         'bulkDelete': (TransientMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
-        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
+        'bulkAdjust': (TransientMap me, List keys, adjust) =>
             keys.fold(me, (me, k) => me.doUpdate(k, adjust)),
         'deepCopy': (TransientMap me) {
           TransientMap res = new TransientMap();
@@ -223,8 +223,10 @@ doTest(operationsCnt, print_fn){
         List activeKeys = impls['map']['instance'].keys.toList();
         int count = r.nextInt(range);
         // get count from active keys
-        for(int i=0; i < count; i++) {
-          keys.add(random_elem(activeKeys));
+        if (activeKeys.isNotEmpty) {
+          for(int i=0; i < count; i++) {
+            keys.add(random_elem(activeKeys));
+          }
         }
         impls.forEach((name, impl){
           impls[name]['instance'] = impls[name]['bulkAdjust'](impl['instance'],
@@ -248,8 +250,6 @@ doTest(operationsCnt, print_fn){
       for(Pair p in pm){
         copy = copy.assoc(p.first, p.second);
       }
-      print(pm);
-      print(copy);
       expect(pm == copy, isTrue);
       expect(pm.hashCode == copy.hashCode, isTrue);
       PersistentMap not_copy = copy.assoc('something', 'completely different');
