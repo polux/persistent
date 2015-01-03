@@ -14,47 +14,47 @@ part 'benchmarks.dart';
 part 'interface.dart';
 part 'interface_impl.dart';
 
-var interfaces = {
+Map interfaces = {
   "PersistentMap": () => new PersistentMapInterface(),
   "TransientMap": () => new TransientMapInterface(),
   "Map": () => new StandardMapInterface(),
 };
 
-preciseBenchmark(result, times){
-  var res = 0;
-  var ressqr = 0;
-  for (int i=0; i<times; i++){
-    var _res = result();
-    res += _res;
-    ressqr += _res * _res;
-  }
-  res /= times;
-  ressqr /= times;
-  return [res, sqrt(ressqr-res*res)];
-}
-
 var sizes = [{1000:6, 2000: 3, 3000: 2, 6000: 1}];
-int times = 10;
+int times = 100;
 
 void main() {
   var config =
-  {'Write': ((sample, factory) => (new WriteBenchmark(sample, factory))),
-   'Read': ((sample, factory) => (new ReadBenchmark(sample, factory))),
+  {
+    'Write': ((sample, factory) => (new WriteBenchmark(sample, factory))),
+    'Read': ((sample, factory) => (new ReadBenchmark(sample, factory))),
   };
+  var result = {};
   config.forEach((mode, creator){
     for (Map sample in sizes) {
-      List<double> unit =
-        preciseBenchmark(() => creator(sample, interfaces['Map']).measure(),
-        times);
-      for (String name in interfaces.keys) {
-        List<double> res = preciseBenchmark(
-          () => creator(sample, interfaces[name]).measure(),
-          times);
-        print('${mode} ${name} sample ${sample}: ${res[0]/unit[0]} ${res[0]} us +- ${res[1]/res[0]*100} %');
+      var res = {};
+      var dev = {};
+      interfaces.forEach((k,v){
+        res[k] = 0;
+        dev[k] = 0;
+      });
+      for (int i=0; i<times; i++){
+        for (String name in interfaces.keys) {
+          var meas = creator(sample, interfaces[name]).measure();
+          res[name] += meas;
+          dev[name] += meas*meas;
+        }
       }
-      print('');
+      for (String name in interfaces.keys) {
+        res[name] /= times;
+        dev[name] /= times;
+        dev[name] = sqrt(dev[name] - res[name] * res[name]);
+      }
+      for (String name in interfaces.keys) {
+        var _dev = 2*(res[name]*dev['Map']+res['Map']*dev[name])/res['Map']/res['Map']/sqrt(times);
+        print('${mode} ${name} sample ${sample}: ${res[name]/res['Map']} '+
+              '+- ${_dev} (${res[name]} us)');
+      }
     }
   });
-
-
 }

@@ -19,7 +19,7 @@ const branchingMask = 0x1f;
 
 const leafSize = branching * 3;
 
-const binSearchThr = 16;
+const binSearchThr = 4;
 const recsize = 3; //0 - key, 1 - val, 2 - hash
 
 
@@ -319,16 +319,13 @@ class _Leaf<K, V> extends _Node<K, V> {
     } else {
       List<List> kvs = new List.generate(branching, (_) => []);
       for (int i=0; i<_kv.length; i+=recsize){
-//        var key = _kv[i];
-//        var val = _kv[i + 1];
-//        var hash = _kv[i + 2];
         int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
-        int l = kvs[branch].length;
-        kvs[branch].length = l+recsize;
-        kvs[branch].setRange(l, l+recsize, _kv, i);
-//        kvs[branch].add(key);
-//        kvs[branch].add(val);
-//        kvs[branch].add(hash);
+//        int l = kvs[branch].length;
+//        kvs[branch].length = l+recsize;
+//        kvs[branch].setRange(l, l+recsize, _kv, i);
+        kvs[branch].add(_kv[i]);
+        kvs[branch].add(_kv[i + 1]);
+        kvs[branch].add(_kv[i + 2]);
       }
       List <_Node<K, V>> array = new List.generate(branching,
           (i) => new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
@@ -341,6 +338,10 @@ class _Leaf<K, V> extends _Node<K, V> {
     var key = kv[0];
     var val = kv[1];
     var hash = kv[2];
+    if (into.length == 0) {
+      into.addAll(kv);
+      return;
+    }
     int from = 0;
     int to = into.length - recsize;
     while(from - to > recsize * binSearchThr){
@@ -354,19 +355,15 @@ class _Leaf<K, V> extends _Node<K, V> {
       }
     }
 
-    if (to < from) {
-      into.addAll(kv);
-      return;
-    }
     for (int i=from; i<=to; i+=recsize) {
       assert(i%recsize == 0);
       if (hash <= into[i+2]) {
-        if (hash == into[i+2] && key == into[i]) {
-          into[i+1] = val;
-          return;
-        }
         if (hash < into[i+2]) {
           into.insertAll(i, kv);
+          return;
+        }
+        if (key == into[i]) {
+          into[i+1] = val;
           return;
         }
       }
@@ -420,11 +417,28 @@ class _Leaf<K, V> extends _Node<K, V> {
   }
 
   V _get(K key, int hash, int depth) {
-    for(int i=0; i<_kv.length; i+=recsize){
-      if (_kv[i] == key) {
+    int from = 0;
+    int to = _kv.length - recsize;
+    while(from - to > recsize * binSearchThr){
+      int mid = (from + to) ~/ 2;
+      if (_kv[mid + 2] > hash){
+        to = mid;
+      } else if (_kv[mid + 2] < hash){
+        from = mid;
+      } else {
+        break;
+      }
+    }
+    for(int i=from; i<=to; i+=recsize){
+      if (_kv[i+2] == hash && _kv[i] == key) {
         return _kv[i+1];
       }
     }
+//    for(int i=0; i<_kv.length; i+=recsize){
+//      if (_kv[i] == key) {
+//        return _kv[i+1];
+//      }
+//    }
     return _none;
   }
 
