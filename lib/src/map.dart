@@ -78,21 +78,31 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
 abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCollection {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new _PersistentMapImpl();
+  factory PersistentMap() => new _Leaf.empty(null);
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
    * [PersistentMap].
    */
-  factory PersistentMap.fromMap(Map<K, V> map) =>
-      new _PersistentMapImpl.fromMap(map);
+  factory PersistentMap.fromMap(Map<K, V> map) {
+    _Node root = new _Leaf.empty(null);
+    map.forEach((K key, V value) {
+      root = root._assoc(null, key, value);
+    });
+    return root;
+  }
 
   /**
    * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
    * implementation of [PersistentMap].
    */
-  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) =>
-      new _PersistentMapImpl.fromPairs(pairs);
+  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) {
+      var _root = new _Leaf.empty(null);
+      pairs.forEach((pair) {
+        _root = _root._assoc(null, pair.first, pair.second);
+      });
+      return _root;
+  }
 
   /**
    * The equality operator.
@@ -231,7 +241,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
   /// A strict (non-lazy) version of [where].
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 
-  _PersistentMapImpl<K, V> update(K key, dynamic updateF);
+  PersistentMap<K, V> update(K key, dynamic updateF);
 
 }
 

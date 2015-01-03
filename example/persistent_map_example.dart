@@ -27,7 +27,7 @@ main() {
   final m5 = m1.mapValues((n) => n + 1);
   print(m5);  // {a: 2, b: 3}
 
-  final m6 = m1.update('a', (n) => n + 1);
+  final m6 = m1._update('a', (n) => n + 1);
   print(m6);  // {a: 2, b: 2}
 
   for (final pair in m4) {

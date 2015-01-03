@@ -92,37 +92,37 @@ doTest(operationsCnt, print_fn){
             keys.fold(me, (me, k) => me.update(k, adjust)),
         'deepCopy': (PersistentMap me) => me
       },
-      // always transient
-      'transient': {
-        'create': () => new PersistentMap().asTransient(),
-        'bulkInsert': (TransientMap me, Map updateWith) =>
-            updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
-        'bulkDelete': (TransientMap me, List keys) =>
-            keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
-        'bulkAdjust': (TransientMap me, List keys, adjust) =>
-            keys.fold(me, (me, k) => me.doUpdate(k, adjust)),
-        'deepCopy': (TransientMap me) {
-          TransientMap res = new TransientMap();
-          me.forEachKeyValue((k, v) => res.doAssoc(k, v));
-          return res;
-        }
-      },
-      // uses transient impl for bulk insert, delete atomicaly
-      'persistentWithTransient': {
-        'create': () => new PersistentMap(),
-        'bulkInsert': (PersistentMap me, Map updateWith) =>
-            me.withTransient((TransientMap me) =>
-              updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
-        'bulkDelete': (PersistentMap me, List keys) =>
-            me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true))),
-        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
-            me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) => me.doUpdate(k, adjust))),
-        'deepCopy': (PersistentMap me) => me
-      },
+//      // always transient
+//      'transient': {
+//        'create': () => new PersistentMap().asTransient(),
+//        'bulkInsert': (TransientMap me, Map updateWith) =>
+//            updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
+//        'bulkDelete': (TransientMap me, List keys) =>
+//            keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
+//        'bulkAdjust': (TransientMap me, List keys, adjust) =>
+//            keys.fold(me, (me, k) => me.doUpdate(k, adjust)),
+//        'deepCopy': (TransientMap me) {
+//          TransientMap res = new TransientMap();
+//          me.forEachKeyValue((k, v) => res.doAssoc(k, v));
+//          return res;
+//        }
+//      },
+//      // uses transient impl for bulk insert, delete atomicaly
+//      'persistentWithTransient': {
+//        'create': () => new PersistentMap(),
+//        'bulkInsert': (PersistentMap me, Map updateWith) =>
+//            me.withTransient((TransientMap me) =>
+//              updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
+//        'bulkDelete': (PersistentMap me, List keys) =>
+//            me.withTransient((TransientMap me) =>
+//              keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true))),
+//        'bulkAdjust': (PersistentMap me, List keys, adjust) =>
+//            me.withTransient((TransientMap me) =>
+//              keys.fold(me, (me, k) => me.doUpdate(k, adjust))),
+//        'deepCopy': (PersistentMap me) => me
+//      },
 
-      'randomlyChangingPersistentTransient': 'will be defined later',
+//      'randomlyChangingPersistentTransient': 'will be defined later',
   };
 
   // helper for randomlyChangingPersistentTransient implementation
@@ -147,14 +147,14 @@ doTest(operationsCnt, print_fn){
   // from time to time randomly change the implementation from persistent to
   // transient and vice versa; may perform multiple bulk operations in one
   // transient state
-  impls['randomlyChangingPersistentTransient'] =
-      {
-        'create': () => new PersistentMap(),
-        'bulkInsert': (me, Map updateWith) => randomlyChangeImpl(impl_for(me)['bulkInsert'](me, updateWith)),
-        'bulkDelete': (me, List keys) => randomlyChangeImpl(impl_for(me)['bulkDelete'](me, keys)),
-        'bulkAdjust': (me, List keys, adjust) => randomlyChangeImpl(impl_for(me)['bulkAdjust'](me, keys, adjust)),
-        'deepCopy': (me) => deepCopyMap(me)
-      };
+//  impls['randomlyChangingPersistentTransient'] =
+//      {
+//        'create': () => new PersistentMap(),
+//        'bulkInsert': (me, Map updateWith) => randomlyChangeImpl(impl_for(me)['bulkInsert'](me, updateWith)),
+//        'bulkDelete': (me, List keys) => randomlyChangeImpl(impl_for(me)['bulkDelete'](me, keys)),
+//        'bulkAdjust': (me, List keys, adjust) => randomlyChangeImpl(impl_for(me)['bulkAdjust'](me, keys, adjust)),
+//        'deepCopy': (me) => deepCopyMap(me)
+//      };
 
 
   int range = 10000;

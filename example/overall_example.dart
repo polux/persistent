@@ -38,7 +38,7 @@ main() {
   print(map1.assoc("c", 3)); // {a: 1, b: 2, c: 3}
   print(map1.assoc("d", 4)); // {a: 1, b: 2, d: 4}
 
-  final map3 = map2.update("c", (x) => x+3);
+  final map3 = map2._update("c", (x) => x+3);
   print(map3.delete("b")); // {c: 7}
   print(map3.delete("a", missingOk: true)); // {b: 3, c: 7}
 
