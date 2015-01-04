@@ -50,6 +50,20 @@ run() {
       expect(pm.update('c', (v) => 'updated $v'), equals(persist({'a': 'b', 'c': 'updated d'})));
     });
 
+    test('equality speed', (){
+      PersistentMap pm;
+      Map m = {};
+      for(int i=0; i<100000; i++) {
+        m['hello${i}'] = 'world${i}';
+      }
+      pm = persist(m);
+      // more important than the 'expect' is that this test takes reasonable time to finish
+      for (int i=0; i<100000; i++) {
+        expect(pm == pm.assoc('hello${i}', 'different'), isFalse);
+      }
+
+    });
+
     test('transient basics', (){
       TransientMap m = new TransientMap();
       m.doAssoc('a', 'b');

@@ -18,6 +18,7 @@ const branchingBits = 5;
 const branchingMask = 0x1f;
 
 const leafSize = branching * 3;
+const leafSizeMin = branching * 3;
 
 const binSearchThr = 4;
 const recsize = 3; //0 - key, 1 - val, 2 - hash
@@ -160,18 +161,42 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   bool operator ==(other) {
     if (other is! _Node) return false;
     if (identical(this, other)) return true;
-    if (this.length != other.length) {
+    _Node me = this;
+    if (me.length != other.length) {
       return false;
     }
-    bool res = true;
-    this.forEachKeyValue((k,v){
-      if (other.get(k) != v){
-        res = false;
+    if (me is _Leaf && other is _Leaf) {
+      for (int i=0; i<(me as _Leaf)._kv.length; i++) {
+        if ((me as _Leaf)._kv[i] != other._kv[i]) return false;
       }
-    });
-    return res;
+      return true;
+    }
+    if (me is _SubMap && other is _SubMap) {
+      for (int i=0; i<branching; i++) {
+        if((me as _SubMap)._array[i] != other._array[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (me is _SubMap && other is _Leaf) {
+      var _tmp = other;
+      other = me;
+      me = _tmp;
+    }
+    if (me is _Leaf && other is _SubMap) {
+      for (Pair p in other) {
+        if (me[p.first] != p.second) {
+          return false;
+        }
+      }
+      return true;
+    }
+    throw new Exception('Should not get here');
+    return null;
   }
 
+  // method must be called only on top-level _Node
   V get(K key, [V notFound = _none]) {
     var val = _get(key, key.hashCode & 0x3fffffff, 0);
     if(_isNone(val)){
@@ -487,6 +512,10 @@ class _SubMap<K, V> extends _Node<K, V> {
     if (this._length == 0) {
         return new _Leaf.empty(owner);
     }
+//    if (this._length <= leafSizeMin) {
+//        for ()
+//        return new _Leaf.abc(owner, _kv, kvLength);
+//    }
     List<_Node<K, V>> newarray = new List<_Node<K, V>>.from(_array);
     newarray[branch] = newChild;
     return new _SubMap.ensureOwner(this, owner, newarray, newLength);

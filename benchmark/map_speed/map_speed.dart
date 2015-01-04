@@ -21,7 +21,7 @@ Map interfaces = {
 };
 
 var sizes = [{1000:6, 2000: 3, 3000: 2, 6000: 1}];
-int times = 10;
+int times = 100;
 
 void main() {
   var config =
