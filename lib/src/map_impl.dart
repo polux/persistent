@@ -36,6 +36,22 @@ _getUpdateValue(key, updateF) {
   }
 }
 
+_reverseHash(hash){
+  return
+  ((hash & branchingMask) << (5 * branchingBits)) |
+  (((hash >> (branchingBits * 1)) & branchingMask) << (4 * branchingBits)) |
+  (((hash >> (branchingBits * 2)) & branchingMask) << (3 * branchingBits)) |
+  (((hash >> (branchingBits * 3)) & branchingMask) << (2 * branchingBits)) |
+  (((hash >> (branchingBits * 4)) & branchingMask) << (1 * branchingBits)) |
+  (((hash >> (branchingBits * 5)) & branchingMask));
+}
+
+_getBranch(hash, depth){
+  return (hash >> ((5-depth)*branchingBits)) & branchingMask;
+}
+
+
+
 class _TransientMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
         implements TransientMap<K, V> {
@@ -71,7 +87,7 @@ class _TransientMapImpl<K, V>
   }
 
   TransientMap<K, V> doDelete(K key, {bool missingOk: false}) {
-    return _adjustRootAndReturn(_root._delete(owner, key, key.hashCode, 0, missingOk));
+    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), 0, missingOk));
   }
 
   TransientMap<K, V> doUpdate(K key, dynamic updateF) {
@@ -83,7 +99,7 @@ class _TransientMapImpl<K, V>
     return this._root;
   }
 
-  toString() => 'TransientMap(${owner.hashCode}, $_root)';
+  toString() => 'TransientMap($_root)';
 
   V get(K key, [V notFound = _none]) => _root.get(key, notFound);
 
@@ -142,20 +158,20 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   int get hashCode;
 
   _Node<K, V> _update(_Owner owner, K key, dynamic updateF){
-    return _insertOneWith(owner, key, null, key.hashCode, 0, updateF);
+    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), 0, updateF);
   }
 
   PersistentMap<K, V> update(K key, dynamic updateF) =>
-    _insertOneWith(null, key, null, key.hashCode, 0, updateF);
+    _insertOneWith(null, key, null, _reverseHash(key.hashCode), 0, updateF);
 
   _Node<K, V> _assoc(_Owner owner, K key, V value) =>
-      _insertOneWith(owner, key, value, key.hashCode, 0);
+      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), 0);
 
   PersistentMap assoc(K key, V value) => _assoc(null, key, value);
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
-  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, key.hashCode, 0, missingOk);
+  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), 0, missingOk);
 
 
   bool operator ==(other) {
@@ -198,7 +214,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   // method must be called only on top-level _Node
   V get(K key, [V notFound = _none]) {
-    var val = _get(key, key.hashCode & 0x3fffffff, 0);
+    var val = _get(key, _reverseHash(key.hashCode), 0);
     if(_isNone(val)){
       if (_isNone(notFound)) {
         _ThrowKeyError(key);
@@ -298,6 +314,37 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, kv, length);
   }
 
+//  _Node<K, V> polish(_Owner owner, int depth, List _kv) {
+//    assert(_kv.length % recsize == 0);
+//    if (_kv.length < recsize*leafSize) {
+//      return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
+//    } else {
+//      List<List> kvs = new List.generate(branching, (_) => []);
+//      var from = 0;
+//      var to;
+//      for (int branch=0; branch < branching; branch++){
+//        to = from;
+//        while(to < _kv.length && _getBranch(_kv[to+2], depth) == branch){
+//          to += recsize;
+//        }
+//        kvs[branch].length = to-from;
+//        kvs[branch].setRange(0, to-from, _kv, from);
+//        from = to;
+//      }
+//
+////      for (int i=0; i<_kv.length; i+=recsize){
+////        int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
+////        int l = kvs[branch].length;
+////        kvs[branch].length = l+recsize;
+////        kvs[branch].setRange(l, l+recsize, _kv, i);
+////      }
+//      List <_Node<K, V>> array = new List.generate(branching,
+//          (i) => new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
+//      return new _SubMap.abc(owner, array, _kv.length ~/ recsize);
+//    }
+//  }
+
+
   _Node<K, V> polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
     if (_kv.length < recsize*leafSize) {
@@ -305,7 +352,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     } else {
       List<List> kvs = new List.generate(branching, (_) => []);
       for (int i=0; i<_kv.length; i+=recsize){
-        int branch = (_kv[i+2] >> (depth * branchingBits)) & branchingMask;
+        int branch = _getBranch(_kv[i+2], depth);
         kvs[branch].add(_kv[i]);
         kvs[branch].add(_kv[i + 1]);
         kvs[branch].add(_kv[i + 2]);
@@ -369,8 +416,6 @@ class _Leaf<K, V> extends _Node<K, V> {
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
     bool found = false;
     List nkv = new List.from(_kv);
-    assert(hash == key.hashCode);
-    hash = key.hashCode;
     for (int i=0; i<nkv.length; i+=recsize){
       if (nkv[i+2] == hash && nkv[i] == key){
         nkv.removeRange(i, i+3);
@@ -477,13 +522,13 @@ class _SubMap<K, V> extends _Node<K, V> {
   }
 
   V _get(K key, int hash, int depth) {
-    int branch = (hash >> (depth * branchingBits)) & branchingMask;
+    int branch = _getBranch(hash, depth);
     _Node<K, V> map = _array[branch];
     return map._get(key, hash, depth + 1);
   }
 
   _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]) {
-    int branch = (hash >> (depth * branchingBits)) & branchingMask;
+    int branch = _getBranch(hash, depth);
     _Node<K, V> m = _array[branch];
     int oldSize = m.length;
     _Node<K, V> newM = m._insertOneWith(owner, key, val, hash, depth + 1, update);
@@ -498,7 +543,7 @@ class _SubMap<K, V> extends _Node<K, V> {
   }
 
   _Node<K, V> _delete(owner, K key, int hash, int depth, bool missingOk) {
-    int branch = (hash >> (depth * branchingBits)) & branchingMask;
+    int branch = _getBranch(hash, depth);
     _Node<K, V> child = _array[branch];
     int childLength = child.length;
     // need to remember child length as this may modify

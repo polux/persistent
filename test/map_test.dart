@@ -78,7 +78,7 @@ run() {
     });
   });
 
-  skip_group('random', (){
+  group('random', (){
     Random r = new Random(47);
     PersistentMap pm = new PersistentMap();
     Map m = {};
