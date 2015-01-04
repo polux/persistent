@@ -47,7 +47,7 @@ _reverseHash(hash){
 }
 
 _getBranch(hash, depth){
-  return (hash >> ((5-depth)*branchingBits)) & branchingMask;
+  return (hash >> (depth*branchingBits)) & branchingMask;
 }
 
 
@@ -87,7 +87,7 @@ class _TransientMapImpl<K, V>
   }
 
   TransientMap<K, V> doDelete(K key, {bool missingOk: false}) {
-    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), 0, missingOk));
+    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), 5, missingOk));
   }
 
   TransientMap<K, V> doUpdate(K key, dynamic updateF) {
@@ -158,20 +158,20 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   int get hashCode;
 
   _Node<K, V> _update(_Owner owner, K key, dynamic updateF){
-    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), 0, updateF);
+    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), 5, updateF);
   }
 
   PersistentMap<K, V> update(K key, dynamic updateF) =>
-    _insertOneWith(null, key, null, _reverseHash(key.hashCode), 0, updateF);
+    _insertOneWith(null, key, null, _reverseHash(key.hashCode), 5, updateF);
 
   _Node<K, V> _assoc(_Owner owner, K key, V value) =>
-      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), 0);
+      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), 5);
 
   PersistentMap assoc(K key, V value) => _assoc(null, key, value);
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
-  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), 0, missingOk);
+  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), 5, missingOk);
 
 
   bool operator ==(other) {
@@ -214,7 +214,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   // method must be called only on top-level _Node
   V get(K key, [V notFound = _none]) {
-    var val = _get(key, _reverseHash(key.hashCode), 0);
+    var val = _get(key, _reverseHash(key.hashCode), 5);
     if(_isNone(val)){
       if (_isNone(notFound)) {
         _ThrowKeyError(key);
@@ -347,7 +347,7 @@ class _Leaf<K, V> extends _Node<K, V> {
 
   _Node<K, V> polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
-    if (_kv.length < recsize*leafSize) {
+    if (_kv.length < recsize*leafSize || depth == 0) {
       return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
     } else {
       List<List> kvs = new List.generate(branching, (_) => []);
@@ -524,14 +524,14 @@ class _SubMap<K, V> extends _Node<K, V> {
   V _get(K key, int hash, int depth) {
     int branch = _getBranch(hash, depth);
     _Node<K, V> map = _array[branch];
-    return map._get(key, hash, depth + 1);
+    return map._get(key, hash, depth - 1);
   }
 
   _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]) {
     int branch = _getBranch(hash, depth);
     _Node<K, V> m = _array[branch];
     int oldSize = m.length;
-    _Node<K, V> newM = m._insertOneWith(owner, key, val, hash, depth + 1, update);
+    _Node<K, V> newM = m._insertOneWith(owner, key, val, hash, depth - 1, update);
     if(identical(m, newM)) {
       if(oldSize != m.length) this._length += m.length - oldSize;
       return this;
@@ -548,7 +548,7 @@ class _SubMap<K, V> extends _Node<K, V> {
     int childLength = child.length;
     // need to remember child length as this may modify
     // the child (if working with transient)
-    _Node<K, V> newChild = child._delete(owner, key, hash, depth + 1, missingOk);
+    _Node<K, V> newChild = child._delete(owner, key, hash, depth - 1, missingOk);
     int newLength = this.length + (newChild.length - childLength);
     if (identical(child, newChild)) {
       this._length = newLength;
