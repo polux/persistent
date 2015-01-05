@@ -11,6 +11,18 @@ import 'package:unittest/unittest.dart';
 import 'dart:math';
 
 
+class Element {
+  var value, hash;
+  Element(this.value, this.hash);
+  get hashCode => hash;
+  operator ==(other){
+    if (other is! Element) {
+      return false;
+    }
+    return value == other.value;
+  }
+}
+
 main() {
   run();
 }
@@ -61,7 +73,6 @@ run() {
       for (int i=0; i<100000; i++) {
         expect(pm == pm.assoc('hello${i}', 'different'), isFalse);
       }
-
     });
 
     test('transient basics', (){
@@ -76,33 +87,32 @@ run() {
       m.doDelete('a');
       expect(m.toMap(), equals({'c':'d'}));
     });
-  });
 
-  group('random', (){
-    Random r = new Random(47);
-    PersistentMap pm = new PersistentMap();
-    Map m = {};
+    test('equality on hash colision', (){
+      var e1 = new Element(0, 0);
+      var e2 = new Element(1, 0);
+      var m1 = persist({e1: 0, e2: 0});
+      var m2 = persist({e2: 0, e1: 0});
+      expect(m1, equals(m2));
+    });
 
-    for (int i=0; i<1000000; i++){
-      var key = r.nextInt(10000);
-      if (r.nextBool()){
-        pm = pm.delete(key, missingOk: true);
-        m.remove(key);
-      } else {
-        var val = 'hello${r.nextInt(100000)}';
-        pm = pm.assoc(key, val);
-        m[key] = val;
+    solo_test('pokus', (){
+      Map m = {};
+      for (int i=0; i<2000; i++){
+        m[i]=i;
       }
-      print("round: $i, size: ${pm.length}");
-      if (pm != new PersistentMap.fromMap(m)){
-        print(m.length);
-        print((new PersistentMap.fromMap(m)).length);
-        print(pm.length);
-        print(pm);
-        print(m);
-        expect(false, isTrue);
+      PersistentMap pm = persist(m);
+      print(pm);
+      print(pm.runtimeType);
+      for (int i=0; i<2000-50; i++){
+        pm = pm.delete(i);
       }
-    }
+      print(pm.length);
+      print(pm);
+      print(pm.runtimeType);
+
+    });
+
   });
 
 }

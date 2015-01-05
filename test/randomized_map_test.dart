@@ -17,15 +17,15 @@ final _getNone = () => _none;
 bool _isNone(val) => val == _none;
 
 main() {
-  run(print_fn: (message) => print(message));
+  run(10000, print_fn: (message) => print(message));
   print('Test successfully finished');
 }
 
-run({print_fn}) {
+run(n, {print_fn}) {
   if (print_fn == null){
     print_fn = (msg) => null;
   }
-  doTest(1000, print_fn);
+  doTest(n, print_fn);
 }
 
 doTest(operationsCnt, print_fn){
