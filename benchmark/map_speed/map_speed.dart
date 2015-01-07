@@ -20,7 +20,7 @@ Map interfaces = {
   "Map": () => new StandardMapInterface(),
 };
 
-var sizes = [{500:6, 1000: 3, 1500: 2, 3000: 1}];
+var sizes = [{500:600, 1000: 300, 1500: 200, 3000: 100}];
 //var sizes = [{100000:1}];
 int times = 10;
 

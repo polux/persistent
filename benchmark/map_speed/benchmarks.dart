@@ -37,29 +37,29 @@ class WriteBenchmark extends BenchmarkBase{
 class ReadBenchmark extends BenchmarkBase{
 
   final Map<num, num> sample;
-  Map<num, BenchmarkInterface> objects = new Map();
+  Map<num, List<BenchmarkInterface>> objects = new Map();
   final dynamic factory;
 
   ReadBenchmark(this.sample, this.factory):super('Reading');
 
   void setup(){
     this.sample.forEach((size, count){
-      BenchmarkInterface object = factory();
-      objects[size] = object;
-      for (int i = 0; i < size; i++) {
-        object.assoc(i*i, "foo");
+      objects[size] = [];
+      for (int j=0; j<count; j++){
+        BenchmarkInterface object = factory();
+        objects[size].add(object);
+        for (int i = 0; i < size; i++) {
+          object.assoc(i*i, "foo");
+        }
       }
     });
   }
 
   void run(){
     for (var size in this.sample.keys) {
-      BenchmarkInterface object = objects[size];
       for (var j=0; j<this.sample[size]; j++){
+        BenchmarkInterface object = objects[size][j];
         for (int i = size; i >= 0; i--) {
-          object.get(i*i);
-        }
-        for (int i = 0; i <= size; i++) {
           object.get(i*i);
         }
       }
