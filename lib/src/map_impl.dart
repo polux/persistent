@@ -9,6 +9,10 @@ part of persistent;
 final _random = new Random();
 
 
+//const branching = 8;
+//const branchingBits = 3;
+//const branchingMask = 0x7;
+
 //const branching = 16;
 //const branchingBits = 4;
 //const branchingMask = 0xf;
@@ -17,11 +21,14 @@ const branching = 32;
 const branchingBits = 5;
 const branchingMask = 0x1f;
 
+const maxDepth = 5;
+const allHashMask = (1 << (maxDepth+1) * branchingBits)-1;
+
 const leafSize = branching * 3;
 const leafSizeMin = branching * 2;
 
 const binSearchThr = 4;
-const recsize = 3; //0 - key, 1 - val, 2 - hash
+const recsize = 3; //0 - hash, 1 - key, 2 - val
 
 
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
@@ -38,7 +45,7 @@ _getUpdateValue(key, updateF) {
 
 _reverseHash(hash){
   var _tmp = hash ^ (hash << 8);
-  return ((_tmp ^ (_tmp << 16)) & 0x3fffffff);
+  return ((_tmp ^ (_tmp << 16)) & allHashMask);
 }
 
 _getBranch(hash, depth){
@@ -82,7 +89,7 @@ class _TransientMapImpl<K, V>
   }
 
   TransientMap<K, V> doDelete(K key, {bool missingOk: false}) {
-    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), 5, missingOk));
+    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), maxDepth, missingOk));
   }
 
   TransientMap<K, V> doUpdate(K key, dynamic updateF) {
@@ -154,20 +161,20 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   int get hashCode;
 
   _Node<K, V> _update(_Owner owner, K key, dynamic updateF){
-    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), 5, updateF);
+    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
   }
 
   PersistentMap<K, V> update(K key, dynamic updateF) =>
-    _insertOneWith(null, key, null, _reverseHash(key.hashCode), 5, updateF);
+    _insertOneWith(null, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
 
   _Node<K, V> _assoc(_Owner owner, K key, V value) =>
-      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), 5);
+      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), maxDepth);
 
   PersistentMap assoc(K key, V value) => _assoc(null, key, value);
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
-  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), 5, missingOk);
+  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
 
 //  intersection(other){
 //    _Leaf me = this;
@@ -188,106 +195,96 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 //    return true;
 //  }
 
-  bool operator ==(other) {
-    if (other is! _Node) return false;
-    if (identical(this, other)) return true;
-    if (this.length != other.length) {
-      return false;
-    }
-    bool res = true;
-    this.forEachKeyValue((k,v){
-      res = res && (other.get(k, _none) == v);
-    });
-    return res;
-  }
-
-
 //  bool operator ==(other) {
 //    if (other is! _Node) return false;
 //    if (identical(this, other)) return true;
-//    _Node me = this;
-//    if (me.length != other.length) {
+//    if (this.length != other.length) {
 //      return false;
 //    }
-//    if (me is _Leaf && other is _Leaf) {
-//      List mekv = (me as _Leaf)._kv;
-//      List okv = other._kv;
-//      var lastMatch=0;
-//      for (int i=0; i<mekv.length; i+=recsize) {
-//        if (mekv[i+2] == okv[i+2]) {
-//          // same hash
-//          if (mekv[i] == okv[i]) {
-//            // same hash, same key
-//            if (mekv[i+1] == okv[i+1]) {
-//              // match
-//              lastMatch = i;
-//              continue;
-//            } else {
-//              // same key, but not value
-//              return false;
-//            }
-//          } else {
-////            if (_isNone((me as _Leaf).sameHashGet(mekv[i], mekv[i+2], lastMatch))){
-////              return false;
-////            }
-//            // same hash, different key
-//            var hash = mekv[i+2];
-//            // find boundaries of same-hash regions
-//            var bm, bo;
-//            for (var j=i; j<mekv.length; j+=recsize){
-//              var fm = mekv[j+2] == hash;
-//              var fo = okv[j+2] == hash;
-//              if (fm) bm=j;
-//              if (fo) bo=j;
-//              if (!fm && !fo) break;
-//            }
-//            if (bm != bo) return false;
-//            // scan the same-hash regions
-//            for (var j=i; j<=bm; j+=recsize) {
-//              bool res = false;
-//              for (var k=i; k<bo; k+=recsize) {
-//                res = res || (mekv[j] == okv[k]) && (mekv[j+1] == okv[k+1]);
-//              }
-//              if (!res) {
-//                return false;
-//              }
-//            }
-//          }
-//        } else {
-//          // different hash
-//          return false;
-//        }
-//      }
-//      return true;
-//    }
-//    if (me is _SubMap && other is _SubMap) {
-//      for (int i=0; i<branching; i++) {
-//        if((me as _SubMap)._array[i] != other._array[i]) {
-//          return false;
-//        }
-//      }
-//      return true;
-//    }
-//    if (me is _SubMap && other is _Leaf) {
-//      var _tmp = other;
-//      other = me;
-//      me = _tmp;
-//    }
-//    if (me is _Leaf && other is _SubMap) {
-//      for (Pair p in other) {
-//        if (me[p.first] != p.second) {
-//          return false;
-//        }
-//      }
-//      return true;
-//    }
-//    throw new Exception('Should not get here');
-//    return null;
+//    bool res = true;
+//    this.forEachKeyValue((k,v){
+//      res = res && (other.get(k, _none) == v);
+//    });
+//    return res;
 //  }
+
+
+  bool operator ==(other) {
+    if (other is! _Node) return false;
+    if (identical(this, other)) return true;
+    _Node me = this;
+    if (me.length != other.length) {
+      return false;
+    }
+    if (me is _Leaf && other is _Leaf) {
+      List mekv = (me as _Leaf)._kv;
+      List okv = other._kv;
+      var lastMatch=0;
+      for (int i=0; i<mekv.length; i+=recsize) {
+        if (mekv[i] == okv[i]) {
+          // same hash
+          if (mekv[i+1] == okv[i+1]) {
+            // same hash, same key
+            if (mekv[i+2] == okv[i+2]) {
+              // match
+              lastMatch = i;
+              continue;
+            } else {
+              // same key, but not value
+              return false;
+            }
+          } else {
+            // same hash, different key
+            var hash = mekv[i];
+            // find boundaries of same-hash regions
+            var bm, bo;
+            for (var j=i; j<mekv.length; j+=recsize){
+              var fm = mekv[j] == hash;
+              var fo = okv[j] == hash;
+              if (fm) bm=j;
+              if (fo) bo=j;
+              if (!fm && !fo) break;
+            }
+            if (bm != bo) return false;
+            // scan the same-hash regions
+            for (var j=i; j<=bm; j+=recsize) {
+              bool res = false;
+              for (var k=i; k<bo; k+=recsize) {
+                res = res || (mekv[j+1] == okv[k+1]) && (mekv[j+2] == okv[k+2]);
+              }
+              if (!res) return false;
+            }
+          }
+        } else {
+          // different hash
+          return false;
+        }
+      }
+      return true;
+    }
+    if (me is _SubMap && other is _SubMap) {
+      for (int i=0; i<branching; i++) {
+        if((me as _SubMap)._array[i] != other._array[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (me is _SubMap && other is _Leaf) {
+      var _tmp = other;
+      other = me;
+      me = _tmp;
+    }
+    if (me is _Leaf && other is _SubMap) {
+      return me==new _Leaf.fromSubmap(other._owner, other);
+    }
+    throw new Exception('Should not get here');
+    return null;
+  }
 
   // method must be called only on top-level _Node
   V get(K key, [V notFound = _none]) {
-    var val = _get(key, _reverseHash(key.hashCode), 5);
+    var val = _get(key, _reverseHash(key.hashCode), maxDepth);
     if(_isNone(val)){
       if (_isNone(notFound)) {
         _ThrowKeyError(key);
@@ -358,7 +355,7 @@ class _Leaf<K, V> extends _Node<K, V> {
   get iterator {
     List<Pair<K, V>> pairs = [];
     for (int i=0; i<_kv.length; i+=recsize){
-      pairs.add(new Pair(_kv[i], _kv[i+1]));
+      pairs.add(new Pair(_kv[i+1], _kv[i+2]));
     }
     return pairs.iterator;
   }
@@ -366,10 +363,10 @@ class _Leaf<K, V> extends _Node<K, V> {
   void sanityCheck(){
     var lasthash = double.NEGATIVE_INFINITY;
     for (int i=0; i<_kv.length; i+=recsize){
-      if (lasthash>_kv[i+2]) {
+      if (lasthash>_kv[i]) {
         throw new Exception('invariant violated');
       }
-      lasthash = _kv[i+2];
+      lasthash = _kv[i];
     }
   }
 
@@ -377,7 +374,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     if(_hash != null) return _hash;
     _hash = 0;
     for(int i=0; i<_kv.length; i+=recsize){
-      _hash ^= hash2(_kv[i+2], _kv[i+1].hashCode);
+      _hash ^= hash2(_kv[i], _kv[i+2].hashCode);
 
     }
     return _hash;
@@ -391,6 +388,15 @@ class _Leaf<K, V> extends _Node<K, V> {
     this._kv = [];
   }
 
+  factory _Leaf.fromSubmap(_Owner owner, _SubMap sm) {
+    List _kv = [];
+    sm._forEachKVSegment((kv){
+      _kv.addAll(kv);
+    });
+    var nres = new _Leaf.abc(owner, _kv);
+    return nres;
+  }
+
   factory _Leaf.ensureOwner(_Leaf old, _Owner owner, kv, int length) {
     if(_ownerEquals(owner, old._owner)) {
       old._kv = kv;
@@ -400,28 +406,28 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, kv);
   }
 
-  dynamic sameHashGet(key, hash, start) {
-    for (int i=start; i<_kv.length; i+=recsize){
-      if (hash == _kv[i+2]) {
-        if (key==_kv[i]) {
-          return _kv[i+1];
-        } else {
-          return _none;
-        }
-      }
-    }
-    return _none;
-  }
-
-  int sameHashRegionLength(hash, start) {
-    int res;
-    for (int i=start; i<_kv.length; i+=recsize){
-      if (hash == _kv[i+2]) {
-        res = i;
-      }
-    }
-    return res;
-  }
+//  dynamic sameHashGet(key, hash, start) {
+//    for (int i=start; i<_kv.length; i+=recsize){
+//      if (hash == _kv[i]) {
+//        if (key==_kv[i+1]) {
+//          return _kv[i+2];
+//        } else {
+//          return _none;
+//        }
+//      }
+//    }
+//    return _none;
+//  }
+//
+//  int sameHashRegionLength(hash, start) {
+//    int res;
+//    for (int i=start; i<_kv.length; i+=recsize){
+//      if (hash == _kv[i]) {
+//        res = i;
+//      }
+//    }
+//    return res;
+//  }
 
 //  _Node<K, V> polish(_Owner owner, int depth, List _kv) {
 //    assert(_kv.length % recsize == 0);
@@ -448,17 +454,19 @@ class _Leaf<K, V> extends _Node<K, V> {
 //  }
 
 
+  // creates either _Leaf with given _kv, or (if _kv.length is big enough) it
+  // splits the _kv to multiple
   _Node<K, V> polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
     // depth == 0 means we are at the bottom level; we consumed all
     // information from 'hash' and we have to extend the _Leaf no matter how
     // long it gets
-    if (_kv.length < recsize * leafSize || depth == 0) {
+    if (_kv.length < recsize * leafSize || depth == -1) {
       return new _Leaf.abc(owner, _kv);
     } else {
       List<List> kvs = new List.generate(branching, (_) => []);
       for (int i=0; i<_kv.length; i+=recsize){
-        int branch = _getBranch(_kv[i+2], depth);
+        int branch = _getBranch(_kv[i], depth);
         kvs[branch].add(_kv[i]);
         kvs[branch].add(_kv[i + 1]);
         kvs[branch].add(_kv[i + 2]);
@@ -472,34 +480,35 @@ class _Leaf<K, V> extends _Node<K, V> {
   _insert(List into, key, val, hash, [update]){
     assert(into.length % recsize == 0);
     if (into.length == 0) {
-      into.addAll([key, val, hash]);
+      into.addAll([hash, key, val]);
       return;
     }
     int from = 0;
-    int to = into.length - recsize;
-    while(from - to > recsize * binSearchThr){
+    int to = (into.length ~/ recsize) - 1;
+    while(to - from > binSearchThr){
       int mid = (from + to) ~/ 2;
-      if (into[mid + 2] > hash){
+      var midh = into[mid*recsize];
+      if (midh > hash){
         to = mid;
-      } else if (into[mid + 2] < hash){
+      } else if (midh < hash){
         from = mid;
       } else {
         break;
       }
     }
 
-    for (int i=from; i<=to; i+=recsize) {
+    for (int i=from*recsize; i<=to*recsize; i+=recsize) {
       assert(i%recsize == 0);
-      if (hash <= into[i+2]) {
-        if (hash < into[i+2]) {
-          into.insertAll(i, [key, val, hash]);
+      if (hash <= into[i]) {
+        if (hash < into[i]) {
+          into.insertAll(i, [hash, key, val]);
           return;
         }
-        if (key == into[i]) {
+        if (key == into[i+1]) {
           if (update == null) {
-            into[i+1] = val;
+            into[i+2] = val;
           } else {
-            into[i+1] = update(into[i+1]);
+            into[i+2] = update(into[i+2]);
           }
           return;
         }
@@ -507,9 +516,9 @@ class _Leaf<K, V> extends _Node<K, V> {
     }
 
     if (update == null) {
-      into.addAll([key, val, hash]);
+      into.addAll([hash, key, val]);
     } else {
-      into.addAll([key, _getUpdateValue(key, update), hash]);
+      into.addAll([hash, key, _getUpdateValue(key, update)]);
     }
     assert(into.length % recsize == 0);
   }
@@ -524,8 +533,8 @@ class _Leaf<K, V> extends _Node<K, V> {
     bool found = false;
     List nkv = _makeCopyIfNeeded(owner, this._owner, _kv);
     for (int i=0; i<nkv.length; i+=recsize){
-      if (nkv[i+2] == hash && nkv[i] == key){
-        nkv.removeRange(i, i+3);
+      if (nkv[i] == hash && nkv[i+1] == key) {
+        nkv.removeRange(i, i+recsize);
         found = true;
         break;
       }
@@ -546,21 +555,39 @@ class _Leaf<K, V> extends _Node<K, V> {
   }
 
   V _get(K key, int hash, int depth) {
+    int f=0;
+//    for (int i=0; i<_kv.length; i+=21){
+//      if (_kv[i+2] < hash){
+//        f=i;
+//      }
+//    }
+//
+//    for (int i=f+recsize; i<_kv.length; i+=recsize) {
+//      var h = _kv[i+2];
+//      if (h == hash && _kv[i] == key) {
+//        return _kv[i+1];
+//      }
+//      if (h > hash) {
+//        return _none;
+//      }
+//    }
+//    return _none;
     int from = 0;
-    int to = _kv.length - recsize;
-    while(from - to > recsize * binSearchThr){
+    int to = _kv.length ~/ recsize;
+    while(to - from > binSearchThr){
       int mid = (from + to) ~/ 2;
-      if (_kv[mid + 2] > hash){
+      var midh = _kv[mid * recsize];
+      if (midh > hash){
         to = mid;
-      } else if (_kv[mid + 2] < hash){
+      } else if (midh < hash){
         from = mid;
       } else {
         break;
       }
     }
-    for(int i=from; i<=to; i+=recsize){
-      if (_kv[i+2] == hash && _kv[i] == key) {
-        return _kv[i+1];
+    for(int i=from*recsize; i<to*recsize; i+=recsize){
+      if (_kv[i] == hash && _kv[i+1] == key) {
+        return _kv[i+2];
       }
     }
     return _none;
@@ -568,7 +595,7 @@ class _Leaf<K, V> extends _Node<K, V> {
 
   void forEachKeyValue(f(K, V)) {
     for (int i=0; i<_kv.length; i+=recsize) {
-      f(_kv[i], _kv[i+1]);
+      f(_kv[i+1], _kv[i+2]);
     }
   }
 
@@ -674,13 +701,7 @@ class _SubMap<K, V> extends _Node<K, V> {
     if (res._length >= leafSizeMin) {
       return res;
     } else {
-      List _kv = [];
-      res._forEachKVSegment((kv){
-        _kv.addAll(kv);
-      });
-      var nres = new _Leaf.abc(owner, _kv);
-//      nres.sanityCheck();
-      return nres;
+      return new _Leaf.fromSubmap(owner, res);
     }
   }
 

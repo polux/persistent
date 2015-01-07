@@ -20,17 +20,13 @@ class WriteBenchmark extends BenchmarkBase{
 
   void run(){
     for (var size in this.sample.keys) {
+      for (var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"])
       for (var j=0; j<this.sample[size]; j++){
         for (int i = 0; i < size; i++) {
-          var key = "key$i";
-          object.assoc("key$i", "foo");
-          object.assoc("key$i", "bar");
-          object.assoc("key$i", "baz");
-          object.assoc("key$i", "woo");
+          object.assoc(i*i, val);
         }
         for (int i = 0; i < size; i++) {
-          var key = "key$i";
-          object.delete(key);
+          object.delete(i*i);
         }
       }
     }
@@ -51,7 +47,7 @@ class ReadBenchmark extends BenchmarkBase{
       BenchmarkInterface object = factory();
       objects[size] = object;
       for (int i = 0; i < size; i++) {
-        object.assoc("key$i", "foo");
+        object.assoc(i*i, "foo");
       }
     });
   }
@@ -61,10 +57,10 @@ class ReadBenchmark extends BenchmarkBase{
       BenchmarkInterface object = objects[size];
       for (var j=0; j<this.sample[size]; j++){
         for (int i = size; i >= 0; i--) {
-          object.get("key$i");
+          object.get(i*i);
         }
         for (int i = 0; i <= size; i++) {
-          object.get("key$i");
+          object.get(i*i);
         }
       }
     }

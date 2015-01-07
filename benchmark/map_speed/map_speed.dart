@@ -16,17 +16,18 @@ part 'interface_impl.dart';
 
 Map interfaces = {
   "PersistentMap": () => new PersistentMapInterface(),
-  "TransientMap": () => new TransientMapInterface(),
+//  "TransientMap": () => new TransientMapInterface(),
   "Map": () => new StandardMapInterface(),
 };
 
-var sizes = [{1000:6, 2000: 3, 3000: 2, 6000: 1}];
-int times = 200;
+var sizes = [{500:6, 1000: 3, 1500: 2, 3000: 1}];
+//var sizes = [{100000:1}];
+int times = 10;
 
 void main() {
   var config =
   {
-    'Write': ((sample, factory) => (new WriteBenchmark(sample, factory))),
+//    'Write': ((sample, factory) => (new WriteBenchmark(sample, factory))),
     'Read': ((sample, factory) => (new ReadBenchmark(sample, factory))),
   };
   var result = {};
