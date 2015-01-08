@@ -1,4 +1,4 @@
-all: init clean run
+all: clean run
     
 init:
 	npm up

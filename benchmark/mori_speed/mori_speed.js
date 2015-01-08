@@ -2,7 +2,7 @@ var Benchmark = require('benchmark');
 var m = require('mori');
 
 var samples = [
-	{"500":6, "1000":3, "1500":2, "3000":1}
+	{"500":60, "1000":30, "1500":20, "3000":10}
 ]
 
 var times = 10;
@@ -34,7 +34,7 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 		objects[size_name] = subobjects;
 	}
 
-	read_map_suite.add('Map Read #'+sample_id, function() {
+	read_map_suite.add('Map Read on '+JSON.stringify(sample), function() {
 	  for(var size_name in sample){
 	  	var size = Number(size_name)
 		
@@ -62,21 +62,20 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 
 	var sample = samples[sample_id];
 
-	write_map_suite.add('Map Write #'+sample_id, function() {
+	write_map_suite.add('Map Write on '+JSON.stringify(sample), function() {
 	  for(var size_name in sample){
 	  	var size = Number(size_name);
 	  	var count = sample[size_name];
-		
 
-		for(var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"]){
-			for (var i = 0; i < count; i++){
-				var map = m.hash_map();
+		for (var j = 0; j < count; j++){
+			var map = m.hash_map();
+			for(var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"]){
 				for (var i = 0; i < size; i++) {
-					m.assoc(map, i*i, val);
+					map = m.assoc(map, i*i, val);
 				}
-				for (var i = 0; i < size; i++) {
-					m.dissoc(map, i*i);
-				}
+			}
+			for (var i = 0; i < size; i++) {
+				map = m.dissoc(map, i*i);
 			}
 		}
 	  }
@@ -86,10 +85,12 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 
 
 
+
 // Run
 
 var logger = function(event) {
 	var error = event.target.error,
+		time = (1/event.target.hz * 1000000);
 		stats = event.target.stats,
 		size = stats.sample.length,
 		result = event.target.name;
@@ -97,7 +98,7 @@ var logger = function(event) {
 	if (error) {
 		result += ': ' + join(error);
 	} else {
-		result += ': ' + (stats.mean * 1000000).toFixed(0) + ' us +/-' +
+		result += ': ' + time.toFixed(0) + ' us +/-' +
 		stats.rme.toFixed(2) + '% (' + size + ' runs sampled)';
 	}
 	console.log(result);

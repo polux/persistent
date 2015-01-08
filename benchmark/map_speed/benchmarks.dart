@@ -20,10 +20,12 @@ class WriteBenchmark extends BenchmarkBase{
 
   void run(){
     for (var size in this.sample.keys) {
-      for (var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"])
       for (var j=0; j<this.sample[size]; j++){
-        for (int i = 0; i < size; i++) {
-          object.assoc(i*i, val);
+        object = factory();
+        for (var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"]){
+          for (int i = 0; i < size; i++) {
+            object.assoc(i*i, val);
+          }
         }
         for (int i = 0; i < size; i++) {
           object.delete(i*i);
