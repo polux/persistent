@@ -13,15 +13,15 @@ final _random = new Random();
 //const branchingBits = 3;
 //const branchingMask = 0x7;
 
-//const branching = 16;
-//const branchingBits = 4;
-//const branchingMask = 0xf;
+const branching = 16;
+const branchingBits = 4;
+const branchingMask = 0xf;
 
-const branching = 32;
-const branchingBits = 5;
-const branchingMask = 0x1f;
+//const branching = 32;
+//const branchingBits = 5;
+//const branchingMask = 0x1f;
 
-const maxDepth = 5;
+const maxDepth = 7;
 const allHashMask = (1 << (maxDepth+1) * branchingBits)-1;
 
 const leafSize = branching * 3;

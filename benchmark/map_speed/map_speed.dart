@@ -16,23 +16,30 @@ part 'interface_impl.dart';
 
 Map interfaces = {
   "PersistentMap": () => new PersistentMapInterface(),
-//  "TransientMap": () => new TransientMapInterface(),
+  "TransientMap": () => new TransientMapInterface(),
   "Map": () => new StandardMapInterface(),
 };
 
-var sizes = [{500:600, 1000: 300, 1500: 200, 3000: 100}];
-//var sizes = [{100000:1}];
 int times = 10;
 
 void main() {
-  var config =
-  {
-//    'Write': ((sample, factory) => (new WriteBenchmark(sample, factory))),
-    'Read': ((sample, factory) => (new ReadBenchmark(sample, factory))),
-  };
+  var config = [
+   {'name': 'Write',
+    'creator': ((sample, factory) => (new WriteBenchmark(sample, factory))),
+    'sizes': [{10000: 1}],
+//    'sizes': [{500:6, 1000: 3, 1500: 2, 3000: 1}],
+   },
+//   {
+//     'name': 'Read',
+//     'creator': ((sample, factory) => (new ReadBenchmark(sample, factory))),
+//     'sizes': [{500:600, 1000: 300, 1500: 200, 3000: 100}],
+//   }
+  ];
   var result = {};
-  config.forEach((mode, creator){
-    for (Map sample in sizes) {
+  config.forEach((conf){
+    String mode = conf['name'];
+    var creator = conf['creator'];
+    for (Map sample in conf['sizes']) {
       var res = {};
       var dev = {};
       interfaces.forEach((k,v){
