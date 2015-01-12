@@ -30,7 +30,6 @@ const leafSizeMin = branching * 2;
 const binSearchThr = 4;
 const recsize = 3; //0 - hash, 1 - key, 2 - val
 
-
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
 _ThrowUpdateKeyError(key, exception) => throw new Exception('Key $key was not found, calling update with no arguments threw: $exception');
@@ -175,11 +174,6 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
   PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
-
-//  intersection(other){
-//    _Leaf me = this;
-//    other
-//  }
 
 //  bool operator ==(other) {
 //    if (other is! _Node) return false;
@@ -346,7 +340,58 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
       new PersistentMap<K, V>.fromPairs(this.where(f));
+
+  static _returnRight(left, right) => right;
+
+  PersistentMap<K, V> union(
+    PersistentMap<K, V> other,
+    [V combine(V left, V right) = _returnRight]
+  ){
+    if(other is _Node){
+      return _union(other as _Node, combine, maxDepth);
+    } else {
+      var result = this.asTransient();
+      other.forEachKeyValue((K key, V value){
+        if(result.hasKey(key)){
+          result.doAssoc(key, combine(this[key], value));
+        } else {
+          result.doAssoc(key, value);
+        }
+      });
+      return result.asPersistent();
+    }
+  }
+
+  PersistentMap<K, V> intersection(
+    PersistentMap<K, V> other,
+    [V combine(V left, V right) = _returnRight]
+  ){
+    if(other is _Node){
+      return _intersection(other as _Node, combine, maxDepth);
+    } else {
+      var result = new PersistentMap().asTransient();
+      other.forEachKeyValue((K key, V value){
+        if(this.hasKey(key)){
+          result.doAssoc(key, combine(this[key], value));
+        }
+      });
+      return result.asPersistent();
+    }
+  }
+
+  PersistentMap<K, V> _union(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  );
+
+  PersistentMap<K, V> _intersection(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  );
 }
+
 
 class _Leaf<K, V> extends _Node<K, V> {
   List _kv;
@@ -605,6 +650,46 @@ class _Leaf<K, V> extends _Node<K, V> {
     f(_kv);
   }
 
+  PersistentMap<K, V> _union(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  ){
+    // TODO: More efficient union of two leafs.
+    _Owner owner = new _Owner();
+    for(int i = 0; i < _kv.length; i+=3){
+      var res = other._get(_kv[i+1], _kv[i], depth);
+      if(_isNone(res)){
+        other =
+          other._insertOneWith(owner, _kv[i+1], _kv[i+2], _kv[i], depth);
+      } else {
+        other =
+          other._insertOneWith(
+            owner, _kv[i+1],
+            combine(_kv[i+2], res),
+            _kv[i],
+            depth
+          );
+      }
+    }
+    other._owner = null;
+    return other;
+  }
+
+  PersistentMap<K, V> _intersection(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  ){
+    List _nkv = [];
+    for(int i = 0; i < _kv.length; i+=3){
+      var res = other._get(_kv[i+1], _kv[i], depth);
+      if(!_isNone(res)){
+        _nkv.addAll([_kv[i], _kv[i+1], combine(_kv[i+2], res)]);
+      }
+    }
+    return new _Leaf.abc(null, _nkv);
+  }
 }
 
 class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
@@ -714,6 +799,47 @@ class _SubMap<K, V> extends _Node<K, V> {
   }
 
   toDebugString() => "_SubMap($_array)";
+
+  PersistentMap<K, V> _union(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  ){
+    if(other is _SubMap){
+      var children = new List.generate(branching, (int i) => (
+        _array[i]._union((other as _SubMap)._array[i], combine, depth-1)
+      ));
+      int size = children.fold(0, (_Node x, int sum) =>
+          sum+=x.length
+      );
+      return new _SubMap.abc(null, children, size);
+    } else {
+      return other._union(this, (x,y) => combine(y,x), depth);
+    }
+  }
+
+  PersistentMap<K, V> _intersection(
+    _Node<K, V> other,
+    V combine(V left, V right),
+    int depth
+  ){
+    if(other is _SubMap){
+      var children = new List.generate(branching, (int i) => (
+        _array[i]._intersection((other as _SubMap)._array[i], combine, depth-1)
+      ));
+      int size = children.fold(0, (_Node x, int sum) =>
+          sum+=x.length
+      );
+      var res = new _SubMap.abc(null, children, size);
+      if (size >= leafSizeMin) {
+        return res;
+      } else {
+        return new _Leaf.fromSubmap(null, res);
+      }
+    } else {
+      return other._intersection(this, (x,y) => combine(y,x), depth);
+    }
+  }
 }
 
 _ownerEquals(_Owner a, _Owner b) {

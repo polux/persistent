@@ -96,23 +96,6 @@ run() {
       expect(m1, equals(m2));
     });
 
-    solo_test('pokus', (){
-      Map m = {};
-      for (int i=0; i<2000; i++){
-        m[i]=i;
-      }
-      PersistentMap pm = persist(m);
-      print(pm);
-      print(pm.runtimeType);
-      for (int i=0; i<2000-50; i++){
-        pm = pm.delete(i);
-      }
-      print(pm.length);
-      print(pm);
-      print(pm.runtimeType);
-
-    });
-
   });
 
 }

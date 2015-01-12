@@ -199,8 +199,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-//  PersistentMap<K, V>
-//      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PersistentMap<K, V>
+      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -219,8 +219,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [intersection] is commutative if and only if [combine] is
    * provided and if it is commutative.
    */
-//  PersistentMap<K, V>
-//      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PersistentMap<K, V>
+      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
 
   /// A strict (non-lazy) version of [map].
   PersistentMap strictMap(Pair f(Pair<K, V> pair));
