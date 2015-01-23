@@ -16,6 +16,17 @@ final _none = new Object();
 final _getNone = () => _none;
 bool _isNone(val) => val == _none;
 
+const hashCodeModulo = 1000;
+
+class Value {
+  dynamic val, hash;
+
+  Value(this.val, this.hash);
+
+  operator ==(other) => this.val == other.val;
+  get hashCode => this.hash;
+}
+
 main() {
   run(10000, print_fn: (message) => print(message));
   print('Test successfully finished');
@@ -162,7 +173,7 @@ doTest(operationsCnt, print_fn){
   List all_values = [];
 
   for (int i=0; i<range; i++){
-    all_keys.add('hello $i');
+    all_keys.add(new Value('hello $i','hello $i'.hashCode % hashCodeModulo));
     all_values.add('world $i');
   }
   test('Random Map Test', () {
