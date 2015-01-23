@@ -10,7 +10,7 @@ part of persistent;
  * A read-only set, unordered collection of distinct elements of type [E].
  *
  * There is no default implementation of [ReadVector], since it just
- * specifies the common interface of [PersistentVector] and [TransientVector].
+ * specifies the common interface of [PVec] and [TVec].
  */
 abstract class ReadSet<E> implements Iterable<E> {
 
@@ -28,17 +28,17 @@ abstract class ReadSet<E> implements Iterable<E> {
  * Persistent data structure is an immutable structure, that provides effective
  * creation of slightly mutated copies.
  */
-abstract class PersistentSet<E> implements ReadSet<E>, PersistentCollection {
+abstract class PSet<E> implements ReadSet<E>, PersistentCollection {
 
-  /// Creates an empty [PersistentSet] using its default implementation.
-  factory PersistentSet() => new _PersistentSetImpl<E>();
+  /// Creates an empty [PSet] using its default implementation.
+  factory PSet() => new _PSetImpl<E>();
 
   /**
    * Creates an immutable copy of [elements] using the default implementation
-   * of [PersistentSet].
+   * of [PSet].
    */
-  factory PersistentSet.from(Iterable<E> elements) {
-    PersistentSet<E> result = new _PersistentSetImpl<E>();
+  factory PSet.from(Iterable<E> elements) {
+    PSet<E> result = new _PSetImpl<E>();
     for (E element in elements) {
       result = result.insert(element);
     }
@@ -50,7 +50,7 @@ abstract class PersistentSet<E> implements ReadSet<E>, PersistentCollection {
    *
    * If [element] is already in `this`, the same set is returned.
    */
-  PersistentSet<E> insert(E element);
+  PSet<E> insert(E element);
 
   /**
    * Returns a set identical to `this` except that it does not contain [element].
@@ -58,53 +58,53 @@ abstract class PersistentSet<E> implements ReadSet<E>, PersistentCollection {
    * If `this` does not contain [element], `this` is returned or Exception is thrown
    * dependent on what is value of [missingOk] flag.
    */
-  PersistentSet<E> delete(E element, {bool missingOk: false});
+  PSet<E> delete(E element, {bool missingOk: false});
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
    * and returns persistent result.
    */
-  PersistentSet<E> withTransient(void change(TransientSet<E> set));
+  PSet<E> withTransient(void change(TSet<E> set));
 
   /**
    * Returns a new set of all the elements that are included
    * in either `this` or [other]
    */
-  PersistentSet<E> union(PersistentSet<E> other);
+  PSet<E> union(PSet<E> other);
 
   /// Alias for [union].
-  PersistentSet<E> operator +(PersistentSet<E> other);
+  PSet<E> operator +(PSet<E> other);
 
   /**
    * Returns a new set of all the elements that are included in `this` but
    * not in [other]
    */
-  PersistentSet<E> difference(PersistentSet<E> other);
+  PSet<E> difference(PSet<E> other);
 
   /// Alias for [difference].
-  PersistentSet<E> operator -(PersistentSet<E> other);
+  PSet<E> operator -(PSet<E> other);
 
   /**
    * Returns a lazy iterable with all the pairs `Pair(first, second)`
    * such that `first` is included in `this` and
    * `second` is included in [other]
    */
-  Iterable<Pair<E,dynamic>> cartesianProduct(PersistentSet other);
+  Iterable<Pair<E,dynamic>> cartesianProduct(PSet other);
 
   /// Alias for [cartesianProduct].
-  Iterable<Pair<E,dynamic>> operator *(PersistentSet other);
+  Iterable<Pair<E,dynamic>> operator *(PSet other);
 
   /**
    * Returns a new set of all the elements that are included
    * in both `this` and [other]
    */
-  PersistentSet<E> intersection(PersistentSet<E> persistentSet);
+  PSet<E> intersection(PSet<E> PSet);
 
   /// A strict (non-lazy) version of [map].
-  PersistentSet strictMap(f(E element));
+  PSet strictMap(f(E element));
 
   /// A strict (non-lazy) version of [where].
-  PersistentSet<E> strictWhere(bool f(E element));
+  PSet<E> strictWhere(bool f(E element));
 
   /**
    * The equality operator.
@@ -119,7 +119,7 @@ abstract class PersistentSet<E> implements ReadSet<E>, PersistentCollection {
    */
   int get hashCode;
 
-  TransientSet<E> asTransient();
+  TSet<E> asTransient();
 }
 
 /**
@@ -130,7 +130,7 @@ abstract class PersistentSet<E> implements ReadSet<E>, PersistentCollection {
  * a persistent structure to apply some changes and obtain a new persistent
  * structure.
  */
-abstract class TransientSet<E> implements ReadSet<E> {
+abstract class TSet<E> implements ReadSet<E> {
 
   /**
    * Adds [element] to `this`.
@@ -149,5 +149,5 @@ abstract class TransientSet<E> implements ReadSet<E> {
    */
   void doDelete(E element, {bool missingOk: false});
 
-  PersistentSet<E> asPersistent();
+  PSet<E> asPersistent();
 }

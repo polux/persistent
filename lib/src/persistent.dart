@@ -45,18 +45,18 @@ int _finish(int hash) {
 persist(from) {
   if(from is PersistentCollection) return from;
   if(from is Map) {
-    var map = new PersistentMap();
-    return map.withTransient((TransientMap map) {
+    var map = new PMap();
+    return map.withTransient((TMap map) {
       from.forEach((key,value) => map.doAssoc(per(key), per(value)));
     });
   }
   else if (from is Set) {
     from = from.map((e) => persist(e));
-    return new PersistentSet.from(from);
+    return new PSet.from(from);
   }
   else if(from is Iterable) {
     from = from.map((e) => persist(e));
-    return new PersistentVector.from(from);
+    return new PVec.from(from);
   }
   else {
     return from;
@@ -86,16 +86,16 @@ lookupIn(PersistentIndexedCollection structure, List path, {notFound}) =>
 
 _lookupIn(dynamic s, Iterator path, {notFound}) {
   if(!path.moveNext()) return s;
-  if(s is PersistentMap) {
+  if(s is PMap) {
     return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
-  else if(s is PersistentVector) {
+  else if(s is PVec) {
     return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
-  else if(s is TransientMap) {
+  else if(s is TMap) {
     return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
-  else if(s is TransientVector) {
+  else if(s is TVec) {
     return _lookupIn(s.get(path.current, notFound), path, notFound: notFound);
   }
   else {
@@ -115,16 +115,16 @@ PersistentCollection insertIn(PersistentIndexedCollection structure, Iterable pa
 PersistentCollection _insertIn(s, Iterator path, dynamic value) {
   var current = path.current;
   if(path.moveNext()) { //path continues
-    if(s is PersistentMap) {
+    if(s is PMap) {
       return s.assoc(current, _insertIn(s.get(current), path, value));
     }
-    else if(s is PersistentVector) {
+    else if(s is PVec) {
       return s.set(current, _insertIn(s.get(current), path, value));
     }
-    else if(s is TransientMap) {
+    else if(s is TMap) {
       return s.doAssoc(current, _insertIn(s.get(current), path, value));
     }
-    else if(s is TransientVector) {
+    else if(s is TVec) {
       return s.doSet(current, _insertIn(s.get(current), path, value));
     }
     else {
@@ -132,19 +132,19 @@ PersistentCollection _insertIn(s, Iterator path, dynamic value) {
     }
   }
   else {
-    if(s is PersistentMap) {
+    if(s is PMap) {
       return s.assoc(current, value);
     }
-    else if(s is PersistentVector) {
+    else if(s is PVec) {
       if(current == s.length) {
         return s.push(value);
       }
       return s.set(current, value);
     }
-    else if(s is TransientMap) {
+    else if(s is TMap) {
       return s.doAssoc(current, value);
     }
-    else if(s is TransientVector) {
+    else if(s is TVec) {
       if(current == s.length) {
         return s.doPush(value);
       }
@@ -170,19 +170,19 @@ PersistentCollection deleteIn(PersistentIndexedCollection structure, List path, 
 PersistentCollection _deleteIn(s, Iterator path, {bool safe: false}) {
   var current = path.current;
   if(path.moveNext()) { //path continues
-    if(s is PersistentMap) {
+    if(s is PMap) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);
       return s.assoc(current, deleted);
     }
-    else if(s is PersistentVector) {
+    else if(s is PVec) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);
       return s.set(current, deleted);
     }
-    else if(s is TransientMap) {
+    else if(s is TMap) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);
       return s.doAssoc(current, deleted);
     }
-    else if(s is TransientVector) {
+    else if(s is TVec) {
       var deleted = _deleteIn(s.get(current), path, safe: safe);
       return s.doSet(current, deleted);  }
     else {
@@ -190,17 +190,17 @@ PersistentCollection _deleteIn(s, Iterator path, {bool safe: false}) {
     }
   }
   else {
-    if(s is PersistentMap) {
+    if(s is PMap) {
       return s.delete(current);
     }
-    else if(s is PersistentVector) {
+    else if(s is PVec) {
       if(s.length - 1 == current) return s.pop();
       else throw new Exception('Cannot delete non last element in PersistentVector');
     }
-    else if(s is TransientMap) {
+    else if(s is TMap) {
       return s.doDelete(current);
     }
-    else if(s is TransientVector) {
+    else if(s is TVec) {
       if(s.length - 1 == current) return s.doPop();
       else throw new Exception('Cannot delete non last element in TransientVector');
     }

@@ -356,7 +356,7 @@ _VNode _transientVNode(_VNode node, _Owner ownerID) {
   return new _VNode(node != null ? node._array.sublist(0) : [], ownerID);
 }
 
-class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PersistentVector<E> {
+class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PVec<E> {
   // cached hashCode.
   int _hashCode = null;
 
@@ -422,7 +422,7 @@ class _PersistentVectorImpl<E> extends _BaseVectorImpl<E> implements PersistentV
   E operator[](int index) => get(index);
 }
 
-class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TransientVector<E> {
+class _TransientVectorImpl<E> extends _BaseVectorImpl<E> implements TVec<E> {
   _TransientVectorImpl._prototype() : super._prototype();
 
   factory _TransientVectorImpl._make(int size, int level, _VNode root, _VNode tail, _Owner ownerID) {

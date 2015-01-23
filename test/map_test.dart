@@ -30,7 +30,7 @@ main() {
 run() {
   group('Persistent map', () {
     test('assoc', () {
-      PersistentMap pm = new PersistentMap();
+      PMap pm = new PMap();
       pm = pm.assoc('a', 'b');
       expect(pm.toMap(), equals({'a': 'b'}));
       pm = pm.assoc('a', 'c');
@@ -39,7 +39,7 @@ run() {
     });
 
     test('get', () {
-      PersistentMap pm = new PersistentMap();
+      PMap pm = new PMap();
       pm = pm.assoc('a', 'b');
       pm = pm.assoc('b', 'c');
 
@@ -49,7 +49,7 @@ run() {
     });
 
     test('delete', () {
-      PersistentMap pm = new PersistentMap();
+      PMap pm = new PMap();
       pm = pm.assoc('a', 'b');
 
       expect(pm.delete('a').toMap(), equals({}));
@@ -58,12 +58,12 @@ run() {
     });
 
     test('update', () {
-      PersistentMap pm = persist({'a':'b', 'c': 'd'});
+      PMap pm = persist({'a':'b', 'c': 'd'});
       expect(pm.update('c', (v) => 'updated $v'), equals(persist({'a': 'b', 'c': 'updated d'})));
     });
 
     test('equality speed', (){
-      PersistentMap pm;
+      PMap pm;
       Map m = {};
       for(int i=0; i<100000; i++) {
         m['hello${i}'] = 'world${i}';
@@ -76,7 +76,7 @@ run() {
     });
 
     test('transient basics', (){
-      TransientMap m = new TransientMap();
+      TMap m = new TMap();
       m.doAssoc('a', 'b');
       m.doAssoc('c', 'd');
       expect(m.toMap(), equals({'a':'b', 'c':'d'}));
@@ -103,10 +103,10 @@ run() {
         if(i%4 != 3) dm1[i] = i;
         if(i%4 != 1) dm2[i] = -i;
       }
-      PersistentMap m1 = persist(dm1);
-      PersistentMap m2 = persist(dm2);
-      PersistentMap m3 = m1.union(m2);
-      PersistentMap m4 = m1.union(m2, (a,b)=>a+b);
+      PMap m1 = persist(dm1);
+      PMap m2 = persist(dm2);
+      PMap m3 = m1.union(m2);
+      PMap m4 = m1.union(m2, (a,b)=>a+b);
 
       expect(m3.length, equals(1000));
       expect(m4.length, equals(1000));
@@ -131,10 +131,10 @@ run() {
         if(i%4 != 3) dm1[i] = i;
         if(i%4 != 1) dm2[i] = -i;
       }
-      PersistentMap m1 = persist(dm1);
-      PersistentMap m2 = persist(dm2);
-      PersistentMap m3 = m1.intersection(m2);
-      PersistentMap m4 = m1.intersection(m2, (a,b)=>a+b);
+      PMap m1 = persist(dm1);
+      PMap m2 = persist(dm2);
+      PMap m3 = m1.intersection(m2);
+      PMap m4 = m1.intersection(m2, (a,b)=>a+b);
 
       expect(m3.length, equals(500));
       expect(m4.length, equals(500));

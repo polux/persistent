@@ -8,9 +8,9 @@ library map_example;
 import 'package:vacuum_persistent/persistent.dart';
 
 main() {
-  final emptyMap = new PersistentMap<String,int>();
+  final emptyMap = new PMap<String,int>();
   final m1 = emptyMap.assoc('a', 1).assoc('b', 2);
-  final m2 = new PersistentMap<String,int>.fromMap({'a': 3, 'c': 4});
+  final m2 = new PMap<String,int>.fromMap({'a': 3, 'c': 4});
 
   print(m1);  // {a: 1, b: 2}
   print(m2);  // {c: 4, a: 3}

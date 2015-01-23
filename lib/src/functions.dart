@@ -7,27 +7,27 @@
 part of persistent;
 
 _dispatch(x, {op:"operation", map, vec, set}) {
-  if (x is PersistentMap) {
+  if (x is PMap) {
     if (map != null) return map();
-  } else if (x is PersistentVector) {
+  } else if (x is PVec) {
     if (vec != null) return vec();
-  } else if (x is PersistentSet) {
+  } else if (x is PSet) {
     if (set != null) return set();
   }
   throw new Exception("${x.runtimeType} does not support $op operation");
 }
 
-_firstP(p) => p.first;
-_secondP(p) => (p is Pair)? p.second : p.last;
+_firstP(p) => p is Pair? p.fst : p.first;
+_secondP(p) => (p is Pair)? p.snd : p.last;
 
 /**
  * Returns a new collection which is the result of inserting elements to persistent
- * [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * [coll] ([PMap]/[PSet]/[PVec]).
  * Accepts up to 9 positional elements in one call. If you need to insert
  * more elements, call [into] with [List] of elements.
  * When conjing to a map as element use [List] of length 2 or [Pair].
- * Inserting element to [PersistentSet], which is already presented, does nothing.
- * Inserting element to [PersistentMap] with existing key will overwrite that key.
+ * Inserting element to [PSet], which is already presented, does nothing.
+ * Inserting element to [PMap] with existing key will overwrite that key.
  *
  * Examples:
  *      PersistentVector pv = persist([1, 2])
@@ -44,9 +44,9 @@ PersistentCollection conj(PersistentCollection coll, arg0, [arg1 = _none, arg2 =
 
 /**
  * Returns a new collection which is the result of inserting all elements of [iter]
- * to persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
- * Inserting element to [PersistentSet], which is already presented, does nothing.
- * Inserting element to [PersistentMap] with existing key will overwrite that key.
+ * to persistent [coll] ([PMap]/[PSet]/[PVec]).
+ * Inserting element to [PSet], which is already presented, does nothing.
+ * Inserting element to [PMap] with existing key will overwrite that key.
  *
  * Examples:
  *      PersistentVector pv = persist([]);
@@ -57,20 +57,20 @@ PersistentCollection conj(PersistentCollection coll, arg0, [arg1 = _none, arg2 =
  *      insert(pm1, pm2); // persist({'a':10, 'b': 15, 'c': 7})
  *      insert(pm1, [['b', 15], new Pair(c, 7)]); // == persist({'a':10, 'b': 15, 'c': 7});
  *
- *      PersistentSet perSet = new PersistentSet();
+ *      PSet perSet = new PSet();
  *      into(perSet, [1,2,1,3,2]); // == persist(new Set.from([1, 2, 3]))
  */
 PersistentCollection into(PersistentCollection coll, Iterable iter) {
   return _dispatch(coll,
      op: 'into',
-     map:()=>  (coll as PersistentMap).withTransient((TransientMap t) => iter.forEach((arg) => t.doAssoc(_firstP(arg), _secondP(arg)))),
-     vec:()=>  (coll as PersistentVector).withTransient((t) => iter.forEach((arg) => t.doPush(arg))),
-     set:()=>  (coll as PersistentSet).withTransient((t) => iter.forEach((arg) => t.doInsert(arg)))
+     map:()=>  (coll as PMap).withTransient((TMap t) => iter.forEach((arg) => t.doAssoc(_firstP(arg), _secondP(arg)))),
+     vec:()=>  (coll as PVec).withTransient((t) => iter.forEach((arg) => t.doPush(arg))),
+     set:()=>  (coll as PSet).withTransient((t) => iter.forEach((arg) => t.doInsert(arg)))
   );
 }
 /**
  * Returns a new collection which is the result of inserting new keys and values
- * into [PersistentIndexedCollection] [coll] ([PersistentMap]/[PersistentVector]).
+ * into [PersistentIndexedCollection] [coll] ([PMap]/[PVec]).
  * Accepts up to 9 key:value positional arguments. If you need more arguments use [assocI] with [Iterable].
  *
  * Example:
@@ -109,7 +109,7 @@ PersistentCollection assoc(PersistentIndexedCollection coll, key0, val0, [
 
 /**
  * Returns a new collection which is the result of adding all elements of [iter]
- * into [PersistentIndexedCollection] [coll] ([PersistentMap]/[PersistentVector]).
+ * into [PersistentIndexedCollection] [coll] ([PMap]/[PVec]).
  * Elements of [iter] should be [Pair] or [List] with 2 arguments.
  *
  * Example:
@@ -123,13 +123,13 @@ PersistentCollection assocI(PersistentIndexedCollection coll, Iterable iter) {
   return _dispatch(coll,
      op: 'assocI',
      map:()=> into(coll, iter),
-     vec:()=> (coll as PersistentVector).withTransient((t) => iter.forEach((arg) => t[_firstP(arg)] = _secondP(arg)))
+     vec:()=> (coll as PVec).withTransient((t) => iter.forEach((arg) => t[_firstP(arg)] = _secondP(arg)))
   );
 }
 
 /**
  * Returns a new [PersistentCollection] which is the result of removing keys from
- * persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * persistent [coll] ([PMap]/[PSet]/[PVec]).
  * Accepts up to 9 key:value positional arguments.
  * If you need more arguments use [dissocI] with [Iterable].
  *
@@ -140,7 +140,7 @@ PersistentCollection assocI(PersistentIndexedCollection coll, Iterable iter) {
  *      dissoc(p, 'c', 'b'); // == persist({'a': 10})
  *      dissoc(p, 'a'); // == persist({'b': 15, 'c': 17})
  *
- *      PersistentSet p = persist(['a', 'b', 'c']);
+ *      PSet p = persist(['a', 'b', 'c']);
  *      dissoc(p, 'c', 'b'); // == persist(['a'])
  *      dissoc(p, 'a'); // == persist(['b', 'c'])
  */
@@ -152,14 +152,14 @@ PersistentCollection dissoc(PersistentCollection coll, arg0, [arg1 = _none, arg2
 /**
  * Returns a new [Persistent] collection which is the result of removing all
  * keys in [iter] from persistent [coll]
- * ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * ([PMap]/[PSet]/[PVec]).
  *
  * Example:
  *      PersistentMap p = persist({'a': 10, 'b':15, 'c': 17});
  *      dissocI(p, ['c', 'b']); // == persist({'a': 10})
  *      dissocI(p, ['a']); // == persist({'b': 15, 'c': 17})
 *
- *      PersistentSet p = persist(['a', 'b', 'c', 'd']);
+ *      PSet p = persist(['a', 'b', 'c', 'd']);
  *      dissocI(p, ['a', 'b']); // == persist(['c', 'd'])
  *
  *      PersistentVector p = persist(['a', 'b', 'c', 'd']);
@@ -169,16 +169,16 @@ PersistentCollection dissoc(PersistentCollection coll, arg0, [arg1 = _none, arg2
 PersistentCollection dissocI(PersistentCollection coll, Iterable iter){
   return _dispatch(coll,
      op: 'dissocI',
-     map:()=> (coll as PersistentMap).withTransient((TransientMap t) =>
+     map:()=> (coll as PMap).withTransient((TMap t) =>
          iter.forEach((arg) => t.doDelete(arg, missingOk: true))),
-     vec:()=> _dissocFromVector(coll as PersistentVector, iter),
-     set:()=> (coll as PersistentSet).withTransient((TransientSet t) =>
+     vec:()=> _dissocFromVector(coll as PVec, iter),
+     set:()=> (coll as PSet).withTransient((TSet t) =>
          iter.forEach((arg) => t.doDelete(arg, missingOk: true)))
   );
 }
 
 //TODO implement doDelete from Vector more effective
-PersistentVector _dissocFromVector(PersistentVector pv, Iterable indexes) {
+PVec _dissocFromVector(PVec pv, Iterable indexes) {
   var r = [];
   var indexesSet = indexes.toSet();
   for(int i =0;i< pv.length;i++) (!indexesSet.contains(i))? r.add(pv[i]) : null;
@@ -187,13 +187,13 @@ PersistentVector _dissocFromVector(PersistentVector pv, Iterable indexes) {
 
 
 /**
- * Returns a new [PersistentVector] which is the result of removing duplicate elements inside [iter].
+ * Returns a new [PVec] which is the result of removing duplicate elements inside [iter].
  *
  * Example:
  *      PersistentVector p = persist([1, 2, 1, 3, 1, 2]);
  *      distinct(p); // == persist([1, 2, 3])
  */
-PersistentVector distinct(Iterable iter) {
+PVec distinct(Iterable iter) {
   var r = [];
   var s = new Set();
   iter.forEach((i) {
@@ -206,7 +206,7 @@ PersistentVector distinct(Iterable iter) {
 }
 
 /**
- * Returns a new empty collection of the same type as [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Returns a new empty collection of the same type as [coll] ([PMap]/[PSet]/[PVec]).
  *
  * Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -217,16 +217,16 @@ PersistentVector distinct(Iterable iter) {
 PersistentCollection empty(PersistentCollection coll) {
   return _dispatch(coll,
      op: 'empty',
-     map:()=> new PersistentMap(),
-     vec:()=> new PersistentVector(),
-     set:()=> new PersistentSet()
+     map:()=> new PMap(),
+     vec:()=> new PVec(),
+     set:()=> new PSet()
   );
 }
 
 /**
- * Returns true if persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) contains [key].
- * As for [PersistentSet], true is returned if [key] is element of [coll].
- * As for [PersistentVector], true is returned if [key] is correct index in [coll].
+ * Returns true if persistent [coll] ([PMap]/[PSet]/[PVec]) contains [key].
+ * As for [PSet], true is returned if [key] is element of [coll].
+ * As for [PVec], true is returned if [key] is correct index in [coll].
  *
  * Example:
  *      PersistantVector pv = persist([1, 2, 5, 7]);
@@ -246,16 +246,16 @@ PersistentCollection empty(PersistentCollection coll) {
 bool hasKey(PersistentCollection coll, key) {
   return _dispatch(coll,
     op: 'hasKey',
-    map:()=> (coll as PersistentMap).containsKey(key),
-    vec:()=> key >= 0 && key < (coll as PersistentVector).length,
-    set:()=> (coll as PersistentSet).contains(key)
+    map:()=> (coll as PMap).containsKey(key),
+    vec:()=> key >= 0 && key < (coll as PVec).length,
+    set:()=> (coll as PSet).contains(key)
   );
 }
 
 //TODO Sadly, it doesn't throw any specific Exceptions
 /**
- * Returns an element of persistent [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) stored under
- * [key]. [PersistentVector] takes [key] as index. [PersistentSet] takes [key] as element of that set
+ * Returns an element of persistent [coll] ([PMap]/[PSet]/[PVec]) stored under
+ * [key]. [PVec] takes [key] as index. [PSet] takes [key] as element of that set
  * and returns it.
  * Optional argument [notFound] is returned if [coll] doesn't have that key.
  * If you don't specify [notFound] and [key] is missing in [coll], then [Exception] is thrown.
@@ -272,7 +272,7 @@ bool hasKey(PersistentCollection coll, key) {
  *      get(pv, -1); // throw ..
  *      get(pv, -1, 10); // == 10
  *
- *      PersistentSet ps = persist(new Set.from(['a', 'b']));
+ *      PSet ps = persist(new Set.from(['a', 'b']));
  *      get(ps, 'a'); // == 'a'
  *      get(ps, 'c'); // throw ..
  *      get(ps, 'c', 17); // 17
@@ -284,7 +284,7 @@ dynamic get(PersistentCollection coll, key, [notFound = _none]) {
 //TODO Sadly, it doesn't throw any specific Exceptions
 /**
  * Returns an element form recursive persistent [coll] under path of keys.
- * [coll] can contain nested [PersistentMap]s, [PersistentVector]s and [PersistentSet]s.
+ * [coll] can contain nested [PMap]s, [PVec]s and [PSet]s.
  * Optional argument [notFound] is returned if [coll] doesn't have that key path.
  * If you don't specify [notFound] and key path is missing in [coll], then [Exception] is thrown.
  *
@@ -342,6 +342,7 @@ dynamic assocIn(PersistentIndexedCollection coll, Iterable keys, val) {
   try{
     return _assocIn(coll, keys, val);
   } catch (e) {
+    rethrow;
     throw new Exception("Key path $keys doesn't exist in coll, $e");
   }
 }
@@ -373,7 +374,8 @@ dynamic updateIn(PersistentIndexedCollection coll, Iterable keys, Function f) {
   try{
     return _updateIn(coll, keys, f);
   } catch (e) {
-    throw new Exception("Key path $keys doesn't exist in coll, $e");
+    rethrow;
+//    throw new Exception("Key path $keys doesn't exist in coll, $e");
   }
 }
 
@@ -387,7 +389,7 @@ dynamic _updateIn(PersistentIndexedCollection coll, Iterable keys, f) {
 }
 
 /**
- * Take iterable [s0] as keys and [s1] as values and return [PersistentMap] constructed from key/value pairs.
+ * Take iterable [s0] as keys and [s1] as values and return [PMap] constructed from key/value pairs.
  * If they have different length, the longer is trimmed to shorter one.
  *
  * Example:
@@ -395,7 +397,7 @@ dynamic _updateIn(PersistentIndexedCollection coll, Iterable keys, f) {
  *      zipmap(['a', 'b', 'c'], [1, 2, 3, 4, 5]); // == persist({'a': 1, 'b': 2, 'c': 3})
  *      zipmap(['a', 'b', 'c', 'd', 'e'], [1, 2, 3]); // == persist({'a': 1, 'b': 2, 'c': 3})
  */
-PersistentMap zipmap(Iterable s0, Iterable s1) {
+PMap zipmap(Iterable s0, Iterable s1) {
   var m = {};
   while (s0.isNotEmpty && s1.isNotEmpty) {
     m[s0.first] = s1.first;
@@ -406,7 +408,7 @@ PersistentMap zipmap(Iterable s0, Iterable s1) {
 }
 
 /**
- * Returns a new [PersistentVector] as subvector from [vector], starting at index [start] inclusive and
+ * Returns a new [PVec] as subvector from [vector], starting at index [start] inclusive and
  * ending at index [end] excusive. If [end] is not set, the length of [vector] is taken as [end] index.
  * If they overlap, empty vector is returned.
  *
@@ -418,7 +420,7 @@ PersistentMap zipmap(Iterable s0, Iterable s1) {
  *      subvec(pv, -1, 1); // == persist([1])
  *      subvec(pv, 10, -5); // == persist([])
  */
-PersistentVector subvec(PersistentVector vector, start, [end]) {
+PVec subvec(PVec vector, start, [end]) {
   if (end == null) end = vector.length;
   var numberOfElem = end-start;
   if (numberOfElem < 0) numberOfElem = 0;
@@ -426,7 +428,7 @@ PersistentVector subvec(PersistentVector vector, start, [end]) {
 }
 
 /**
- * Returns the number of elements in [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]).
+ * Returns the number of elements in [coll] ([PMap]/[PSet]/[PVec]).
  *
  * Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -435,13 +437,13 @@ PersistentVector subvec(PersistentVector vector, start, [end]) {
  *      PersistentMap pm = persist({'a': 10, 'b': 17});
  *      count(pm); // == 2
  *
- *      PersistentSet ps = persist(new Set.from('a'));
+ *      PSet ps = persist(new Set.from('a'));
  *      count(ps); // == 1
  */
 num count(PersistentCollection coll) => (coll as Iterable).length;
 
 /**
- *  Returns whether [coll] ([PersistentMap]/[PersistentSet]/[PersistentVector]) is empty.
+ *  Returns whether [coll] ([PMap]/[PSet]/[PVec]) is empty.
  *
  *  Example:
  *      PersistentVector pv = persist([1, 2, 3]);
@@ -450,7 +452,7 @@ num count(PersistentCollection coll) => (coll as Iterable).length;
  *      PersistentMap pm = persist({});
  *      isEmpty(pm); // == true
  *
- *      PersistentSet ps = persist(new Set.from('a'));
+ *      PSet ps = persist(new Set.from('a'));
  *      isEmpty(ps); // == false
  */
 bool isEmpty(PersistentCollection coll) => (coll as Iterable).isEmpty;
@@ -465,88 +467,88 @@ bool isEmpty(PersistentCollection coll) => (coll as Iterable).isEmpty;
 Iterable reverse(PersistentCollection coll) => persist((coll as Iterable).toList().reversed);
 
 /**
- * Get iterable from keys of [map] ([PersistentMap]).
+ * Get iterable from keys of [map] ([PMap]).
  *
  * Example:
  *        PersistentMap pm = persist({'a' : 10, 'c': 11});
  *        keys(pm); // == iterable('a', 'b')
  */
-Iterable keys(PersistentMap map) => map.keys;
+Iterable keys(PMap map) => map.keys;
 
 /**
- * Get iterable from values of [map] ([PersistentMap]).
+ * Get iterable from values of [map] ([PMap]).
  *
  * Example:
  *        PersistentMap pm = persist({'a' : 10, 'c': 11});
  *        values(pm); // == iterable(10, 11)
  */
-Iterable values(PersistentMap map) => map.values;
+Iterable values(PMap map) => map.values;
 
 /**
- * Returns a new [PersistentSet] as result of removing [elem] from [coll].
+ * Returns a new [PSet] as result of removing [elem] from [coll].
  * It is an inverted operation to [conj].
  * If element is not in [coll], original [coll] is returned.
  *
  * Example:
- *      PersistentSet ps = persist(new Set.from(['a', 'b']));
+ *      PSet ps = persist(new Set.from(['a', 'b']));
  *      disj(ps, 'a'); // ==  persist(new Set.from(['b']));
  */
-PersistentSet disj(PersistentSet coll, elem) => coll.delete(elem, missingOk: true);
+PSet disj(PSet coll, elem) => coll.delete(elem, missingOk: true);
 
 /**
- * Returns a new [PersistentSet] as union of [s1] and [s2].
+ * Returns a new [PSet] as union of [s1] and [s2].
  *
  * Example:
- *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
- *      PersistentSet ps1 = persist(new Set.from(['b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['a', 'b']));
+ *      PSet ps1 = persist(new Set.from(['b', 'c']));
  *      union(ps1, ps2); // ==  persist(new Set.from(['a', 'b', 'c']));
  */
-PersistentSet union(PersistentSet s1, PersistentSet s2) => s1.union(s2);
+PSet union(PSet s1, PSet s2) => s1.union(s2);
 
 /**
- * Returns a new [PersistentSet] as intersection of [s1] and [s2].
+ * Returns a new [PSet] as intersection of [s1] and [s2].
  *
  * Example:
- *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
- *      PersistentSet ps1 = persist(new Set.from(['b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['a', 'b']));
+ *      PSet ps1 = persist(new Set.from(['b', 'c']));
  *      intersection(ps1, ps2); // ==  persist(new Set.from(['b']));
  */
-PersistentSet intersection(PersistentSet s1, PersistentSet s2) => s1.intersection(s2);
+PSet intersection(PSet s1, PSet s2) => s1.intersection(s2);
 
 /**
- * Returns a new [PersistentSet] as difference of [s1] and [s2].
+ * Returns a new [PSet] as difference of [s1] and [s2].
  *
  * Example:
- *      PersistentSet ps1 = persist(new Set.from(['a', 'b']));
- *      PersistentSet ps1 = persist(new Set.from(['b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['a', 'b']));
+ *      PSet ps1 = persist(new Set.from(['b', 'c']));
  *      difference(ps1, ps2); // ==  persist(new Set.from(['a']));
  */
-PersistentSet difference(PersistentSet s1, PersistentSet s2) => s1.difference(s2);
+PSet difference(PSet s1, PSet s2) => s1.difference(s2);
 
 /**
- * Returns true if [PersistentSet] [s1] is a subset of [s2].
+ * Returns true if [PSet] [s1] is a subset of [s2].
  * Inverse operation is [isSuperset].
  *
  * Example:
- *      PersistentSet ps1 = persist(new Set.from(['a', 'b', 'c']));
- *      PersistentSet ps1 = persist(new Set.from(['b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['a', 'b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['b', 'c']));
  *      isSubset(ps2, ps1); // == true
  *      isSubset(ps1, ps2); // == false
  */
-bool isSubset(PersistentSet s1, PersistentSet s2) => intersection(s1,s2) == s1;
+bool isSubset(PSet s1, PSet s2) => intersection(s1,s2) == s1;
 
 
 /**
- * Returns true if [PersistentSet] [s1] is a superset of [s2].
+ * Returns true if [PSet] [s1] is a superset of [s2].
  * Inverse operation is [isSubset].
  *
  * Example:
- *      PersistentSet ps1 = persist(new Set.from(['a', 'b', 'c']));
- *      PersistentSet ps1 = persist(new Set.from(['b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['a', 'b', 'c']));
+ *      PSet ps1 = persist(new Set.from(['b', 'c']));
  *      isSubset(ps2, ps1); // == false
  *      isSubset(ps1, ps2); // == true
  */
-bool isSuperset(PersistentSet s1, PersistentSet s2) => isSubset(s2, s1);
+bool isSuperset(PSet s1, PSet s2) => isSubset(s2, s1);
 
 // ------------------- SEQUENCES ---------------------
 

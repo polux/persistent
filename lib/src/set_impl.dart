@@ -26,39 +26,39 @@ abstract class _ReadSetBase<E>
   }
 }
 
-abstract class _PersistentSetMixim<E>
-    implements PersistentSet<E> {
+abstract class _PSetMixim<E>
+    implements PSet<E> {
 
-  PersistentSet<E> union(PersistentSet<E> persistentSet) =>
+  PSet<E> union(PSet<E> PSet) =>
       this.withTransient((set)=>
-        persistentSet.where((e) => !this.contains(e)).forEach((e)=>
+        PSet.where((e) => !this.contains(e)).forEach((e)=>
             set.doInsert(e)
         )
       );
 
-  PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
-      union(persistentSet);
+  PSet<E> operator +(PSet<E> pset) =>
+      union(pset);
 
-  PersistentSet<E> difference(PersistentSet<E> persistentSet) =>
-      new PersistentSet.from(this.where((e) => !persistentSet.contains(e)));
+  PSet<E> difference(PSet<E> pset) =>
+      new PSet.from(this.where((e) => !pset.contains(e)));
 
-  PersistentSet<E> operator -(PersistentSet<E> persistentSet) =>
-      difference(persistentSet);
+  PSet<E> operator -(PSet<E> pset) =>
+      difference(pset);
 
-  Iterable<Pair> cartesianProduct(PersistentSet<E> persistentSet) =>
-      this.expand((a) => persistentSet.map((b) => new Pair(a,b)));
+  Iterable<Pair> cartesianProduct(PSet<E> PSet) =>
+      this.expand((a) => PSet.map((b) => new Pair(a,b)));
 
-  Iterable<Pair> operator *(PersistentSet persistentSet) =>
-      cartesianProduct(persistentSet);
+  Iterable<Pair> operator *(PSet PSet) =>
+      cartesianProduct(PSet);
 
-  PersistentSet<E> intersect(PersistentSet<E> persistentSet) =>
-      new PersistentSet.from(this.where((e) => persistentSet.contains(e)));
+  PSet<E> intersect(PSet<E> pset) =>
+      new PSet.from(this.where((e) => pset.contains(e)));
 
-  PersistentSet strictMap(f(E element)) =>
-      new PersistentSet.from(this.map(f));
+  PSet strictMap(f(E element)) =>
+      new PSet.from(this.map(f));
 
-  PersistentSet<E> strictWhere(bool f(E element)) =>
-      new PersistentSet<E>.from(this.where(f));
+  PSet<E> strictWhere(bool f(E element)) =>
+      new PSet<E>.from(this.where(f));
 }
 
 abstract class _SetImplBase<E> extends _ReadSetBase<E> {
@@ -80,7 +80,7 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
   Iterable map(f(E element)) {
-    return _map.map((pair)=>f(pair.first));
+    return _map.map((pair)=>f(pair.fst));
   }
 
   int get length => _map.length;
@@ -89,65 +89,63 @@ abstract class _SetImplBase<E> extends _ReadSetBase<E> {
       other is _SetImplBase ? _map == other._map : false;
 
   Iterator<E> get iterator =>
-      _map.map((Pair<E, Object> pair) => pair.first).iterator;
+      _map.map((Pair<E, Object> pair) => pair.fst).iterator;
 
-  // PersistentMap's "last" is optimized
-  E get last => _map.last.first;
+  E get last => _map.last.fst;
 
-  // PersistentMap's "elementAt" is optimized
-  E elementAt(int index) => _map.elementAt(index).first;
+  E elementAt(int index) => _map.elementAt(index).fst;
 }
 
 
-class _PersistentSetImpl<E>
+class _PSetImpl<E>
     extends _SetImplBase<E>
-    with _PersistentSetMixim<E> {
+    with _PSetMixim<E> {
 
-  final PersistentMap<E, Null> _map;
+  final PMap<E, Null> _map;
 
-  _PersistentSetImpl._internal(this._map);
+  _PSetImpl._internal(this._map);
 
-  factory _PersistentSetImpl() =>
-      new _PersistentSetImpl._internal(new PersistentMap<E, Object>());
+  factory _PSetImpl() =>
+      new _PSetImpl._internal(new PMap<E, Object>());
 
-  _PersistentSetImpl<E> insert(E element) =>
-      new _PersistentSetImpl._internal(_map.assoc(element, null));
+  _PSetImpl<E> insert(E element) =>
+      new _PSetImpl._internal(_map.assoc(element, null));
 
-  _PersistentSetImpl<E> delete(E element, {bool missingOk:false}) =>
-      new _PersistentSetImpl._internal(_map.delete(element, missingOk:missingOk));
+  _PSetImpl<E> delete(E element, {bool missingOk:false}) =>
+      new _PSetImpl._internal(_map.delete(element, missingOk:missingOk));
 
-  TransientSet asTransient() {
-    return new _TransientSetImpl._internal(_map.asTransient());
+  TSet asTransient() {
+    return new _TSetImpl._internal(_map.asTransient());
   }
 
 
-  PersistentSet<E> union(PersistentSet<E> persistentSet){
-    if(persistentSet is _PersistentSetImpl<E>){
-      return new _PersistentSetImpl._internal(
-          _map.union(persistentSet._map));
+  PSet<E> union(PSet<E> PSet){
+    if(PSet is _PSetImpl<E>){
+      return new _PSetImpl._internal(
+          _map.union(PSet._map));
     } else {
-      return super.union(persistentSet);
+      return super.union(PSet);
     }
   }
 
-  PersistentSet<E> intersection(PersistentSet<E> persistentSet){
-    if(persistentSet is _PersistentSetImpl<E>){
-      return new _PersistentSetImpl._internal(
-          _map.intersection(persistentSet._map));
+  PSet<E> intersection(PSet<E> PSet){
+    if(PSet is _PSetImpl<E>){
+      return new _PSetImpl._internal(
+          _map.intersection(PSet._map));
     } else {
-      return super.intersection(persistentSet);
+      return super.intersection(PSet);
     }
   }
 
-  PersistentSet withTransient(void change(TransientSet set)) {
-    TransientSet result = this.asTransient();
+  PSet withTransient(void change(TSet set)) {
+    TSet result = this.asTransient();
     change(result);
     return result.asPersistent();
   }
 
   bool operator==(other) =>
       other is ReadSet ?
-        other is TransientSet ?
+        other is TSet ?
           this.length == other.length &&
           this.fold(true, (test, v)=> test && other.contains(v))
         :
@@ -158,13 +156,13 @@ class _PersistentSetImpl<E>
   int get hashCode => this._map.hashCode;
 }
 
-class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
-  final TransientMap<E, Null> _map;
+class _TSetImpl<E> extends _SetImplBase<E> implements TSet<E> {
+  final TMap<E, Null> _map;
 
-  _TransientSetImpl._internal(this._map);
+  _TSetImpl._internal(this._map);
 
-  factory _TransientSetImpl() =>
-      new _TransientSetImpl._internal(new TransientMap<E, Object>());
+  factory _TSetImpl() =>
+      new _TSetImpl._internal(new TMap<E, Object>());
 
   void doInsert(E element){
     _map.doAssoc(element, null);
@@ -174,8 +172,8 @@ class _TransientSetImpl<E> extends _SetImplBase<E> implements TransientSet<E> {
     _map.doDelete(element, missingOk:missingOk);
   }
 
-  PersistentSet asPersistent() {
-    return new _PersistentSetImpl._internal(_map.asPersistent());
+  PSet asPersistent() {
+    return new _PSetImpl._internal(_map.asPersistent());
   }
 
 }

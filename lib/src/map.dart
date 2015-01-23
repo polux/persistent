@@ -8,14 +8,14 @@ part of persistent;
 
 /**
  * The interface is defined mainly for documenting read-functions of PersistentMap
- * and TransientMap; the interface is not supposed to be actually used
+ * and TMap; the interface is not supposed to be actually used
  * (as you usually know, which Map you are using).
  *
  * [ReadMap] binds keys of type [K] to values of type [V]. Null
  * values are supported but null keys are not.
  *
  * There is no default implementation of [ReadMap], since it just
- * specifies common interface of [PersistentMap] and [TransientMap].
+ * specifies common interface of [PMap] and [TMap].
  *
  * In all the examples below `{k1: v1, k2: v2, ...}` is a shorthand for
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
@@ -75,22 +75,22 @@ abstract class ReadMap<K, V> implements Iterable<Pair<K, V>> {
  * `new PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
 
-abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCollection {
+abstract class PMap<K, V> implements ReadMap<K, V>, PersistentIndexedCollection {
 
-  /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new _Leaf.empty(null);
+  /** Creates an empty [PMap] using its default implementation. */
+  factory PMap() => new _Leaf.empty(null);
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
-   * [PersistentMap].
+   * [PMap].
    */
-  factory PersistentMap.fromMap(Map<K, V> map) => new _Node.fromMap(map);
+  factory PMap.fromMap(Map<K, V> map) => new _Node.fromMap(map);
 
   /**
-   * Creates a [PersistentMap] from an [Iterable] of [Pair]s using the default
-   * implementation of [PersistentMap].
+   * Creates a [PMap] from an [Iterable] of [Pair]s using the default
+   * implementation of [PMap].
    */
-  factory PersistentMap.fromPairs(Iterable<Pair<K, V>> pairs) => new _Node.fromPairs(pairs);
+  factory PMap.fromPairs(Iterable<Pair<K, V>> pairs) => new _Node.fromPairs(pairs);
 
   /**
    * The equality operator.
@@ -118,7 +118,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *     {'a': 1}.assoc('b', 2) == {'a': 1, 'b': 2}
    *     {'a': 1, 'b': 2}.assoc('b', 3) == {'a': 3, 'b': 3}
    */
-  PersistentMap<K, V> assoc(K key, V value);
+  PMap<K, V> assoc(K key, V value);
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
@@ -131,7 +131,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *     {'a': 1, 'b': 2}.delete('b') == {'a': 1}
    *     {'a': 1}.delete('b') // throws an Exception
    */
-  PersistentMap<K, V> delete(K key, {bool missingOk: false});
+  PMap<K, V> delete(K key, {bool missingOk: false});
 
   /**
    * Returns a new map identical to `this` except that the value it possibly
@@ -162,14 +162,14 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Returns a transient copy of `this`.
    *
    * This is usually called to make many changes and
-   * then create a new [PersistentMap].
+   * then create a new [PMap].
    *
    *     var persistent1 = new PersistentMap.from({'a':1});
    *     var transient = persistent1.asTransient();
    *     transient.doAssoc({'b':2});
    *     var persistent2 = new transient.asPersistent();
    */
-  TransientMap<K, V> asTransient();
+  TMap<K, V> asTransient();
 
   /**
    * Creates a transient copy of `this`, lets it to be modified by [change]
@@ -180,7 +180,7 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    *       m.doAssoc({'b':2});
    *     });
    */
-  PersistentMap<K, V> withTransient(dynamic change(TransientMap));
+  PMap<K, V> withTransient(dynamic change(TMap));
 
   /**
    * Returns a new map whose (key, value) pairs are the union of those of `this`
@@ -199,8 +199,8 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  PersistentMap<K, V>
-      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PMap<K, V>
+      union(PMap<K, V> other, [V combine(V left, V right)]);
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -219,16 +219,16 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
    * Note that [intersection] is commutative if and only if [combine] is
    * provided and if it is commutative.
    */
-  PersistentMap<K, V>
-      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PMap<K, V>
+      intersection(PMap<K, V> other, [V combine(V left, V right)]);
 
   /// A strict (non-lazy) version of [map].
-  PersistentMap strictMap(Pair f(Pair<K, V> pair));
+  PMap strictMap(Pair f(Pair<K, V> pair));
 
   /// A strict (non-lazy) version of [where].
-  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair));
+  PMap<K, V> strictWhere(bool f(Pair<K, V> pair));
 
-  PersistentMap<K, V> update(K key, dynamic updateF);
+  PMap<K, V> update(K key, dynamic updateF);
 
 }
 
@@ -241,13 +241,13 @@ abstract class PersistentMap<K, V> implements ReadMap<K, V>, PersistentIndexedCo
  * a persistent structure to apply some changes and obtain a new persistent
  * structure. The less changes are done, the more efficient is the conversion.
  */
-abstract class TransientMap<K, V> implements ReadMap<K, V> {
+abstract class TMap<K, V> implements ReadMap<K, V> {
 
   /**
    * Creates an empty map using the default implementation of
-   * [TransientMap].
+   * [TMap].
    */
-  factory TransientMap() => new _TransientMapImpl();
+  factory TMap() => new _TMapImpl();
 
   /**
    * Binds [key] to [value].
@@ -259,7 +259,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doAssoc('b', 2); // map is now {'a': 1, 'b': 2}
    *     map.doAssoc('b', 3); // map is now {'a': 1, 'b': 3}
    */
-  TransientMap<K, V>
+  TMap<K, V>
       doAssoc(K key, V value);
 
   /**
@@ -273,7 +273,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doDelete('b', 2); // map is now {'a': 1}
    *     map.doDelete('b', 2, missingOk: true); // map is still {'a': 1}
    */
-  TransientMap<K, V> doDelete(K key, {bool missingOk: false}) ;
+  TMap<K, V> doDelete(K key, {bool missingOk: false}) ;
 
   /**
    * Adjusts the value that is possibly bound to [key] by applying [f].
@@ -288,7 +288,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     map.doUpdate('b', ([x]) => x == null ? 2 : x + 1); // map is now {'a': 1, 'b': 2}
    *     map.doUpdate('b', (x) => x + 1); // map is now {'a': 1, 'b': 3}
    */
-  TransientMap<K, V> doUpdate(K key, dynamic f);
+  TMap<K, V> doUpdate(K key, dynamic f);
 
   /**
    * Updates all values by passing them to [f] and replacing them by results.
@@ -296,7 +296,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     var map = PersistentMap.fromMap({'a': 1, 'b': 2}).asTransient();
    *     map.mapValues((x) => x + 1) // map is now {'a': 2, 'b': 3}
    */
-//  TransientMap doMapValues(f(V value));
+//  TMap doMapValues(f(V value));
 
   /**
    * Returns a persistent copy of `this`.
@@ -309,7 +309,7 @@ abstract class TransientMap<K, V> implements ReadMap<K, V> {
    *     transient.doAssoc({'b':2});
    *     var persistent2 = new transient.asPersistent();
    */
-  PersistentMap asPersistent();
+  PMap asPersistent();
 
   operator []=(key, value);
 }

@@ -16,10 +16,10 @@ List data = [];
 
 var creators = {
 
-  "persistent": () => new PersistentMap.fromMap(template),
+  "persistent": () => new PMap.fromMap(template),
 
   "transient": (){
-    var res = new TransientMap();
+    var res = new TMap();
     template.forEach((k, v) => res.doAssoc(k, v));
     return res;
   },

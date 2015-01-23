@@ -7,10 +7,10 @@
 part of map_bench;
 
 class PersistentMapInterface<K, V>
-  extends EncapsulatingInterface<K, V, PersistentMap<K, V>>{
+  extends EncapsulatingInterface<K, V, PMap<K, V>>{
 
   PersistentMapInterface(){
-    this.object = new PersistentMap<K, V>();
+    this.object = new PMap<K, V>();
   }
 
   assoc(K key, V value) =>
@@ -25,10 +25,10 @@ class PersistentMapInterface<K, V>
 
 
 class TransientMapInterface<K, V>
-  extends EncapsulatingInterface<K, V, TransientMap<K, V>>{
+  extends EncapsulatingInterface<K, V, TMap<K, V>>{
 
   TransientMapInterface(){
-    this.object = new PersistentMap<K, V>().asTransient();
+    this.object = new PMap<K, V>().asTransient();
   }
 
   assoc(K key, V value) =>
@@ -97,7 +97,7 @@ class LinkedListInterface<K, V>
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.first == key) {
+      if (elem.fst == key) {
         builder.add(new Pair<K, V>(key, value));
         return builder.build(cons.tail);
       }
@@ -113,7 +113,7 @@ class LinkedListInterface<K, V>
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.first == key) return;
+      if (elem.fst == key) return;
       it = cons.tail;
     }
   }

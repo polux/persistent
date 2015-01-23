@@ -10,7 +10,7 @@ part of persistent;
  * A read-only vector, ordered collection of elements of type [E].
  *
  * There is no default implementation of [ReadVector], since it just
- * specifies the common interface of [PersistentVector] and [TransientVector].
+ * specifies the common interface of [PVec] and [TVec].
  */
 abstract class ReadVector<E> implements Iterable<E> {
 
@@ -55,7 +55,7 @@ abstract class ReadVector<E> implements Iterable<E> {
  * Persistent data structure is an immutable structure, that provides effective
  * creation of slightly mutated copies.
  */
-abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCollection {
+abstract class PVec<E> implements ReadVector<E>, PersistentIndexedCollection {
 
   /**
    * Returns a new vector identical to `this` except that
@@ -68,7 +68,7 @@ abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCo
    *     v.set(0,":("); // returns [":(","B"]
    *     v.set(2,":D"); // throws RangeError
    */
-  PersistentVector<E> set(int index, E value);
+  PVec<E> set(int index, E value);
 
   /**
    * Returns a new vector identical to `this` except that
@@ -78,7 +78,7 @@ abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCo
    *     v.push("three"); // returns ["one","two","three"]
    *     v.push("four"); // returns ["one","two","four"]
    */
-  PersistentVector<E> push(E value);
+  PVec<E> push(E value);
 
   /**
    * Returns a new vector identical to `this` except that
@@ -91,31 +91,31 @@ abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCo
    *     v.pop(); // still returns ["one"]
    *     new PersistentVector.from([]).pop(); // throws RangeError
    */
-  PersistentVector<E> pop();
+  PVec<E> pop();
 
   /**
    * Returns a transient copy of `this`.
    *
    * This is ussualy called to do some changes and
-   * then create a new [PersistentVector].
+   * then create a new [PVec].
    *
    *     var persistent1 = new PersistentVector.from([1]);
    *     var transient = persistent1.asTransient();
    *     transient.doPush(2);
    *     var persistent2 = new transient.asPersistent(); // persistent2 is now [1,2]
    */
-  TransientVector<E> asTransient();
+  TVec<E> asTransient();
 
   /**
-   * Creates an empty [PersistentVector] using its default implementation.
+   * Creates an empty [PVec] using its default implementation.
    */
-  factory PersistentVector() => new _PersistentVectorImpl.empty();
+  factory PVec() => new _PersistentVectorImpl.empty();
 
   /**
-   * Creates an [PersistentVector] filled by [values]
+   * Creates an [PVec] filled by [values]
    * using its default implementation.
    */
-  factory PersistentVector.from(Iterable<E> values) => new _PersistentVectorImpl.from(values);
+  factory PVec.from(Iterable<E> values) => new _PersistentVectorImpl.from(values);
 
   /**
    * Creates transient copy of `this`, lets it to be modified by [change]
@@ -126,7 +126,7 @@ abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCo
    *       v.doPush(3);
    *     });
    */
-  PersistentVector<E> withTransient(void change(TransientVector<E> vect));
+  PVec<E> withTransient(void change(TVec<E> vect));
 
 
   /**
@@ -152,7 +152,7 @@ abstract class PersistentVector<E> implements ReadVector<E>, PersistentIndexedCo
  * a persistent structure to apply some changes and obtain a new persistent
  * structure.
  */
-abstract class TransientVector<E> implements ReadVector<E> {
+abstract class TVec<E> implements ReadVector<E> {
 
   /**
    * Sets the element at [index] to be [value].
@@ -211,5 +211,5 @@ abstract class TransientVector<E> implements ReadVector<E> {
    *     transient.doPush(2);
    *     var persistent2 = new transient.asPersistent();
    */
-  PersistentVector<E> asPersistent();
+  PVec<E> asPersistent();
 }

@@ -17,10 +17,10 @@ run() {
 
   group('PersistentVector', () {
 
-    PV(list) => new PersistentVector.from(list);
+    PV(list) => new PVec.from(list);
 
     test('get', () {
-      PersistentVector v = PV([0, 1, 2]);
+      PVec v = PV([0, 1, 2]);
       expect(v.get(0), equals(0));
       expect(v[1], equals(1));
       expect(v.get(2, 47), equals(2));
@@ -74,7 +74,7 @@ run() {
 
     test('asTransient', () {
       expect(PV([0, 1]).asTransient().toList(), equals([0, 1]));
-      expect(PV([0, 1]).asTransient() is TransientVector, isTrue);
+      expect(PV([0, 1]).asTransient() is TVec, isTrue);
     });
 
     test('withTransient', () {
@@ -85,14 +85,14 @@ run() {
 
 
     test('pushing nulls', () {
-      PersistentVector v = PV([]);
+      PVec v = PV([]);
       v = v.push(null);
       v = v.push(47);
       expect(v, orderedEquals([null, 47]));
     });
 
     test('created from array of nulls', () {
-      PersistentVector v = PV([null, null]);
+      PVec v = PV([null, null]);
       v = v.push(null);
       v = v.push(47);
       expect(v, orderedEquals([null, null, null, 47]));
@@ -102,10 +102,10 @@ run() {
 
   group('TransientVector', () {
 
-    TV(list) => new PersistentVector.from(list).asTransient();
+    TV(list) => new PVec.from(list).asTransient();
 
     test('get', () {
-      TransientVector v = TV([0, 1, 2]);
+      TVec v = TV([0, 1, 2]);
       expect(v.get(0), equals(0));
       expect(v[1], equals(1));
       expect(v.get(2, 47), equals(2));
@@ -153,7 +153,7 @@ run() {
     });
 
     test('set', () {
-      TransientVector v = TV([0, 1]);
+      TVec v = TV([0, 1]);
       v[0] = 1;
       expect(v, equals([1, 1]));
       expect(TV([0, 1])..doSet(0, 1)..toList(), equals([1, 1]));
@@ -163,7 +163,7 @@ run() {
 
     test('asPersistent', () {
       expect(TV([0, 1]).asPersistent().toList(), equals([0, 1]));
-      expect(TV([0, 1]).asPersistent() is PersistentVector, isTrue);
+      expect(TV([0, 1]).asPersistent() is PVec, isTrue);
     });
 
 

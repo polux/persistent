@@ -8,6 +8,7 @@ part of persistent;
 
 
 // this turns out to be the fastest combination
+
 const branchingBits = 4;
 const maxDepth = 6;
 
@@ -53,32 +54,32 @@ _getBranch(hash, depth){
 
 
 
-class _TransientMapImpl<K, V>
+class _TMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
-        implements TransientMap<K, V> {
+        implements TMap<K, V> {
   _Node _root;
 
   _Owner _owner;
   get owner => _owner != null ? _owner :
-      throw new Exception('Cannot modify TransientMap after calling asPersistent.');
+      throw new Exception('Cannot modify TMap after calling asPersistent.');
 
-  factory _TransientMapImpl() => new _TransientMapImpl.fromPersistent(new PersistentMap());
+  factory _TMapImpl() => new _TMapImpl.fromPersistent(new PMap());
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
-   * [TransientMap].
+   * [TMap].
    */
-  _TransientMapImpl.fromPersistent(_Node<K, V> map) {
+  _TMapImpl.fromPersistent(_Node<K, V> map) {
     _owner = new _Owner();
     _root = map;
   }
 
-  TransientMap _adjustRootAndReturn(newRoot) {
+  TMap _adjustRootAndReturn(newRoot) {
     _root = newRoot;
     return this;
   }
 
-  TransientMap<K, V>
+  TMap<K, V>
       doAssoc(K key, V value) {
         return _adjustRootAndReturn(_root._assoc(owner, key, value));
       }
@@ -87,20 +88,20 @@ class _TransientMapImpl<K, V>
     this.doAssoc(key, value);
   }
 
-  TransientMap<K, V> doDelete(K key, {bool missingOk: false}) {
+  TMap<K, V> doDelete(K key, {bool missingOk: false}) {
     return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), maxDepth, missingOk));
   }
 
-  TransientMap<K, V> doUpdate(K key, dynamic updateF) {
+  TMap<K, V> doUpdate(K key, dynamic updateF) {
     return _adjustRootAndReturn(_root._update(owner, key, updateF));
   }
 
-  PersistentMap asPersistent() {
+  PMap asPersistent() {
     _owner = null;
     return this._root;
   }
 
-  toString() => 'TransientMap($_root)';
+  toString() => 'TMap($_root)';
 
   V get(K key, [V notFound = _none]) => _root.get(key, notFound);
 
@@ -128,7 +129,7 @@ class _TransientMapImpl<K, V>
 /**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
-abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements PersistentMap<K, V> {
+abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements PMap<K, V> {
   _Owner _owner;
   int _length;
   int _hash;
@@ -147,7 +148,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
   factory _Node.fromPairs(pairs){
     var _root = new _Leaf.empty(null);
     pairs.forEach((pair) {
-      _root = _root._assoc(null, pair.first, pair.second);
+      _root = _root._assoc(null, pair.fst, pair.snd);
     });
     return _root;
   }
@@ -163,17 +164,17 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
     return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
   }
 
-  PersistentMap<K, V> update(K key, dynamic updateF) =>
+  PMap<K, V> update(K key, dynamic updateF) =>
     _insertOneWith(null, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
 
   _Node<K, V> _assoc(_Owner owner, K key, V value) =>
       _insertOneWith(owner, key, value, _reverseHash(key.hashCode), maxDepth);
 
-  PersistentMap assoc(K key, V value) => _assoc(null, key, value);
+  PMap assoc(K key, V value) => _assoc(null, key, value);
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
-  PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
+  PMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
 
   bool operator ==(other) {
     if (other is! _Node) return false;
@@ -283,9 +284,9 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
     return buffer.toString();
   }
 
-  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.first);
+  Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
 
-  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.second);
+  Iterable<V> get values => this.map((Pair<K, V> pair) => pair.snd);
 
   void forEachKeyValue(f(K key, V value));
 
@@ -297,28 +298,28 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   bool hasKey(key) => containsKey(key);
 
-  TransientMap asTransient() {
-    return new _TransientMapImpl.fromPersistent(this);
+  TMap asTransient() {
+    return new _TMapImpl.fromPersistent(this);
   }
 
-  PersistentMap withTransient(dynamic f(TransientMap map)) {
-    TransientMap transient = this.asTransient();
+  PMap withTransient(dynamic f(TMap map)) {
+    TMap transient = this.asTransient();
     f(transient);
     return transient.asPersistent();
   }
 
   V operator [](K key) => get(key);
 
-  PersistentMap strictMap(Pair<K, V> f(Pair<K, V> pair)) =>
-      new PersistentMap.fromPairs(this.map(f));
+  PMap strictMap(Pair<K, V> f(Pair<K, V> pair)) =>
+      new PMap.fromPairs(this.map(f));
 
-  PersistentMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
-      new PersistentMap<K, V>.fromPairs(this.where(f));
+  PMap<K, V> strictWhere(bool f(Pair<K, V> pair)) =>
+      new PMap<K, V>.fromPairs(this.where(f));
 
   static _returnRight(left, right) => right;
 
-  PersistentMap<K, V> union(
-    PersistentMap<K, V> other,
+  PMap<K, V> union(
+    PMap<K, V> other,
     [V combine(V left, V right) = _returnRight]
   ){
     if(other is _Node){
@@ -336,14 +337,14 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
     }
   }
 
-  PersistentMap<K, V> intersection(
-    PersistentMap<K, V> other,
+  PMap<K, V> intersection(
+    PMap<K, V> other,
     [V combine(V left, V right) = _returnRight]
   ){
     if(other is _Node){
       return _intersection(other as _Node, combine, maxDepth);
     } else {
-      var result = new PersistentMap().asTransient();
+      var result = new PMap().asTransient();
       other.forEachKeyValue((K key, V value){
         if(this.hasKey(key)){
           result.doAssoc(key, combine(this[key], value));
@@ -353,13 +354,13 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
     }
   }
 
-  PersistentMap<K, V> _union(
+  PMap<K, V> _union(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
   );
 
-  PersistentMap<K, V> _intersection(
+  PMap<K, V> _intersection(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
@@ -561,7 +562,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     f(_kv);
   }
 
-  PersistentMap<K, V> _union(
+  PMap<K, V> _union(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
@@ -587,7 +588,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     return other;
   }
 
-  PersistentMap<K, V> _intersection(
+  PMap<K, V> _intersection(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
@@ -711,7 +712,7 @@ class _SubMap<K, V> extends _Node<K, V> {
 
   toDebugString() => "_SubMap($_array)";
 
-  PersistentMap<K, V> _union(
+  PMap<K, V> _union(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
@@ -729,7 +730,7 @@ class _SubMap<K, V> extends _Node<K, V> {
     }
   }
 
-  PersistentMap<K, V> _intersection(
+  PMap<K, V> _intersection(
     _Node<K, V> other,
     V combine(V left, V right),
     int depth
