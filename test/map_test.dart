@@ -96,6 +96,54 @@ run() {
       expect(m1, equals(m2));
     });
 
+    test('union', (){
+      var dm1 = {};
+      var dm2 = {};
+      for(int i = 1; i <= 1000; i++){
+        if(i%4 != 3) dm1[i] = i;
+        if(i%4 != 1) dm2[i] = -i;
+      }
+      PersistentMap m1 = persist(dm1);
+      PersistentMap m2 = persist(dm2);
+      PersistentMap m3 = m1.union(m2);
+      PersistentMap m4 = m1.union(m2, (a,b)=>a+b);
+
+      expect(m3.length, equals(1000));
+      expect(m4.length, equals(1000));
+      for(int i = 1; i <= 1000; i++){
+        if(i%4 == 1){
+          expect(m3[i], equals(i));
+          expect(m4[i], equals(i));
+        } else if(i%4 == 3){
+          expect(m3[i], equals(-i));
+          expect(m4[i], equals(-i));
+        } else {
+          expect(m3[i], equals(-i));
+          expect(m4[i], equals(0));
+        }
+      }
+    });
+
+    test('intersection', (){
+      var dm1 = {};
+      var dm2 = {};
+      for(int i = 1; i <= 1000; i++){
+        if(i%4 != 3) dm1[i] = i;
+        if(i%4 != 1) dm2[i] = -i;
+      }
+      PersistentMap m1 = persist(dm1);
+      PersistentMap m2 = persist(dm2);
+      PersistentMap m3 = m1.intersection(m2);
+      PersistentMap m4 = m1.intersection(m2, (a,b)=>a+b);
+
+      expect(m3.length, equals(500));
+      expect(m4.length, equals(500));
+      for(int i = 2; i <= 1000; i+=2){
+        expect(m3[i], equals(-i));
+        expect(m4[i], equals(0));
+      }
+    });
+
   });
 
 }
