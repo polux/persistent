@@ -8,7 +8,6 @@ library map_test;
 
 import 'package:vacuum_persistent/persistent.dart';
 import 'package:unittest/unittest.dart';
-import 'dart:math';
 
 
 class Element {
@@ -21,6 +20,7 @@ class Element {
     }
     return value == other.value;
   }
+  toString() => "Element(${value},${hash})";
 }
 
 main() {

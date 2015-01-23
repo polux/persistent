@@ -243,11 +243,13 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
             // scan the same-hash regions
             for (var j=i; j<=bm; j+=recsize) {
               bool res = false;
-              for (var k=i; k<bo; k+=recsize) {
-                res = res || (mekv[j+1] == okv[k+1]) && (mekv[j+2] == okv[k+2]);
+              for (var k=i; k<=bo; k+=recsize) {;
+                res = res || ((mekv[j+1] == okv[k+1]) && (mekv[j+2] == okv[k+2]));
               }
               if (!res) return false;
             }
+            // continue after the boundary
+            i = bm;
           }
         } else {
           // different hash
