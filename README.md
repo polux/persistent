@@ -2,6 +2,8 @@
 
 [![Build Status](https://drone.io/github.com/vacuumlabs/persistent/status.png)](https://drone.io/github.com/vacuumlabs/persistent/latest)
 
+check out [changes in 2.0 version!] (https://github.com/vacuumlabs/persistent/wiki/20changes).
+
 The project is forked from
 [polux/persistent](https://github.com/polux/persistent).
 
