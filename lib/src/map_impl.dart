@@ -6,22 +6,20 @@
 
 part of persistent;
 
-final _random = new Random();
 
-
-//const branching = 8;
-//const branchingBits = 3;
-//const branchingMask = 0x7;
-
-const branching = 16;
+// this turns out to be the fastest combination
 const branchingBits = 4;
-const branchingMask = 0xf;
+const maxDepth = 6;
 
-//const branching = 32;
+//const branchingBits = 3;
+//const maxDepth = 9;
+
 //const branchingBits = 5;
-//const branchingMask = 0x1f;
+//const maxDepth = 5;
 
-const maxDepth = 7;
+
+const branching = 1 << branchingBits;
+const branchingMask = (1 << branchingBits)-1;
 const allHashMask = (1 << (maxDepth+1) * branchingBits)-1;
 
 const leafSize = branching * 3;
@@ -29,6 +27,8 @@ const leafSizeMin = branching * 2;
 
 const binSearchThr = 4;
 const recsize = 3; //0 - hash, 1 - key, 2 - val
+
+final _random = new Random();
 
 _ThrowKeyError(key) => throw new Exception('Key Error: ${key} is not defined');
 
@@ -175,20 +175,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
 
-//  bool operator ==(other) {
-//    if (other is! _Node) return false;
-//    if (identical(this, other)) return true;
-//    if (this.length != other.length) {
-//      return false;
-//    }
-//    for (Pair p in this) {
-//      if (other.get(p.first, _none) != p.second) {
-//        return false;
-//      }
-//    }
-//    return true;
-//  }
-
+//  poor man's == for debugging purposes
 //  bool operator ==(other) {
 //    if (other is! _Node) return false;
 //    if (identical(this, other)) return true;
@@ -243,7 +230,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
             // scan the same-hash regions
             for (var j=i; j<=bm; j+=recsize) {
               bool res = false;
-              for (var k=i; k<=bo; k+=recsize) {;
+              for (var k=i; k<=bo; k+=recsize) {
                 res = res || ((mekv[j+1] == okv[k+1]) && (mekv[j+2] == okv[k+2]));
               }
               if (!res) return false;
@@ -453,30 +440,10 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, kv);
   }
 
-//  dynamic sameHashGet(key, hash, start) {
-//    for (int i=start; i<_kv.length; i+=recsize){
-//      if (hash == _kv[i]) {
-//        if (key==_kv[i+1]) {
-//          return _kv[i+2];
-//        } else {
-//          return _none;
-//        }
-//      }
-//    }
-//    return _none;
-//  }
-//
-//  int sameHashRegionLength(hash, start) {
-//    int res;
-//    for (int i=start; i<_kv.length; i+=recsize){
-//      if (hash == _kv[i]) {
-//        res = i;
-//      }
-//    }
-//    return res;
-//  }
+// alternative version of polish which uses List.setRange; does not seem to speed
+// up things, however
 
-//  _Node<K, V> polish(_Owner owner, int depth, List _kv) {
+//  _Node<K, V> alternative_polish(_Owner owner, int depth, List _kv) {
 //    assert(_kv.length % recsize == 0);
 //    if (_kv.length < recsize*leafSize) {
 //      return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
@@ -502,10 +469,10 @@ class _Leaf<K, V> extends _Node<K, V> {
 
 
   // creates either _Leaf with given _kv, or (if _kv.length is big enough) it
-  // splits the _kv to multiple
-  _Node<K, V> polish(_Owner owner, int depth, List _kv) {
+  // splits the _kv to multiple _Nodes
+  _Node<K, V> _polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
-    // depth == 0 means we are at the bottom level; we consumed all
+    // depth == -1 means we are at the bottom level; we consumed all
     // information from 'hash' and we have to extend the _Leaf no matter how
     // long it gets
     if (_kv.length < recsize * leafSize || depth == -1) {
@@ -573,7 +540,7 @@ class _Leaf<K, V> extends _Node<K, V> {
   _Node<K, V> _insertOneWith(_Owner owner, key, val, hash, int depth, [update]) {
     List nkv = _makeCopyIfNeeded(owner, this._owner, _kv);
     _insert(nkv, key, val, hash, update);
-    return polish(owner, depth, nkv);
+    return _polish(owner, depth, nkv);
   }
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk) {
@@ -603,22 +570,6 @@ class _Leaf<K, V> extends _Node<K, V> {
 
   V _get(K key, int hash, int depth) {
     int f=0;
-//    for (int i=0; i<_kv.length; i+=21){
-//      if (_kv[i+2] < hash){
-//        f=i;
-//      }
-//    }
-//
-//    for (int i=f+recsize; i<_kv.length; i+=recsize) {
-//      var h = _kv[i+2];
-//      if (h == hash && _kv[i] == key) {
-//        return _kv[i+1];
-//      }
-//      if (h > hash) {
-//        return _none;
-//      }
-//    }
-//    return _none;
     int from = 0;
     int to = _kv.length ~/ recsize;
     while(to - from > binSearchThr){
@@ -849,7 +800,7 @@ _ownerEquals(_Owner a, _Owner b) {
 }
 
 /// usually, we need to copy some arrays when associng. However, when working
-/// with transients (and owners match), it is safe just to modify the array
+/// with transients (and the owners match), it is safe just to modify the array
 _makeCopyIfNeeded(_Owner a, _Owner b, List c) {
   if(_ownerEquals(a, b))
     return c;
