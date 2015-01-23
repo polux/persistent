@@ -14,42 +14,42 @@ part of persistent;
  */
 class Pair<A, B> {
 
-  /// First value
-  final A first;
+  /// fst value
+  final A fst;
 
   /// Second value
-  final B second;
+  final B snd;
 
   /**
    * Creates a new pair of given values
    */
-  Pair(this.first, this.second);
+  Pair(this.fst, this.snd);
 
   /**
    * The equality operator.
    *
-   * Two pairs are equal if and only if both their first and second
+   * Two pairs are equal if and only if both their fst and second
    * values are equal.
    */
   bool operator ==(other) {
     return (other is Pair<A, B>)
-        && first == other.first
-        && second == other.second;
+        && fst == other.fst
+        && snd == other.snd;
   }
 
   operator [](int pos) {
     switch (pos) {
-      case 0: return first;
-      case 1: return second;
+      case 0: return fst;
+      case 1: return snd;
       default: throw new RangeError("Pair does not contain value on position $pos");
     }
   }
 
-  A get key => first;
+  A get key => fst;
 
-  B get value => second;
+  B get value => snd;
 
-  int get hashCode => first.hashCode + 31 * second.hashCode;
+  int get hashCode => fst.hashCode + 31 * snd.hashCode;
 
-  String toString() => "Pair($first, $second)";
+  String toString() => "Pair($fst, $snd)";
 }

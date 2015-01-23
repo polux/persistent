@@ -38,13 +38,13 @@ run: build/map_memory.js
 
 	@echo "$$INTRO"
 
-	@echo -n "DartVM persistent: "
-	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} persistent > build/temp.out 2>/dev/null
-	@tail -1 build/temp.out
-
-	@echo -n "DartVM map: "
-	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} map > build/temp.out 2>/dev/null
-	@tail -1 build/temp.out
+#	@echo -n "DartVM persistent: "
+#	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} persistent > build/temp.out 2>/dev/null
+#	@tail -1 build/temp.out
+#
+#	@echo -n "DartVM map: "
+#	@dart --old_gen_heap_size=1024 map_memory.dart ${template_size} map > build/temp.out 2>/dev/null
+#	@tail -1 build/temp.out
 
 	@echo -n "NodeJS persistent: "
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} persistent > build/temp.out) 2>/dev/null
@@ -52,6 +52,10 @@ run: build/map_memory.js
 
 	@echo -n "NodeJS map: "
 	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} map > build/temp.out) 2>/dev/null
+	@tail -1 build/temp.out
+
+	@echo -n "NodeJS hashmap: "
+	@ (! node --max-old-space-size=1024 build/map_memory.js ${template_size} hashmap > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 
 	rm -f build/temp.out

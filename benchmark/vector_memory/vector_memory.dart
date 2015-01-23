@@ -15,7 +15,7 @@ List data = [];
 
 var creators = {
 
-  "persistent": () => new PersistentVector.from(template),
+  "persistent": () => new PVec.from(template),
 
   "list": () => new List.from(template),
 };

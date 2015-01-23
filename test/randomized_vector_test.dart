@@ -12,15 +12,15 @@ import 'dart:core';
 import 'utils.dart';
 
 main() {
-  run(print_fn: (message) => print(message));
+  run(10000, print_fn: (message) => print(message));
   print('Test successfully finished');
 }
 
-run({print_fn}) {
+run(n, {print_fn}) {
   if (print_fn == null){
     print_fn = (msg) => null;
   }
-  doTest(1000, print_fn);
+  doTest(n, print_fn);
 }
 
 doTest(operationsCnt, print_fn){
@@ -44,14 +44,14 @@ doTest(operationsCnt, print_fn){
 
   Map impls = {
     'persistent': {
-      'create': () => new PersistentVector(),
-      'bulkInsert': (PersistentVector ve, List updateWith) =>
+      'create': () => new PVec(),
+      'bulkInsert': (PVec ve, List updateWith) =>
         updateWith.fold(ve, (ve, e) => ve.push(e)),
-      'bulkPop': (PersistentVector ve, int count) =>
+      'bulkPop': (PVec ve, int count) =>
         new List.filled(count, null).fold(ve, (ve, e) => ve.pop()),
-      'bulkChange': (PersistentVector ve, Map changes) =>
+      'bulkChange': (PVec ve, Map changes) =>
         changes.keys.fold(ve, (ve, key) => ve.set(key, changes[key])),
-      'deepCopy': (PersistentVector ve) => ve,
+      'deepCopy': (PVec ve) => ve,
     },
     'model': {
       'create': () => [],
@@ -64,42 +64,42 @@ doTest(operationsCnt, print_fn){
       'deepCopy': (List ve) => ve.sublist(0),
     },
     'transient': {
-      'create': () => new PersistentVector().asTransient(),
-      'bulkInsert': (TransientVector ve, List updateWith) {
+      'create': () => new PVec().asTransient(),
+      'bulkInsert': (TVec ve, List updateWith) {
         updateWith.forEach((e) => ve.doPush(e));
         return ve;
       },
-      'bulkPop': (TransientVector ve, int count) {
+      'bulkPop': (TVec ve, int count) {
         for (int i = 0; i < count; i++) ve.doPop();
         return ve;
       },
-      'bulkChange': (TransientVector ve, Map changes) {
+      'bulkChange': (TVec ve, Map changes) {
         changes.forEach((k, v) => ve.doSet(k, v));
         return ve;
       },
-      'deepCopy': (TransientVector ve) => new PersistentVector.from(ve).asTransient(),
+      'deepCopy': (TVec ve) => new PVec.from(ve).asTransient(),
     },
     'withTransient': {
-      'create': () => new PersistentVector(),
-      'bulkInsert': (PersistentVector ve, List updateWith) =>
+      'create': () => new PVec(),
+      'bulkInsert': (PVec ve, List updateWith) =>
         ve.withTransient((tv) {
           updateWith.forEach((e) => tv.doPush(e));
         }),
-      'bulkPop': (PersistentVector ve, int count) =>
+      'bulkPop': (PVec ve, int count) =>
         ve.withTransient((tv) {
           for (int i = 0; i < count; i++) tv.doPop();
         }),
-      'bulkChange': (PersistentVector ve, Map changes) =>
+      'bulkChange': (PVec ve, Map changes) =>
         ve.withTransient((tv) {
           changes.forEach((k, v) => tv.doSet(k, v));
         }),
-      'deepCopy': (PersistentVector ve) => ve,
+      'deepCopy': (PVec ve) => ve,
     },
   };
 
   randomlyChangeImpl(m) {
     if (probability(0.1)) {
-      if (m is PersistentVector) {
+      if (m is PVec) {
         return m.asTransient();
       } else {
         return m.asPersistent();
@@ -110,7 +110,7 @@ doTest(operationsCnt, print_fn){
   }
 
   impl_for(ve) {
-    if (ve is TransientVector) {
+    if (ve is TVec) {
       return impls['transient'];
     } else {
       return impls['persistent'];
@@ -119,7 +119,7 @@ doTest(operationsCnt, print_fn){
 
   impls.addAll({
     'randomlyChangingPersistentTransient': {
-      'create': () => new PersistentVector(),
+      'create': () => new PVec(),
       'bulkInsert': (ve, List updateWith) =>
         randomlyChangeImpl(impl_for(ve)['bulkInsert'](ve, updateWith)),
       'bulkPop': (ve, int count) =>
@@ -139,7 +139,7 @@ doTest(operationsCnt, print_fn){
     });
 
     for (int i = 0; i < operationsCnt; i++) {
-      PersistentVector vec = impls['persistent']['instance'];
+      PVec vec = impls['persistent']['instance'];
 
       if (probability(0.01) || oldImpls['persistent'].isEmpty) {
         print_fn('saving old instances');
@@ -191,14 +191,14 @@ doTest(operationsCnt, print_fn){
       }
 
       // test iterating, equality and hashCode
-      PersistentVector copy = new PersistentVector();
-      PersistentVector pv = impls['persistent']['instance'];
+      PVec copy = new PVec();
+      PVec pv = impls['persistent']['instance'];
       for(var item in pv) {
         copy = copy.push(item);
       }
       expect(pv == copy, isTrue);
       expect(pv.hashCode == copy.hashCode, isTrue);
-      PersistentVector not_copy = copy.push('something completely different');
+      PVec not_copy = copy.push('something completely different');
       expect(pv == not_copy, isFalse);
       expect(pv.hashCode == not_copy.hashCode, isFalse);
 

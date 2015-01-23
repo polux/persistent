@@ -8,7 +8,6 @@ part of map_bench;
 
 abstract class BenchmarkInterface<K, V>{
 
-  void create();
   void assoc(K key, V value);
   void get(K key);
   void delete(K key);

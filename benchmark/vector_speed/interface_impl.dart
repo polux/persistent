@@ -7,9 +7,9 @@
 part of vector_speed;
 
 class PersistentVectorInterface<E>
-  extends EncapsulatingInterface<E, PersistentVector<E>>{
+  extends EncapsulatingInterface<E, PVec<E>>{
 
-  create() => object = new PersistentVector<E>();
+  create() => object = new PVec<E>();
 
   push(E value) =>
     object = object.push(value);
@@ -25,9 +25,9 @@ class PersistentVectorInterface<E>
 
 
 class TransientVectorInterface<E>
-  extends EncapsulatingInterface<E, TransientVector<E>>{
+  extends EncapsulatingInterface<E, TVec<E>>{
 
-  create() => object = new PersistentVector<E>().asTransient();
+  create() => object = new PVec<E>().asTransient();
 
   push(E value) =>
     object.doPush(value);
@@ -39,7 +39,7 @@ class TransientVectorInterface<E>
   pop() => object.doPop();
 
   _copy(){
-    return new PersistentVector.from(object).asTransient();
+    return new PVec.from(object).asTransient();
   }
 }
 

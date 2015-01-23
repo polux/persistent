@@ -20,6 +20,6 @@ main() {
   vector_test.run();
   reference_test.run();
   cursor_test.run();
-  randomized_map_test.run();
-  randomized_vector_test.run();
+  randomized_map_test.run(100);
+  randomized_vector_test.run(100);
 }

@@ -9,7 +9,7 @@ library overall_example;
 import 'package:vacuum_persistent/persistent.dart';
 
 example(){
-  var couple = new PersistentMap.fromMap({'father': 'Homer', 'mother': 'Marge'});
+  var couple = new PMap.fromMap({'father': 'Homer', 'mother': 'Marge'});
   var withChild = couple.assoc('boy', 'Bart');
   print(couple); // {mother: Marge, father: Homer}
   print(withChild); // {boy: Bart, mother: Marge, father: Homer}
@@ -28,8 +28,8 @@ main() {
 
   // Persistency:
 
-  final map1 = new PersistentMap.fromMap({"a":1, "b":2});
-  final map2 = new PersistentMap.fromMap({"b":3, "c":4});
+  final map1 = new PMap.fromMap({"a":1, "b":2});
+  final map2 = new PMap.fromMap({"b":3, "c":4});
 
   print(map1["a"]); // 1
   print(map1.get("b")); // 2
@@ -38,7 +38,7 @@ main() {
   print(map1.assoc("c", 3)); // {a: 1, b: 2, c: 3}
   print(map1.assoc("d", 4)); // {a: 1, b: 2, d: 4}
 
-  final map3 = map2.update("c", (x) => x+3);
+  final map3 = map2._update("c", (x) => x+3);
   print(map3.delete("b")); // {c: 7}
   print(map3.delete("a", missingOk: true)); // {b: 3, c: 7}
 
@@ -48,7 +48,7 @@ main() {
 
   // Transiency:
 
-  final vector1 = new PersistentVector.from(["x", "y"]);
+  final vector1 = new PVec.from(["x", "y"]);
 
   print(vector1.push("z")); // (x, y, z)
   print(vector1.push("q")); // (x, y, q)

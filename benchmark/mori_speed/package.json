@@ -1,0 +1,10 @@
+{
+  "name": "mori_speed",
+  "main": "mori_speed.js",
+  "dependencies": {
+    "benchmark": "^1.0.0",
+    "closurecompiler": "^1.5.1",
+    "mori": "^0.2.9"
+  },
+  "private": true
+}

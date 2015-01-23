@@ -7,6 +7,7 @@
 library map_memory;
 
 import 'package:vacuum_persistent/persistent.dart';
+import 'dart:collection';
 
 Map template = {};
 
@@ -15,15 +16,16 @@ List data = [];
 
 var creators = {
 
-  "persistent": () => new PersistentMap.fromMap(template),
+  "persistent": () => new PMap.fromMap(template),
 
   "transient": (){
-    var res = new TransientMap();
+    var res = new TMap();
     template.forEach((k, v) => res.doAssoc(k, v));
     return res;
   },
 
   "map": () => new Map.from(template),
+  "hashmap": () => new HashMap.from(template)
 };
 
 void run(int template_size, String mode) {

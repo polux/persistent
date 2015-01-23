@@ -1,4 +1,4 @@
-template_size = 1000
+template_size = 16
 
 all: clean run
 
@@ -37,6 +37,10 @@ run: build/vector_memory.js
 
 	@echo "$$INTRO"
 
+	@echo -n "NodeJS list: "
+	@ (! node --max-old-space-size=1024 build/vector_memory.js ${template_size} list > build/temp.out) 2>/dev/null
+	@tail -1 build/temp.out
+
 	@echo -n "DartVM persistent: "
 	@dart --old_gen_heap_size=1024 vector_memory.dart ${template_size} persistent > build/temp.out 2>/dev/null
 	@tail -1 build/temp.out
@@ -49,7 +53,4 @@ run: build/vector_memory.js
 	@ (! node --max-old-space-size=1024 build/vector_memory.js ${template_size} persistent > build/temp.out) 2>/dev/null
 	@tail -1 build/temp.out
 
-	@echo -n "NodeJS list: "
-	@ (! node --max-old-space-size=1024 build/vector_memory.js ${template_size} list > build/temp.out) 2>/dev/null
-	@tail -1 build/temp.out
 

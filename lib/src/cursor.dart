@@ -8,12 +8,12 @@ part of persistent;
 
 class Cursor {
   final Reference _ref;
-  final PersistentVector _path;
+  final PVec _path;
 
   Cursor(Reference this._ref, Iterable path) :
-    _path = (path is PersistentVector)? path: new PersistentVector.from(path);
+    _path = (path is PVec)? path: new PVec.from(path);
 
-  Cursor operator[](val) => new Cursor(_ref, conj(_path, val) as PersistentVector);
+  Cursor operator[](val) => new Cursor(_ref, conj(_path, val) as PVec);
 
   deref([notFound = _none]) => getIn(_ref.deref(), _path, notFound);
 

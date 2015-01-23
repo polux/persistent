@@ -16,16 +16,27 @@ final _none = new Object();
 final _getNone = () => _none;
 bool _isNone(val) => val == _none;
 
+const hashCodeModulo = 1000;
+
+class Value {
+  dynamic val, hash;
+
+  Value(this.val, this.hash);
+
+  operator ==(other) => this.val == other.val;
+  get hashCode => this.hash;
+}
+
 main() {
-  run(print_fn: (message) => print(message));
+  run(10000, print_fn: (message) => print(message));
   print('Test successfully finished');
 }
 
-run({print_fn}) {
+run(n, {print_fn}) {
   if (print_fn == null){
     print_fn = (msg) => null;
   }
-  doTest(1000, print_fn);
+  doTest(n, print_fn);
 }
 
 doTest(operationsCnt, print_fn){
@@ -63,7 +74,7 @@ doTest(operationsCnt, print_fn){
     return res;
   }
 
-  fn_adjust(String a) => '${a}j';
+  fn_adjust(String a) => '${a} adjusted';
 
   Map impls = {
       'map': {
@@ -76,63 +87,65 @@ doTest(operationsCnt, print_fn){
             keys.forEach((k) =>  me.remove(k));
             return me;
         },
-        'bulkAdjust': (Map me, List keys) {
-          keys.forEach((k) => me[k] = fn_adjust(me[k]));
+        'bulkAdjust': (Map me, List keys, adjust) {
+          keys.forEach((k) => me[k] = adjust(me[k]));
           return me;
         },
         'deepCopy': (Map me) => deepCopyMap(me)
       },
       'persistent': {
-        'create': () => new PersistentMap(),
-        'bulkInsert': (PersistentMap me, Map updateWith) =>
+        'create': () => new PMap(),
+        'bulkInsert': (PMap me, Map updateWith) =>
             updateWith.keys.fold(me, (me, k) => me.assoc(k, updateWith[k])),
-        'bulkDelete': (PersistentMap me, List keys) =>
+        'bulkDelete': (PMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.delete(k, missingOk: true)),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.update(k, fn_adjust)),
-        'deepCopy': (PersistentMap me) => me
+        'bulkAdjust': (PMap me, List keys, adjust) =>
+            keys.fold(me, (me, k) => me.update(k, adjust)),
+        'deepCopy': (PMap me) => me
       },
       // always transient
       'transient': {
-        'create': () => new PersistentMap().asTransient(),
-        'bulkInsert': (TransientMap me, Map updateWith) =>
+        'create': () => new TMap(),
+        'bulkInsert': (TMap me, Map updateWith) =>
             updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k])),
-        'bulkDelete': (TransientMap me, List keys) =>
+        'bulkDelete': (TMap me, List keys) =>
             keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true)),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust)),
-        'deepCopy': (TransientMap me) {
-          TransientMap res = new TransientMap();
+        'bulkAdjust': (TMap me, List keys, adjust) =>
+            keys.fold(me, (me, k) => me.doUpdate(k, adjust)),
+        'deepCopy': (TMap me) {
+          TMap res = new TMap();
           me.forEachKeyValue((k, v) => res.doAssoc(k, v));
           return res;
         }
       },
       // uses transient impl for bulk insert, delete atomicaly
       'persistentWithTransient': {
-        'create': () => new PersistentMap(),
-        'bulkInsert': (PersistentMap me, Map updateWith) =>
-            me.withTransient((TransientMap me) =>
+        'create': () => new PMap(),
+        'bulkInsert': (PMap me, Map updateWith) =>
+            me.withTransient((TMap me) =>
               updateWith.keys.fold(me, (me, k) => me.doAssoc(k, updateWith[k]))),
-        'bulkDelete': (PersistentMap me, List keys) =>
-            me.withTransient((TransientMap me) =>
+        'bulkDelete': (PMap me, List keys) =>
+            me.withTransient((TMap me) =>
               keys.fold(me, (me, k) =>  me.doDelete(k, missingOk: true))),
-        'bulkAdjust': (PersistentMap me, List keys) =>
-            me.withTransient((TransientMap me) =>
-              keys.fold(me, (me, k) => me.doUpdate(k, fn_adjust))),
-        'deepCopy': (PersistentMap me) => me
+        'bulkAdjust': (PMap me, List keys, adjust) =>
+            me.withTransient((TMap me) =>
+              keys.fold(me, (me, k) => me.doUpdate(k, adjust))),
+        'deepCopy': (PMap me) => me
       },
+
+      'randomlyChangingPersistentTransient': 'will be defined later',
   };
 
-  // some helper helper fns for persistentSlashTransient
+  // helper for randomlyChangingPersistentTransient implementation
   impl_for(map){
-    if (map is PersistentMap) return impls['persistent'];
-    if (map is TransientMap) return impls['transient'];
+    if (map is PMap) return impls['persistent'];
+    if (map is TMap) return impls['transient'];
     throw new Exception('shouldnt get here');
   }
 
   randomlyChangeImpl(m){
     if(probability(0.1)){
-      if (m is PersistentMap){
+      if (m is PMap){
         return m.asTransient();
       } else {
         return m.asPersistent();
@@ -145,14 +158,14 @@ doTest(operationsCnt, print_fn){
   // from time to time randomly change the implementation from persistent to
   // transient and vice versa; may perform multiple bulk operations in one
   // transient state
-  impls.addAll({
-      'randomlyChangingPersistentTransient': {
-        'create': () => new PersistentMap(),
+  impls['randomlyChangingPersistentTransient'] =
+      {
+        'create': () => new PMap(),
         'bulkInsert': (me, Map updateWith) => randomlyChangeImpl(impl_for(me)['bulkInsert'](me, updateWith)),
         'bulkDelete': (me, List keys) => randomlyChangeImpl(impl_for(me)['bulkDelete'](me, keys)),
+        'bulkAdjust': (me, List keys, adjust) => randomlyChangeImpl(impl_for(me)['bulkAdjust'](me, keys, adjust)),
         'deepCopy': (me) => deepCopyMap(me)
-      },
-  });
+      };
 
 
   int range = 10000;
@@ -160,7 +173,7 @@ doTest(operationsCnt, print_fn){
   List all_values = [];
 
   for (int i=0; i<range; i++){
-    all_keys.add('hello $i');
+    all_keys.add(new Value('hello $i','hello $i'.hashCode % hashCodeModulo));
     all_values.add('world $i');
   }
   test('Random Map Test', () {
@@ -179,16 +192,16 @@ doTest(operationsCnt, print_fn){
       // generate a random collection of keys(&values) which you want to insert/delete
       // do perform operation on all instances
 
-      PersistentMap pm = impls['persistent']['instance'];
+      PMap pm = impls['persistent']['instance'];
       print_fn('$i/$operationsCnt: current length: ${pm.length}');
 
       if(probability(0.5)) {
         // bulkInsert
-        // let's add some fixed percentage of all keys to the map
-        int num = r.nextInt((range/10).floor());
+        // let's add up to count keys to the map
+        int count = r.nextInt((range/10).floor());
 
         Map  map = {};
-        for(int i=0; i < num; i++) {
+        for(int i=0; i < count; i++) {
           map[random_elem(all_keys)] = random_elem(all_values);
         }
 
@@ -203,9 +216,9 @@ doTest(operationsCnt, print_fn){
           // from time to time, delete the whole map
           keys = new List.from(pm.keys);
         } else {
-          int num = r.nextInt(range);
+          int count = r.nextInt(range);
           keys = [];
-          for(int i=0; i < num; i++) {
+          for(int i=0; i < count; i++) {
             // sometimes try to delete key which is not there
             keys.add(random_elem(all_keys));
           }
@@ -216,19 +229,20 @@ doTest(operationsCnt, print_fn){
         });
       }
       else {
+        // bulkAdjust
         List keys = [];
-        int num = r.nextInt(range);
         List activeKeys = impls['map']['instance'].keys.toList();
-        if(activeKeys.length != 0) {
-          for(int i=0; i < num; i++) {
-            // sometimes try to delete key which is not there
+        int count = r.nextInt(range);
+        // get count from active keys
+        if (activeKeys.isNotEmpty) {
+          for(int i=0; i < count; i++) {
             keys.add(random_elem(activeKeys));
           }
-          // perform deletion on each instance
-          impls.forEach((name, impl){
-            impls[name]['instance'] = impls[name]['bulkDelete'](impl['instance'], keys);
-          });
         }
+        impls.forEach((name, impl){
+          impls[name]['instance'] = impls[name]['bulkAdjust'](impl['instance'],
+              keys, fn_adjust);
+        });
       }
 
       // from time to time, deep-copy all the instances to test immutability
@@ -243,13 +257,13 @@ doTest(operationsCnt, print_fn){
       assertInstancesAreSame(oldImpls);
 
       // test iterating, equality and hashCode
-      PersistentMap copy = new PersistentMap();
+      PMap copy = new PMap();
       for(Pair p in pm){
-        copy = copy.assoc(p.first, p.second);
+        copy = copy.assoc(p.fst, p.snd);
       }
       expect(pm == copy, isTrue);
       expect(pm.hashCode == copy.hashCode, isTrue);
-      PersistentMap not_copy = copy.assoc('something', 'completely different');
+      PMap not_copy = copy.assoc('something', 'completely different');
       expect(pm == not_copy, isFalse);
       // this may very rarely not be true
       expect(pm.hashCode == not_copy.hashCode, isFalse);

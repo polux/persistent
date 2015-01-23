@@ -18,12 +18,12 @@ run() {
   group('Persistent set', () {
 
     test('length', () {
-      var set = new PersistentSet.from(["a","b","c"]);
+      var set = new PSet.from(["a","b","c"]);
       expect(set.length, equals(3));
     });
 
     test('contains', () {
-      var set = new PersistentSet.from(["a","b","c"]);
+      var set = new PSet.from(["a","b","c"]);
       expect(set.contains("a"), isTrue);
       expect(set.contains("b"), isTrue);
       expect(set.contains("c"), isTrue);
@@ -31,73 +31,73 @@ run() {
     });
 
     test('==', () {
-      var set1 = new PersistentSet.from(["a","b"]);
-      var set2 = new PersistentSet.from(["b","a"]);
-      var set3 = new PersistentSet.from(["b"]);
+      var set1 = new PSet.from(["a","b"]);
+      var set2 = new PSet.from(["b","a"]);
+      var set3 = new PSet.from(["b"]);
       expect(set1==set2, isTrue);
       expect(set2!=set3, isTrue);
       expect(set1!=set3, isTrue);
     });
 
     test('union', () {
-      var set1 = new PersistentSet.from(["a","b","c"]);
-      var set2 = new PersistentSet.from(["d","c"]);
-      var set3 = new PersistentSet();
+      var set1 = new PSet.from(["a","b","c"]);
+      var set2 = new PSet.from(["d","c"]);
+      var set3 = new PSet();
       expect(set1.union(set3) == set1, isTrue);
       expect(set3.union(set2) == set2, isTrue);
-      expect(set1.union(set2) == new PersistentSet.from(["a","b","c","d"]), isTrue);
+      expect(set1.union(set2) == new PSet.from(["a","b","c","d"]), isTrue);
     });
 
     test('difference', () {
-      var set1 = new PersistentSet.from(["a","b","c"]);
-      var set2 = new PersistentSet.from(["d","c"]);
-      var set3 = new PersistentSet();
+      var set1 = new PSet.from(["a","b","c"]);
+      var set2 = new PSet.from(["d","c"]);
+      var set3 = new PSet();
       expect(set1.difference(set3) == set1, isTrue);
       expect(set3.difference(set2) == set3, isTrue);
       expect(
-          set1.difference(set2) == new PersistentSet.from(["a","b"]),
+          set1.difference(set2) == new PSet.from(["a","b"]),
           isTrue
       );
     });
 
     test('intersection', () {
-      var set1 = new PersistentSet.from(["a","b","c"]);
-      var set2 = new PersistentSet.from(["d","c"]);
-      var set3 = new PersistentSet();
+      var set1 = new PSet.from(["a","b","c"]);
+      var set2 = new PSet.from(["d","c"]);
+      var set3 = new PSet();
       expect(set1.intersection(set3) == set3, isTrue);
       expect(set3.intersection(set2) == set3, isTrue);
-      expect(set1.intersection(set2) == new PersistentSet.from(["c"]), isTrue);
+      expect(set1.intersection(set2) == new PSet.from(["c"]), isTrue);
     });
 
     test('cartesianProduct', () {
-      var set1 = new PersistentSet.from(["a","b","c"]);
-      var set2 = new PersistentSet.from(["d","c"]);
-      var set3 = new PersistentSet();
-      expect(new PersistentSet.from(set1 * set3) == set3, isTrue);
-      expect(new PersistentSet.from(set3 * set2) == set3, isTrue);
-      expect(new PersistentSet.from(set1 * set2) == new PersistentSet.from([
+      var set1 = new PSet.from(["a","b","c"]);
+      var set2 = new PSet.from(["d","c"]);
+      var set3 = new PSet();
+      expect(new PSet.from(set1 * set3) == set3, isTrue);
+      expect(new PSet.from(set3 * set2) == set3, isTrue);
+      expect(new PSet.from(set1 * set2) == new PSet.from([
         new Pair("a","d"), new Pair("b","d"), new Pair("c","d"),
         new Pair("a","c"), new Pair("b","c"), new Pair("c","c")
       ]), isTrue);
     });
 
     test('insert', () {
-      var set = new PersistentSet.from(["a","b","c"]);
+      var set = new PSet.from(["a","b","c"]);
       set = set.insert("c");
-      expect(set, equals(new PersistentSet.from(["a","b","c"])));
+      expect(set, equals(new PSet.from(["a","b","c"])));
       expect(set.contains("c"), isTrue);
       set = set.insert("d");
-      expect(set, equals(new PersistentSet.from(["a","b","c","d"])));
+      expect(set, equals(new PSet.from(["a","b","c","d"])));
       expect(set.contains("d"), isTrue);
     });
 
     test('delete', () {
-      var set = new PersistentSet.from(["a","b","c"]);
+      var set = new PSet.from(["a","b","c"]);
       set = set.delete("c");
-      expect(set, equals(new PersistentSet.from(["a","b"])));
+      expect(set, equals(new PSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
       set = set.delete("d", missingOk:true);
-      expect(set, equals(new PersistentSet.from(["a","b"])));
+      expect(set, equals(new PSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
   });
@@ -105,12 +105,12 @@ run() {
   group('Transient set', () {
 
     test('length', () {
-      var set = new PersistentSet.from(["a","b","c"]).asTransient();
+      var set = new PSet.from(["a","b","c"]).asTransient();
       expect(set.length, equals(3));
     });
 
     test('contains', () {
-      var set = new PersistentSet.from(["a","b","c"]).asTransient();
+      var set = new PSet.from(["a","b","c"]).asTransient();
       expect(set.contains("a"), isTrue);
       expect(set.contains("b"), isTrue);
       expect(set.contains("c"), isTrue);
@@ -118,26 +118,26 @@ run() {
     });
 
     test('doInsert', () {
-      var set = new PersistentSet.from(["a","b","c"]).asTransient();
+      var set = new PSet.from(["a","b","c"]).asTransient();
       set.doInsert("c");
       expect(set.asPersistent(),
-          equals(new PersistentSet.from(["a","b","c"])));
+          equals(new PSet.from(["a","b","c"])));
       expect(set.contains("c"), isTrue);
       set = set.asPersistent().asTransient();
       set.doInsert("d");
       expect(set.asPersistent(),
-          equals(new PersistentSet.from(["a","b","c","d"])));
+          equals(new PSet.from(["a","b","c","d"])));
       expect(set.contains("d"), isTrue);
     });
 
     test('doDelete', () {
-      var set = new PersistentSet.from(["a","b","c"]).asTransient();
+      var set = new PSet.from(["a","b","c"]).asTransient();
       set.doDelete("c");
-      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PSet.from(["a","b"])));
       expect(set.contains("c"), isFalse);
       set = set.asPersistent().asTransient();
       set.doDelete("d", missingOk:true);
-      expect(set.asPersistent(), equals(new PersistentSet.from(["a","b"])));
+      expect(set.asPersistent(), equals(new PSet.from(["a","b"])));
       expect(set.contains("d"), isFalse);
     });
   });
