@@ -811,7 +811,7 @@ class _SubMap<K, V> extends _Node<K, V> {
       var children = new List.generate(branching, (int i) => (
         _array[i]._union((other as _SubMap)._array[i], combine, depth-1)
       ));
-      int size = children.fold(0, (_Node x, int sum) =>
+      int size = children.fold(0, (int sum, _Node x) =>
           sum+=x.length
       );
       return new _SubMap.abc(null, children, size);
@@ -829,7 +829,7 @@ class _SubMap<K, V> extends _Node<K, V> {
       var children = new List.generate(branching, (int i) => (
         _array[i]._intersection((other as _SubMap)._array[i], combine, depth-1)
       ));
-      int size = children.fold(0, (_Node x, int sum) =>
+      int size = children.fold(0, (int sum, _Node x) =>
           sum+=x.length
       );
       var res = new _SubMap.abc(null, children, size);
