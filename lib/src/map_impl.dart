@@ -175,21 +175,6 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements Persisten
 
   PersistentMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
 
-//  poor man's == for debugging purposes
-//  bool operator ==(other) {
-//    if (other is! _Node) return false;
-//    if (identical(this, other)) return true;
-//    if (this.length != other.length) {
-//      return false;
-//    }
-//    bool res = true;
-//    this.forEachKeyValue((k,v){
-//      res = res && (other.get(k, _none) == v);
-//    });
-//    return res;
-//  }
-
-
   bool operator ==(other) {
     if (other is! _Node) return false;
     if (identical(this, other)) return true;
@@ -440,36 +425,9 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, kv);
   }
 
-// alternative version of polish which uses List.setRange; does not seem to speed
-// up things, however
+  /// creates either _Leaf with given _kv, or (if _kv.length is big enough) it
+  /// splits the _kv to multiple _Nodes
 
-//  _Node<K, V> alternative_polish(_Owner owner, int depth, List _kv) {
-//    assert(_kv.length % recsize == 0);
-//    if (_kv.length < recsize*leafSize) {
-//      return new _Leaf.abc(owner, _kv, _kv.length ~/ recsize);
-//    } else {
-//      List<List> kvs = new List.generate(branching, (_) => []);
-//      var from = 0;
-//      var to;
-//      for (int branch=0; branch < branching; branch++){
-//        to = from;
-//        while(to < _kv.length && _getBranch(_kv[to+2], depth) == branch){
-//          to += recsize;
-//        }
-//        kvs[branch].length = to-from;
-//        kvs[branch].setRange(0, to-from, _kv, from);
-//        from = to;
-//      }
-//
-//      List <_Node<K, V>> array = new List.generate(branching,
-//          (i) => new _Leaf.abc(owner, kvs[i], kvs[i].length ~/ recsize));
-//      return new _SubMap.abc(owner, array, _kv.length ~/ recsize);
-//    }
-//  }
-
-
-  // creates either _Leaf with given _kv, or (if _kv.length is big enough) it
-  // splits the _kv to multiple _Nodes
   _Node<K, V> _polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
     // depth == -1 means we are at the bottom level; we consumed all
