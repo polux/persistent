@@ -143,15 +143,7 @@ class _PSetImpl<E>
     return result.asPersistent();
   }
 
-  bool operator==(other) =>
-      other is ReadSet ?
-        other is TSet ?
-          this.length == other.length &&
-          this.fold(true, (test, v)=> test && other.contains(v))
-        :
-          super == other
-      :
-        false;
+  bool operator==(other) => other is PSet ? super == other : false;
 
   int get hashCode => this._map.hashCode;
 }
