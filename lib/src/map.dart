@@ -81,6 +81,26 @@ abstract class PMap<K, V> implements ReadMap<K, V>, PersistentIndexedCollection 
   factory PMap() => new _Leaf.empty(null);
 
   /**
+   * dispatches to either PMap.fromMap or PMap.fromPairs
+   */
+  factory PMap.from(dynamic source) {
+    if (source is Map) {
+      return new PMap.fromMap(source);
+    } else {
+      if (source is Iterable) {
+        if (source.isEmpty) {
+          return new PMap();
+        } else {
+          if (source.first is Pair) {
+            return new PMap.fromPairs(source);
+          }
+        }
+      }
+    }
+    throw new Exception('cannot construct PMap from ${source.runtimeType} ($source)');
+  }
+
+  /**
    * Creates an immutable copy of [map] using the default implementation of
    * [PMap].
    */
