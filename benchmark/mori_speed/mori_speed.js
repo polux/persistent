@@ -28,7 +28,7 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 
 		subobjects = [];
 		for (var i = 0; i < count; i++){
-			subobjects.push(m.hash_map.apply(null, prototype));
+			subobjects.push(m.hashMap.apply(null, prototype));
 		}
 
 		objects[size_name] = subobjects;
@@ -40,10 +40,12 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 		
 		objects[size_name].forEach(function(map){
 			for (var i = size; i >= 0; i--) {
-				m.get(map, i*i, "poo");
+                // somefn.f2, .f1, .f3, etc were added in mori 0.3 to speed-up method dispatching.
+                // .f2 means version of function with arity 2, etc
+				m.get.f2(map, i*i);
 			}
 			for (var i = 0; i <= size; i++) {
-				m.get(map, i*i, "poo");
+				m.get.f2(map, i*i);
 			}
 		});
 
@@ -66,10 +68,11 @@ for (var sample_id = 0; sample_id < samples.length; sample_id++){
 	  for(var size_name in sample){
 	  	var size = Number(size_name);
 	  	var count = sample[size_name];
-
 		for (var j = 0; j < count; j++){
-			var map = m.hash_map();
-			for(var val in ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"]){
+            var map = m.hashMap();
+            vals = ["foo", "bar", "baz", "woo", "hoo", "goo", "wat"];
+			for(var ival in vals){
+                var val = vals[ival];
 				for (var i = 0; i < size; i++) {
 					map = m.assoc(map, i*i, val);
 				}
