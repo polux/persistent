@@ -20,9 +20,10 @@ Map interfaces = {
   "Map": () => new StandardMapInterface(),
 };
 
-int times = 10;
+int times = 4;
 
 void main() {
+
   var config = [
    {'name': 'Write',
     'creator': ((sample, factory) => (new WriteBenchmark(sample, factory))),
@@ -50,6 +51,8 @@ void main() {
       for (int i=0; i<times; i++){
         for (String name in interfaces.keys) {
           var meas = creator(sample, interfaces[name]).measure();
+          meas /= 1000; // we want milliseconds
+          meas /= 10; //to compensate for tenfold error in benchmark harness
           res[name] += meas;
           dev[name] += meas*meas;
         }
@@ -62,7 +65,7 @@ void main() {
       for (String name in interfaces.keys) {
         var _dev = 2*(res[name]*dev['Map']+res['Map']*dev[name])/res['Map']/res['Map']/sqrt(times);
         print('${mode} ${name} sample ${sample}: ${res[name]/res['Map']} '+
-              '+- ${_dev} (${res[name]} us)');
+              '+- ${_dev} (${res[name]} ms)');
       }
     }
   });
