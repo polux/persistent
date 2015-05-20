@@ -43,10 +43,13 @@ _getUpdateValue(key, updateF) {
   }
 }
 
-_reverseHash(hash){
+/// see technical.md for explanation of what this does
+_mangleHash(hash){
   var _tmp = hash ^ (hash << 8);
   return ((_tmp ^ (_tmp << 16)) & allHashMask);
 }
+
+/// no array compression here (aka bitpos style). Why? See technical.md
 
 _getBranch(hash, depth){
   return (hash >> (depth*branchingBits)) & branchingMask;
@@ -57,6 +60,8 @@ _getBranch(hash, depth){
 class _TMapImpl<K, V>
         extends IterableBase<Pair<K, V>>
         implements TMap<K, V> {
+  // Although PMap can be represented a simple _Node, Transient map needs
+  // separate structure with a mutable reference to _Node.
   _Node _root;
 
   _Owner _owner;
@@ -89,7 +94,7 @@ class _TMapImpl<K, V>
   }
 
   TMap<K, V> doDelete(K key, {bool missingOk: false}) {
-    return _adjustRootAndReturn(_root._delete(owner, key, _reverseHash(key.hashCode), maxDepth, missingOk));
+    return _adjustRootAndReturn(_root._delete(owner, key, _mangleHash(key.hashCode), maxDepth, missingOk));
   }
 
   TMap<K, V> doUpdate(K key, dynamic updateF) {
@@ -161,20 +166,20 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements PMap<K, V
   int get hashCode;
 
   _Node<K, V> _update(_Owner owner, K key, dynamic updateF){
-    return _insertOneWith(owner, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
+    return _insertOneWith(owner, key, null, _mangleHash(key.hashCode), maxDepth, updateF);
   }
 
   PMap<K, V> update(K key, dynamic updateF) =>
-    _insertOneWith(null, key, null, _reverseHash(key.hashCode), maxDepth, updateF);
+    _insertOneWith(null, key, null, _mangleHash(key.hashCode), maxDepth, updateF);
 
   _Node<K, V> _assoc(_Owner owner, K key, V value) =>
-      _insertOneWith(owner, key, value, _reverseHash(key.hashCode), maxDepth);
+      _insertOneWith(owner, key, value, _mangleHash(key.hashCode), maxDepth);
 
   PMap assoc(K key, V value) => _assoc(null, key, value);
 
   _Node<K, V> _delete(_Owner owner, K key, int hash, int depth, bool missingOk);
 
-  PMap delete(K key, {bool missingOk: false}) => _delete(null, key, _reverseHash(key.hashCode), maxDepth, missingOk);
+  PMap delete(K key, {bool missingOk: false}) => _delete(null, key, _mangleHash(key.hashCode), maxDepth, missingOk);
 
   bool operator ==(other) {
     if (other is! _Node) return false;
@@ -253,7 +258,7 @@ abstract class _Node<K, V> extends IterableBase<Pair<K, V>> implements PMap<K, V
 
   // method must be called only on top-level _Node
   V get(K key, [V notFound = _none]) {
-    var val = _get(key, _reverseHash(key.hashCode), maxDepth);
+    var val = _get(key, _mangleHash(key.hashCode), maxDepth);
     if(_isNone(val)){
       if (_isNone(notFound)) {
         _ThrowKeyError(key);
@@ -380,6 +385,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     return pairs.iterator;
   }
 
+  /// check whether order-by-hashcode invariant (see technical.md) holds
   void sanityCheck(){
     var lasthash = double.NEGATIVE_INFINITY;
     for (int i=0; i<_kv.length; i+=recsize){
@@ -426,8 +432,7 @@ class _Leaf<K, V> extends _Node<K, V> {
     return new _Leaf.abc(owner, kv);
   }
 
-  /// creates either _Leaf with given _kv, or (if _kv.length is big enough) it
-  /// splits the _kv to multiple _Nodes
+  /// see technical.md for explanation of what this does
 
   _Node<K, V> _polish(_Owner owner, int depth, List _kv) {
     assert(_kv.length % recsize == 0);
