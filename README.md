@@ -2,10 +2,15 @@
 
 [![Build Status](https://drone.io/github.com/vacuumlabs/persistent/status.png)](https://drone.io/github.com/vacuumlabs/persistent/latest)
 
-check out [changes in 2.0 version!] (https://github.com/vacuumlabs/persistent/wiki/20changes).
+Check out [changes in 2.0 version!] (changes_2_0.md)
 
-The project is forked from
+Learn how you can use [transients] (transients.md)
+
+Want to understand the code? Want to contribute? See [technical overview] (technical.md)
+
+<!-- The project is forked from
 [polux/persistent](https://github.com/polux/persistent).
+-->
 
 ## What are persistent data structures
 *Persistent* data structure is an immutable structure; the main difference with standard data structures is how you 'write' to them: instead of mutating
@@ -68,6 +73,4 @@ or Dart2JS on Node (the numbers are quite independent of the structure size):
 * Dart2JS write speed: 14 (6 by using Transients)
 
 Although the factors are quite big, the whole operation is still very fast and it probably won't be THE bottleneck which would slow down your app. 
-
-Some [advanced topics](https://github.com/vacuumlabs/persistent/wiki/Advanced-topics).
 
