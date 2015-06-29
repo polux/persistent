@@ -151,6 +151,8 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
 
+  int get hashCode => 127;
+
   Iterator<Pair<K, V>> get iterator => const _EmptyMapIterator();
 
   Pair<K, V> _elementAt(int index) {
@@ -165,7 +167,12 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 }
 
 class _Leaf<K, V> extends _APersistentMap<K, V> {
+  /// hashCode of the keys stored in this leaf, used to speed-up failed lookups
   int _hash;
+
+  /// Cached hashCode for this leaf
+  int _cachedHashCode;
+
   LinkedList<Pair<K, V>> _pairs;
 
   _Leaf(this._hash, pairs, int size) : super(size, false, true) {
@@ -363,6 +370,19 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     return thisAsMap.length == counter;
   }
 
+  int get hashCode {
+    if (_cachedHashCode == null) {
+      _cachedHashCode = 0;
+      LinkedList<Pair<K, V>> it = _pairs;
+      while (it.isCons) {
+        Cons<Pair<K, V>> cons = it.asCons;
+        _cachedHashCode ^= cons.elem.hashCode;
+        it = cons.tail;
+      }
+    }
+    return _cachedHashCode;
+  }
+
   Iterator<Pair<K, V>> get iterator => _pairs.iterator;
 
   Pair<K, V> _elementAt(int index) {
@@ -412,6 +432,7 @@ class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _SubMap<K, V> extends _APersistentMap<K, V> {
+  int _cachedHashCode;
   int _bitmap;
   List<_APersistentMap<K, V>> _array;
 
@@ -683,6 +704,16 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
       }
     }
     return true;
+  }
+
+  int get hashCode {
+    if (_cachedHashCode == null) {
+      _cachedHashCode = _bitmap;
+      for (final subMap in _array) {
+        _cachedHashCode ^= _cachedHashCode * 31 + subMap.hashCode;
+      }
+    }
+    return _cachedHashCode;
   }
 
   Iterator<Pair<K, V>> get iterator => new _SubMapIterator(_array);

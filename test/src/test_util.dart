@@ -141,7 +141,7 @@ bool mapEquals(Map m1, Map m2) {
       if (!m2.containsKey(k)) throw new _Stop();
       if (v != m2[k]) throw new _Stop();
     });
-  } on _Stop catch(e) {
+  } on _Stop {
     return false;
   }
   return true;
@@ -153,7 +153,7 @@ bool setEquals(Set s1, Set s2) {
     s1.forEach((e) {
       if (!s2.contains(e)) throw new _Stop();
     });
-  } on _Stop catch(e) {
+  } on _Stop {
     return false;
   }
   return true;

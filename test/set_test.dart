@@ -21,6 +21,23 @@ testIsEmpty(Set<Element> s) =>
 testEquals(Set<Element> s1, Set<Element> s2) =>
     (implemSetFrom(s1) == implemSetFrom(s2)) == setEquals(s1, s2);
 
+testHashCode(Set<int> set) {
+  List<int> elements = set.toList();
+  var set1 = implemSetFrom(set);
+  // We compare the hash code of set1 against the hash code of sets created by
+  // inserting rotations of elements into an empty set. That way, we obtain sets
+  // equal according to [=] but not necessarily structurally equal.
+  for (int i = 0; i < elements.length; i++) {
+    var set2 = new PersistentSet();
+    for (int j = 0; j < elements.length; j++) {
+      set2 = set2.insert(elements[(j+i) % elements.length]);
+    }
+    if (set1.hashCode != set2.hashCode)
+      return false;
+  }
+  return true;
+}
+
 testInsert(Set<Element> s, Element elem) =>
     sameSet(implemSetFrom(s).insert(elem), modelSetFrom(s).insert(elem));
 
@@ -77,6 +94,7 @@ main(List<String> arguments) {
   final properties = {
     'isEmpty'      : forall(e.sets, testIsEmpty),
     'equals'       : forall2(e.sets, e.sets, testEquals),
+    'hashCode'     : forall(e.sets, testHashCode),
     'insert'       : forall2(e.sets, e.elements, testInsert),
     'delete'       : forall2(e.sets, e.elements, testDelete),
     'contains'     : forall2(e.sets, e.elements, testContains),
