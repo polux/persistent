@@ -17,7 +17,7 @@ part of persistent;
 abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  factory PersistentMap() => new _EmptyMap<K, V>();
+  const factory PersistentMap() = _EmptyMap;
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
@@ -171,6 +171,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 abstract class PersistentMapBase<K, V>
     extends IterableBase<Pair<K, V>>
     implements PersistentMap<K, V> {
+
+  const PersistentMapBase();
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();

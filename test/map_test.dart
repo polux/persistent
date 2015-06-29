@@ -9,6 +9,9 @@ import 'package:propcheck/propcheck.dart';
 import 'package:persistent/persistent.dart';
 import 'src/test_util.dart';
 
+// Test const constructor for PersistentMap.
+const constMap = const PersistentMap<Key, int>();
+
 // a deliberately non-commutative operation on nullable integers
 int minus(int x, int y) => (x == null ? 0 : x) - (y == null ? 0 : y);
 

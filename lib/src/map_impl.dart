@@ -18,7 +18,7 @@ class _Stop implements Exception {}
 abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   final int length;
 
-  _APersistentMap(this.length, this.isEmpty, this._isLeaf);
+  const _APersistentMap(this.length, this.isEmpty, this._isLeaf);
 
   final bool isEmpty;
   final bool _isLeaf;
@@ -94,7 +94,7 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _EmptyMap<K, V> extends _APersistentMap<K, V> {
-  _EmptyMap() : super(0, true, false);
+  const _EmptyMap() : super(0, true, false);
 
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
