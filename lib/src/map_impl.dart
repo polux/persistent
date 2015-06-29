@@ -18,7 +18,7 @@ class _Stop implements Exception {}
 abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   final int length;
 
-  _APersistentMap(this.length, this.isEmpty, this._isLeaf);
+  const _APersistentMap(this.length, this.isEmpty, this._isLeaf);
 
   final bool isEmpty;
   final bool _isLeaf;
@@ -94,7 +94,7 @@ class _EmptyMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _EmptyMap<K, V> extends _APersistentMap<K, V> {
-  _EmptyMap() : super(0, true, false);
+  const _EmptyMap() : super(0, true, false);
 
   Option<V> _lookup(K key, int hash, int depth) => new Option<V>.none();
 
@@ -165,13 +165,12 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 }
 
 class _Leaf<K, V> extends _APersistentMap<K, V> {
-  int _hash;
-  LinkedList<Pair<K, V>> _pairs;
+  final int _hash;
+  final LinkedList<Pair<K, V>> _pairs;
 
-  _Leaf(this._hash, pairs, int size) : super(size, false, true) {
-    this._pairs = pairs;
-    assert(size == pairs.length);
-  }
+  const _Leaf(this._hash, pairs, int size)
+      : super(size, false, true)
+      , this._pairs = pairs;
 
   PersistentMap<K, V> _insertWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth) {
@@ -412,10 +411,10 @@ class _SubMapIterator<K, V> implements Iterator<Pair<K, V>> {
 }
 
 class _SubMap<K, V> extends _APersistentMap<K, V> {
-  int _bitmap;
-  List<_APersistentMap<K, V>> _array;
+  final int _bitmap;
+  final List<_APersistentMap<K, V>> _array;
 
-  _SubMap(this._bitmap, this._array, int size) : super(size, false, false);
+  const _SubMap(this._bitmap, this._array, int size) : super(size, false, false);
 
   static _popcount(int n) {
     n = n - ((n >> 1) & 0x55555555);

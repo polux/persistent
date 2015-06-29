@@ -21,33 +21,28 @@ abstract class LinkedList<E> implements Iterable<E> {
 }
 
 class LinkedListBuilder<E> {
-  LinkedList<E> _first = null;
-  Cons<E> _last = null;
+  final List<E> _buffer = [];
 
   void add(E x) {
-    Cons<E> cons = new Cons<E>(x, null);
-    if (_first == null) {
-      _first = cons;
-    } else {
-      _last.tail = cons;
-    }
-    _last = cons;
+    _buffer.add(x);
+  }
+
+  LinkedList<E> _build(int i, LinkedList<E> tail) {
+    if (i == _buffer.length) return tail;
+    return new Cons<E>(_buffer[i], _build(i+1, tail));
   }
 
   LinkedList<E> build([tail = null]) {
     if (tail == null)
       tail = new Nil<E>();
-    if (_first == null) {
-      return tail;
-    } else {
-      _last.tail = tail;
-      return _first;
-    }
+    return _build(0, tail);
   }
 }
 
 abstract class _LinkedListBase<E> extends IterableBase<E>
     implements LinkedList<E> {
+
+  const _LinkedListBase();
 
   void foreach(f(A)) {
     LinkedList<E> it = this;
@@ -90,14 +85,15 @@ class _NilIterator<E> implements Iterator<E> {
 }
 
 class Nil<E> extends _LinkedListBase<E> {
-  bool get isNil => true;
-  bool get isCons => false;
+  final int length = 0;
+  final bool isNil = true;
+  final bool isCons = false;
+  final Cons<E> asCons = null;
   Nil<E> get asNil => this;
-  Cons<E> get asCons => null;
+
+  const Nil();
 
   toString() => "nil()";
-
-  int get length => 0;
 
   Iterator<E> get iterator => const _NilIterator();
 }
@@ -124,12 +120,13 @@ class _ConsIterator<E> implements Iterator<E> {
 }
 
 class Cons<E> extends _LinkedListBase<E> {
-  int _length = null;
-
+  final int length;
   final E elem;
-  LinkedList<E> tail;
+  final LinkedList<E> tail;
 
-  Cons(this.elem, this.tail);
+  const Cons(this.elem, tail)
+    : this.tail = tail
+    , this.length = tail.length + 1;
 
   bool get isNil => false;
   bool get isCons => true;
@@ -137,13 +134,6 @@ class Cons<E> extends _LinkedListBase<E> {
   Cons<E> get asCons => this;
 
   toString() => "cons($elem, $tail)";
-
-  int get length {
-    if (_length == null) {
-      _length = tail.length + 1;
-    }
-    return _length;
-  }
 
   Iterator<E> get iterator => new _ConsIterator<E>(this);
 }

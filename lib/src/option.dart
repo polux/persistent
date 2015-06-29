@@ -11,7 +11,7 @@ class Option<T> {
   final T _value;
   final bool isDefined;
 
-  Option._internal(this.isDefined, this._value);
+  const Option._internal(this.isDefined, this._value);
 
   factory Option.none() => _none;
 

@@ -172,6 +172,8 @@ abstract class PersistentMapBase<K, V>
     extends IterableBase<Pair<K, V>>
     implements PersistentMap<K, V> {
 
+  const PersistentMapBase();
+
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
     this.forEachKeyValue((K k, V v) { result[k] = v; });
