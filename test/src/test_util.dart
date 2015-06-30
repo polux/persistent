@@ -49,7 +49,7 @@ class Key {
     return true;
   }
 
-  bool operator ==(Key other) {
+  bool operator ==(other) {
     if (other is! Key) return false;
     return _eqList(key, other.key) && b == other.b;
   }
@@ -58,18 +58,21 @@ class Key {
 }
 
 /**
- * A datatype with an imperfect hash function to use as an element for testing
- * sets.
+ * A datatype with an imperfect hash function but with less inhabitants than [Key].
  */
 class Element {
   final int i;
   final bool b;
+
   Element(this.i, this.b);
+
   int get hashCode => i.hashCode;
+
   bool operator ==(other) =>
     (other is Element)
     && i == other.i
     && b == other.b;
+
   String toString() => "Element($i, $b)";
 }
 
@@ -82,6 +85,7 @@ class Enumerations {
   en.Enumeration<int> values;
   en.Enumeration<Map<Key, int>> maps;
   en.Enumeration<Set<Element>> sets;
+  en.Enumeration<PersistentMap<Element, int>> pmaps;
 
   static _list7(x1) => (x2) => (x3) => (x4) => (x5)  => (x6) => (x7) =>
       [x1, x2, x3, x4, x5, x6, x7];
@@ -110,6 +114,9 @@ class Enumerations {
     maps = c.mapsOf(keys, values);
     elements = en.apply((i, b) => new Element(i, b), c.ints, c.bools);
     sets = c.setsOf(elements);
+    pmaps = en.fix((e) =>
+        en.singleton(new PersistentMap()) +
+        en.apply((m, key, val) => m.insert(key, val), e.pay(), elements, values));
   }
 }
 
@@ -174,8 +181,8 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   final parser = new args.ArgParser();
   parser.addFlag('help', negatable: false);
   parser.addFlag('quiet', negatable: false);
-  parser.addOption('quickCheckMaxSize', defaultsTo: '700');
-  parser.addOption('smallCheckDepth', defaultsTo: '15');
+  parser.addOption('quickCheckMaxSize', defaultsTo: '300');
+  parser.addOption('smallCheckDepth', defaultsTo: '7');
   parser.addOption('property',
                    help: 'property to test or "all"',
                    allowed: new List.from(properties.keys)..add('all'),

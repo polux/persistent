@@ -24,25 +24,8 @@ testIsEmpty(Map<Key, int> map) =>
 testEquals(Map<Key, int> map1, Map<Key, int> map2) =>
     (implemMapFrom(map1) == implemMapFrom(map2)) == mapEquals(map1, map2);
 
-testHashCode(Map<Key, int> map) {
-  List<Pair<Key, int>> entries = [];
-  map.forEach((key, value) {
-    entries.add(new Pair(key, value));
-  });
-  var map1 = implemMapFrom(map);
-  // We compare the hash code of map1 against the hash code of maps created by
-  // inserting rotations of entries into an empty map. That way, we obtain maps
-  // equal according to [=] but not necessarily structurally equal.
-  for (int i = 0; i < entries.length; i++) {
-    var map2 = new PersistentMap();
-    for (int j = 0; j < entries.length; j++) {
-      final entry = entries[(j+i) % entries.length];
-      map2 = map2.insert(entry.fst, entry.snd);
-    }
-    if (map1.hashCode != map2.hashCode)
-      return false;
-  }
-  return true;
+testHashCode(PersistentMap<Element, int> map1, PersistentMap<Element, int> map2) {
+  return (map1 != map2) || (map1.hashCode == map2.hashCode);
 }
 
 testInsert(Map<Key, int> map, Key key, int value) =>
@@ -102,7 +85,7 @@ main(List<String> arguments) {
   final properties = {
     'isEmpty'     : forall(e.maps, testIsEmpty),
     'equals'      : forall2(e.maps, e.maps, testEquals),
-    'hashCode'    : forall(e.maps, testHashCode),
+    'hashCode'    : forall2(e.pmaps, e.pmaps, testHashCode),
     'insert'      : forall3(e.maps, e.keys, e.values, testInsert),
     'delete'      : forall2(e.maps, e.keys, testDelete),
     'lookup'      : forall2(e.maps, e.keys, testLookup),

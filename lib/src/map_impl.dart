@@ -710,7 +710,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     if (_cachedHashCode == null) {
       _cachedHashCode = _bitmap;
       for (final subMap in _array) {
-        _cachedHashCode ^= _cachedHashCode * 31 + subMap.hashCode;
+        _cachedHashCode = _cachedHashCode * 31 + subMap.hashCode;
       }
     }
     return _cachedHashCode;
