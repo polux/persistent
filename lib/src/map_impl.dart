@@ -330,7 +330,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     while (it.isCons) {
       Cons<Pair<K, V>> cons = it.asCons;
       Pair<K, V> elem = cons.elem;
-      if (elem.snd == null && !thisAsMap.containsKey(elem.fst))
+      if ((elem.snd == null) && !thisAsMap.containsKey(elem.fst))
         return false;
       if (thisAsMap[elem.fst] != elem.snd)
         return false;
