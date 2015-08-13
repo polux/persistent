@@ -8,11 +8,6 @@ part of persistent;
 final _random = new Random();
 
 /**
- * Exception used for aborting forEach loops.
- */
-class _Stop implements Exception {}
-
-/**
  * Superclass for _EmptyMap, _Leaf and _SubMap.
  */
 abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
@@ -34,8 +29,6 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   _APersistentMap<K, V>
       _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth);
   _APersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth);
-  _APersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
   _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth);
@@ -43,9 +36,6 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   _APersistentMap<K, V>
       _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
                         int depth);
-  _APersistentMap<K, V>
-      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
-                                int depth);
   _APersistentMap<K, V>
       _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth);
   _APersistentMap<K, V>
@@ -119,11 +109,6 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
       _unionWith(PersistentMap<K, V> m, V combine(V x, V y), int depth) => m;
 
   PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) {
-    throw "should never be called";
-  }
-
-  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
   PersistentMap<K, V>
@@ -132,12 +117,6 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, V>
       _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
                         int depth) => this;
-
-  PersistentMap<K, V>
-      _intersectionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y),
-                                int depth) {
-        throw "should never be called";
-  }
 
   PersistentMap<K, V> _intersectionWithLeaf(
       _Leaf<K, V> m, V combine(V x, V y), int depth) => this;
@@ -299,10 +278,6 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
           m._unionWithLeaf(this, combine, depth);
 
   PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
-          this;
-
-  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, length, combine, _hash, depth);
 
@@ -313,11 +288,6 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithLeaf(this, combine, depth);
-
-  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
-                                                V combine(V x, V y),
-                                                int depth) =>
-      m;
 
   PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
@@ -579,10 +549,6 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
           m._unionWithSubMap(this, combine, depth);
 
   PersistentMap<K, V>
-      _unionWithEmptyMap(_EmptyMap<K, V> m, V combine(V x, V y), int depth) =>
-          this;
-
-  PersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           this._insertWith(m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
@@ -627,11 +593,6 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithSubMap(this, combine, depth);
-
-  PersistentMap<K, V> _intersectionWithEmptyMap(_EmptyMap<K, V> m,
-                                                V combine(V x, V y),
-                                                int depth) =>
-      m;
 
   PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
