@@ -6,7 +6,6 @@
 part of map_bench;
 
 class Benchmark {
-
   int size;
 
   Benchmark([this.size = 1000]);

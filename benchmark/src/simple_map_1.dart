@@ -14,8 +14,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   bool get isEmpty => _list.isNil;
 
   SimplePersistentMap._internal(this._list);
-  factory SimplePersistentMap() =>
-      new SimplePersistentMap._internal(new Nil());
+  factory SimplePersistentMap() => new SimplePersistentMap._internal(new Nil());
 
   PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
@@ -36,6 +35,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
       builder.add(new Pair<K, V>(key, value));
       return builder.build();
     }
+
     return new SimplePersistentMap._internal(newList());
   }
 
@@ -54,14 +54,13 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   }
 
   PersistentMap<K, U> mapValues<U>(U f(V value)) =>
-    new SimplePersistentMap._internal(
-      _list.strictMap((p) => new Pair(p.fst, f(p.snd))));
+      new SimplePersistentMap._internal(
+          _list.strictMap((p) => new Pair(p.fst, f(p.snd))));
 
   forEachKeyValue(f(K, V)) {
     Map<K, V> tmp = new Map<K, V>();
     _list.foreach((pair) {
-      if (!tmp.containsKey(pair.fst))
-        tmp[pair.fst] = pair.snd;
+      if (!tmp.containsKey(pair.fst)) tmp[pair.fst] = pair.snd;
     });
     tmp.forEach(f);
   }
@@ -75,7 +74,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
   }
 
   PersistentMap<K, V> intersection(PersistentMap<K, V> other,
-                                   [V combine(V x, V y)]) {
+      [V combine(V x, V y)]) {
     throw new UnsupportedError("intersection is not supported");
   }
 

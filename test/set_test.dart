@@ -30,10 +30,9 @@ bool testHashCode(Set<Element> set) {
   for (int i = 0; i < elements.length; i++) {
     var set2 = new PersistentSet();
     for (int j = 0; j < elements.length; j++) {
-      set2 = set2.insert(elements[(j+i) % elements.length]);
+      set2 = set2.insert(elements[(j + i) % elements.length]);
     }
-    if (set1.hashCode != set2.hashCode)
-      return false;
+    if (set1.hashCode != set2.hashCode) return false;
   }
   return true;
 }
@@ -44,8 +43,9 @@ bool testInsert(Set<Element> s, Element elem) =>
 bool testDelete(Set<Element> s, Element elem) {
   PersistentSet ps = implemSetFrom(s).delete(elem);
   return sameSet(ps, modelSetFrom(s).delete(elem))
-    // checks that delete's normalizes the set so that == is well defined
-    && implemSetFrom(ps.toSet()) == ps;
+      // checks that delete's normalizes the set so that == is well defined
+      &&
+      implemSetFrom(ps.toSet()) == ps;
 }
 
 bool testContains(Set<Element> s, Element elem) =>
@@ -54,21 +54,21 @@ bool testContains(Set<Element> s, Element elem) =>
 bool testLength(Set<Element> s) =>
     implemSetFrom(s).length == modelSetFrom(s).length;
 
-bool testUnion(Set<Element> s1, Set<Element> s2) =>
-    sameSet(implemSetFrom(s1).union(implemSetFrom(s2)),
-            modelSetFrom(s1).union(modelSetFrom(s2)));
+bool testUnion(Set<Element> s1, Set<Element> s2) => sameSet(
+    implemSetFrom(s1).union(implemSetFrom(s2)),
+    modelSetFrom(s1).union(modelSetFrom(s2)));
 
-bool testDifference(Set<Element> s1, Set<Element> s2) =>
-    sameSet(implemSetFrom(s1).difference(implemSetFrom(s2)),
-            modelSetFrom(s1).difference(modelSetFrom(s2)));
+bool testDifference(Set<Element> s1, Set<Element> s2) => sameSet(
+    implemSetFrom(s1).difference(implemSetFrom(s2)),
+    modelSetFrom(s1).difference(modelSetFrom(s2)));
 
-bool testIntersection(Set<Element> s1, Set<Element> s2) =>
-    sameSet(implemSetFrom(s1).intersection(implemSetFrom(s2)),
-            modelSetFrom(s1).intersection(modelSetFrom(s2)));
+bool testIntersection(Set<Element> s1, Set<Element> s2) => sameSet(
+    implemSetFrom(s1).intersection(implemSetFrom(s2)),
+    modelSetFrom(s1).intersection(modelSetFrom(s2)));
 
-bool testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
-    sameSet(implemSetFrom(s1).cartesianProduct(implemSetFrom(s2)),
-            modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
+bool testCartesianProduct(Set<Element> s1, Set<Element> s2) => sameSet(
+    implemSetFrom(s1).cartesianProduct(implemSetFrom(s2)),
+    modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
 
 bool testIterator(Set<Element> s) =>
     setEquals(implemSetFrom(s).toSet(), modelSetFrom(s).toSet());
@@ -92,20 +92,20 @@ bool testLast(Set<Element> s) {
 main(List<String> arguments) {
   final e = new Enumerations();
   final properties = {
-    'isEmpty'      : forall(e.sets, testIsEmpty),
-    'equals'       : forall2(e.sets, e.sets, testEquals),
-    'hashCode'     : forall(e.sets, testHashCode),
-    'insert'       : forall2(e.sets, e.elements, testInsert),
-    'delete'       : forall2(e.sets, e.elements, testDelete),
-    'contains'     : forall2(e.sets, e.elements, testContains),
-    'length'       : forall(e.sets, testLength),
-    'union'        : forall2(e.sets, e.sets, testUnion),
-    'difference'   : forall2(e.sets, e.sets, testDifference),
-    'intersection' : forall2(e.sets, e.sets, testIntersection),
-    'product'      : forall2(e.sets, e.sets, testCartesianProduct),
-    'iterator'     : forall(e.sets, testIterator),
-    'elementAt'    : forall(e.sets, testElementAt),
-    'last'         : forall(e.sets, testLast)
+    'isEmpty': forall(e.sets, testIsEmpty),
+    'equals': forall2(e.sets, e.sets, testEquals),
+    'hashCode': forall(e.sets, testHashCode),
+    'insert': forall2(e.sets, e.elements, testInsert),
+    'delete': forall2(e.sets, e.elements, testDelete),
+    'contains': forall2(e.sets, e.elements, testContains),
+    'length': forall(e.sets, testLength),
+    'union': forall2(e.sets, e.sets, testUnion),
+    'difference': forall2(e.sets, e.sets, testDifference),
+    'intersection': forall2(e.sets, e.sets, testIntersection),
+    'product': forall2(e.sets, e.sets, testCartesianProduct),
+    'iterator': forall(e.sets, testIterator),
+    'elementAt': forall(e.sets, testElementAt),
+    'last': forall(e.sets, testLast)
   };
   testMain(arguments, properties);
 }

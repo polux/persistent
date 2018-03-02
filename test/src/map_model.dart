@@ -64,21 +64,24 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
   int get length => _map.length;
 
   ModelMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
-    if (combine == null) { combine = (x, y) => y; }
+    if (combine == null) {
+      combine = (x, y) => y;
+    }
     Map newmap = new Map.from(_map);
     (other as ModelMap<K, V>)._map.forEach((K key, V value) {
-      newmap[key] = newmap.containsKey(key)
-          ? combine(newmap[key], value)
-          : value;
+      newmap[key] =
+          newmap.containsKey(key) ? combine(newmap[key], value) : value;
     });
     return new ModelMap(newmap);
   }
 
   ModelMap<K, V> intersection(PersistentMap<K, V> other,
-                                   [V combine(V x, V y)]) {
-    if (combine == null) { combine = (x, y) => y; }
-    Map<K,V> newmap = new Map();
-    ModelMap<K,V> otherMap = other as ModelMap<K,V>;
+      [V combine(V x, V y)]) {
+    if (combine == null) {
+      combine = (x, y) => y;
+    }
+    Map<K, V> newmap = new Map();
+    ModelMap<K, V> otherMap = other as ModelMap<K, V>;
     _map.forEach((K key, V value) {
       if (otherMap._map.containsKey(key)) {
         newmap[key] = combine(value, otherMap._map[key]);

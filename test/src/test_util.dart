@@ -28,16 +28,16 @@ class Key {
 
   static int computeHashCode(key) {
     int result = 0;
-    for(int i = 0; i < 7; i++) {
+    for (int i = 0; i < 7; i++) {
       result |= key[i] << (5 * i);
     }
     return result;
   }
 
   Key(List<int> key, bool b)
-      : this.key = key
-      , this.b = b
-      , this.hashCode = computeHashCode(key) {
+      : this.key = key,
+        this.b = b,
+        this.hashCode = computeHashCode(key) {
     assert(key.length == 7);
   }
 
@@ -68,10 +68,7 @@ class Element {
 
   int get hashCode => i.hashCode;
 
-  bool operator ==(other) =>
-    (other is Element)
-    && i == other.i
-    && b == other.b;
+  bool operator ==(other) => (other is Element) && i == other.i && b == other.b;
 
   String toString() => "Element($i, $b)";
 }
@@ -87,27 +84,36 @@ class Enumerations {
   en.Enumeration<Set<Element>> sets;
   en.Enumeration<PersistentMap<Element, int>> pmaps;
 
-  static _list7(x1) => (x2) => (x3) => (x4) => (x5)  => (x6) => (x7) =>
-      [x1, x2, x3, x4, x5, x6, x7];
+  static _list7(x1) => (x2) =>
+      (x3) => (x4) => (x5) => (x6) => (x7) => [x1, x2, x3, x4, x5, x6, x7];
 
   Enumerations() {
     // [{0}, {1}, ..., {31}]
     var smallints = en.empty();
     for (int i = 0; i < 32; i++) {
       var n = en.singleton(i);
-      for (int s = 0; s < i; s++) { n = n.pay(); }
+      for (int s = 0; s < i; s++) {
+        n = n.pay();
+      }
       smallints += n;
     }
     // [{0}, {1}, {2}, {3}]
     var twoBits = en.empty();
     for (int i = 0; i < 3; i++) {
       var n = en.singleton(i);
-      for (int s = 0; s < i; s++) { n = n.pay(); }
+      for (int s = 0; s < i; s++) {
+        n = n.pay();
+      }
       twoBits += n;
     }
-    final smalllists = en.singleton(_list7)
-        .apply(smallints).apply(smallints).apply(smallints)
-        .apply(smallints).apply(smallints).apply(smallints)
+    final smalllists = en
+        .singleton(_list7)
+        .apply(smallints)
+        .apply(smallints)
+        .apply(smallints)
+        .apply(smallints)
+        .apply(smallints)
+        .apply(smallints)
         .apply(twoBits);
     keys = en.apply((k, b) => new Key(k, b), smalllists, c.bools);
     values = c.ints + new en.Enumeration.singleton(null);
@@ -115,8 +121,9 @@ class Enumerations {
     elements = en.apply((i, b) => new Element(i, b), c.ints, c.bools);
     sets = c.setsOf(elements);
     pmaps = en.fix((e) =>
-        en.singleton(new PersistentMap<Element,int>()) +
-        en.apply3((m, key, val) => m.insert(key, val), e.pay(), elements, values));
+        en.singleton(new PersistentMap<Element, int>()) +
+        en.apply3(
+            (m, key, val) => m.insert(key, val), e.pay(), elements, values));
   }
 }
 
@@ -129,7 +136,7 @@ naiveLast(Iterable iterable) {
   var result;
   do {
     result = it.current;
-  } while(it.moveNext());
+  } while (it.moveNext());
   return result;
 }
 
@@ -184,10 +191,10 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   parser.addOption('quickCheckMaxSize', defaultsTo: '300');
   parser.addOption('smallCheckDepth', defaultsTo: '7');
   parser.addOption('property',
-                   help: 'property to test or "all"',
-                   allowed: new List.from(properties.keys)..add('all'),
-                   allowMultiple: true,
-                   defaultsTo: 'all');
+      help: 'property to test or "all"',
+      allowed: new List.from(properties.keys)..add('all'),
+      allowMultiple: true,
+      defaultsTo: 'all');
   final flags = parser.parse(arguments);
 
   if (flags['help']) {
@@ -196,11 +203,9 @@ void testMain(List<String> arguments, Map<String, Property> properties) {
   }
 
   final qc = new QuickCheck(
-      maxSize: int.parse(flags['quickCheckMaxSize']),
-      quiet: flags['quiet']);
+      maxSize: int.parse(flags['quickCheckMaxSize']), quiet: flags['quiet']);
   final sc = new SmallCheck(
-      depth: int.parse(flags['smallCheckDepth']),
-      quiet: flags['quiet']);
+      depth: int.parse(flags['smallCheckDepth']), quiet: flags['quiet']);
 
   Iterable<String> toTest = flags['property'];
   if (toTest.contains('all')) {

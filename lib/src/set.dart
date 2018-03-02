@@ -6,7 +6,6 @@
 part of persistent;
 
 abstract class PersistentSet<E> implements Iterable<E> {
-
   /// Creates an empty [PersistentSet] using its default implementation.
   factory PersistentSet() => new _PersistentSetImpl<E>();
 
@@ -56,10 +55,8 @@ abstract class PersistentSet<E> implements Iterable<E> {
 /**
  * A base class for implementations of [PersistentSet].
  */
-abstract class PersistentSetBase<E>
-    extends IterableBase<E>
+abstract class PersistentSetBase<E> extends IterableBase<E>
     implements PersistentSet<E> {
-
   PersistentSet<E> operator +(PersistentSet<E> persistentSet) =>
       union(persistentSet);
 
@@ -69,8 +66,7 @@ abstract class PersistentSetBase<E>
   PersistentSet<Pair> operator *(PersistentSet persistentSet) =>
       cartesianProduct(persistentSet);
 
-  PersistentSet strictMap(f(E element)) =>
-      new PersistentSet.from(this.map(f));
+  PersistentSet strictMap(f(E element)) => new PersistentSet.from(this.map(f));
 
   PersistentSet<E> strictWhere(bool f(E element)) =>
       new PersistentSet<E>.from(this.where(f));

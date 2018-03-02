@@ -35,8 +35,7 @@ class LinkedListBuilder<E> {
   }
 
   LinkedList<E> build([tail = null]) {
-    if (tail == null)
-      tail = new Nil<E>();
+    if (tail == null) tail = new Nil<E>();
     if (_first == null) {
       return tail;
     } else {
@@ -48,7 +47,6 @@ class LinkedListBuilder<E> {
 
 abstract class _LinkedListBase<E> extends IterableBase<E>
     implements LinkedList<E> {
-
   void foreach(f(A)) {
     LinkedList<E> it = this;
     while (!it.isNil) {

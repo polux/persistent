@@ -37,7 +37,7 @@ class ModelSet<E> extends PersistentSetBase<E> {
     return new ModelSet(newset);
   }
 
-  ModelSet<Pair<E,F>> cartesianProduct<F>(PersistentSet<F> other) {
+  ModelSet<Pair<E, F>> cartesianProduct<F>(PersistentSet<F> other) {
     Set<Pair> newset = new Set<Pair>();
     for (E e1 in zet) {
       for (final e2 in (other as ModelSet<E>).zet) {
@@ -53,7 +53,6 @@ class ModelSet<E> extends PersistentSetBase<E> {
   }
 
   Iterator<E> get iterator => zet.iterator;
-
 
   E pickRandomElement([Random random]) {
     throw new UnsupportedError("");

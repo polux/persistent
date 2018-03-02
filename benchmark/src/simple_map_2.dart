@@ -68,7 +68,7 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
   }
 
   PersistentMap<K, V> intersection(PersistentMap<K, V> other,
-                                   [V combine(V x, V y)]) {
+      [V combine(V x, V y)]) {
     throw new UnsupportedError("intersection is not supported");
   }
 

@@ -36,7 +36,6 @@ void bench(List<String> doyle, List<String> austeen) {
 }
 
 main() {
-  Future
-      .wait([getWords(AUSTEEN), getWords(DOYLE)])
-      .then((result) => bench(result[0], result[1]));
+  Future.wait([getWords(AUSTEEN), getWords(DOYLE)]).then(
+      (result) => bench(result[0], result[1]));
 }

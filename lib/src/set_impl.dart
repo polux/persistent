@@ -27,7 +27,9 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   _PersistentSetImpl<F> map<F>(F f(E element)) {
     _PersistentSetImpl result = new _PersistentSetImpl();
-    _map.forEachKeyValue((E k, v) { result = result.insert(f(k)); });
+    _map.forEachKeyValue((E k, v) {
+      result = result.insert(f(k));
+    });
     return result;
   }
 
@@ -61,12 +63,12 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
       new _PersistentSetImpl._internal(
           _map.intersection((persistentSet as _PersistentSetImpl<E>)._map));
 
-  _PersistentSetImpl<Pair<E, F>>
-      cartesianProduct<F>(PersistentSet<F> persistentSet) {
+  _PersistentSetImpl<Pair<E, F>> cartesianProduct<F>(
+      PersistentSet<F> persistentSet) {
     _PersistentSetImpl<Pair> result = new _PersistentSetImpl();
     _map.forEachKeyValue((E e1, _) {
       (persistentSet as _PersistentSetImpl<F>)._map.forEachKeyValue((e2, _) {
-        result = result.insert(new Pair<E,Object>(e1, e2));
+        result = result.insert(new Pair<E, Object>(e1, e2));
       });
     });
     return result;

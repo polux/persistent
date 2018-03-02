@@ -15,7 +15,6 @@ part of persistent;
  * `PersistentMap.fromMap({k1: v1, k2: v2, ...})`.
  */
 abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
-
   /** Creates an empty [PersistentMap] using its default implementation. */
   const factory PersistentMap() = _EmptyMap<K, V>;
 
@@ -56,8 +55,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.insert('b', 3) == {'a': 3, 'b', 3}
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
-  PersistentMap<K, V>
-      insert(K key, V value, [V combine(V oldvalue, V newvalue)]);
+  PersistentMap<K, V> insert(K key, V value,
+      [V combine(V oldvalue, V newvalue)]);
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]
@@ -123,8 +122,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    * Note that [union] is commutative if and only if [combine] is provided and
    * if it is commutative.
    */
-  PersistentMap<K, V>
-      union(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PersistentMap<K, V> union(PersistentMap<K, V> other,
+      [V combine(V left, V right)]);
 
   /**
    * Returns a new map whose (key, value) pairs are the intersection of those of
@@ -143,8 +142,8 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    * Note that [intersection] is commutative if and only if [combine] is
    * provided and if it is commutative.
    */
-  PersistentMap<K, V>
-      intersection(PersistentMap<K, V> other, [V combine(V left, V right)]);
+  PersistentMap<K, V> intersection(PersistentMap<K, V> other,
+      [V combine(V left, V right)]);
 
   /// Returns a mutable copy of `this`.
   Map<K, V> toMap();
@@ -168,15 +167,15 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 /**
  * A base class for implementations of [PersistentMap].
  */
-abstract class PersistentMapBase<K, V>
-    extends IterableBase<Pair<K, V>>
+abstract class PersistentMapBase<K, V> extends IterableBase<Pair<K, V>>
     implements PersistentMap<K, V> {
-
   const PersistentMapBase();
 
   Map<K, V> toMap() {
     Map<K, V> result = new Map<K, V>();
-    this.forEachKeyValue((K k, V v) { result[k] = v; });
+    this.forEachKeyValue((K k, V v) {
+      result[k] = v;
+    });
     return result;
   }
 
