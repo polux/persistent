@@ -6,19 +6,17 @@
 part of persistent;
 
 class Option<T> {
-  static final _none = new Option._internal(false, null);
-
   final T _value;
   final bool isDefined;
 
-  Option._internal(this.isDefined, this._value);
+  const Option._internal(this.isDefined, this._value);
 
-  factory Option.none() => _none;
+  factory Option.none() => const Option._internal(false, null);
 
   factory Option.some(T value) => new Option._internal(true, value);
 
   factory Option.fromNullable(T nullableValue) =>
-      nullableValue == null ? _none : new Option.some(nullableValue);
+      nullableValue == null ? new Option.none() : new Option.some(nullableValue);
 
   T get value {
     if (isDefined) return _value;
@@ -43,12 +41,13 @@ class Option<T> {
   Option get flattened {
     // enforces the precondition in checked mode
     final self = this as Option<Option>;
-    return self.orElse(_none);
+    return self.orElse(new Option.none());
   }
 
-  bool operator ==(Option<T> other) =>
-      (isDefined && other.isDefined && _value == other._value)
-   || (!isDefined && !other.isDefined);
+  bool operator ==(Object other) =>
+      other is Option<T> && (
+          (isDefined && other.isDefined && _value == other._value)
+           || (!isDefined && !other.isDefined));
 
   int get hashCode => asNullable.hashCode;
 

@@ -105,30 +105,30 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWith(PersistentMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) => m;
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _intersectionWith(_APersistentMap<K, V> m, V combine(V x, V y),
                         int depth) => this;
 
-  PersistentMap<K, V> _intersectionWithLeaf(
+  _APersistentMap<K, V> _intersectionWithLeaf(
       _Leaf<K, V> m, V combine(V x, V y), int depth) => this;
 
-  PersistentMap<K, V> _intersectionWithSubMap(
+  _APersistentMap<K, V> _intersectionWithSubMap(
       _SubMap<K, V> m, V combine(V x, V y), int depth) => this;
 
-  PersistentMap mapValues(f(V)) => this;
+  PersistentMap<K, U> mapValues<U>(U f(V value)) => new _EmptyMap<K, U>();
 
   void forEachKeyValue(f(K, V)) {}
 
-  bool operator ==(PersistentMap<K, V> other) => other is _EmptyMap;
+  bool operator ==(Object other) => other is _EmptyMap;
 
   int get hashCode => 127;
 
@@ -273,27 +273,27 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
         : new _Leaf<K, V>(_hash, adjustPairs(), length);
   }
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithLeaf(this, combine, depth);
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) =>
           m._insertWith(_pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+  _APersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithLeaf(this, combine, depth);
 
-  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+  _APersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
       m._intersectWith(_pairs, length, combine, _hash, depth);
 
-  PersistentMap<K, V> _intersectionWithSubMap(_SubMap<K, V> m,
+  _APersistentMap<K, V> _intersectionWithSubMap(_SubMap<K, V> m,
                                               V combine(V x, V y), int depth) =>
       m._intersectWith(_pairs, length, combine, _hash, depth);
 
@@ -310,7 +310,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     return new Option<V>.none();
   }
 
-  PersistentMap mapValues(f(V)) =>
+  PersistentMap<K, U> mapValues<U>(U f(V value)) =>
       new _Leaf(_hash,
                 _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
 
@@ -318,7 +318,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
-  bool operator ==(PersistentMap<K, V> other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! _Leaf) return false;
     _Leaf otherLeaf = other;
@@ -544,16 +544,16 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWith(_APersistentMap<K, V> m, V combine(V x, V y), int depth) =>
           m._unionWithSubMap(this, combine, depth);
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithLeaf(_Leaf<K, V> m, V combine(V x, V y), int depth) =>
           this._insertWith(m._pairs, m.length, (V v1, V v2) => combine(v2, v1),
               m._hash, depth);
 
-  PersistentMap<K, V>
+  _APersistentMap<K, V>
       _unionWithSubMap(_SubMap<K, V> m, V combine(V x, V y), int depth) {
     int ormap = _bitmap | m._bitmap;
     int andmap = _bitmap & m._bitmap;
@@ -590,16 +590,16 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     return new _SubMap<K, V>(ormap, newarray, newSize);
   }
 
-  PersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
+  _APersistentMap<K, V> _intersectionWith(_APersistentMap<K, V> m,
                                         V combine(V x, V y), int depth) =>
       m._intersectionWithSubMap(this, combine, depth);
 
-  PersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
+  _APersistentMap<K, V> _intersectionWithLeaf(_Leaf<K, V> m, V combine(V x, V y),
                                             int depth) =>
       _intersectWith(m._pairs,  m.length, (V v1, V v2) => combine(v2, v1),
                      m._hash, depth);
 
-  PersistentMap<K, V> _intersectionWithSubMap(
+  _APersistentMap<K, V> _intersectionWithSubMap(
       _SubMap<K, V> m, V combine(V x, V y), int depth) {
     int andmap = _bitmap & m._bitmap;
     List<_APersistentMap<K, V>> newarray = new List<_APersistentMap<K, V>>();
@@ -636,9 +636,9 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap mapValues(f(V)) {
-    List<_APersistentMap<K, V>> newarray =
-        new List<_APersistentMap<K, V>>.from(_array, growable: false);
+  PersistentMap<K, U> mapValues<U>(U f(V value)) {
+    List<_APersistentMap<K, U>> newarray =
+        new List<_APersistentMap<K, U>>.from(_array, growable: false);
     for (int i = 0; i < _array.length; i++) {
       _APersistentMap<K, V> mi = _array[i];
         newarray[i] = mi.mapValues(f);
@@ -650,7 +650,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 
-  bool operator ==(PersistentMap<K, V> other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! _SubMap) return false;
     _SubMap otherSubMap = other;

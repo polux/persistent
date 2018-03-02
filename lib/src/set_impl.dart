@@ -21,11 +21,11 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
   _PersistentSetImpl<E> delete(E element) =>
       new _PersistentSetImpl._internal(_map.delete(element));
 
-  bool contains(E element) => _map.lookup(element).isDefined;
+  bool contains(Object element) => _map.lookup(element).isDefined;
 
   void forEach(f(E element)) => _map.forEachKeyValue((E k, v) => f(k));
 
-  _PersistentSetImpl map(f(E element)) {
+  _PersistentSetImpl<F> map<F>(F f(E element)) {
     _PersistentSetImpl result = new _PersistentSetImpl();
     _map.forEachKeyValue((E k, v) { result = result.insert(f(k)); });
     return result;
@@ -43,10 +43,11 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
 
   int get length => _map.length;
 
-  _PersistentSetImpl<E> union(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.union(persistentSet._map));
+  _PersistentSetImpl<E> union(PersistentSet<E> persistentSet) =>
+      new _PersistentSetImpl._internal(
+          _map.union((persistentSet as _PersistentSetImpl<E>)._map));
 
-  _PersistentSetImpl<E> difference(_PersistentSetImpl<E> persistentSet) {
+  _PersistentSetImpl<E> difference(PersistentSet<E> persistentSet) {
     _PersistentSetImpl result = new _PersistentSetImpl();
     _map.forEachKeyValue((E k, v) {
       if (!persistentSet.contains(k)) {
@@ -56,20 +57,23 @@ class _PersistentSetImpl<E> extends PersistentSetBase<E> {
     return result;
   }
 
-  _PersistentSetImpl<E> intersection(_PersistentSetImpl<E> persistentSet) =>
-      new _PersistentSetImpl._internal(_map.intersection(persistentSet._map));
+  _PersistentSetImpl<E> intersection(PersistentSet<E> persistentSet) =>
+      new _PersistentSetImpl._internal(
+          _map.intersection((persistentSet as _PersistentSetImpl<E>)._map));
 
-  PersistentSet<Pair> cartesianProduct(_PersistentSetImpl<E> persistentSet) {
+  _PersistentSetImpl<Pair<E, F>>
+      cartesianProduct<F>(PersistentSet<F> persistentSet) {
     _PersistentSetImpl<Pair> result = new _PersistentSetImpl();
     _map.forEachKeyValue((E e1, _) {
-      persistentSet._map.forEachKeyValue((e2, _) {
+      (persistentSet as _PersistentSetImpl<F>)._map.forEachKeyValue((e2, _) {
         result = result.insert(new Pair<E,Object>(e1, e2));
       });
     });
     return result;
   }
 
-  bool operator ==(_PersistentSetImpl<E> other) => _map == other._map;
+  bool operator ==(Object other) =>
+      (other is _PersistentSetImpl<E>) && _map == other._map;
 
   int get hashCode => _map.hashCode;
 

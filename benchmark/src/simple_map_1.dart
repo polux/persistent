@@ -53,7 +53,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
     return new Option<V>.none();
   }
 
-  PersistentMap mapValues(f(V)) =>
+  PersistentMap<K, U> mapValues<U>(U f(V value)) =>
     new SimplePersistentMap._internal(
       _list.strictMap((p) => new Pair(p.fst, f(p.snd))));
 

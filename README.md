@@ -1,7 +1,5 @@
 # Efficient Persistent Data Structures
 
-[![Build Status](https://drone.io/github.com/polux/persistent/status.png)](https://drone.io/github.com/polux/persistent/latest)
-
 Mostly efficient persistent maps and sets for now. Also option types.
 
 "Persistent" means immutable here, not "saved on disk".

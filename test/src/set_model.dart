@@ -13,41 +13,41 @@ class ModelSet<E> extends PersistentSetBase<E> {
 
   ModelSet(this.zet);
 
-  PersistentSet<E> insert(E element) {
+  ModelSet<E> insert(E element) {
     Set<E> newset = new Set<E>.from(zet);
     newset.add(element);
     return new ModelSet(newset);
   }
 
-  PersistentSet<E> delete(E element) {
+  ModelSet<E> delete(E element) {
     Set<E> newset = new Set<E>.from(zet);
     newset.remove(element);
     return new ModelSet(newset);
   }
 
-  PersistentSet<E> union(ModelSet<E> other) {
+  ModelSet<E> union(PersistentSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);
-    newset.addAll(other.zet);
+    newset.addAll((other as ModelSet<E>).zet);
     return new ModelSet(newset);
   }
 
-  PersistentSet<E> difference(ModelSet<E> other) {
+  ModelSet<E> difference(PersistentSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);
-    newset.removeAll(other.zet);
+    newset.removeAll((other as ModelSet<E>).zet);
     return new ModelSet(newset);
   }
 
-  PersistentSet<Pair> cartesianProduct(ModelSet other) {
+  ModelSet<Pair<E,F>> cartesianProduct<F>(PersistentSet<F> other) {
     Set<Pair> newset = new Set<Pair>();
     for (E e1 in zet) {
-      for (final e2 in other.zet) {
+      for (final e2 in (other as ModelSet<E>).zet) {
         newset.add(new Pair(e1, e2));
       }
     }
     return new ModelSet(newset);
   }
 
-  PersistentSet<E> intersection(PersistentSet<E> other) {
+  ModelSet<E> intersection(PersistentSet<E> other) {
     Set<E> newset = new Set<E>.from(zet);
     return new ModelSet(newset.where((E e) => other.contains(e)).toSet());
   }

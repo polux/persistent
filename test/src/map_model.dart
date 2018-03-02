@@ -17,14 +17,14 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
 
   bool get isEmpty => _map.isEmpty;
 
-  PersistentMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
+  ModelMap<K, V> insert(K key, V value, [V combine(V x, V y)]) {
     combine = (combine != null) ? combine : (V x, V y) => y;
     Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap[key] = _map.containsKey(key) ? combine(_map[key], value) : value;
     return new ModelMap(newmap);
   }
 
-  PersistentMap<K, V> delete(K key) {
+  ModelMap<K, V> delete(K key) {
     Map<K, V> newmap = new Map<K, V>.from(_map);
     newmap.remove(key);
     return new ModelMap(newmap);
@@ -38,7 +38,7 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
     }
   }
 
-  PersistentMap mapValues(f(V)) {
+  ModelMap<K, U> mapValues<U>(U f(V value)) {
     Map newmap = new Map.from(_map);
     _map.forEach((K key, V value) {
       newmap[key] = f(value);
@@ -63,10 +63,10 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
 
   int get length => _map.length;
 
-  PersistentMap<K, V> union(ModelMap<K, V> other, [V combine(V x, V y)]) {
+  ModelMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) {
     if (combine == null) { combine = (x, y) => y; }
     Map newmap = new Map.from(_map);
-    other._map.forEach((K key, V value) {
+    (other as ModelMap<K, V>)._map.forEach((K key, V value) {
       newmap[key] = newmap.containsKey(key)
           ? combine(newmap[key], value)
           : value;
@@ -74,13 +74,14 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
     return new ModelMap(newmap);
   }
 
-  PersistentMap<K, V> intersection(ModelMap<K, V> other,
+  ModelMap<K, V> intersection(PersistentMap<K, V> other,
                                    [V combine(V x, V y)]) {
     if (combine == null) { combine = (x, y) => y; }
-    Map newmap = new Map();
+    Map<K,V> newmap = new Map();
+    ModelMap<K,V> otherMap = other as ModelMap<K,V>;
     _map.forEach((K key, V value) {
-      if (other._map.containsKey(key)) {
-        newmap[key] = combine(value, other._map[key]);
+      if (otherMap._map.containsKey(key)) {
+        newmap[key] = combine(value, otherMap._map[key]);
       }
     });
     return new ModelMap(newmap);

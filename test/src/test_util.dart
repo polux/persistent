@@ -115,8 +115,8 @@ class Enumerations {
     elements = en.apply((i, b) => new Element(i, b), c.ints, c.bools);
     sets = c.setsOf(elements);
     pmaps = en.fix((e) =>
-        en.singleton(new PersistentMap()) +
-        en.apply((m, key, val) => m.insert(key, val), e.pay(), elements, values));
+        en.singleton(new PersistentMap<Element,int>()) +
+        en.apply3((m, key, val) => m.insert(key, val), e.pay(), elements, values));
   }
 }
 

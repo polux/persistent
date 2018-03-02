@@ -11,7 +11,7 @@ class Pair<A, B> {
 
   Pair(this.fst, this.snd);
 
-  bool operator ==(Pair<A, B> other) {
+  bool operator ==(Object other) {
     return (other is Pair<A, B>)
         && fst == other.fst
         && snd == other.snd;

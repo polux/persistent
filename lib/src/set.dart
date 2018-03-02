@@ -36,7 +36,7 @@ abstract class PersistentSet<E> implements Iterable<E> {
   /// Alias for [difference].
   PersistentSet<E> operator -(PersistentSet<E> persistentSet);
 
-  PersistentSet<Pair> cartesianProduct(PersistentSet persistentSet);
+  PersistentSet<Pair<E, F>> cartesianProduct<F>(PersistentSet<F> persistentSet);
 
   /// Alias for [cartesianProduct].
   PersistentSet<Pair> operator *(PersistentSet persistentSet);

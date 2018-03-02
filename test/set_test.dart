@@ -15,14 +15,14 @@ Element times42(Element e) => new Element(e.i * 42, e.b);
 // a predicate on Elements
 bool pred(Element e) => e.i % 3 == 0;
 
-testIsEmpty(Set<Element> s) =>
+bool testIsEmpty(Set<Element> s) =>
     implemSetFrom(s).isEmpty == modelSetFrom(s).isEmpty;
 
-testEquals(Set<Element> s1, Set<Element> s2) =>
+bool testEquals(Set<Element> s1, Set<Element> s2) =>
     (implemSetFrom(s1) == implemSetFrom(s2)) == setEquals(s1, s2);
 
-testHashCode(Set<int> set) {
-  List<int> elements = set.toList();
+bool testHashCode(Set<Element> set) {
+  List<Element> elements = set.toList();
   var set1 = implemSetFrom(set);
   // We compare the hash code of set1 against the hash code of sets created by
   // inserting rotations of elements into an empty set. That way, we obtain sets
@@ -38,42 +38,42 @@ testHashCode(Set<int> set) {
   return true;
 }
 
-testInsert(Set<Element> s, Element elem) =>
+bool testInsert(Set<Element> s, Element elem) =>
     sameSet(implemSetFrom(s).insert(elem), modelSetFrom(s).insert(elem));
 
-testDelete(Set<Element> s, Element elem) {
+bool testDelete(Set<Element> s, Element elem) {
   PersistentSet ps = implemSetFrom(s).delete(elem);
   return sameSet(ps, modelSetFrom(s).delete(elem))
     // checks that delete's normalizes the set so that == is well defined
     && implemSetFrom(ps.toSet()) == ps;
 }
 
-testContains(Set<Element> s, Element elem) =>
+bool testContains(Set<Element> s, Element elem) =>
     implemSetFrom(s).contains(elem) == modelSetFrom(s).contains(elem);
 
-testLength(Set<Element> s) =>
+bool testLength(Set<Element> s) =>
     implemSetFrom(s).length == modelSetFrom(s).length;
 
-testUnion(Set<Element> s1, Set<Element> s2) =>
+bool testUnion(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).union(implemSetFrom(s2)),
             modelSetFrom(s1).union(modelSetFrom(s2)));
 
-testDifference(Set<Element> s1, Set<Element> s2) =>
+bool testDifference(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).difference(implemSetFrom(s2)),
             modelSetFrom(s1).difference(modelSetFrom(s2)));
 
-testIntersection(Set<Element> s1, Set<Element> s2) =>
+bool testIntersection(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).intersection(implemSetFrom(s2)),
             modelSetFrom(s1).intersection(modelSetFrom(s2)));
 
-testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
+bool testCartesianProduct(Set<Element> s1, Set<Element> s2) =>
     sameSet(implemSetFrom(s1).cartesianProduct(implemSetFrom(s2)),
             modelSetFrom(s1).cartesianProduct(modelSetFrom(s2)));
 
-testIterator(Set<Element> s) =>
+bool testIterator(Set<Element> s) =>
     setEquals(implemSetFrom(s).toSet(), modelSetFrom(s).toSet());
 
-testElementAt(Set<Element> s) {
+bool testElementAt(Set<Element> s) {
   final expected = implemSetFrom(s);
   int i = 0;
   for (final entry in expected) {
@@ -83,7 +83,7 @@ testElementAt(Set<Element> s) {
   return true;
 }
 
-testLast(Set<Element> s) {
+bool testLast(Set<Element> s) {
   if (s.isEmpty) return true;
   final implem = implemSetFrom(s);
   return implem.last == naiveLast(implem);

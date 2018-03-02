@@ -38,7 +38,7 @@ class SimplePersistentMap2<K, V> extends PersistentMapBase<K, V> {
     }
   }
 
-  PersistentMap mapValues(f(V)) {
+  PersistentMap<K, U> mapValues<U>(U f(V value)) {
     Map newmap = new Map.from(_map);
     _map.forEach((K key, V value) {
       newmap[key] = f(value);

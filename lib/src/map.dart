@@ -17,7 +17,7 @@ part of persistent;
 abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
 
   /** Creates an empty [PersistentMap] using its default implementation. */
-  const factory PersistentMap() = _EmptyMap;
+  const factory PersistentMap() = _EmptyMap<K, V>;
 
   /**
    * Creates an immutable copy of [map] using the default implementation of
@@ -104,7 +104,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.mapValues((x) => x + 1) == {'a', 2, 'b', 3}
    *     {}.mapValues((x) => x + 1) == {}
    */
-  PersistentMap mapValues(f(V value));
+  PersistentMap<K, U> mapValues<U>(U f(V value));
 
   /**
    * Returns a new map whose (key, value) pairs are the union of those of `this`
@@ -193,9 +193,13 @@ abstract class PersistentMapBase<K, V>
   }
 
   // Optimized version of Iterable's contains
-  bool contains(Pair<K, V> entry) {
-    final value = this.lookup(entry.fst);
-    return value.isDefined && value.value == entry.snd;
+  bool contains(Object entry) {
+    if (entry is Pair<K, V>) {
+      final value = this.lookup(entry.fst);
+      return value.isDefined && value.value == entry.snd;
+    } else {
+      return false;
+    }
   }
 
   Iterable<K> get keys => this.map((Pair<K, V> pair) => pair.fst);
