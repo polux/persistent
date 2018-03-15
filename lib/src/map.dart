@@ -56,7 +56,7 @@ abstract class PersistentMap<K, V> implements Iterable<Pair<K, V>> {
    *     {'a': 1, 'b': 2}.insert('b', 3, (x,y) => x - y) == {'a': 3, 'b', -1}
    */
   PersistentMap<K, V> insert(K key, V value,
-      [V combine(V oldvalue, V newvalue)]);
+      [V combine(V oldValue, V newValue)]);
 
   /**
    * Returns a new map identical to `this` except that it doesn't bind [key]

@@ -140,8 +140,8 @@ naiveLast(Iterable iterable) {
   return result;
 }
 
-PersistentMap implemMapFrom(Map m) => new PersistentMap.fromMap(m);
-ModelMap modelMapFrom(Map m) => new ModelMap(m);
+PersistentMap<K, V> implemMapFrom<K, V>(Map<K, V> m) => new PersistentMap<K, V>.fromMap(m);
+ModelMap<K, V> modelMapFrom<K, V>(Map<K, V> m) => new ModelMap<K, V>(m);
 
 PersistentSet implemSetFrom(Set s) => new PersistentSet.from(s);
 ModelSet modelSetFrom(Set s) => new ModelSet(s);

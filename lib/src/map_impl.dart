@@ -24,7 +24,7 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> _intersectWith(LinkedList<Pair<K, V>> keyValues, int size,
       V combine(V x, V y), int hash, int depth);
   PersistentMap<K, V> _delete(K key, int hash, int depth);
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth);
+  PersistentMap<K, V> _adjust(K key, V update(V value), int hash, int depth);
 
   _APersistentMap<K, V> _unionWith(
       _APersistentMap<K, V> m, V combine(V x, V y), int depth);
@@ -58,7 +58,7 @@ abstract class _APersistentMap<K, V> extends PersistentMapBase<K, V> {
   PersistentMap<K, V> delete(K key) =>
       _delete(key, key.hashCode & 0x3fffffff, 0);
 
-  PersistentMap<K, V> adjust(K key, V update(V)) =>
+  PersistentMap<K, V> adjust(K key, V update(V value)) =>
       _adjust(key, update, key.hashCode & 0x3fffffff, 0);
 
   PersistentMap<K, V> union(PersistentMap<K, V> other, [V combine(V x, V y)]) =>
@@ -102,7 +102,7 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, V> _delete(K key, int hash, int depth) => this;
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) => this;
+  PersistentMap<K, V> _adjust(K key, V update(V value), int hash, int depth) => this;
 
   _APersistentMap<K, V> _unionWith(
           PersistentMap<K, V> m, V combine(V x, V y), int depth) =>
@@ -130,7 +130,7 @@ class _EmptyMap<K, V> extends _APersistentMap<K, V> {
 
   PersistentMap<K, U> mapValues<U>(U f(V value)) => new _EmptyMap<K, U>();
 
-  void forEachKeyValue(f(K, V)) {}
+  void forEachKeyValue(f(K key, V value)) {}
 
   bool operator ==(Object other) => other is _EmptyMap;
 
@@ -252,7 +252,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
         : new _Leaf<K, V>(_hash, newPairs, found ? length - 1 : length);
   }
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  PersistentMap<K, V> _adjust(K key, V update(V value), int hash, int depth) {
     LinkedList<Pair<K, V>> adjustPairs() {
       LinkedListBuilder<Pair<K, V>> builder =
           new LinkedListBuilder<Pair<K, V>>();
@@ -314,7 +314,7 @@ class _Leaf<K, V> extends _APersistentMap<K, V> {
   PersistentMap<K, U> mapValues<U>(U f(V value)) => new _Leaf(
       _hash, _pairs.strictMap((p) => new Pair(p.fst, f(p.snd))), length);
 
-  void forEachKeyValue(f(K, V)) {
+  void forEachKeyValue(f(K key, V value)) {
     _pairs.foreach((Pair<K, V> pair) => f(pair.fst, pair.snd));
   }
 
@@ -530,7 +530,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     }
   }
 
-  PersistentMap<K, V> _adjust(K key, V update(V), int hash, int depth) {
+  PersistentMap<K, V> _adjust(K key, V update(V value), int hash, int depth) {
     int branch = (hash >> (depth * 5)) & 0x1f;
     int mask = 1 << branch;
     if ((_bitmap & mask) != 0) {
@@ -651,7 +651,7 @@ class _SubMap<K, V> extends _APersistentMap<K, V> {
     return new _SubMap(_bitmap, newarray, length);
   }
 
-  forEachKeyValue(f(K, V)) {
+  forEachKeyValue(f(K key, V value)) {
     _array.forEach((mi) => mi.forEachKeyValue(f));
   }
 

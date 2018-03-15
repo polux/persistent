@@ -16,17 +16,17 @@ class Benchmark {
 
   Map<String, int> bench() {
     var res = {};
-    res["Linked List"] = _bench(() => new SimplePersistentMap());
-    res["Mutable Map"] = _bench(() => new SimplePersistentMap2());
+    res["Linked List"] = _bench(() => new SimplePersistentMap<String, String>());
+    res["Mutable Map"] = _bench(() => new SimplePersistentMap2<String, String>());
     res["Hash Trie"] = _bench(() => new PersistentMap());
     return res;
   }
 
-  int _bench(PersistentMap empty()) {
+  int _bench(PersistentMap<String, String> empty()) {
     final stopwatch = new Stopwatch();
     stopwatch.start();
 
-    PersistentMap map = empty();
+    PersistentMap<String, String> map = empty();
     for (int i = 0; i < size; i++) {
       map = map.insert("key$i", "foo", (String x, String y) => x + y);
       map = map.insert("key$i", "bar", (String x, String y) => x + y);

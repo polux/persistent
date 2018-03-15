@@ -46,7 +46,7 @@ bool testLookup(Map<Key, int> map, Key key) =>
 
 bool testAdjust(Map<Key, int> map, Key key) => sameMap(
     implemMapFrom(map).adjust(key, times42),
-    modelMapFrom(map).adjust(key, times42));
+    modelMapFrom(map).adjust(key, times42) as ModelMap<Key, int>);
 
 bool testMapValues(Map<Key, int> map) => sameMap(
     implemMapFrom(map).mapValues(times42),

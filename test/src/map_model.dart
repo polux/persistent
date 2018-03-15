@@ -5,8 +5,6 @@
 
 part of test_util;
 
-final _random = new Random();
-
 /**
  * Naive implementation of PersistentMap using dart:core [Map]s.
  */
@@ -46,7 +44,7 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
     return new ModelMap(newmap);
   }
 
-  PersistentMap<K, V> adjust(K key, V update(V)) {
+  PersistentMap<K, V> adjust(K key, V update(V value)) {
     if (_map.containsKey(key)) {
       Map newmap = new Map.from(_map);
       newmap[key] = update(_map[key]);
@@ -55,7 +53,7 @@ class ModelMap<K, V> extends PersistentMapBase<K, V> {
     return this;
   }
 
-  void forEachKeyValue(f(K, V)) {
+  void forEachKeyValue(f(K key, V value)) {
     _map.forEach(f);
   }
 

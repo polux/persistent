@@ -57,7 +57,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
       new SimplePersistentMap._internal(
           _list.strictMap((p) => new Pair(p.fst, f(p.snd))));
 
-  forEachKeyValue(f(K, V)) {
+  forEachKeyValue(f(K key, V value)) {
     Map<K, V> tmp = new Map<K, V>();
     _list.foreach((pair) {
       if (!tmp.containsKey(pair.fst)) tmp[pair.fst] = pair.snd;
@@ -78,7 +78,7 @@ class SimplePersistentMap<K, V> extends PersistentMapBase<K, V> {
     throw new UnsupportedError("intersection is not supported");
   }
 
-  PersistentMap<K, V> adjust(K key, V update(V)) {
+  PersistentMap<K, V> adjust(K key, V update(V value)) {
     throw new UnsupportedError("adjust is not supported");
   }
 

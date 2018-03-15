@@ -11,13 +11,13 @@ abstract class LinkedList<E> implements Iterable<E> {
   Nil<E> get asNil;
   Cons<E> get asCons;
 
-  void foreach(f(A));
+  void foreach(f(E elem));
 
   /// A strict (non-lazy) version of [:map:].
-  LinkedList strictMap(f(A));
+  LinkedList<F> strictMap<F>(F f(E elem));
 
   /// A strict (non-lazy) version of [:where:].
-  LinkedList<E> strictWhere(bool f(A));
+  LinkedList<E> strictWhere(bool f(E elem));
 }
 
 class LinkedListBuilder<E> {
@@ -47,7 +47,7 @@ class LinkedListBuilder<E> {
 
 abstract class _LinkedListBase<E> extends IterableBase<E>
     implements LinkedList<E> {
-  void foreach(f(A)) {
+  void foreach(f(E elem)) {
     LinkedList<E> it = this;
     while (!it.isNil) {
       Cons<E> cons = it.asCons;
@@ -56,8 +56,8 @@ abstract class _LinkedListBase<E> extends IterableBase<E>
     }
   }
 
-  LinkedList strictMap(f(A)) {
-    LinkedListBuilder<E> builder = new LinkedListBuilder<E>();
+  LinkedList<F> strictMap<F>(F f(E elem)) {
+    LinkedListBuilder<F> builder = new LinkedListBuilder<F>();
     LinkedList<E> it = this;
     while (it.isCons) {
       Cons<E> cons = it.asCons;
@@ -68,7 +68,7 @@ abstract class _LinkedListBase<E> extends IterableBase<E>
     return builder.build();
   }
 
-  LinkedList<E> strictWhere(bool f(A)) {
+  LinkedList<E> strictWhere(bool f(E elem)) {
     LinkedListBuilder<E> builder = new LinkedListBuilder<E>();
     LinkedList<E> it = this;
     while (it.isCons) {
