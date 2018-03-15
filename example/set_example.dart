@@ -3,7 +3,7 @@
 
 // Author: Paul Brauner (polux@google.com)
 
-library map_example;
+library set_example;
 
 import 'package:persistent/persistent.dart';
 

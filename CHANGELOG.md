@@ -1,5 +1,13 @@
 # Persistent Changelog
 
+## 1.0.0
+
+- Pass dart 2 analyzer
+
+## 0.9.0
+
+- Make strong mode compliant
+
 ## 0.8.3
 
 - Remove call to deprecated function in args parsing
